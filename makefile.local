@@ -1,0 +1,5 @@
+#GMP_HOME= $(HOME)/local/flowstar/include
+#GMP_LIB_HOME = $(HOME)/local/flowstar/lib
+GMP_HOME= /usr/include
+GMP_LIB_HOME = /usr/lib64
+
