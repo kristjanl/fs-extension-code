@@ -13,10 +13,10 @@ TESTOBJS = Interval.o Monomial.o Polynomial.o Matrix.o MyLogger.o TaylorModel.o 
 
 
 # All sources
-SRCS= $(OBJS:.o=.cc)
+SRCS= $(OBJS:.o=.cpp)
 
 # All dependency files
-DFILES= $(SRCS:.cc=.d)
+DFILES= $(SRCS:.cpp=.d)
 
 all: flowstar
 
@@ -27,7 +27,7 @@ test:
 	./testcompile
 
 testcompile: $(TESTOBJS) unittesting.o
-	g++ -O3 -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	g++ -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
   
 .PHONY: fast
@@ -36,27 +36,27 @@ fast:
 	./fastcompile
   
 fastcompile: $(TESTOBJS) unittestingfast.o
-	g++ -O3 -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	g++ -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
-	g++ -O3 -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	g++ -w $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
-	g++ -O3 -w $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
-#	g++ -O3 -w $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
+	g++ -w $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
+#	g++ -w $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
 
 %.o: %.cc
-	$(CXX) -O3 -c $(CFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) -o $@ $<
 %.o: %.cpp %.h
-	$(CXX) -O3 -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $< -pg
 unittestingfast.o: unittestingfast.cpp unittesting.h
-	$(CXX) -O3 -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $< -pg
   
 #%.o: %.cpp $(DEPDIR)/%.d
-#	$(CXX) -O3 -c $(DEPFLAGS) $(CFLAGS) -o $@ $<
+#	$(CXX) -c $(DEPFLAGS) $(CFLAGS) -o $@ $<
 #  $(POSTCOMPILE)
 %.o: %.c
-	$(CXX) -O3 -c $(CFLAGS) -o $@ $<
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 modelParser.tab.c: modelParser.y
 	bison -d -v modelParser.y
