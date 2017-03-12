@@ -1,0 +1,2 @@
+GMP2_HOME= $(HOME)/local/flow2/include
+GMP_LIB_HOME = $(HOME)/local/flow2/lib
