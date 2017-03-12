@@ -31,7 +31,10 @@
 flowstar
 makefile.local
 glpk.h
+testcompile
+fastcompile
 
 #editor copies
 \#*
 *~
+
