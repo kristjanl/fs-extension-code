@@ -38,3 +38,10 @@ fastcompile
 \#*
 *~
 
+# flex/bison stuff
+lex.yy.c
+*.output
+*.tab.c
+*.tab.h
+
+gmon.out
