@@ -8,5 +8,17 @@
 #include "MyComponent.h"
 #include "OutputWriter.h"
 #include "Continuous.h"
+#include "Hybrid.h"
+
+
+extern int lineNum;
+
+extern ParseSetting parseSetting;
+extern ParseResult parseResult;
+
+extern int yyparse();
+
+void parseError(const char *str, int lnum);
+
 
 #endif /* UNITTESTING_H_ */

@@ -110,6 +110,7 @@ extern int lineNum;
 using namespace std;
 
 extern void parseODE();
+extern void parseTM();
 
 
 #define ALGORITHM_DEFAULT 0

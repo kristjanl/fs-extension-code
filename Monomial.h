@@ -49,6 +49,7 @@ public:
 
 	void toString(string & result, const vector<string> & varNames) const;
   string toString(const vector<string> & varNames) const;
+  string toString() const;
 
 	bool classInvariantOK() const;
 

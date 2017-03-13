@@ -35,7 +35,7 @@ fast:
 	make fastcompile
 	./fastcompile
 
-fastcompile: $(OBJS) unittestingfast.o lex.yy.o
+fastcompile: $(OBJS) lex.yy.o modelParser.tab.o unittestingfast.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o

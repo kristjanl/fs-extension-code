@@ -40,6 +40,7 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 ":=" {return ASSIGN;}
 "^" {return '^';}
 "/" {return '/';}
+"<" {return '<';}
 ">" {return '>';}
 "mode" {return MODE;}
 "init" {return INIT;}
@@ -109,6 +110,8 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "alg_small_comp" {return ALG_SMALL_COMP;}
 "decomposition" {return DECOMPOSITION;}
 "no decomposition" {return NODECOMPOSITION;}
+"my model" {return MYMODEL;}
+"my mono" {return MYMONO;}
 
 
 {number} { yylval.dblVal = atof( (char *)yytext ); return NUM; }

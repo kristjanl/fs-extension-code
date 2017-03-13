@@ -6802,7 +6802,8 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-
+    //logger.force("1");exit(0);
+    
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
 	}
@@ -7142,7 +7143,8 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 		parseSetting.order = orders[i] - 1;
 
-		parseODE();		// call the parser
+				parseODE();		// call the parser
+				//logger.force("2");exit(0);
 
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7486,7 +7488,8 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-
+    //logger.force("3");exit(0);
+    
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
 	}
@@ -7858,7 +7861,8 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-
+    //logger.force("4");exit(0);
+    
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
 	}
@@ -8229,10 +8233,15 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 	TaylorModelVec Adrdt;
 	for(int i=0; i<rangeDim; ++i)
 	{
+	  logger.enable();
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
+		logger.log(prefix);
+		logger.log(suffix);
+		logger.log(strOde_centered[i]);
 
 		parseODE();		// call the parser
-
+    //logger.force("5");exit(0);
+    
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
 	}
@@ -8614,7 +8623,8 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-
+    //logger.force("6");exit(0);
+    
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
 	}
@@ -8944,7 +8954,8 @@ ContinuousSystem::ContinuousSystem(const vector<string> & strOde_input, const Fl
 		parseSetting.clear();
 		parseSetting.strODE = prefix + strOde[i] + suffix;
 		parseODE();
-
+    //logger.force("7");exit(0);
+    
 		strOde_centered.push_back(parseResult.strExpansion);
 	}
 
@@ -13825,6 +13836,4 @@ void ContinuousReachability::myRun() {
   exit(0);
 }
 
-//void parseODE() {
-//}
 

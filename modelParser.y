@@ -69,6 +69,8 @@
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP
 %token DECOMPOSITION 
 %token NODECOMPOSITION
+%token MYMODEL
+%token MYMONO
 
 %type <poly> polynomial
 %type <poly> ODEpolynomial
@@ -100,6 +102,9 @@
 %type <strVec> npode
 %type <pNode> computation_path
 %type <iVec> compVarIds
+%type <poly> my_poly
+%type <mono> my_mono
+%type <iVec> my_mono_powers
 
 
 
@@ -469,6 +474,31 @@ TAYLOR_POLYNOMIAL '{' non_polynomial_rhs_no_remainder '}'
 NONPOLY_CENTER '{' non_polynomial_rhs_center '}'
 {
 	parseResult.strExpansion = (*$3);
+	delete $3;
+}
+|
+MYMODEL '{' my_poly '}'
+{
+  logger.log("tm");
+  parseResult.model = TaylorModel(*($3), Interval());
+	delete $3;
+}|
+MYMODEL '{' my_poly '+' '[' NUM ',' NUM ']' '}'
+{
+  logger.log("tm2");
+  parseResult.model = TaylorModel(*($3), Interval($6,$8));
+	delete $3;
+}|
+MYMODEL '{' my_poly '-' '[' NUM ',' NUM ']' '}'
+{
+  logger.log("tm3");
+	parseResult.model = TaylorModel(*($3), Interval(-$8,-$6));
+	delete $3;
+}|
+MYMONO '{' my_mono '}'
+{
+  Monomial m(*$3);
+	parseResult.mono = m;
 	delete $3;
 }
 ;
@@ -4377,6 +4407,10 @@ IDENT
 	}
 
 	$$ = new Polynomial;
+	logger.logPoly($$);
+	logger.log(*$1);
+	exit(0);
+	
 	parseSetting.flowpipe.tms[id].getExpansion(*$$);
 	
 	(*$$).nctrunc(parseSetting.order);
@@ -4796,9 +4830,79 @@ NUM
 }
 ;
 
+my_poly: my_poly '+' my_poly{
+  //logger.log("+");
+  $$ = $1;
+  *$$ += *($3);
+  delete $3;
+} | my_poly '-' my_poly{
+  //logger.log("-");
+  $$ = $1;
+  *$$ -= *($3);
+  delete $3;
+} | my_poly '^' NUM{
+  int exp = (int) $3;
+	if(exp == 0) {
+		Interval I(1);
+		$$ = new Polynomial(I, parseSetting.variables.size());
+	} else {
+		$$ = new Polynomial;
+		(*$1).pow(*$$, exp);
+	}
+	delete $1;
+} | my_poly '*' my_poly{
+  //logger.log("*");
+  $$ = $1;
+  *$$ *= *($3);
+  delete $3;
+} | IDENT {
+  //logger.log(*$1);
+  vector<string> vars = parseSetting.variables;
+  int dim = parseSetting.variables.size();
+  int pos = find(vars.begin(), vars.end(), *$1) - vars.begin();
+  if(pos >= dim) {
+		char errMsg[MSG_SIZE];
+		string s = sbuilder() << "variable '" << *$1 << "' wasn't declared";
+		sprintf(errMsg, s.c_str());
+		parseError(errMsg, lineNum);
+		exit(1);
+	}
+	vector<int> degs;
+	for(int i = 0; i < dim; i++) {
+	  if(i == pos) {
+	    degs.push_back(1);
+	    continue;
+	  }
+	  degs.push_back(0);
+	}
+	
+  Monomial m(Interval(1), degs);
+  $$ = new Polynomial(m);
+}
+| NUM {
+  int dim = parseSetting.variables.size();
+  Polynomial *p = new Polynomial(Interval($1), dim);
+  $$ = new Polynomial(Interval($1), dim);
+};
 
+my_mono: NUM '<' my_mono_powers '>' {
+	Monomial *m = new Monomial(Interval($1), *$3);
+  $$ = m;
+  delete $3;
+} | '<' my_mono_powers '>' {
+	Monomial *m = new Monomial(Interval(1), *$2);
+  $$ = m;
+  delete $2;
+};
 
-
+my_mono_powers: NUM{
+  vector<int> *degrees = new vector<int>();
+  degrees->push_back($1);
+  $$ = degrees;
+} | NUM ',' my_mono_powers {
+  $3->insert($3->begin(),$1);
+  $$ = $3;
+};
 
 
 

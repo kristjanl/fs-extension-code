@@ -399,6 +399,17 @@ string Monomial::toString(const vector<string> & varNames) const
   return strMono;
 }
 
+string Monomial::toString() const {
+	vector<string> variables;
+	for(int i = 0; i < degrees.size(); i++) {
+	  char buffer[10];
+    sprintf (buffer, "a%d", i);
+	  variables.push_back(buffer);
+	}
+	
+	return toString(variables);
+}
+
 Monomial Monomial::transform(map<int, int> lookup, int size) {
   //cout << "m transform" << endl;
   int i = 0;

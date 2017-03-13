@@ -276,6 +276,7 @@ public:
 
 	list<Interval> ranges;
 	list<Interval>::iterator iterRange;
+	vector<string> variables;
 
 	vector<Interval> step_exp_table;
 	TaylorModelVec flowpipe;
@@ -297,6 +298,8 @@ class ParseResult					// the data structure of a parsed non-polynomial ODE with 
 public:
 	Polynomial	expansion;
 	Interval	remainder;
+	TaylorModel model;
+	Monomial mono;
 	string		strExpansion;
 
 	ParseResult();

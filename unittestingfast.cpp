@@ -238,6 +238,20 @@ void component() {
   cout << "here" << endl;
 }
 
+int lineNum = 1;
+
+ContinuousReachability continuousProblem;
+HybridReachability hybridProblem;
+ReachabilitySetting mode_local_setting;
+
+extern int yyparse();
+
+void parseError(const char *str, int lnum)
+{
+	cerr << "Error @line " << lineNum << ":" << string(str) << endl;
+	exit(1);
+}
+
 void sw() {
   MyComponent component;
   vector<Interval> domain;
@@ -258,4 +272,9 @@ int main() {
   transf_padding();
   component();
   sw();
+  
+  parseSetting.strODE = "my mono { <1,2,0,4>}";
+  logger.log(sbuilder() << "input: " << parseSetting.strODE);
+	parseODE();		// call the parser
+  logger.log(parseResult.mono.toString());
 }

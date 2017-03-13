@@ -1084,7 +1084,26 @@ void SmallCompReachability::myRun() {
   logger.enable(); //coupled with model parsing disable
   
   logger.log("Simple Comp Run <");
+  /*
+  parseSetting.clear();
+  parseSetting.variables.push_back("x");
+  parseSetting.variables.push_back("y");
+  parseSetting.variables.push_back("z");
+  
+
+  parseSetting.strODE = "my model {2 + 3*z^2 - 3*x - x*y*x^3 - [-2,0]}";
+  logger.log(sbuilder() << "input: " << parseSetting.strODE);
+	parseODE();		// call the parser
+  logger.logTM("parsed", parseResult.model);
+  
+  parseSetting.strODE = "my mono { <1,2,0,4>}";
+  logger.log(sbuilder() << "input: " << parseSetting.strODE);
+	parseODE();		// call the parser
+  logger.log(parseResult.mono.toString());
+	exit(0);
+  
   logger.log(sbuilder() << "output: " << outputFileName);
+  exit(0);*/
   logger.inc();
   
   clock_t begin, end;
