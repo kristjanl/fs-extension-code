@@ -45,3 +45,5 @@ lex.yy.c
 *.tab.h
 
 gmon.out
+
+makefile.local

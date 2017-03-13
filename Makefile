@@ -26,7 +26,7 @@ test:
 	make testcompile
 	./testcompile
 
-testcompile: $(TESTOBJS) unittesting.o
+testcompile: $(OBJS) unittesting.o lex.yy.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 
@@ -35,7 +35,7 @@ fast:
 	make fastcompile
 	./fastcompile
 
-fastcompile: $(TESTOBJS) unittestingfast.o
+fastcompile: $(OBJS) unittestingfast.o lex.yy.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
