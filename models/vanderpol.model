@@ -1,0 +1,32 @@
+continuous reachability
+{
+ state var x,y
+	
+ setting
+ {
+  fixed steps 0.02
+  time 7
+  remainder estimation 1e-5
+  shrink wrapping 10
+  gnuplot octagon x,y
+  fixed orders 5
+  cutoff 1e-12
+  precision 53
+  output vanderpol
+  alg_small_comp
+  no decomposition
+  print on
+ }
+	
+ poly ode 1
+ {
+  x' =  y
+  y' =  y - x - x^2*y
+ }
+ 
+ init
+ {
+  x in [1.25 , 1.55]
+  y in [2.25 , 2.35]
+ }
+}

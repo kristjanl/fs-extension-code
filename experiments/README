@@ -1,0 +1,31 @@
+Running experiments consist of running 2 scripts:
+1) run_flowstar.py
+2) run_comparision.py
+
+Both of these operate on models given by pairs in the variable 'pairs', the
+first model of the pair is the model without shrink wrapping and the second is
+the one with shrink wrapping.
+For example with the line:
+  pairs = pairs + [('moore_rot_plain.model', 'moore_rot_sw_10.model')]
+'moore_rot_plain.model' denotes the model without shrink wrapping and
+'moore_rot_sw_10.model' denotes the model with shrink wrapping
+
+1) run_flowstar.py
+  runs on flowstar on all the files to generate the csv files (containing the 
+  the variable interval, variable range and remainder term size for all the
+  variables) in the directory ./csvs
+  (some models are commented out, since running them takes a lot of time).
+  
+2) run_comparision.py
+  a) Generates experiments.html file from all the csvs
+  b) Generates images containing the interval boxes of the first variable up
+     the point which both the model with shrink wrapping and the model without
+     shrink wrapping managed to integrate to.
+     
+     
+* The models are taken from 
+https://ths.rwth-aachen.de/research/projects/hypro/benchmarks-of-continuous-and-hybrid-systems/
+The continuous benchmarks are modified to have a fixed order.
+The hybrid benchmarks are encoded as continuous ones by only taking the initial
+mode and setting the intial conditions as the initial conditions for the hybrid
+model.

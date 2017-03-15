@@ -1,0 +1,4 @@
+reason: max increase couldn't find a remainder Was thrown
+integration time: 3.52
+computation time: 265.64
+shrink wrapping time: 0
