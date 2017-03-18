@@ -300,6 +300,66 @@ void swSet() {
 	logger.logTMV("set",  component.initSet);
 	logger.log(sbuilder() << "is close: " << expected.isClose(component.initSet, 0));
 }
+void sw3() {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+  vector<Interval> step_exp_table;
+  vector<Interval> step_end_exp_table;
+	construct_step_exp_table(step_exp_table, step_end_exp_table, 0.1, 2*2);
+	
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	
+	OutputWriter writer("dummy", 0, 1);
+	
+  TaylorModelVec parsed = parseTMV("my models {a + [-1,1], b + [0,1],2 + [-1,1],[-2,2]}");
+	vector<HornerForm> hfVec;
+	hfVec.push_back(HornerForm(Interval(1)));
+	hfVec.push_back(HornerForm(Interval(2)));
+	hfVec.push_back(HornerForm(Interval(3)));
+	hfVec.push_back(HornerForm(Interval(4)));
+		
+  MyComponent c1;
+  c1.addVar(0);
+  c1.addVar(1);
+  c1.prepareComponent(parsed, hfVec, domain);
+  
+  MyComponent c2;
+  c2.addVar(2);
+  c2.addVar(3);
+  c2.prepareComponent(parsed, hfVec, domain);
+  
+  logger.logTMV("c1init", c1.initSet);
+  logger.log(c1.initSet.tms.at(0).getParamCount());
+  logger.logTMV("c2init", c2.initSet);
+	
+	vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	comps.push_back(&c2);
+	
+  MyComponent all = getSystemComponent(comps, parsed, hfVec, domain);
+  
+  logger.logTMV("a_init", all.initSet);  
+  
+  logger.log(all.compMappers.size());
+  
+  logger.listVi("m0", all.compMappers.at(0));
+  logger.listVi("m1", all.compMappers.at(1));
+  logger.listVi("m2", all.compMappers.at(2));
+  
+  c1.pipes.push_back(c1.initSet);
+  c2.pipes.push_back(c2.initSet);
+  
+  
+  smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
+      comps, writer);
+}
+
 
 int main() {
   /*
@@ -314,6 +374,7 @@ int main() {
   component();
   sw1();
   sw2();
-  */
   swSet();
+  */
+  sw3();
 }

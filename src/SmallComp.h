@@ -17,6 +17,10 @@ namespace smallComp {
       vector<Interval> step_end_exp_table);
   void shrinkWrapSet(MyComponent * component, double factor, 
         vector<Interval> domain);
+        
+  double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 
+      vector<Interval> step_end_exp_table, vector<MyComponent *> comps,
+      OutputWriter & writer);
 }
 
 class SmallCompSystem: public ContinuousSystem  {

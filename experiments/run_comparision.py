@@ -9,7 +9,7 @@ import os.path
 scriptsDir = "scripts"
 sys.path.append(scriptsDir)
 # directory of models
-modelDir = os.path.join("..", "models")
+modelDir = os.path.join("..", "models", "bench")
 
 import my_functions as fs
 

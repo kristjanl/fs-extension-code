@@ -6,7 +6,7 @@ import re
 import os
 
 # directory of models
-modelDir = os.path.join("..", "models")
+modelDir = os.path.join("..", "models", "bench")
 flowstar = os.path.join("..", "src", "flowstar")
 
 pairs = []

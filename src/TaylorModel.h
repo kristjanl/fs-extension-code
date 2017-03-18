@@ -129,6 +129,7 @@ public:
   TaylorModel* ptransform(vector<int> indexes);
   TaylorModel prepareSecondary(int prefix) const;
   int getParamCount() const;
+  TaylorModel addNParams(int n) const;
   vector<int> getParams() const;
   void getLinearPart(Interval ret[], vector<int> variables) const;
   void getLinearPart2(vector<int> variables) const;
@@ -269,6 +270,7 @@ public:
   TaylorModelVec transform(vector<int> indexes);
   
   bool isClose(const TaylorModelVec & tmv, double d) const;
+  TaylorModelVec addNParams(int n) const;
 
 	TaylorModelVec & operator = (const TaylorModelVec & tmv);
 };

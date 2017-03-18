@@ -2422,6 +2422,19 @@ int Polynomial::getVariableCount() const {
   return m.getVariableCount();
 }
 
+Polynomial Polynomial::addNVariables(int n) const {
+  list<Monomial>::const_iterator it, it_last;
+	it_last = monomials.end();
+	
+	list<Monomial> retMonos;
+  for(it = monomials.begin(); it != it_last; it++) {
+    Monomial m = it->addNVariables(n);
+    retMonos.push_back(m);
+	}
+	Polynomial ret(retMonos);
+	return ret;
+}
+
 
 //returns true if the polynomial is not zero
 bool HornerForm::getVars(int vars[]) const {

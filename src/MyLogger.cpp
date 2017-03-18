@@ -72,6 +72,7 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
   //logger.log(sbuilder() << "pdim: " << paramDim);
 	for (unsigned i=0; i<dim; i++) {
     int paramDim = tmv.tms.at(i).getParamCount();
+    //logger.log(paramDim);
     logger.log(sbuilder() << name << "[" << i << "]=" << 
         tmv.tms.at(i).toString(getVNames(paramDim)));
 	}

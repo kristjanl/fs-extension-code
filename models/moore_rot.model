@@ -7,12 +7,12 @@ continuous reachability
     fixed steps 0.1
     time 10.0
     remainder estimation 1e-3
-    shrink wrapping 10
+    shrink wrapping 0
     gnuplot interval x1,x2
     fixed orders 2
     cutoff 1e-15
     precision 53
-    output moore_rot_sw_10
+    output moore_rot
     alg_small_comp
     decomposition [[x1,x2]]
     print on

@@ -171,6 +171,7 @@ public:
   string toString(const vector<string> & varNames) const;
   int equals(const Polynomial &) const;
   int getVariableCount() const;
+  Polynomial addNVariables(int n) const;
 
 	friend class TaylorModel;
 	friend class TaylorModelVec;

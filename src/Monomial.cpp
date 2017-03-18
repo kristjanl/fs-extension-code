@@ -406,6 +406,7 @@ string Monomial::toString() const {
     sprintf (buffer, "a%d", i);
 	  variables.push_back(buffer);
 	}
+  //cout << "deg size: " << degrees.size();
 	
 	return toString(variables);
 }
@@ -620,3 +621,16 @@ int Monomial::linearVariable() const {
   }
   return variable;
 }
+
+
+Monomial Monomial::addNVariables(int n) const {
+  vector<int> deg = degrees;
+  for(int i = 0; i < n; i++)
+    deg.push_back(0);
+  
+	Monomial ret(coefficient, deg);
+	return ret;
+}
+
+
+

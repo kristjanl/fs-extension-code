@@ -311,7 +311,6 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   logger.inc();
   logger.listVi("vars", varIndexes);
   logger.log(sbuilder() << "dependencies: " << dependencies.size());
-  
   //prepare variables for all the dependencies
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
         it < dependencies.end(); it++) {
@@ -326,7 +325,6 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   remapIVP(init, ode, domain);
   
   isPrepared = true;
-  
   
   logger.dec();
   logger.log("preparing >");
@@ -367,7 +365,7 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
   sort(tpIndexes.begin(), tpIndexes.end());
   tpIndexes.erase( 
       unique(tpIndexes.begin(), tpIndexes.end()), tpIndexes.end() );
-      
+  
   
   vector<int> allParams;
       
@@ -376,7 +374,7 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
         it < tpIndexes.end(); it++) {
     allParams.push_back(*it);
   }
-   
+  
   //logger.listVi("allParams (current)", allParams);
   //gather all indexes of all previous components
   for(int i = 0; i < dependencies.size(); i++) {
@@ -468,6 +466,8 @@ void MyComponent::remapLastFlowpipe() {
   
   addEmptyTM(pipes, varSize);
   
+  logger.log(dependencies.size());
+  
   if(dependencies.size() == 0)
     return;
   logger.log("remapping last <");
@@ -479,7 +479,7 @@ void MyComponent::remapLastFlowpipe() {
   int depIndex = 0;
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
       it < dependencies.end(); it++, depIndex++) {
-    //logger.log(sbuilder() << "depIndex: " << depIndex);
+    logger.log(sbuilder() << "depIndex: " << depIndex);
     int link = (*it)->linkVar;
     //logger.log(sbuilder() << "link: " << link);
     MyComponent *pComp = (*it)->pComp;
@@ -536,7 +536,6 @@ void MyComponent::remapLastFlowpipe() {
   //logger.logTMV("init", initSet);
   logger.dec();
   logger.log("remapping last >");
-  
 }
 
 void MyComponent::prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
@@ -637,7 +636,7 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
       it < comps.end(); it++) {
     for(vector<int>::iterator i2 = (*it)->varIndexes.begin();
         i2 < (*it)->varIndexes.end(); i2++) {
-      allVars.addDependency(*i2, *it);  
+      allVars.addDependency(*i2, *it);
     }
   }
   allVars.prepareComponent(init, ode, domain);

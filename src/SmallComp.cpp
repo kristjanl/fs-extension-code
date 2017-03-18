@@ -462,9 +462,10 @@ namespace smallComp {
     double s = -1, t = -1, d = -1, q;
     
     TaylorModelVec last = component.pipes.at(component.pipes.size() - 1);
-    
     TaylorModelVec next;
     last.evaluate_t(next, step_end_exp_table);
+    
+    next = component.swInput;
     
     //logger.logTMV("next", next);
     TaylorModelVec orig(next);
@@ -639,6 +640,80 @@ namespace smallComp {
     return q;
   }
   
+  void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce, 
+      int oParamCount) {
+    int paramCount = tmv.tms[0].getParamCount();
+    for(int i = 0; i < varsToIntroduce.size(); i++) {
+      int var = varsToIntroduce[i];
+      //logger.log(sbuilder() << "var: " << var);
+      TaylorModel & tm = tmv.tms[var];
+      
+      Interval & rem = tm.remainder;
+      
+      Interval inf;
+      rem.inf(inf);
+      Interval sup;
+      rem.sup(sup);
+      
+      Interval shift = inf + sup;
+      shift.div_assign(2);
+      
+      //logger.log(sbuilder() << "shift: " << shift.toString());
+      //logger.log(sbuilder() << "inf: " << inf.toString());
+      //logger.log(sbuilder() << "sup: " << sup.toString());
+      //logger.log(sbuilder() << "tm: " << tm.remainder.toString());
+      
+      
+	    tm.expansion.add_assign(Monomial(shift, paramCount));
+      Interval coef = (rem - shift).sup();
+      
+      //logger.log(sbuilder() << "coef: " << coef.toString());
+      
+      vector<int> degs;
+      //logger.log(tm.getParamCount());
+      for(int j = 0; j < paramCount; j++) {
+        if(j == oParamCount + i)
+          degs.push_back(1);
+        else
+          degs.push_back(0);
+      }
+      
+      tm.expansion.add_assign(Monomial(coef, degs));
+      tm.remainder = Interval();
+    }
+  }
+  
+  void introduceParam(MyComponent & comp, vector<Interval> step_end_exp_table, 
+      vector<Interval> & domain) {
+    TaylorModelVec last = comp.pipes.at(comp.pipes.size() - 1);
+    TaylorModelVec tmv;
+    last.evaluate_t(tmv, step_end_exp_table);
+    
+    
+    //logger.logTMV("last", last);
+    //logger.logTMV("tmv", tmv);
+    
+    vector<int> varsToIntroduce;
+    varsToIntroduce.push_back(2);
+    varsToIntroduce.push_back(3);
+    
+    domain.push_back(Interval(-1,1));
+    domain.push_back(Interval(-1,1));
+    
+    
+    int oParamCount = tmv.tms[0].getParamCount();
+    
+    TaylorModelVec padded = tmv.addNParams(varsToIntroduce.size());
+    int paramCount = padded.tms[0].getParamCount();
+    
+    
+    logger.logTMV("padded", padded);
+    
+    parametrizeVars(padded, varsToIntroduce, oParamCount);
+    
+    logger.logTMV("padded", padded);
+    comp.swInput = padded;
+  }
   
   double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 
       vector<Interval> step_end_exp_table, vector<MyComponent *> comps,
@@ -651,6 +726,12 @@ namespace smallComp {
     all.remapLastFlowpipe();
     logger.enable();
     
+    introduceParam(all, step_end_exp_table, domain);
+    
+    logger.logTMV("a", all.pipes.at(0));
+    logger.log(all.compMappers.size());
+    logger.listVi("0", all.compMappers.at(0));
+    logger.listVi("1", all.compMappers.at(0));
     
     //logger.logTMV("all", all.pipes.at(all.pipes.size() - 1));
     //vector<TaylorModelVec> p2 = all.dependencies.at(0)->pComp->pipes;
@@ -673,210 +754,10 @@ namespace smallComp {
     writer.swTime += singleSW;
     //logger.force(sbuilder() << "single: " << singleSW);
     //logger.force(sbuilder() << (end - start));
-  }
-  
-  void shrinkWrap_old(MyComponent & component, vector<Interval> domain, 
-      vector<Interval> step_end_exp_table) {
-    logger.log("sw <");
-    logger.inc();
-    double s = -1, t = -1, d = -1, q;
     
-    TaylorModelVec last = component.pipes.at(component.pipes.size() - 1);
-    //logger.logTMV("last", last);
-    
-    TaylorModelVec next;
-    last.evaluate_t(next, step_end_exp_table);
-    
-    logger.logTMV("next", next);
-    TaylorModelVec orig(next);
-    
-    //remove the constant part
-    next.rmConstant(); 
-    
-    logger.logTMV("noconst", next);
-    
-    
-    //logger.log(sbuilder() << d);
-    
-    int varSize = component.solveIndexes.size();
-    Matrix m(varSize);
-    
-    
-    /*
-    Interval intZero;
-    vector<vector<Interval> > intCoefficients;
-  	vector<Interval> intVecTemp;
-	  for(int i=0; i<varSize+1; ++i) {
-	  	intVecTemp.push_back(intZero);
-	  }
-
-	  for(int i=0; i<varSize; ++i) {
-  		intCoefficients.push_back(intVecTemp);
-	  }
-    
-  	next.linearCoefficients(intCoefficients);
-  	
-    logger.logVI("coef0", intCoefficients.at(0));
-    logger.logVI("coef1", intCoefficients.at(1));
-    */
-    
-    //set the elements of matrix m as the linear coefficients
-    {
-      int row = 0;
-      for(vector<int>::iterator it = component.solveIndexes.begin();
-          it < component.solveIndexes.end(); it++, row++) {
-        Interval linearPart[varSize];
-        next.tms.at(*it).getLinearPart(linearPart, component.solveIndexes);
-        //logger.log(sbuilder() << "r[0]: " << linearPart[0].toString());
-        //logger.log(sbuilder() << "r[1]: " << linearPart[1].toString());
-        for(int i = 0; i < varSize; i++) {
-          m.set(linearPart[i].sup(), row, i); //TODO taking sup is not correct
-        }
-      }
-    }
-    //logger.logMatrix(m);
-    
-    //find the inverse of m
-    Matrix inv(varSize);
-    m.inverse(inv);
-    logger.logMatrix(inv);
-    
-    
-    //find the nonliear part of m^-1 * TM
-    vector<TaylorModel> tms;
-    int row = 0;
-    for(vector<int>::iterator it = component.solveIndexes.begin();
-        it < component.solveIndexes.end(); it++, row++) {
-      logger.log(sbuilder() << "varIndex:" << *it);
-      
-      //^m-1 * TM part
-      TaylorModel result;
-      int col = 0;
-      for(vector<int>::iterator it2 = component.solveIndexes.begin();
-          it2 < component.solveIndexes.end(); it2++, col++) {
-        //logger.log(sbuilder() << "(" << row << "," << col <<")");
-        //logger.logd(m.get(row, col));
-        TaylorModel temp;
-        next.tms.at(*it2).mul(temp, inv.get(row,col));
-        result.add_assign(temp);
-      }
-      logger.logTM("res1", result);
-      
-      //substract the linear part (by adding -1*linear part)
-      vector<Interval> coefs;
-      coefs.push_back(0); //time
-      for(int i = 0; i < component.allTMParams.size(); i++) {
-        //logger.log(i);
-        if(i == *it) // TODO assuming that varIndex == paramIndex
-          coefs.push_back(-1);
-        else
-          coefs.push_back(0);
-      }
-      TaylorModel tm(Polynomial(coefs), Interval(0));
-      logger.logTM("-1*lin", tm);
-      result.add_assign(tm);
-      logger.logTM("res2", result);
-      tms.push_back(result);
-    }
-    
-    
-    logger.logTMV("C^-1 * ", tms);
-    //finding d
-    for(vector<TaylorModel>::iterator it = tms.begin(); it < tms.end(); it++) {
-      //logger.log(it->remainder.toString());
-      //logger.log(sbuilder() << it->remainder.mag());
-      if(it->remainder.mag() > d)
-        d = it->remainder.mag();
-    }
-    logger.log(sbuilder() << "d: " << d);
-    
-    //nullify remainder (so you get only nonlinear part)
-    for(int i = 0; i < tms.size(); i++) {
-      tms.at(i).remainder = Interval(0);
-    }
-    logger.logTMV("S", tms);
-    
-    //finding s
-    TaylorModelVec nlPart(tms);
-    //logger.logTMV("nl", nlPart);
-    //bound the nonlinear part
-    vector<Interval> nlRange;
-    
-    nlPart.polyRange(nlRange, domain);
-    
-    //logger.logVI("nl", nlRange);
-    for(vector<Interval>::iterator it = nlRange.begin();
-        it < nlRange.end(); it++) {
-      double mag = it->mag();
-      s = max(s,mag);
-    }
-    logger.log(sbuilder() << "s: " << s);
-    
-    
-    //find t
-    for(vector<int>::iterator it = component.allTMParams.begin();
-        it < component.allTMParams.end(); it++) {
-      int param = *it + 1; //index of parameter, +1 cause of time
-      
-      TaylorModelVec pDer;
-      nlPart.derivative(pDer, param); //derivative wrt to parameter
-      //logger.log(param);
-      //logger.logTMV("pDer", pDer);
-      
-      //bound of the derivative
-      vector<Interval> pDerRange;
-      pDer.polyRange(pDerRange, domain);
-      //logger.logVI("pd", pDerRange);
-      for(vector<Interval>::iterator it2 = pDerRange.begin();
-          it2 < pDerRange.end(); it2++) {
-        double mag = it2->mag();
-        //logger.log(sbuilder() << mag);
-        t = max(t,mag);
-      }
-    }
-    logger.log(sbuilder() << "t: " << t);
-    
-    int n = component.allTMParams.size(); //TODO is this needed?
-    q = 1 + d*(1/((1-(n-1)*t)*(1-s))); //TODO not safe floating point rounding
-    
-    logger.log(sbuilder() << "q: " << q);
-    
-    TaylorModelVec constantPart;
-    next.mul(constantPart, -1); //next has constant part removed
-    constantPart.add_assign(orig);
-    for(int i = 0; i < constantPart.tms.size(); i++) {
-      constantPart.tms.at(i).remainder = Interval(0); //nullify the remainder
-    }
-    
-    vector<TaylorModel> qTM;
-    for(int i = 0; i < next.tms.size(); i++) {
-      TaylorModel tm = next.tms.at(i);
-      TaylorModel mult;
-      tm.mul(mult, q);
-      //take only the polynomial part
-      qTM.push_back(TaylorModel(mult.expansion, Interval(0)));
-    }
-    
-    logger.logTMV("qTM", TaylorModelVec(qTM));
-    
-    TaylorModelVec shrinkWrapped;
-    constantPart.add(shrinkWrapped, TaylorModelVec(qTM));
-    
-    logger.logTMV("orig", orig);
-    logger.logTMV("swra", shrinkWrapped);
-    
-    
-    vector<Interval> range;
-    orig.polyRange(range, domain);
-    logger.logVI("orig", range);
-    shrinkWrapped.polyRange(range, domain);
-    logger.logVI("swra", range);
-    
-    
-    logger.dec();
-    logger.log("sw >");
     exit(0);
   }
+  
   
   
   void bar12() {

@@ -3763,6 +3763,21 @@ TaylorModelVec TaylorModelVec::transform(vector<int> indexes) {
   return TaylorModelVec(temp);
 }
 
+TaylorModelVec TaylorModelVec::addNParams(int n) const {
+//  logger.log("adding tmv");
+  vector<TaylorModel> retTms;
+  for(vector<TaylorModel>::const_iterator it = tms.begin(); 
+      it < tms.end(); it++) {
+    retTms.push_back(it->addNParams(n));
+  }
+  return TaylorModelVec(retTms);
+}
+
+TaylorModel TaylorModel::addNParams(int n) const{
+//  logger.log("adding tm");
+  Polynomial retExpansion = expansion.addNVariables(n);
+  return TaylorModel(retExpansion, remainder);
+}
 
 bool TaylorModelVec::isClose(const TaylorModelVec & tmv, double d) const {
   //logger.log("comparing tmv");

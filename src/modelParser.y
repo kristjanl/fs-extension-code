@@ -4849,6 +4849,11 @@ my_taylor_model: my_poly {
 } | my_poly '-' '[' NUM ',' NUM ']' {
   $$ = new TaylorModel(*($1), Interval(-$6,-$4));
   delete $1;
+} | '[' NUM ',' NUM ']' {
+  
+  $$ = new TaylorModel(
+      Polynomial(Monomial(Interval(0), parseSetting.variables.size())), 
+      Interval($2,$4));
 };
 
 my_poly: my_poly '+' my_poly{

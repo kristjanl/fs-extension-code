@@ -29,6 +29,7 @@ class MyComponent {
     
     vector<MyComponent> previous;
     TaylorModelVec initSet;
+    TaylorModelVec swInput;
     vector<HornerForm> odes;
     vector<Interval> dom;
     vector<TaylorModelVec> pipes;
