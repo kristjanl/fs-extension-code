@@ -305,6 +305,7 @@ void sw3() {
   domain.push_back(Interval(0,0.1));
   domain.push_back(Interval(-1,1));
   domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
   
   vector<Interval> step_exp_table;
   vector<Interval> step_end_exp_table;
@@ -314,10 +315,11 @@ void sw3() {
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
 	parseSetting.addVar("b");
+	parseSetting.addVar("c");
 	
 	OutputWriter writer("dummy", 0, 1);
 	
-  TaylorModelVec parsed = parseTMV("my models {a + [-1,1], b + [0,1],2 + [-1,1],[-2,2]}");
+  TaylorModelVec parsed = parseTMV("my models {a + [-1,1],[0,1],2 + b + [-1,1],c + [-2,2]}");
 	vector<HornerForm> hfVec;
 	hfVec.push_back(HornerForm(Interval(1)));
 	hfVec.push_back(HornerForm(Interval(2)));
@@ -327,21 +329,23 @@ void sw3() {
   MyComponent c1;
   c1.addVar(0);
   c1.addVar(1);
-  c1.prepareComponent(parsed, hfVec, domain);
+  c1.addVar(3);
   
   MyComponent c2;
   c2.addVar(2);
-  c2.addVar(3);
-  c2.prepareComponent(parsed, hfVec, domain);
-  
-  logger.logTMV("c1init", c1.initSet);
-  logger.log(c1.initSet.tms.at(0).getParamCount());
-  logger.logTMV("c2init", c2.initSet);
 	
 	vector<MyComponent *> comps;
 	comps.push_back(&c1);
 	comps.push_back(&c2);
 	
+	prepareComponents(comps, parsed, hfVec, domain);
+	
+	c1.log();
+	exit(0);
+
+  c1.prepareComponent(parsed, hfVec, domain);
+  c2.prepareComponent(parsed, hfVec, domain);
+  
   MyComponent all = getSystemComponent(comps, parsed, hfVec, domain);
   
   logger.logTMV("a_init", all.initSet);  
@@ -359,6 +363,81 @@ void sw3() {
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);
 }
+void comp() {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+	parseSetting.addVar("d");
+  TaylorModelVec tmv = parseTMV("my models {a, b, c,d}");
+  vector<HornerForm> hfs = parseHFFromPoly("my hfs {b+a,b,c,d+c}");
+  
+  MyComponent c1;
+  c1.addVar(0);
+  c1.addVar(1);
+  MyComponent c2;
+  c2.addVar(2);
+  MyComponent c3;
+  c3.addVar(3);
+  c3.addDependency(2, &c2);
+    
+  vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	comps.push_back(&c2);
+	comps.push_back(&c3);
+	
+	prepareComponents(comps, tmv, hfs, domain);
+	
+	
+  //c1.log();
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+  TaylorModelVec tmv1 = parseTMV("my models {a,b}");
+  vector<HornerForm> hfs1 = parseHFFromPoly("my hfs {a+b,b}");
+	logger.log(c1.initSet.isClose(tmv1, 1e-20));
+	logger.log(c1.odes.size() == hfs1.size());
+	for(int i = 0; i < c1.odes.size(); i++) {
+  	logger.log(c1.odes[0].isClose(hfs1[0], 1e-20));
+  }
+  logger.log(c1.varIndexes == parseiVec("my iv <0,1>"));
+  logger.log(c1.solveIndexes == parseiVec("my iv <0,1>"));
+  logger.log(c1.tpIndexes == parseiVec("my iv <0,1>"));
+  logger.log(c1.allTMParams == parseiVec("my iv <0,1>"));
+  
+  logger.log(c1.compMappers.size() == 0);
+  
+  c3.log();
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("c");
+	parseSetting.addVar("d");
+  TaylorModelVec tmv3 = parseTMV("my models {d, c}");
+  vector<HornerForm> hfs3 = parseHFFromPoly("my hfs {c + d, 0}");
+	logger.log(c3.initSet.isClose(tmv3, 1e-20));
+	logger.log(c3.odes.size() == hfs3.size());
+	for(int i = 0; i < c3.odes.size(); i++) {
+  	logger.log(c3.odes[i].isClose(hfs3[i], 1e-20));
+  }
+  logger.log(c3.varIndexes == parseiVec("my iv <3>"));
+  logger.log(c3.solveIndexes == parseiVec("my iv <0>"));
+  logger.log(c3.tpIndexes == parseiVec("my iv <3>"));
+  logger.log(c3.allTMParams == parseiVec("my iv <2,3>"));
+  logger.log(c3.allTMParams == parseiVec("my iv <2,3>"));
+  
+  logger.log(c3.compMappers.at(0) == parseiVec("my iv <0,-2>"));
+  
+  exit(0);
+}
 
 
 int main() {
@@ -375,6 +454,7 @@ int main() {
   sw1();
   sw2();
   swSet();
-  */
   sw3();
+  */
+  comp();
 }

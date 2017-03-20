@@ -73,6 +73,8 @@
 %token MYMODEL
 %token MYMODELS
 %token MYMONO
+%token MYHORNERFORMS
+%token MYINTGVEC
 
 %type <poly> polynomial
 %type <poly> ODEpolynomial
@@ -108,7 +110,8 @@
 %type <ptm> my_taylor_model
 %type <ptmVec> my_taylor_models
 %type <mono> my_mono
-%type <iVec> my_mono_powers
+%type <iVec> my_integer_vector
+%type <polyVec> my_polys
 
 
 
@@ -498,6 +501,17 @@ MYMONO '{' my_mono '}'
   Monomial m(*$3);
 	parseResult.mono = m;
 	delete $3;
+}
+|
+MYHORNERFORMS '{' my_polys '}'
+{
+  parseResult.polys = $3;
+}
+|
+MYINTGVEC '<' my_integer_vector '>'
+{
+	parseResult.integerVec = *$3;
+  delete $3;
 }
 ;
 
@@ -4828,6 +4842,16 @@ NUM
 }
 ;
 
+my_polys: my_poly {
+  $$ = new vector<Polynomial>();
+  $$->push_back(*$1);
+  delete $1;
+} | my_poly ',' my_polys {
+  $3->insert($3->begin(),*$1);
+  $$ = $3;
+  delete $1;
+};
+
 my_taylor_models: my_taylor_model {
   $$ = new vector<TaylorModel>();
   $$->push_back(TaylorModel(*$1));
@@ -4911,21 +4935,21 @@ my_poly: my_poly '+' my_poly{
   $$ = new Polynomial(Interval($1), dim);
 };
 
-my_mono: NUM '<' my_mono_powers '>' {
+my_mono: NUM '<' my_integer_vector '>' {
 	Monomial *m = new Monomial(Interval($1), *$3);
   $$ = m;
   delete $3;
-} | '<' my_mono_powers '>' {
+} | '<' my_integer_vector '>' {
 	Monomial *m = new Monomial(Interval(1), *$2);
   $$ = m;
   delete $2;
 };
 
-my_mono_powers: NUM{
+my_integer_vector: NUM{
   vector<int> *degrees = new vector<int>();
   degrees->push_back($1);
   $$ = degrees;
-} | NUM ',' my_mono_powers {
+} | NUM ',' my_integer_vector {
   $3->insert($3->begin(),$1);
   $$ = $3;
 };

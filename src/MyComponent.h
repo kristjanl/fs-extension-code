@@ -15,19 +15,30 @@ class MyComponent {
   public:
     MyComponent();
     MyComponent(vector<int> vs, vector<int> tps);
-    vector<int> varIndexes; //indexes to be solved in this component
-    vector<int> linkVars; //linking variables, probably not needed
-    vector<int> compVars; //all variable indexes in component (solve + links)
-    vector<int> solveIndexes; //indexes of variables that need to be solved (wrt component variable position)
+    
+    //indexes to be solved in this component
+    vector<int> varIndexes;
+    //linking variables, probably not needed
+    vector<int> linkVars;
+    //all variable indexes in component (solve + links)
+    vector<int> compVars;
+    //indexes of variables that need to be solved (wrt component variable position)
+    vector<int> solveIndexes;
     bool isSolved;
     bool isPrepared;
+    static int nextFreeParam;
     
+    //parameters that are introduced in this component
     vector<int> tpIndexes;
+    //parameters that are used in flowpipes (component's own + dependencies)
+    //ordered by parameter order in the whole system
     vector<int> allTMParams;
     vector<CompDependency *> dependencies;
     vector< vector<int> > compMappers;
     
     vector<MyComponent> previous;
+    
+    //first are component's variables, then come dependencies
     TaylorModelVec initSet;
     TaylorModelVec swInput;
     vector<HornerForm> odes;
@@ -62,7 +73,11 @@ class CompDependency {
     vector<int> mapper;
 };
 
-vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, const vector<HornerForm> & ode);
+vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, 
+    const vector<HornerForm> & ode);
+
+void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
+    const vector<HornerForm> & ode, vector<Interval> domain);
 
 MyComponent getSystemComponent(vector<MyComponent *> comps, 
     TaylorModelVec init, const vector<HornerForm> & ode, 

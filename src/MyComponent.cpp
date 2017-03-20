@@ -62,6 +62,11 @@ or -2 to indicate placeholders
 [-2,-2,0,-2,1] maps a1*a2 to a3*a5
 */
 void MyComponent::prepareMappers() {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("preparing mappers <");
+  logger.inc();
+
   vector< vector<int> > mappers;
 
   for(int i = 0; i < dependencies.size(); i++) {
@@ -99,6 +104,9 @@ void MyComponent::prepareMappers() {
   //logger.logVi("mapper1", mappers.at(1));
   //return *mappers;
   //return mappers;
+  logger.dec();
+  logger.log("preparing mappers <");
+  logger.restore(old);
 }
 
 
@@ -244,69 +252,86 @@ void addEmptyTM(vector<TaylorModelVec> & pipes, int dim) {
 
 void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
       vector<Interval> domain) {
-    
-    logger.listVi("all params", allTMParams);
-    logger.listVi("all variables", compVars);
-    logger.listVi("link variables", linkVars);
-    
-    vector<HornerForm> compOdes;
-    for(int i = 0; i < compVars.size(); i++) {
-      int varIndex = compVars.at(i);
-      logger.log(sbuilder() << "v: " << varIndex);
-      logger.inc();
-      HornerForm hf;
-      if(linkVars.end() != find(linkVars.begin(), linkVars.end(), varIndex)) {
-        // we don't care about the ode if the variable is a link
-      } else {
-        try{
-          hf = (ode.at(varIndex)).transform(compVars);
-        }
-        catch (exception& e) {
-          logger.reset();
-          logger.log(e.what());
-          logger.log(ode.at(varIndex).toString());
-          logger.logVi("indexes", compVars);
-          throw e;
-        }
+  int old = logger.reset();
+  logger.disable();
+  logger.log("remapping IV <");
+  logger.inc();
+
+  
+  logger.listVi("all params", allTMParams);
+  logger.listVi("all variables", compVars);
+  logger.listVi("link variables", linkVars);
+  
+  vector<HornerForm> compOdes;
+  for(int i = 0; i < compVars.size(); i++) {
+    int varIndex = compVars.at(i);
+    logger.log(sbuilder() << "v: " << varIndex);
+    logger.inc();
+    HornerForm hf;
+    if(linkVars.end() != find(linkVars.begin(), linkVars.end(), varIndex)) {
+      // we don't care about the ode if the variable is a link
+    } else {
+      try{
+        hf = (ode.at(varIndex)).transform(compVars);
       }
-      compOdes.push_back(hf);
-      logger.log(hf.toString());
-      logger.dec();
+      catch (exception& e) {
+        logger.reset();
+        logger.log(e.what());
+        logger.log(ode.at(varIndex).toString());
+        logger.logVi("indexes", compVars);
+        throw e;
+      }
     }
-    
-    vector<Interval> compDomain;
-    compDomain.push_back(domain.at(0)); //time domain
-    for(int i = 0; i < allTMParams.size(); i++) {
-      int paramIndex = allTMParams.at(i);
-      compDomain.push_back(domain.at(paramIndex + 1)); //+1 for time
-    }
-    
-    TaylorModelVec *compInit = new TaylorModelVec();
-    for(int i = 0; i < compVars.size(); i++) {
-      int varIndex = compVars.at(i);
-      logger.log(sbuilder() << "init var: " << varIndex);
-      //using compVars, cause of the assumption that initial conditions 
-      TaylorModel tm = tmv.tms.at(varIndex).transform(allTMParams);
-      logger.logTM("c1", tmv.tms.at(varIndex));
-      logger.logTM("c2", tm);
-      logger.log(sbuilder() << "tm paramCount1: " << tm.getParamCount());
-      
-      (*compInit).tms.push_back(tm);
-    }
-    
-    odes = compOdes;
-    dom = compDomain;
-    initSet = *compInit;
+    compOdes.push_back(hf);
+    logger.log(hf.toString());
+    logger.dec();
   }
+  
+  vector<Interval> compDomain;
+  compDomain.push_back(domain.at(0)); //time domain
+  for(int i = 0; i < allTMParams.size(); i++) {
+    int paramIndex = allTMParams.at(i);
+    compDomain.push_back(domain.at(paramIndex + 1)); //+1 for time
+  }
+  
+  TaylorModelVec *compInit = new TaylorModelVec();
+  for(int i = 0; i < compVars.size(); i++) {
+    int varIndex = compVars.at(i);
+    logger.log(sbuilder() << "init var: " << varIndex);
+    //using compVars, cause of the assumption that initial conditions 
+    TaylorModel tm = tmv.tms.at(varIndex).transform(allTMParams);
+    logger.logTM("c1", tmv.tms.at(varIndex));
+    logger.logTM("c2", tm);
+    logger.log(sbuilder() << "tm paramCount1: " << tm.getParamCount());
+    
+    (*compInit).tms.push_back(tm);
+  }
+  
+  odes = compOdes;
+  dom = compDomain;
+  initSet = *compInit;
+  
+  logger.dec();
+  logger.log("remapping IV <");
+  logger.restore(old);
+}
   
 
   
 void MyComponent::prepareComponent(TaylorModelVec init, 
     const vector<HornerForm> & ode, vector<Interval> domain) {
-  //return if variables have already been prepared
-  if(isPrepared)
-    return;
+  int old = logger.reset();
   logger.disable();
+  logger.log("preparing component <");
+  logger.inc();
+
+  //return if variables have already been prepared
+  if(isPrepared) {
+    logger.restore(old);
+    return;
+  }
+  
+  
   logger.log("preparing <");
   logger.inc();
   logger.listVi("vars", varIndexes);
@@ -319,7 +344,7 @@ void MyComponent::prepareComponent(TaylorModelVec init,
     pComp->prepareComponent(init, ode, domain);
   }
 
-
+  
   prepareVariables(init);
   prepareMappers();
   remapIVP(init, ode, domain);
@@ -327,12 +352,16 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   isPrepared = true;
   
   logger.dec();
-  logger.log("preparing >");
-  logger.enable();
+  logger.log("preparing component >");
+  logger.restore(old);
 }
   
 void MyComponent::prepareVariables(TaylorModelVec init) {
-  
+  int old = logger.reset();
+  logger.disable();
+  logger.log("preparing variables <");
+  logger.inc();
+
   //add all linking variables
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
       it < dependencies.end(); it++) {
@@ -353,13 +382,12 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
       solveIndexes.push_back(pos);
     }
   }
-  
   //gather nonzero taylor model parameters from initial conditions
   for(vector<int>::iterator it = varIndexes.begin(); 
       it < varIndexes.end(); it++) {
     //logger.logTM("tm", init.tms.at(*it));
     vector<int> tmParams = init.tms.at(*it).getParams();
-    //logger.logVi("params", tmParams);
+    logger.listVi("params", tmParams);
     tpIndexes.insert(tpIndexes.end(), tmParams.begin(), tmParams.end());
   }
   sort(tpIndexes.begin(), tpIndexes.end());
@@ -387,15 +415,18 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
         pComp->allTMParams.begin(), pComp->allTMParams.end());
   }
   
-  //sort all indexes
+  //sort all params
   sort(allParams.begin(), allParams.end());
-  //remove duplicate indexes
+  //remove duplicate params
   allParams.erase( 
       unique( allParams.begin(), allParams.end() ), allParams.end() );
   
   allTMParams = allParams;
   //logger.logVi("allParams (with dependencies)", allParams);
   
+  logger.dec();
+  logger.log("preparing variables >");
+  logger.restore(old);
 }  
 
 void MyComponent::remapFlowpipes() {
@@ -642,6 +673,43 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
   allVars.prepareComponent(init, ode, domain);
   return allVars;
 }
+
+
+void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
+    const vector<HornerForm> & ode, vector<Interval> domain) {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("preparing components <");
+  logger.inc();
+
+  
+  
+  //find parameters present in all variable initial conditions
+  vector<int> params;
+  for(int i = 0; i < init.tms.size(); i++) {
+    //parameters in a single variable initial condition
+    vector<int> tmParams = init.tms[i].getParams();
+    params.insert(params.end(), tmParams.begin(), tmParams.end());
+  }
+  //remove duplicate parameters
+  sort(params.begin(), params.end());
+  params.erase( unique(params.begin(), params.end()), params.end() );
+  
+  logger.listVi("params", params);
+  
+  MyComponent::nextFreeParam = params.size();
+  
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    (*it)->prepareComponent(init, ode, domain);
+  }
+
+  logger.dec();
+  logger.log("preparing components >");
+  logger.restore(old);
+}
+
+int MyComponent::nextFreeParam = -1;
 
 
 

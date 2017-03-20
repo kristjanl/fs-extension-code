@@ -3899,6 +3899,7 @@ vector<int> TaylorModel::getParams() const {
     //logger.logM(*it);
     //logger.logVi("mparams", it->getParams());
     vector<int> mparams = it->getParams();
+    //logger.listVi("mparams", mparams);
     ret.insert(ret.end(), mparams.begin(), mparams.end());
   }
   

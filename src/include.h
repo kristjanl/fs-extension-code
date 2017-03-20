@@ -116,6 +116,10 @@ extern void parseTM();
 class TaylorModelVec;
 extern TaylorModelVec parseTMV(string s);
 
+class HornerForm;
+extern vector<HornerForm> parseHFFromPoly(string s);
+extern vector<int> parseiVec(string s);
+
 
 #define ALGORITHM_DEFAULT 0
 #define ALGORITHM_SIMPLE_IMPL 1

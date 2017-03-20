@@ -292,7 +292,6 @@ BOOST_AUTO_TEST_CASE (sw_set) {
 }
 
 BOOST_AUTO_TEST_CASE (sw_paper) {
-  logger.disable();
   MyComponent component;
   vector<Interval> domain;
   domain.push_back(Interval(0,0.1));
@@ -305,14 +304,13 @@ BOOST_AUTO_TEST_CASE (sw_paper) {
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
 	parseSetting.addVar("b");
-	parse("my models {2 + 4*a + 0.5 * a^2 + [-0.2,0.2],1 + 3*b + a * b + [-0.1,0.1]}");
-  component.pipes.push_back(parseResult.tmv);
+	
+  component.swInput = parseTMV(
+      "my models {2 + 4*a + 0.5 * a^2 + [-0.2,0.2],1 + 3*b + a * b + [-0.1,0.1]}");
   double q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
-  logger.enable();
   BOOST_CHECK_CLOSE(1.1125, q, 1e-10);
 }
 BOOST_AUTO_TEST_CASE (sw_linear_coef) {
-  logger.disable();
   MyComponent component;
   vector<Interval> domain;
   domain.push_back(Interval(0,0.1));
@@ -324,14 +322,11 @@ BOOST_AUTO_TEST_CASE (sw_linear_coef) {
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
-	parse("my models {2 + 0.5*a + [-1,1]}");
-  component.pipes.push_back(parseResult.tmv);
+	component.swInput = parseTMV("my models {2 + 0.5*a + [-1,1]}");
   double q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
-  logger.enable();
   BOOST_CHECK_CLOSE(3, q, 1e-10);
 }
 BOOST_AUTO_TEST_CASE (sw_linear_remainder) {
-  logger.disable();
   MyComponent component;
   vector<Interval> domain;
   domain.push_back(Interval(0,0.1));
@@ -343,14 +338,11 @@ BOOST_AUTO_TEST_CASE (sw_linear_remainder) {
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
-	parse("my models {2 + 1*a + [-3,3]}");
-  component.pipes.push_back(parseResult.tmv);
+	component.swInput = parseTMV("my models {2 + 1*a + [-3,3]}");
   double q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
-  logger.enable();
   BOOST_CHECK_CLOSE(4, q, 1e-10);
 }
 BOOST_AUTO_TEST_CASE (sw_nonlinear) {
-  logger.disable();
   MyComponent component;
   vector<Interval> domain;
   domain.push_back(Interval(0,0.1));
@@ -362,11 +354,130 @@ BOOST_AUTO_TEST_CASE (sw_nonlinear) {
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
-	parse("my models {2 + a + 0.25 * a^2 + [-1,1]}");
-  component.pipes.push_back(parseResult.tmv);
+	component.swInput = parseTMV("my models {2 + a + 0.25 * a^2 + [-1,1]}");
   double q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
-  logger.enable();
   BOOST_CHECK_CLOSE(2 + 1.0/3, q, 1e-10);
+}
+
+
+BOOST_AUTO_TEST_CASE (initial_component_preparation) {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+  TaylorModelVec tmv = parseTMV("my models {a, b, c}");
+  vector<HornerForm> hfs = parseHFFromPoly("my hfs {b+a,b,c}");
+  
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+  TaylorModelVec tmv2 = parseTMV("my models {a, b, c}");
+  vector<HornerForm> hfs2 = parseHFFromPoly("my hfs {a + b,b,c}");
+  
+  
+  MyComponent c1;
+  c1.addVar(0);
+  c1.addVar(1);
+  c1.addVar(2);
+    
+  vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	
+	prepareComponents(comps, tmv, hfs, domain);
+	
+  BOOST_CHECK(c1.initSet.isClose(tmv2, 1e-20));
+	BOOST_CHECK(c1.odes.size() == hfs2.size());
+	for(int i = 0; i < c1.odes.size(); i++) {
+  	BOOST_CHECK(c1.odes[i].isClose(hfs2[i], 1e-20));
+  }
+  BOOST_CHECK(c1.varIndexes == parseiVec("my iv <0,1,2>"));
+  BOOST_CHECK(c1.solveIndexes == parseiVec("my iv <0,1,2>"));
+  BOOST_CHECK(c1.tpIndexes == parseiVec("my iv <0,1,2>"));
+  BOOST_CHECK(c1.allTMParams == parseiVec("my iv <0,1,2>"));
+  
+  
+  BOOST_CHECK(c1.compMappers.size() == 0);
+}
+
+BOOST_AUTO_TEST_CASE (multiple_and_dependent_components) {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+	parseSetting.addVar("d");
+  TaylorModelVec tmv = parseTMV("my models {a, b, c,d}");
+  vector<HornerForm> hfs = parseHFFromPoly("my hfs {b+a,b,c,d+c}");
+  
+  MyComponent c1;
+  c1.addVar(0);
+  c1.addVar(1);
+  MyComponent c2;
+  c2.addVar(2);
+  MyComponent c3;
+  c3.addVar(3);
+  c3.addDependency(2, &c2);
+    
+  vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	comps.push_back(&c2);
+	comps.push_back(&c3);
+	
+	prepareComponents(comps, tmv, hfs, domain);
+	
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+  TaylorModelVec tmv1 = parseTMV("my models {a,b}");
+  vector<HornerForm> hfs1 = parseHFFromPoly("my hfs {a+b,b}");
+	BOOST_CHECK(c1.initSet.isClose(tmv1, 1e-20));
+	BOOST_CHECK(c1.odes.size() == hfs1.size());
+	for(int i = 0; i < c1.odes.size(); i++) {
+  	BOOST_CHECK(c1.odes[i].isClose(hfs1[i], 1e-20));
+  }
+  BOOST_CHECK(c1.varIndexes == parseiVec("my iv <0,1>"));
+  BOOST_CHECK(c1.solveIndexes == parseiVec("my iv <0,1>"));
+  BOOST_CHECK(c1.tpIndexes == parseiVec("my iv <0,1>"));
+  BOOST_CHECK(c1.allTMParams == parseiVec("my iv <0,1>"));
+  
+  BOOST_CHECK(c1.compMappers.size() == 0);
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("c");
+	parseSetting.addVar("d");
+  TaylorModelVec tmv3 = parseTMV("my models {d, c}");
+  vector<HornerForm> hfs3 = parseHFFromPoly("my hfs {c + d, 0}");
+	BOOST_CHECK(c3.initSet.isClose(tmv3, 1e-20));
+	BOOST_CHECK(c3.odes.size() == hfs3.size());
+	for(int i = 0; i < c3.odes.size(); i++) {
+  	BOOST_CHECK(c3.odes[i].isClose(hfs3[i], 1e-20));
+  }
+  BOOST_CHECK(c3.varIndexes == parseiVec("my iv <3>"));
+  BOOST_CHECK(c3.solveIndexes == parseiVec("my iv <0>"));
+  BOOST_CHECK(c3.tpIndexes == parseiVec("my iv <3>"));
+  BOOST_CHECK(c3.allTMParams == parseiVec("my iv <2,3>"));
+  BOOST_CHECK(c3.allTMParams == parseiVec("my iv <2,3>"));
+  
+  BOOST_CHECK(c3.compMappers.at(0) == parseiVec("my iv <0,-2>"));
 }
 
 BOOST_AUTO_TEST_SUITE_END( )

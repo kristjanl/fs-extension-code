@@ -114,6 +114,8 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "my model" {return MYMODEL;}
 "my models" {return MYMODELS;}
 "my mono" {return MYMONO;}
+"my hfs" {return MYHORNERFORMS;}
+"my iv" {return MYINTGVEC;}
 
 
 {number} { yylval.dblVal = atof( (char *)yytext ); return NUM; }
@@ -191,4 +193,22 @@ TaylorModelVec parseTMV(string s) {
   //cout << "parsing TMV" << endl;
   parse(s);
   return parseResult.tmv;
+}
+
+vector<HornerForm> parseHFFromPoly(string s) {
+  parse(s);
+  vector<Polynomial> *polys = parseResult.polys;
+  vector<HornerForm> ret;
+  for(int i = 0; i < polys->size(); i++) {
+    Polynomial poly = polys->at(i);
+    HornerForm hf;
+    poly.toHornerForm(hf);
+    ret.push_back(hf);
+  }
+  delete parseResult.polys;
+  return ret;
+}
+vector<int> parseiVec(string s) {
+  parse(s);
+  return parseResult.integerVec;
 }

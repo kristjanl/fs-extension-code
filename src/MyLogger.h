@@ -55,7 +55,8 @@ class mylogger2 {
 		mylogger2(bool disabled);
 		void disable();
 		void enable();
-		void reset();
+		int reset();
+		void restore(int old);
 	private:
 		int ltab;
 		int disabled;

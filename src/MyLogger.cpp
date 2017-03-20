@@ -147,8 +147,13 @@ void mylogger2::disable() {
 void mylogger2::enable() {
 	disabled--;
 }
-void mylogger2::reset() {
+int mylogger2::reset() {
+  int old = disabled;
 	disabled = 0;
+	return old;
+}
+void mylogger2::restore(int old) {
+  disabled = old;
 }
 
 mylogger2::mylogger2() {

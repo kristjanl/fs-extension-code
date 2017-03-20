@@ -308,7 +308,9 @@ public:
 	Interval	remainder;
 	TaylorModel model;
 	TaylorModelVec tmv;
+	vector<Polynomial> *polys;
 	Monomial mono;
+	vector<int> integerVec;
 	string		strExpansion;
 
 	ParseResult();

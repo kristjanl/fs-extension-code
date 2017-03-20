@@ -456,23 +456,23 @@ namespace smallComp {
   
   double shrinkWrap(MyComponent & component, vector<Interval> domain, 
       vector<Interval> step_end_exp_table) {
-    //logger.disable();
+    logger.disable();
     logger.log("sw <");
     logger.inc();
     double s = -1, t = -1, d = -1, q;
     
-    TaylorModelVec last = component.pipes.at(component.pipes.size() - 1);
-    TaylorModelVec next;
-    last.evaluate_t(next, step_end_exp_table);
+    //TaylorModelVec last = component.pipes.at(component.pipes.size() - 1);
+    //TaylorModelVec next;
+    //last.evaluate_t(next, step_end_exp_table);
     
-    next = component.swInput;
+    TaylorModelVec next = component.swInput;
     
     //logger.logTMV("next", next);
     TaylorModelVec orig(next);
     logger.logTMV("orig", orig);
     
     int varSize = orig.tms.size();
-    int paramCount = last.tms.at(0).getParamCount();
+    int paramCount = next.tms.at(0).getParamCount();
     
     
     //remove the constant part
@@ -637,6 +637,7 @@ namespace smallComp {
     logger.log(sbuilder() << "q:" << q);
     logger.dec();
     logger.log("sw >");
+    logger.enable();
     return q;
   }
   
@@ -707,8 +708,6 @@ namespace smallComp {
     int paramCount = padded.tms[0].getParamCount();
     
     
-    logger.logTMV("padded", padded);
-    
     parametrizeVars(padded, varsToIntroduce, oParamCount);
     
     logger.logTMV("padded", padded);
@@ -719,16 +718,20 @@ namespace smallComp {
       vector<Interval> step_end_exp_table, vector<MyComponent *> comps,
       OutputWriter & writer) {
     logger.log("applying sw");
-    all.log();
     
     clock_t start = clock();
     logger.disable();
     all.remapLastFlowpipe();
     logger.enable();
     
+    TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
+    TaylorModelVec tmv;
+    last.evaluate_t(tmv, step_end_exp_table);
+    all.swInput = tmv;
+    
     introduceParam(all, step_end_exp_table, domain);
     
-    logger.logTMV("a", all.pipes.at(0));
+    logger.logTMV("all", all.swInput);
     logger.log(all.compMappers.size());
     logger.listVi("0", all.compMappers.at(0));
     logger.listVi("1", all.compMappers.at(0));

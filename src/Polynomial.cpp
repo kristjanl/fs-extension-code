@@ -2464,3 +2464,21 @@ bool HornerForm::getVars(int vars[]) const {
   logger.dec();
   return ret;
 }
+
+
+bool HornerForm::isClose(const HornerForm & hf, double d) const {
+//  logger.log("checking close");
+//  logger.log(sbuilder() << constant.toString() << " and " << 
+//      hf.constant.toString());
+  if(constant.isClose(hf.constant, d) == false)
+    return false;
+//  logger.log(sbuilder() << "s1: " << hornerForms.size() << ", s2: " 
+//      << hf.hornerForms.size());
+  if(hornerForms.size() != hf.hornerForms.size())
+    return false;
+  for(int i = 0; i < hornerForms.size(); i++) {
+    if(hornerForms[i].isClose(hf.hornerForms[i], d) == false)
+      return false;
+  }
+  return true;
+}
