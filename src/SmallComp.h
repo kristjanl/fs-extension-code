@@ -15,7 +15,7 @@ namespace smallComp {
   void bar12();
   double shrinkWrap(MyComponent & component, vector<Interval> domain, 
       vector<Interval> step_end_exp_table);
-  void shrinkWrapSet(MyComponent * component, double factor, 
+  void shrinkWrapSet(MyComponent & all, MyComponent * component, double factor, 
         vector<Interval> domain);
         
   double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 

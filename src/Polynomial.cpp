@@ -2381,6 +2381,8 @@ HornerForm HornerForm::transform(vector<int> indexes) const {
     return HornerForm(constant);
   }
   Interval intZero;
+  logger.listVi("indexes", indexes);
+  logger.log(sbuilder() << "hf size: " << hornerForms.size());
   for(int i = 0; i < hornerForms.size(); i++) {
     //logger.log(sbuilder() << i << ": " << hornerForms.at(i).toString());
     //logger.log(hornerForms.at(i).constant.subseteq(intZero));
@@ -2394,17 +2396,19 @@ HornerForm HornerForm::transform(vector<int> indexes) const {
       }
     }
   }
-  
   vector<HornerForm> hfs;
+  
   for(int i = 0; i < indexes.size() + 1; i++) {
     hfs.push_back(HornerForm(intZero));
   }
   
   hfs.at(0) = hornerForms.at(0).transform(indexes);
+  
   for(int i = 0; i < indexes.size(); i++) {
     int varIndex = indexes.at(i) + 1; // +1 since time is 0
     hfs.at(i+1) = hornerForms.at(varIndex).transform(indexes);
   }
+  
   
   HornerForm ret(constant, hfs);
   return ret;

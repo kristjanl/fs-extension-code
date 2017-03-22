@@ -3791,10 +3791,13 @@ bool TaylorModelVec::isClose(const TaylorModelVec & tmv, double d) const {
 }
 
 bool TaylorModel::isClose(const TaylorModel & tm, double d) const {
-  //logger.logTM("tm1", *this);
-  //logger.logTM("tm2", tm);
-  if(getParamCount() != tm.getParamCount())
+  int old = logger.reset();
+  logger.disable();
+  if(getParamCount() != tm.getParamCount()) {
+    logger.log("not same param count");
+    logger.restore(old);
     return false;
+  }
   TaylorModel subbed;
 	sub(subbed, tm);
 	vector<Interval> domain;
@@ -3804,10 +3807,16 @@ bool TaylorModel::isClose(const TaylorModel & tm, double d) const {
 	Interval result;
 	subbed.polyRange(result, domain);
 	//logger.log(result.mag() > d);
-	if(result.mag() > d)
+	if(result.mag() > d) {
+    logger.log("poly diff larger");
+    logger.log(result.toString());
+    logger.restore(old);
 	  return false;
+	}
 	
-	return remainder.isClose(tm.remainder, d);
+	bool ret = remainder.isClose(tm.remainder, d);
+	logger.restore(old);
+	return ret;
 }
 
 TaylorModel TaylorModel::transform(vector<int> indexes) {

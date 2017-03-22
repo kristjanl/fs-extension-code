@@ -278,17 +278,18 @@ BOOST_AUTO_TEST_CASE (sw_set) {
   MyComponent component;
   vector<Interval> domain;
 	component.pipes.push_back(parseResult.tmv);
+	component.compVars.push_back(0);
+	component.allTMParams.push_back(0);
 	
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
 	parse("my models {3 + a + [-1,1]}");
-	component.initSet = parseResult.tmv;
-	
-	smallComp::shrinkWrapSet(&component, 2.0, domain);
+	component.swInput = parseResult.tmv;
+	smallComp::shrinkWrapSet(component, &component, 2.0, domain);
   TaylorModelVec expected = parseTMV("my models {3 + 2 * a}");
 	
-  BOOST_CHECK( expected.isClose(component.initSet, 1e-20) );
+	BOOST_CHECK(expected.isClose(component.initSet, 0));
 }
 
 BOOST_AUTO_TEST_CASE (sw_paper) {
@@ -479,5 +480,135 @@ BOOST_AUTO_TEST_CASE (multiple_and_dependent_components) {
   
   BOOST_CHECK(c3.compMappers.at(0) == parseiVec("my iv <0,-2>"));
 }
+BOOST_AUTO_TEST_CASE (apply_sw) {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+  vector<Interval> step_exp_table;
+  vector<Interval> step_end_exp_table;
+	construct_step_exp_table(step_exp_table, step_end_exp_table, 0.1, 2*2);
+	
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	
+	OutputWriter writer("dummy", 0, 1);
+	
+  TaylorModelVec parsed = parseTMV("my models {1+2*a + [-1,2],2+b}");
+  vector<HornerForm> hfs = parseHFFromPoly("my hfs {1,2}");
+		
+  MyComponent c1;
+  c1.addVar(0);
+  
+  MyComponent c2;
+  c2.addVar(1);
+  
+	vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	comps.push_back(&c2);
+		
+	prepareComponents(comps, parsed, hfs, domain);
+	
+	//pipes will be populated in actual integration
+	c1.pipes.push_back(c1.initSet);
+	c2.pipes.push_back(c2.initSet);
+	
+  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  
+  smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
+      comps, writer);
 
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+  TaylorModelVec e1 = parseTMV("my models {1+4*a}");
+  TaylorModelVec e2 = parseTMV("my models {2+2*a}");
+	BOOST_CHECK(e1.isClose(c1.initSet, 0));
+	BOOST_CHECK(e2.isClose(c2.initSet, 0));
+}
+
+BOOST_AUTO_TEST_CASE (apply_sw_with_introduction) {
+  vector<Interval> domain;
+  domain.push_back(Interval(0,0.1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  domain.push_back(Interval(-1,1));
+  
+  vector<Interval> step_exp_table;
+  vector<Interval> step_end_exp_table;
+	construct_step_exp_table(step_exp_table, step_end_exp_table, 0.1, 2*2);
+	
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+	parseSetting.addVar("d");
+	parseSetting.addVar("e");
+	
+	OutputWriter writer("dummy", 0, 1);
+	
+  TaylorModelVec parsed = parseTMV("my models {1+a,2+[-1,2],3+c,4+d,5+e + [-2,2]}");
+  vector<HornerForm> hfs = parseHFFromPoly("my hfs {1,2,3,4,5}");
+		
+  MyComponent c1;
+  c1.addVar(0);
+  c1.addVar(1);
+  c1.addVar(3);
+  
+  MyComponent c2;
+  c2.addVar(2);
+  
+  MyComponent c3;
+  c3.addVar(4);
+  c3.addDependency(0, &c1);
+  
+	
+	vector<MyComponent *> comps;
+	comps.push_back(&c1);
+	comps.push_back(&c2);
+	comps.push_back(&c3);
+	
+	c1.retainEmptyParams = true;
+	c2.retainEmptyParams = true;
+	c3.retainEmptyParams = true;
+	
+	prepareComponents(comps, parsed, hfs, domain);
+	
+	//pipes will be populated in actual integration
+	c1.pipes.push_back(c1.initSet);
+	c2.pipes.push_back(c2.initSet);
+	c3.pipes.push_back(c3.initSet);
+  
+  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  
+  /*
+  logger.logTMV("c1", c1.initSet);
+  logger.logTMV("c2", c2.initSet);
+  logger.logTMV("c3", c3.initSet);
+  */
+  smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
+      comps, writer);
+  
+	parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a");
+	TaylorModelVec e2 = parseTMV("my models{3 + 3*a}");
+	parseSetting.addVar("b");
+	parseSetting.addVar("c");
+	TaylorModelVec e1 = parseTMV("my models{1 + 3*a,2.5 + 4.5*b,4 + 3*c}");
+	parseSetting.addVar("d");
+	TaylorModelVec e3 = parseTMV("my models{5 + 3*d, 1 + 3*a}");
+	
+	BOOST_CHECK(e1.isClose(c1.initSet, 1e-14));
+	BOOST_CHECK(e2.isClose(c2.initSet, 1e-14));
+	BOOST_CHECK(e3.isClose(c3.initSet, 1e-14));
+	
+}
 BOOST_AUTO_TEST_SUITE_END( )

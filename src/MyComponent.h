@@ -28,6 +28,11 @@ class MyComponent {
     bool isPrepared;
     static int nextFreeParam;
     
+    //retains Taylor Model parameters that don't have initial conditions
+    bool retainEmptyParams;
+    //vector of variables that will introduce parameter
+    vector<int> varsToBeIntroduced;
+    
     //parameters that are introduced in this component
     vector<int> tpIndexes;
     //parameters that are used in flowpipes (component's own + dependencies)

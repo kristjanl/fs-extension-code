@@ -397,18 +397,13 @@ namespace smallComp {
     }
   }
   
-  void shrinkWrapSet(MyComponent * component, double factor, 
-        vector<Interval> domain) {
-    logger.disable();
-    logger.log("sw set <");
-    logger.inc();
-    TaylorModelVec orig = component->initSet;
-    TaylorModelVec noConst = TaylorModelVec(orig);
+  TaylorModelVec shrinkWrapTMV(TaylorModelVec tmv, double factor) {
+    TaylorModelVec noConst = TaylorModelVec(tmv);
     noConst.rmConstant(); 
     
     TaylorModelVec constantPart;
     noConst.mul(constantPart, -1);
-    constantPart.add_assign(orig);
+    constantPart.add_assign(tmv);
     for(int i = 0; i < constantPart.tms.size(); i++) {
       constantPart.tms.at(i).remainder = Interval(0); //nullify the remainder
     }
@@ -424,29 +419,52 @@ namespace smallComp {
     
     TaylorModelVec wrappedSet = TaylorModelVec(qTM);
     wrappedSet.add_assign(constantPart);
+    return wrappedSet;
+  }
+  
+  //wraps all.swInput
+  void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor, 
+        vector<Interval> domain) {
+    int old = logger.reset();
+    logger.disable();
+    logger.log("sw set <");
+    logger.inc();
+    TaylorModelVec orig = comp->initSet;
+    //comp->initSet = shrinkWrapTMV(comp->initSet, factor);
     
-    /*
+    logger.logTMV("input", all.swInput);
+    TaylorModelVec wrapped = shrinkWrapTMV(all.swInput, factor);
+    logger.log("");
+    logger.logTMV("wrapped", wrapped);
     
-    logger.logTMV("orig", orig);
-    //logger.logTMV("noConst", noConst);
-    //logger.logTMV("constantPart", constantPart);
-    logger.logTMV("wSet", wrappedSet);
+    logger.listVi("compVars", all.compVars);
     
-    vector<Interval> origRange;
-    orig.polyRange(origRange, domain);
-    logger.logVI("origRange", origRange);
+    TaylorModelVec newCompSet;
     
-    vector<Interval> wrappedRange;
-    wrappedSet.polyRange(wrappedRange, domain);
-    logger.logVI("wSetRange", wrappedRange);
+    for(int i = 0; i < comp->compVars.size(); i++) {
+      //variable in component
+      int varIndex = comp->compVars.at(i);
+      //index of that variable in call component
+      int indexInAll = find(all.compVars.begin(), all.compVars.end(), varIndex) - 
+          all.compVars.begin();
+      logger.log(sbuilder() << "index in all: " << indexInAll);
+      logger.log(sbuilder() << "init var: " << varIndex);
+      //using compVars, cause of the assumption that initial conditions 
+      logger.listVi("tm paras", comp->allTMParams);
+      logger.logTM("c1", wrapped.tms.at(indexInAll));
+      TaylorModel tm = wrapped.tms.at(indexInAll).transform(comp->allTMParams);
+      logger.logTM("c2", tm);
+      logger.log(sbuilder() << "tm paramCount1: " << wrapped.tms[0].getParamCount());
+      logger.log(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+      
+      newCompSet.tms.push_back(tm);
+    }
+    comp->initSet = newCompSet;
+    logger.logTMV("new", newCompSet);
     
-    */
-    
-    component->initSet = wrappedSet;
-    logger.logTMV("init", wrappedSet);
     logger.dec();
     logger.log("sw set >");
-    logger.enable();
+    logger.restore(old);
   }
   
   void my_handler (const char * reason, const char * file, int line, 
@@ -456,6 +474,7 @@ namespace smallComp {
   
   double shrinkWrap(MyComponent & component, vector<Interval> domain, 
       vector<Interval> step_end_exp_table) {
+    int old = logger.reset();
     logger.disable();
     logger.log("sw <");
     logger.inc();
@@ -637,13 +656,13 @@ namespace smallComp {
     logger.log(sbuilder() << "q:" << q);
     logger.dec();
     logger.log("sw >");
-    logger.enable();
+    logger.restore(old);
     return q;
   }
   
   void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce, 
-      int oParamCount) {
-    int paramCount = tmv.tms[0].getParamCount();
+      int paramCount) {
+    //int paramCount = tmv.tms[0].getParamCount();
     for(int i = 0; i < varsToIntroduce.size(); i++) {
       int var = varsToIntroduce[i];
       //logger.log(sbuilder() << "var: " << var);
@@ -673,7 +692,7 @@ namespace smallComp {
       vector<int> degs;
       //logger.log(tm.getParamCount());
       for(int j = 0; j < paramCount; j++) {
-        if(j == oParamCount + i)
+        if(j == var + 1)
           degs.push_back(1);
         else
           degs.push_back(0);
@@ -684,8 +703,8 @@ namespace smallComp {
     }
   }
   
-  void introduceParam(MyComponent & comp, vector<Interval> step_end_exp_table, 
-      vector<Interval> & domain) {
+  void introduceParam(MyComponent & comp, vector<MyComponent *> comps, 
+      vector<Interval> step_end_exp_table, vector<Interval> & domain) {
     TaylorModelVec last = comp.pipes.at(comp.pipes.size() - 1);
     TaylorModelVec tmv;
     last.evaluate_t(tmv, step_end_exp_table);
@@ -695,32 +714,39 @@ namespace smallComp {
     //logger.logTMV("tmv", tmv);
     
     vector<int> varsToIntroduce;
-    varsToIntroduce.push_back(2);
-    varsToIntroduce.push_back(3);
+    for(int i = 0; i < comps.size(); i++) {
+      vector<int> & compVars = comps[i]->varsToBeIntroduced;
+      varsToIntroduce.insert(varsToIntroduce.end(), 
+          compVars.begin(), compVars.end());
+      logger.listVi("vs: ", comps[i]->varsToBeIntroduced);
+    }
+    logger.listVi("introducing", varsToIntroduce);
     
-    domain.push_back(Interval(-1,1));
-    domain.push_back(Interval(-1,1));
     
+    //no need to add more parameters now
+    //int oParamCount = tmv.tms[0].getParamCount();
     
-    int oParamCount = tmv.tms[0].getParamCount();
-    
-    TaylorModelVec padded = tmv.addNParams(varsToIntroduce.size());
+    //TaylorModelVec padded = tmv.addNParams(varsToIntroduce.size());
+    TaylorModelVec padded = TaylorModelVec(tmv);
     int paramCount = padded.tms[0].getParamCount();
     
     
-    parametrizeVars(padded, varsToIntroduce, oParamCount);
+    parametrizeVars(padded, varsToIntroduce, paramCount);
     
-    logger.logTMV("padded", padded);
+    //logger.logTMV("padded", padded);
     comp.swInput = padded;
   }
   
   double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 
       vector<Interval> step_end_exp_table, vector<MyComponent *> comps,
       OutputWriter & writer) {
-    logger.log("applying sw");
+    int old = logger.reset();
+    logger.disable();
+    logger.log("applying sw <");
     
     clock_t start = clock();
     logger.disable();
+    
     all.remapLastFlowpipe();
     logger.enable();
     
@@ -729,27 +755,39 @@ namespace smallComp {
     last.evaluate_t(tmv, step_end_exp_table);
     all.swInput = tmv;
     
-    introduceParam(all, step_end_exp_table, domain);
+    logger.logTMV("swInput", all.swInput);
+    //introduces a parameter to swInput
+    introduceParam(all, comps, step_end_exp_table, domain);
+    logger.log(all.swInput.tms[0].getParamCount());
     
-    logger.logTMV("all", all.swInput);
+    /*
     logger.log(all.compMappers.size());
     logger.listVi("0", all.compMappers.at(0));
-    logger.listVi("1", all.compMappers.at(0));
+    logger.listVi("1", all.compMappers.at(1));
+    logger.listVi("2", all.compMappers.at(2));
+    logger.listVi("3", all.compMappers.at(3));
+    logger.listVi("4", all.compMappers.at(4));
+    */
+    logger.logTMV("swI aft", all.swInput);
+    
     
     //logger.logTMV("all", all.pipes.at(all.pipes.size() - 1));
     //vector<TaylorModelVec> p2 = all.dependencies.at(0)->pComp->pipes;
     //logger.logTMV("p2", p2.at(p2.size() - 1));
     
-    //logger.disable();
+    //calculate the shrink wrapping factor for swInput
     double swQ = shrinkWrap(all, domain, step_end_exp_table);
-    //logger.enable();
+    
+    logger.logTMV("c0", comps[0]->swInput);
+    logger.logTMV("c1", comps[1]->swInput);
     
     logger.log(sbuilder() << "swQ: " << swQ);
     
     //use the computed shrink wrapping factor to modify the initial sets
     for(vector<MyComponent *>::iterator it = comps.begin(); 
         it < comps.end(); it++) {
-      shrinkWrapSet(*it, swQ, domain);
+      //sets comp.initSet from q and all.swInput
+      shrinkWrapSet(all, *it, swQ, domain);
     }
     
     clock_t end = clock();
@@ -758,7 +796,8 @@ namespace smallComp {
     //logger.force(sbuilder() << "single: " << singleSW);
     //logger.force(sbuilder() << (end - start));
     
-    exit(0);
+    logger.log("applying sw >");
+    logger.restore(old);
   }
   
   
@@ -1015,6 +1054,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
     logger.enable();
     //(*it)->log();
   }
+  logger.log(currentTMV.tms[0].getParamCount());
+  exit(0);
   
   logger.disable();
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
