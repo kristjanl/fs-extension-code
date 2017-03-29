@@ -16,6 +16,7 @@ import my_functions as fs
 pairs = []
 
 pairs = pairs + [('moore_rot_plain.model', 'moore_rot_sw_10.model')]
+pairs = pairs + [('moore_rot_point_plain.model', 'moore_rot_point_sw_10.model', 'moore_rot_point_sw_10_infl.model')]
 
 pairs = pairs + [('vanderpol_plain.model', 'vanderpol_sw_10.model')]
 pairs = pairs + [('Brusselator_plain.model', 'Brusselator_sw_10.model')]
@@ -23,7 +24,7 @@ pairs = pairs + [('jet_engine_plain.model', 'jet_engine_sw_10.model')]
 pairs = pairs + [('buckling_column_plain.model', 'buckling_column_sw_10.model')]
 pairs = pairs + [('Lotka_Volterra_plain.model', 'Lotka_Volterra_sw_10.model')]
 pairs = pairs + [('Lorentz_plain.model', 'Lorentz_sw_10.model')]
-pairs = pairs + [('Roessler_plain.model', 'Roessler_sw_10.model')]
+pairs = pairs + [('Roessler_plain.model', 'Roessler_sw_10.model', 'Roessler_sw_10_infl.model')]
 
 #slow
 pairs = pairs + [('biology_I_plain.model', 'biology_I_sw_10.model')]
@@ -34,23 +35,22 @@ pairs = pairs + [('lacoperon_plain.model', 'lacoperon_sw_10.model')]
 pairs = pairs + [('coupledVanderPol_plain.model', 'coupledVanderPol_sw_10.model')]
 
 #non lin hybrid
-pairs = pairs + [('nonholonomic_plain.model', 'nonholonomic_sw_10.model')]
+pairs = pairs + [('nonholonomic_plain.model', 'nonholonomic_sw_10.model', 'nonholonomic_sw_10_infl.model')]
 pairs = pairs + [('neuron_I_plain.model', 'neuron_I_sw_10.model')]
 pairs = pairs + [('neuron_II_plain.model', 'neuron_II_sw_10.model')]
 pairs = pairs + [('diabetic_1_plain.model', 'diabetic_1_sw_10.model')]
 pairs = pairs + [('diabetic_2_plain.model', 'diabetic_2_sw_10.model')]
 
 #lin hybrid
-pairs = pairs + [('bouncing_ball_plain.model', 'bouncing_ball_sw_10.model')]
-pairs = pairs + [('two_tanks_plain.model', 'two_tanks_sw_10.model')]
-pairs = pairs + [('rod_reactor_plain.model', 'rod_reactor_sw_10.model')]
+pairs = pairs + [('bouncing_ball_plain.model', 'bouncing_ball_sw_10.model', 'bouncing_ball_sw_10_infl.model')]
+pairs = pairs + [('two_tanks_plain.model', 'two_tanks_sw_10.model', 'two_tanks_sw_10_infl.model')]
+pairs = pairs + [('rod_reactor_plain.model', 'rod_reactor_sw_10.model', 'rod_reactor_sw_10_infl.model')]
 pairs = pairs + [('cruise_control_plain.model', 'cruise_control_sw_10.model')]
-pairs = pairs + [('switching_5_plain.model', 'switching_5_sw_10.model')]
+pairs = pairs + [('switching_5_plain.model', 'switching_5_sw_10.model', 'switching_5_sw_10_infl.model')]
 pairs = pairs + [('vehicle_platoon_3_plain.model', 'vehicle_platoon_3_sw_10.model')]
-pairs = pairs + [('filtered_oscillator_4_plain.model', 'filtered_oscillator_4_sw_10.model')]
-pairs = pairs + [('filtered_oscillator_8_plain.model', 'filtered_oscillator_8_sw_10.model')]
-pairs = pairs + [('filtered_oscillator_16_plain.model', 'filtered_oscillator_16_sw_10.model')]
-pairs = pairs + [('filtered_oscillator_32_plain.model', 'filtered_oscillator_32_sw_10.model')]
+pairs = pairs + [('filtered_oscillator_4_plain.model', 'filtered_oscillator_4_sw_10.model', 'filtered_oscillator_4_sw_10_infl.model')]
+pairs = pairs + [('filtered_oscillator_8_plain.model', 'filtered_oscillator_8_sw_10.model', 'filtered_oscillator_8_sw_10_infl.model')]
+pairs = pairs + [('filtered_oscillator_16_plain.model', 'filtered_oscillator_16_sw_10.model', 'filtered_oscillator_16_sw_10_infl.model')]
 
 def getParam(filename, param):
   with open(filename) as f:
@@ -59,9 +59,44 @@ def getParam(filename, param):
       m = re.search('%s (.*)' %param, line)
       if m != None:
         return m.group(1)
+        
 
+def getVarRange2(modelFile, csvs):
+  print "finding range2"
+  # find time that all integrations reached
+  time = min( map(lambda x: fs.find_file_max_time(x), csvs) )
+  dim = len(getParam(modelFile, "state var").split(','))
+  
+  ranges = map(lambda c: [], csvs)
+  
+  for (i, csv) in enumerate(csvs):
+    if not os.path.isfile(csv):
+      return map(lambda _: -1, csvs)
+    with open(csv) as f:
+      for line in f:
+        data = line.split(',')
+        #line with needed time
+        if float(data[0]) == float(time): 
+          #get variable ranges
+          ranges[i] = map(lambda x: float(x), data[2 + 2*dim: 2 + 3*dim])
+          
+  for i in range(dim):
+    #find minimum value in the ranges
+    minValue = ranges[0][i]
+    for r in ranges[1:]:
+      if minValue > r[i]:
+        minValue = r[i]
+    
+    # mark minimum value
+    for (j,_) in enumerate(ranges):
+      if minValue == ranges[0][i]:
+        continue
+      if minValue == ranges[j][i]:
+        ranges[j][i] = "<b>%s</b>"%ranges[j][i]
+  return ranges
+  
 def getVarRange(modelFile, plain, sw):
-  time = fs.find_max_time(plainCSV,swCSV)
+  time = fs.find_max_time(plain,sw)
   dim = len(getParam(modelFile, "state var").split(','))
   if not os.path.isfile(plain):
     return [-1,-1]
@@ -138,30 +173,28 @@ outFile.write("    <th>Variable range</th>\n")
 outFile.write("  </tr>\n")
 
 
-for (plain, sw) in pairs:
-  plainModel = os.path.join(modelDir, plain)
-  swModel = os.path.join(modelDir, sw)
+for models in pairs:
+  modelFiles = map(lambda m: os.path.join(modelDir, m), models)
   
-  plainCSV = os.path.join("csvs", "%s.csv" %getParam(plainModel, "output"))
-  swCSV = os.path.join("csvs", "%s.csv" %getParam(swModel, "output"))
+  csvs = map(lambda m: \
+      os.path.join("csvs", "%s.csv" %getParam(m, "output") ), modelFiles)
   
-  varRange = getVarRange(plainModel, plainCSV, swCSV)
   
-  writeData(plainModel, plain, outFile, varRange[0])
-  writeData(swModel, sw, outFile, varRange[1])
+  print "csvs: %s" %csvs
+  print modelFiles
   
+  varRange2 = getVarRange2(modelFiles[0], csvs)
+  
+  for (i, model) in enumerate(models):
+    print modelFiles[i]
+    print models[i]
+    print varRange2[i]
+    writeData(modelFiles[i], models[i], outFile, varRange2[i])
+    
   
   outFile.write('<tr style="border-bottom:3px solid black">' + \
       '<td colspan="100%"><hr /></td></tr>\n')
-    
   
-  if not os.path.isfile(plainCSV) or not os.path.isfile(swCSV):
-    continue
-  
-  p = subprocess.Popen([os.path.join(scriptsDir, 'plot_to_max_time.py'), \
-      plainCSV, swCSV, 'var1=1', 'var2=0'])
-  p.wait()
-
 
 
 outFile.write("</table>\n")
@@ -172,7 +205,24 @@ outFile.write("</html>\n")
 outFile.close()
 
 
+#plotting of comparision plots
+for models in pairs:
+  modelFiles = map(lambda m: os.path.join(modelDir, m), models)
+  
+  csvs = map(lambda m: \
+      os.path.join("csvs", "%s.csv" %getParam(m, "output") ), modelFiles)
+  
+  time = min( map(lambda x: fs.find_file_max_time(x), csvs) )
+  tend = "tend=%s" %time
+  
 
+  for csv in csvs:
+    if not os.path.isfile(csv):
+      continue
+    args = [os.path.join(scriptsDir, 'gnuplot_var.py')] + \
+        [csv] + ['var1=1', 'var2=0'] + [tend]
+    p = subprocess.Popen(args)
+    p.wait()
 
 
 

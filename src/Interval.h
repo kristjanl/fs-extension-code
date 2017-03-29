@@ -125,10 +125,13 @@ public:
 	string getHigher() const;
 	bool isClose(const Interval & I, double d) const;
 	
-	
+	void compare(const Interval & I) const;
 	
 	void dump(FILE *fp) const;
 	void output(FILE *fp, const char * msg, const char * msg2) const;
 };
+
+// returns true if all the intervals in I1 are subseteq to intervals in I2
+bool subseteq(const vector<Interval> & I1, const vector<Interval> & I2);
 
 #endif /* INTERVAL_H_ */

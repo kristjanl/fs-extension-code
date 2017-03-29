@@ -1,4 +1,4 @@
-reason: matrix is singular Was thrown
-integration time: 0.9
-computation time: 0.34
-shrink wrapping time: 0
+reason: Map is not shrinkable (n = 4, t = 0.656564) Was thrown
+integration time: 3.9
+computation time: 5.9
+shrink wrapping time: 0.01

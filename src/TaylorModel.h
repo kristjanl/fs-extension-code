@@ -268,6 +268,7 @@ public:
   string toString(const vector<string> & varNames) const;
   TaylorModelVec prepareSecondary(int prefix) const;
   TaylorModelVec transform(vector<int> indexes);
+  bool compare(const TaylorModelVec & tmv, const vector<Interval> & domain) const;
   
   bool isClose(const TaylorModelVec & tmv, double d) const;
   TaylorModelVec addNParams(int n) const;

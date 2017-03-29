@@ -7,12 +7,14 @@ continuous reachability
   fixed steps 0.01
   time 0.1
   remainder estimation 1e-2
-  QR precondition
+  shrink wrapping 0
   gnuplot octagon x1,x2
   fixed orders 15
   cutoff 1e-15
   precision 512
-  output switching_5
+  output switching_5_plain
+  alg_small_comp
+  no decomposition
   print on
  }
  

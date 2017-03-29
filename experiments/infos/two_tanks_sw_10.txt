@@ -1,4 +1,3 @@
-reason: matrix is singular Was thrown
-integration time: 0.09
-computation time: 0.17
-shrink wrapping time: 0
+integration time: 2
+computation time: 4.15
+shrink wrapping time: 0.02

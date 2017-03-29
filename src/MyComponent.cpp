@@ -509,8 +509,11 @@ void MyComponent::remapLastFlowpipe() {
   
   logger.log(dependencies.size());
   
-  if(dependencies.size() == 0)
+  if(dependencies.size() == 0) {
+    logger.restore(old);
+    logger.dec();
     return;
+  }
   
   //logger.disable();
   

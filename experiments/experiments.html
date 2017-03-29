@@ -20,7 +20,7 @@
     <td>0.1</td>
     <td>10.0</td>
     <td>10.1</td>
-    <td>0.41</td>
+    <td>0.42</td>
     <td>0</td>
     <td>None</td>
     <td>[552.748, 553.25]</td>
@@ -32,10 +32,47 @@
     <td>0.1</td>
     <td>10.0</td>
     <td>10.1</td>
-    <td>0.4</td>
-    <td>0</td>
+    <td>0.42</td>
+    <td>0.01</td>
     <td>None</td>
     <td>['<b>3.33631</b>', '<b>3.91177</b>']</td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+  <tr>
+    <td><a href='../models/bench/moore_rot_point_plain.model'>moore_rot_point_plain.model</a></td>
+    <td>2</td> 
+    <td>2</td>
+    <td>0.1</td>
+    <td>10.0</td>
+    <td>10.1</td>
+    <td>0.32</td>
+    <td>0</td>
+    <td>None</td>
+    <td>[502.024, 502.012]</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/moore_rot_point_sw_10.model'>moore_rot_point_sw_10.model</a></td>
+    <td>2</td> 
+    <td>2</td>
+    <td>0.1</td>
+    <td>10.0</td>
+    <td>10.1</td>
+    <td>0.38</td>
+    <td>0</td>
+    <td>None</td>
+    <td>['<b>92.7688</b>', '<b>67.5215</b>']</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/moore_rot_point_sw_10_infl.model'>moore_rot_point_sw_10_infl.model</a></td>
+    <td>2</td> 
+    <td>2</td>
+    <td>0.1</td>
+    <td>10.0</td>
+    <td>10.1</td>
+    <td>0.5</td>
+    <td>0</td>
+    <td>None</td>
+    <td>[64982.0, 47071.2]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -194,8 +231,8 @@
     <td>6</td>
     <td>0.02</td>
     <td>6</td>
-    <td>1.7</td>
-    <td>125.09</td>
+    <td>1.72</td>
+    <td>128.09</td>
     <td>0</td>
     <td>max increase couldn't find a remainder Was thrown</td>
     <td>[0.295989, 0.421195, 0.174543]</td>
@@ -207,10 +244,22 @@
     <td>0.02</td>
     <td>6</td>
     <td>0.18</td>
-    <td>14.3</td>
+    <td>14.84</td>
     <td>0</td>
-    <td>matrix is singular Was thrown</td>
+    <td>Map is not shrinkable (s = 99801) Was thrown</td>
     <td>[0.295989, 0.421195, 0.174543]</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/Roessler_sw_10_infl.model'>Roessler_sw_10_infl.model</a></td>
+    <td>3</td> 
+    <td>6</td>
+    <td>0.02</td>
+    <td>6</td>
+    <td>0.18</td>
+    <td>94.58</td>
+    <td>0</td>
+    <td>Map is not shrinkable (s = 1.24696) Was thrown</td>
+    <td>[0.296186, 0.421234, 0.174546]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -219,11 +268,11 @@
     <td>4</td>
     <td>0.01</td>
     <td>2</td>
-    <td>0.29</td>
-    <td>41464.1</td>
-    <td>0.43</td>
-    <td>Map is not shrinkable (n = 7, t = 0.208004) Was thrown</td>
-    <td>[0.0543427, 0.0207648, 0.0324809, 0.0441029, 0.0446152, 0.0294377, 0.0503502]</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
   <tr>
     <td><a href='../models/bench/biology_I_sw_10.model'>biology_I_sw_10.model</a></td>
@@ -235,7 +284,7 @@
     <td>42777.7</td>
     <td>0.43</td>
     <td>Map is not shrinkable (n = 7, t = 0.208004) Was thrown</td>
-    <td>[0.0543427, 0.0207648, 0.0324809, 0.0441029, 0.0446152, 0.0294377, 0.0503502]</td>
+    <td>-1</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -320,7 +369,7 @@
     <td>0.01</td>
     <td>7.5</td>
     <td>7.51</td>
-    <td>0.86</td>
+    <td>1.18</td>
     <td>0</td>
     <td>None</td>
     <td>[0.01, 0.01, 0.2]</td>
@@ -331,11 +380,23 @@
     <td>5</td>
     <td>0.01</td>
     <td>7.5</td>
-    <td>0.09</td>
+    <td>4.19</td>
+    <td>1.39</td>
+    <td>0.02</td>
+    <td>Map is not shrinkable (n = 3, t = 0.356848) Was thrown</td>
+    <td>[0.01, 0.01, 25639.9]</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/nonholonomic_sw_10_infl.model'>nonholonomic_sw_10_infl.model</a></td>
+    <td>3</td> 
+    <td>5</td>
     <td>0.01</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[0.01, 0.01, 0.2]</td>
+    <td>7.5</td>
+    <td>3.69</td>
+    <td>0.83</td>
+    <td>0.02</td>
+    <td>Map is not shrinkable (n = 3, t = 0.344752) Was thrown</td>
+    <td>[0.197664, 0.197664, 1602.74]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -395,10 +456,10 @@
     <td>0.1</td>
     <td>360</td>
     <td>210.7</td>
-    <td>63.62</td>
+    <td>82.65</td>
     <td>0</td>
     <td>max increase couldn't find a remainder Was thrown</td>
-    <td>[3.96822, 3.16018e-06, 0.249496, 0.1]</td>
+    <td>[3.17254, 2.25247e-05, 0.0250228, 0.1]</td>
   </tr>
   <tr>
     <td><a href='../models/bench/diabetic_1_sw_10.model'>diabetic_1_sw_10.model</a></td>
@@ -406,11 +467,11 @@
     <td>2</td>
     <td>0.1</td>
     <td>360</td>
-    <td>0.9</td>
-    <td>0.19</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[3.96822, 3.16018e-06, 0.249496, 0.1]</td>
+    <td>25.9</td>
+    <td>13.72</td>
+    <td>0.04</td>
+    <td>Map is not shrinkable (n = 4, t = 0.611912) Was thrown</td>
+    <td>[357864.0, 1.03252, 1138.18, 0.100001]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -420,10 +481,10 @@
     <td>0.1</td>
     <td>360</td>
     <td>190.7</td>
-    <td>102.82</td>
+    <td>131.87</td>
     <td>0</td>
     <td>max increase couldn't find a remainder Was thrown</td>
-    <td>[3.96822, 4.29094e-06, 0.37248, 0.1]</td>
+    <td>[3.8561, 1.98873e-05, 0.470782, 0.1]</td>
   </tr>
   <tr>
     <td><a href='../models/bench/diabetic_2_sw_10.model'>diabetic_2_sw_10.model</a></td>
@@ -431,11 +492,11 @@
     <td>2</td>
     <td>0.1</td>
     <td>360</td>
-    <td>0.9</td>
-    <td>0.34</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[3.96822, 4.29094e-06, 0.37248, 0.1]</td>
+    <td>3.9</td>
+    <td>5.9</td>
+    <td>0.01</td>
+    <td>Map is not shrinkable (n = 4, t = 0.656564) Was thrown</td>
+    <td>[139.551, 0.000534572, 13.8663, 0.1]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -445,10 +506,10 @@
     <td>0.1</td>
     <td>10</td>
     <td>10.1</td>
-    <td>0.08</td>
+    <td>0.15</td>
     <td>0</td>
     <td>None</td>
-    <td>[0.24905, 0.981]</td>
+    <td>-1</td>
   </tr>
   <tr>
     <td><a href='../models/bench/bouncing_ball_sw_10.model'>bouncing_ball_sw_10.model</a></td>
@@ -456,11 +517,23 @@
     <td>5</td>
     <td>0.1</td>
     <td>10</td>
-    <td>0</td>
-    <td>0</td>
+    <td>0.9</td>
+    <td>0.02</td>
     <td>0</td>
     <td>matrix is singular Was thrown</td>
-    <td>[0.24905, 0.981]</td>
+    <td>-1</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/bouncing_ball_sw_10_infl.model'>bouncing_ball_sw_10_infl.model</a></td>
+    <td>2</td> 
+    <td>5</td>
+    <td>0.1</td>
+    <td>10</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -470,10 +543,10 @@
     <td>0.01</td>
     <td>2</td>
     <td>2</td>
-    <td>3.81</td>
+    <td>4.81</td>
     <td>0</td>
     <td>None</td>
-    <td>[0.980788, 0.15393]</td>
+    <td>[34.5084, 87.7617]</td>
   </tr>
   <tr>
     <td><a href='../models/bench/two_tanks_sw_10.model'>two_tanks_sw_10.model</a></td>
@@ -481,11 +554,23 @@
     <td>10</td>
     <td>0.01</td>
     <td>2</td>
-    <td>0.09</td>
-    <td>0.17</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[0.980788, 0.15393]</td>
+    <td>2</td>
+    <td>4.15</td>
+    <td>0.02</td>
+    <td>None</td>
+    <td>[1263.66, 2538.62]</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/two_tanks_sw_10_infl.model'>two_tanks_sw_10_infl.model</a></td>
+    <td>2</td> 
+    <td>10</td>
+    <td>0.01</td>
+    <td>2</td>
+    <td>2</td>
+    <td>4.71</td>
+    <td>0.04</td>
+    <td>None</td>
+    <td>[1780540.0, 3525510.0]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -495,10 +580,10 @@
     <td>0.1</td>
     <td>50</td>
     <td>50</td>
-    <td>3.43</td>
+    <td>4.39</td>
     <td>0</td>
     <td>None</td>
-    <td>[11.1617, 0.1, 0.1]</td>
+    <td>-1</td>
   </tr>
   <tr>
     <td><a href='../models/bench/rod_reactor_sw_10.model'>rod_reactor_sw_10.model</a></td>
@@ -507,10 +592,22 @@
     <td>0.1</td>
     <td>50</td>
     <td>0.9</td>
-    <td>0.07</td>
+    <td>0.14</td>
     <td>0</td>
     <td>matrix is singular Was thrown</td>
-    <td>[11.1617, 0.1, 0.1]</td>
+    <td>-1</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/rod_reactor_sw_10_infl.model'>rod_reactor_sw_10_infl.model</a></td>
+    <td>3</td> 
+    <td>5</td>
+    <td>0.1</td>
+    <td>50</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -544,23 +641,35 @@
     <td>15</td>
     <td>0.01</td>
     <td>0.1</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
-    <td>-</td>
+    <td>0.11</td>
+    <td>3.2</td>
+    <td>0</td>
+    <td>None</td>
+    <td>[1.72952, 1.40547, 0.918705, 1.49922, 2.62682]</td>
   </tr>
   <tr>
     <td><a href='../models/bench/switching_5_sw_10.model'>switching_5_sw_10.model</a></td>
     <td>5</td> 
     <td>15</td>
     <td>0.01</td>
-    <td>1</td>
-    <td>0.09</td>
-    <td>1.04</td>
+    <td>0.1</td>
+    <td>0.11</td>
+    <td>4.11</td>
+    <td>0.01</td>
+    <td>None</td>
+    <td>['<b>1.59609</b>', '<b>1.28548</b>', '<b>0.900354</b>', '<b>1.37574</b>', '<b>2.61232</b>']</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/switching_5_sw_10_infl.model'>switching_5_sw_10_infl.model</a></td>
+    <td>5</td> 
+    <td>15</td>
+    <td>0.01</td>
+    <td>0.1</td>
+    <td>0.11</td>
+    <td>15.6</td>
     <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>-1</td>
+    <td>None</td>
+    <td>[5.82091, 4.97996, 4.57013, 5.07048, 4.44228]</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -595,10 +704,10 @@
     <td>0.05</td>
     <td>4</td>
     <td>4.05</td>
-    <td>21.82</td>
+    <td>33.55</td>
     <td>0</td>
     <td>None</td>
-    <td>[0.0609854, 0.153031, 0.0805626, 0.0795734, 0.0614916, 0.0375204]</td>
+    <td>[5.03194e-05, 0.00439575, 0.0584985, 1.95768, 32.9529, 372.259]</td>
   </tr>
   <tr>
     <td><a href='../models/bench/filtered_oscillator_4_sw_10.model'>filtered_oscillator_4_sw_10.model</a></td>
@@ -606,11 +715,23 @@
     <td>8</td>
     <td>0.05</td>
     <td>4</td>
-    <td>0.45</td>
-    <td>3.5</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[0.0609854, 0.153031, 0.0805626, 0.0795734, 0.0614916, 0.0375204]</td>
+    <td>4.05</td>
+    <td>72.99</td>
+    <td>0.04</td>
+    <td>None</td>
+    <td>[190.764, 19814.8, 317.938, 529.852, 882.644, 1468.16]</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/filtered_oscillator_4_sw_10_infl.model'>filtered_oscillator_4_sw_10_infl.model</a></td>
+    <td>6</td> 
+    <td>8</td>
+    <td>0.05</td>
+    <td>4</td>
+    <td>4.05</td>
+    <td>86.31</td>
+    <td>0.02</td>
+    <td>None</td>
+    <td>[0.000600825, 0.0624081, '<b>0.00100137</b>', '<b>0.0016688</b>', '<b>0.00277995</b>', '<b>0.00462407</b>']</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -620,10 +741,10 @@
     <td>0.05</td>
     <td>4</td>
     <td>4.05</td>
-    <td>60.36</td>
+    <td>150.58</td>
     <td>0</td>
     <td>None</td>
-    <td>[0.0609854, 0.153031, 0.0805626, 0.0795734, 0.0614916, 0.0375204, 0.0187671, 0.00789787, 0.00286022, 0.000907367]</td>
+    <td>-1</td>
   </tr>
   <tr>
     <td><a href='../models/bench/filtered_oscillator_8_sw_10.model'>filtered_oscillator_8_sw_10.model</a></td>
@@ -631,11 +752,23 @@
     <td>8</td>
     <td>0.05</td>
     <td>4</td>
-    <td>0.45</td>
-    <td>9.44</td>
-    <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[0.0609854, 0.153031, 0.0805626, 0.0795734, 0.0614916, 0.0375204, 0.0187671, 0.00789787, 0.00286022, 0.000907367]</td>
+    <td>4.05</td>
+    <td>328.51</td>
+    <td>0.03</td>
+    <td>None</td>
+    <td>-1</td>
+  </tr>
+  <tr>
+    <td><a href='../models/bench/filtered_oscillator_8_sw_10_infl.model'>filtered_oscillator_8_sw_10_infl.model</a></td>
+    <td>10</td> 
+    <td>8</td>
+    <td>0.05</td>
+    <td>4</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
@@ -645,10 +778,10 @@
     <td>0.05</td>
     <td>4</td>
     <td>4.05</td>
-    <td>212.37</td>
+    <td>1020.74</td>
     <td>0</td>
     <td>None</td>
-    <td>[0.0022036728, 0.0050638938, 0.0005798351, 0.0014872006, 0.0001373833, 0.0003932439, 2.95494e-05, 9.44815e-05]</td>
+    <td>-1</td>
   </tr>
   <tr>
     <td><a href='../models/bench/filtered_oscillator_16_sw_10.model'>filtered_oscillator_16_sw_10.model</a></td>
@@ -656,36 +789,23 @@
     <td>8</td>
     <td>0.05</td>
     <td>4</td>
-    <td>0.45</td>
-    <td>33.59</td>
+    <td>0.5</td>
+    <td>161.43</td>
     <td>0</td>
-    <td>matrix is singular Was thrown</td>
-    <td>[0.0022036728, 0.0050638938, 0.0005798351, 0.0014872006, 0.0001373833, 0.0003932439, 2.95494e-05, 9.44815e-05]</td>
+    <td>max refinement steps Was thrown</td>
+    <td>-1</td>
   </tr>
-<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
   <tr>
-    <td><a href='../models/bench/filtered_oscillator_32_plain.model'>filtered_oscillator_32_plain.model</a></td>
-    <td>9</td> 
+    <td><a href='../models/bench/filtered_oscillator_16_sw_10_infl.model'>filtered_oscillator_16_sw_10_infl.model</a></td>
+    <td>8</td> 
     <td>8</td>
     <td>0.05</td>
     <td>4</td>
-    <td>0</td>
-    <td>3.79</td>
-    <td>0</td>
-    <td>max refinement steps Was thrown</td>
-    <td>[-1e-10, 2e-10, -1.7656e-11, 1.8131e-11, -5.917e-12, 6.012e-12, -1.979e-12, 1.998e-12, -6.61e-13]</td>
-  </tr>
-  <tr>
-    <td><a href='../models/bench/filtered_oscillator_32_sw_10.model'>filtered_oscillator_32_sw_10.model</a></td>
-    <td>9</td> 
-    <td>8</td>
-    <td>0.05</td>
-    <td>4</td>
-    <td>0</td>
-    <td>3.82</td>
-    <td>0</td>
-    <td>max refinement steps Was thrown</td>
-    <td>[-1e-10, 2e-10, -1.7656e-11, 1.8131e-11, -5.917e-12, 6.012e-12, -1.979e-12, 1.998e-12, -6.61e-13]</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
   </tr>
 <tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
 </table>

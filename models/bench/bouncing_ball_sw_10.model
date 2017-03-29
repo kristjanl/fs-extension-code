@@ -7,7 +7,7 @@ continuous reachability
   fixed steps 0.1
   time 10
   remainder estimation 1e-5
-  shrink wrapping 1
+  shrink wrapping 10
   gnuplot octagon x,v
   fixed orders 5
   cutoff 1e-15

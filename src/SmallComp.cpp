@@ -11,6 +11,7 @@ namespace smallComp {
 
   void picardIter(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, TaylorModelVec init, int order) {
+    int old = logger.reset();
     logger.disable();
     logger.log("picardIter <");
     logger.inc();
@@ -61,13 +62,14 @@ namespace smallComp {
     
     logger.dec();
     logger.log("picardIter >");
-    logger.enable();
+    logger.restore(old);
   }
 
 
   void computeNewRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
+    int old = logger.reset();
     logger.disable();
     logger.log("picardIterRem <");
     logger.inc();
@@ -156,12 +158,13 @@ namespace smallComp {
     //logger.logTMV("end", pipe);
     logger.dec();
     logger.log("picardIterRem >");
-    logger.enable();
+    logger.restore(old);
   }
 
   void findDecreasingRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
+    int old = logger.reset();
     logger.disable();
     logger.log("decRem <");
     logger.inc();
@@ -191,14 +194,6 @@ namespace smallComp {
           redo = true;
           guess.at(i) *= 2; //TODO think/find a better way to increase it
         }
-        /*
-        logger.enable();
-        logger.enable();
-        logger.enable();
-        logger.logVI("guess", guess);
-        logger.disable();
-        logger.disable();
-        logger.disable();//*/
         //reset the remainder
         pipe.tms[comp[i]].remainder = guess.at(i);
       }
@@ -211,12 +206,13 @@ namespace smallComp {
     }
     logger.dec();
     logger.log("decRem >");
-    logger.enable();
+    logger.restore(old);
   }
 
   void refineRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
+    int old = logger.reset();
     logger.disable();
     logger.log("refRem <");
     logger.inc();
@@ -258,12 +254,13 @@ namespace smallComp {
     }
     logger.dec();
     logger.log("refRem >");
-    logger.enable();
+    logger.restore(old);
   }
 
   void advance_step(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain, int order) {
+    int old = logger.reset();
     logger.disable();
     logger.log("advancing <");
     logger.inc();
@@ -285,7 +282,7 @@ namespace smallComp {
     //logger.logTMV("ref pipe", pipe);
     logger.dec();
     logger.log("advancing >");
-    logger.enable();
+    logger.restore(old);
   }
   
   //TODO duplicated in MyComponent
@@ -306,10 +303,8 @@ namespace smallComp {
     
     int counter = 0;
     for(double t=THRESHOLD_HIGH; t < time;) {
-      //logger.enable();
       //logger.log(sbuilder() << "t: " << t);
       //logger.logTMV("init", nextInit);
-      //logger.disable();
       Interval stepTime = Interval(t, t + step);
       //logger.log(sbuilder() << "counter: " << counter);
       //add empty Taylor model in first component
@@ -355,10 +350,8 @@ namespace smallComp {
     int counter = 0;
     for(double t=THRESHOLD_HIGH; t < time;) {
       logger.log("");
-      //logger.enable();
       logger.log(sbuilder() << "t: " << t);
       logger.logTMV("init2", nextInit);
-      //logger.disable();
       Interval stepTime = Interval(t, t + step);
       //logger.log(sbuilder() << "counter: " << counter);
       //add empty Taylor model in first component
@@ -459,6 +452,17 @@ namespace smallComp {
       
       newCompSet.tms.push_back(tm);
     }
+    
+    
+    //comp->initSet is the old set, newCompSet is the shrink wrapped one
+    if(true) { // TODO add compiler flag
+      if(comp->initSet.compare(newCompSet, domain) == false) {
+	      //throw std::runtime_error("something decreased after shrink wrapping");
+	    }
+    }
+    
+    
+    logger.logTMV("old", comp->initSet);
     comp->initSet = newCompSet;
     logger.logTMV("new", newCompSet);
     
@@ -525,7 +529,13 @@ namespace smallComp {
     Matrix inv(varSize);
     
     gsl_error_handler_t *old_handler = gsl_set_error_handler (&my_handler);
-    m.inverse(inv);
+    try{
+      m.inverse(inv);
+    }catch(IntegrationException& e) {
+      logger.reset();
+      logger.logMatrix(m);
+      throw e;
+    }
     gsl_set_error_handler (old_handler);
     
     logger.log("M^-1");
@@ -662,6 +672,10 @@ namespace smallComp {
   
   void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce, 
       int paramCount) {
+    int old = logger.reset();
+    logger.disable();
+    logger.log("parametrizing <");
+    logger.inc();
     //int paramCount = tmv.tms[0].getParamCount();
     for(int i = 0; i < varsToIntroduce.size(); i++) {
       int var = varsToIntroduce[i];
@@ -701,17 +715,22 @@ namespace smallComp {
       tm.expansion.add_assign(Monomial(coef, degs));
       tm.remainder = Interval();
     }
+    logger.dec();
+    logger.log("parametrizing >");
+    logger.restore(old);
   }
   
   void introduceParam(MyComponent & comp, vector<MyComponent *> comps, 
-      vector<Interval> step_end_exp_table, vector<Interval> & domain) {
-    TaylorModelVec last = comp.pipes.at(comp.pipes.size() - 1);
-    TaylorModelVec tmv;
-    last.evaluate_t(tmv, step_end_exp_table);
+      vector<Interval> & domain) {
+    int old = logger.reset();
+    logger.disable();
+    logger.log("introducing <");
+    logger.inc();
+    TaylorModelVec tmv = comp.swInput;
     
     
     //logger.logTMV("last", last);
-    //logger.logTMV("tmv", tmv);
+    logger.logTMV("original", tmv);
     
     vector<int> varsToIntroduce;
     for(int i = 0; i < comps.size(); i++) {
@@ -719,9 +738,9 @@ namespace smallComp {
       varsToIntroduce.insert(varsToIntroduce.end(), 
           compVars.begin(), compVars.end());
       logger.listVi("vs: ", comps[i]->varsToBeIntroduced);
+      comps[i]->varsToBeIntroduced.clear();
     }
     logger.listVi("introducing", varsToIntroduce);
-    
     
     //no need to add more parameters now
     //int oParamCount = tmv.tms[0].getParamCount();
@@ -731,10 +750,23 @@ namespace smallComp {
     int paramCount = padded.tms[0].getParamCount();
     
     
-    parametrizeVars(padded, varsToIntroduce, paramCount);
+    if(varsToIntroduce.size() != 0) {
+      parametrizeVars(padded, varsToIntroduce, paramCount);
+    }
     
-    //logger.logTMV("padded", padded);
+    logger.logTMV("introduced", padded);
     comp.swInput = padded;
+    
+    
+    
+    if(true) { // TODO add compiler flag
+      if(tmv.compare(comp.swInput, domain) == false) {
+	      throw std::runtime_error("something decreased after introducing param");
+	    }
+    }
+    logger.dec();
+    logger.log("introducing >");
+    logger.restore(old);
   }
   
   double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 
@@ -743,12 +775,11 @@ namespace smallComp {
     int old = logger.reset();
     logger.disable();
     logger.log("applying sw <");
+    logger.inc();
     
     clock_t start = clock();
-    logger.disable();
     
     all.remapLastFlowpipe();
-    logger.enable();
     
     TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
     TaylorModelVec tmv;
@@ -757,9 +788,10 @@ namespace smallComp {
     
     logger.logTMV("swInput", all.swInput);
     //introduces a parameter to swInput
-    introduceParam(all, comps, step_end_exp_table, domain);
-    logger.log(all.swInput.tms[0].getParamCount());
     
+    
+    introduceParam(all, comps, domain);
+    logger.log(all.swInput.tms[0].getParamCount());
     /*
     logger.log(all.compMappers.size());
     logger.listVi("0", all.compMappers.at(0));
@@ -778,9 +810,6 @@ namespace smallComp {
     //calculate the shrink wrapping factor for swInput
     double swQ = shrinkWrap(all, domain, step_end_exp_table);
     
-    logger.logTMV("c0", comps[0]->swInput);
-    logger.logTMV("c1", comps[1]->swInput);
-    
     logger.log(sbuilder() << "swQ: " << swQ);
     
     //use the computed shrink wrapping factor to modify the initial sets
@@ -796,6 +825,7 @@ namespace smallComp {
     //logger.force(sbuilder() << "single: " << singleSW);
     //logger.force(sbuilder() << (end - start));
     
+    logger.dec();
     logger.log("applying sw >");
     logger.restore(old);
   }
@@ -892,7 +922,10 @@ namespace smallComp {
       const OutputWriter writer, int order, double step, double time, 
       vector<Interval> step_end_exp_table, TaylorModelVec tmv, 
       const vector<HornerForm> & ode, vector<Interval> domain) {
-      
+    int old = logger.reset();
+    logger.disable();
+    logger.log("singleStepPrepareIntegrate <");
+    logger.inc();
     //if component has already been solved return
     if(component.isSolved) {
       //logger.log("solved already");
@@ -910,7 +943,6 @@ namespace smallComp {
     //logger.log("solving");
     logger.listVi("component vars: ", component.compVars);
     
-    //logger.disable();
     //component.prepare(tmv, ode, domain);
     
     //remaps previous components flowpipes
@@ -918,13 +950,14 @@ namespace smallComp {
     component.remapLastFlowpipe();
     
     //component.log();
+    
     singleStepIntegrate(component, writer, order, step, time,
         step_end_exp_table);
     component.isSolved = true;
-    //logger.enable();
     
-    //bar12();
-    //shrinkWrap(component, domain, step_end_exp_table);
+    logger.dec();
+    logger.log("singleStepPrepareIntegrate >");
+    logger.restore(old);
   }
   
   void integrateComponentWrapper(MyComponent & component, 
@@ -949,12 +982,10 @@ namespace smallComp {
     //logger.log("solving");
     logger.listVi("component vars: ", component.compVars);
     
-    //logger.disable();
     component.prepare(tmv, ode, domain);
     component.log();
     integrateComponent2(component, writer, order, step, time, step_end_exp_table);
     component.isSolved = true;
-    //logger.enable();
     
     
     //bar12();
@@ -964,28 +995,22 @@ namespace smallComp {
 
 SmallCompReachability::SmallCompReachability()
 : ContinuousReachability() {
-  logger.enable();
   logger.log("simple comp reach constructor");
-  logger.disable();
 }
 
 
 
 SmallCompSystem::SmallCompSystem(const TaylorModelVec & ode_input, const Flowpipe & initialSet_input)
 : ContinuousSystem(ode_input, initialSet_input) {
-  logger.enable();
   logger.log("simple comp system cons (ode, pipe)");
-  logger.disable();
 }
 SmallCompSystem::SmallCompSystem(const ContinuousSystem & system, vector< vector<int> > components)
 : ContinuousSystem(system), components(components) {
-  logger.enable();
   logger.log("simple comp system cons (sys)");
-  logger.disable();
 }
 
 void SmallCompReachability::myRun() {
-  logger.enable(); //coupled with model parsing disable
+  int old = logger.reset();
   logger.log("Simple Comp Run <");
   logger.inc();
   
@@ -1007,14 +1032,10 @@ void SmallCompReachability::myRun() {
 	end = clock();
 	//printf("simple comp time cost: %lf\n", 
 	//    (double)(end - begin) / CLOCKS_PER_SEC);
-	
-	ofstream myfile;
-  myfile.open ("example1.txt", std::ios::app);
-  myfile << "Writing this to a file.\n";
-  myfile.close();
-	
+		
   logger.dec();
   logger.log("Simple Comp Run >");
+  logger.restore(old);
 }
 
 void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
@@ -1023,9 +1044,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   logger.inc();
   logger.log(sbuilder() << "# of components: " <<components.size());
   
-  logger.disable();
   vector<MyComponent *> comps = createComponents(components, hfOde);
-  logger.enable();
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
@@ -1043,23 +1062,19 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   vector<Interval> domain = initialSet.domain;
   domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
   
-  //logger.disable();
   vector<TaylorModelVec> pipes;
+  
+  if(precondition == SHRINK_WRAPPING) {
+    for(int i = 0; i < comps.size(); i++) {
+      comps.at(i)->retainEmptyParams = true;
+    }
+  }
   
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    //(*it)->log();
-    logger.disable();
     (*it)->prepareComponent(currentTMV, hfOde, domain);
-    logger.enable();
-    //(*it)->log();
   }
-  logger.log(currentTMV.tms[0].getParamCount());
-  exit(0);
-  
-  logger.disable();
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
-  logger.enable();
   //all.log();
   
    
@@ -1070,7 +1085,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   int stepCounter = sw_step;
   double t;
   for(t = 0; t < time; t+= step) {
-    //logger.log("");
     logger.log(sbuilder() << "t: " << t);
     
     
@@ -1078,10 +1092,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
     try{
       for(vector<MyComponent *>::iterator it = comps.begin(); 
           it < comps.end(); it++) {
-        logger.disable();
+        //logger.logTMV("init", (*it)->initSet);
         smallComp::singleStepPrepareIntegrate(**it, writer, order, step, 
             step, step_end_exp_table, currentTMV, hfOde, domain);
-        logger.enable();
         //logger.logTMV("0", (*it)->pipes.at(0));
         i++;
       }
@@ -1097,11 +1110,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
         //logger.logTMV("evaluated", (*it)->initSet);
       }
       if((precondition == SHRINK_WRAPPING) && (--stepCounter == 0)) {
-        logger.log("shrink wrapping");
-        logger.disable();
         smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, comps,
             writer);
-        logger.enable();
         stepCounter = sw_step;
       }
       
@@ -1116,7 +1126,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
       logger.log(sbuilder() << "iEv: " << iEv.toString());
       logger.log(sbuilder() << "rem:" << 
           comps.at(0)->initSet.tms.at(0).remainder.toString());  
-      */
+      //*/
     }catch(IntegrationException& e) {
       logger.reset();
       logger.log("IntegrationException caught");
@@ -1135,46 +1145,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   writer.addComponents(comps, domain);
   writer.writeCSV();
   writer.writeInfo();
-  
-  writer.finish();
-
-  logger.dec();
-  logger.log("sc reach >");
-}
-
-void SmallCompSystem::my_reach_picard_old(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
-{
-  logger.log("sc reach <");
-  logger.inc();
-  logger.log(sbuilder() << "# of components: " <<components.size());
-  
-  vector<MyComponent *> comps = createComponents(components, hfOde);
-  
-  //copy-paste from flowstar 
-	vector<Interval> step_exp_table, step_end_exp_table;
-	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
-	vector<PolynomialConstraint> dummy_invariant;
-  //end of copy-paste
-  
-  //create output writer object
-  //arguments are name and 2 indexes of variables (-1 is time)
-  
-
-  TaylorModelVec currentTMV = initialSet.tmvPre;
-
-  //domain of the TM variable
-  vector<Interval> domain = initialSet.domain;
-  domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
-  
-  //logger.disable();
-  vector<TaylorModelVec> pipes;
-  
-  for(vector<MyComponent *>::iterator it = comps.begin(); it < comps.end(); it++) {
-    //logger.listVi("vars", (*it)->compVars);
-    smallComp::integrateComponentWrapper(**it, writer, order, step, 
-        time, step_end_exp_table, currentTMV, hfOde, domain);
-  }
-  //smallComp::integrateComponentWrapper(*(comps.at(0)), writer, order, step, time, step_end_exp_table, currentTMV, hfOde, domain);
   
   writer.finish();
 

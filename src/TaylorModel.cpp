@@ -3962,3 +3962,21 @@ void TaylorModel::getLinearPart2(vector<int> variables) const {
     }
   }
 }
+
+bool TaylorModelVec::compare(const TaylorModelVec & tmv, 
+      const vector<Interval> & domain) const {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("comparing");
+  
+  vector<Interval> first;
+  vector<Interval> second;
+  intEval(first, domain);
+	tmv.intEval(second, domain);
+	logger.logVI("first", first);
+	logger.logVI("second", second);
+	return subseteq(first, second);
+  
+  logger.restore(old);
+}
+

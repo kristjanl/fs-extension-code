@@ -77,8 +77,9 @@ lex.yy.c: modelLexer.l modelParser.tab.c
 	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	 rm -f $@.$$$$
 
-# include $(DFILES)
-# include modelParser.tab.d lex.yy.d
+ include $(DFILES)
+ include modelParser.tab.d lex.yy.d
 
 clean: 
-	rm -f flowstar *.o *~ modelParser.tab.c modelParser.tab.h modelParser.output lex.yy.c myapp
+	rm -f flowstar *.o *.d *~ modelParser.tab.c modelParser.tab.h \
+	modelParser.output lex.yy.c myapp fastcompile testcompile

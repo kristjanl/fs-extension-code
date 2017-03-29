@@ -1873,7 +1873,50 @@ string Interval::getHigher() const {
 }
 
 
+void Interval::compare(const Interval & I) const {
+  logger.log("comparing (needs to be in increasing order)");
+  logger.log(I.toString());
+  
+  int size = 40;
+  char s[] = "%.20RDe";
 
+  char lo1Str[size];
+	mpfr_sprintf(lo1Str, s, lo);
+  char lo2Str[size];
+	mpfr_sprintf(lo2Str, s, I.lo);
+	
+  char up1Str[size];
+	mpfr_sprintf(up1Str, s, up);
+  char up2Str[size];
+	mpfr_sprintf(up2Str, s, I.up);
+
+  //needs to be in increasing order
+	logger.log(lo2Str);
+	logger.log(lo1Str);
+	logger.log(up1Str);
+	logger.log(up2Str);
+}
+
+bool subseteq(const vector<Interval> & v1, const vector<Interval> & v2) {
+  int old = logger.reset();
+  if(v1.size() != v2.size())
+    throw invalid_argument("Different domains of vectors");
+  for(int i = 0; i < v1.size(); i++) {
+    if(v1[i].subseteq(v2[i]) == false) {
+      logger.log(sbuilder() << "[" << i << "] wasn't subset");
+      string s1, s2;
+      v1[i].toString(s1);
+      v2[i].toString(s2);
+      logger.log(s1);
+      logger.log(s2);
+      v1[i].compare(v2[i]);
+      logger.restore(old);
+      return false;
+    }
+  }
+  logger.restore(old);
+  return true;
+}
 
 
 

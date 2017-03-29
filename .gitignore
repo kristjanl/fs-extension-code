@@ -47,3 +47,6 @@ lex.yy.c
 gmon.out
 
 makefile.local
+
+#dependency files
+src/*.d

@@ -28,12 +28,16 @@ def gnuplot_for_variable(args, nameLookup):
   outFile.close()
   
 def write_data(outFile, inFileName, args, var1, var2):  
-  start=float(args['start'])
-  end=float(args['end'])
+  start = float(args['start'])
+  end = float(args['end'])
   
-  tend=1000000000
+  tend = 1000000000
   if 'tend' in args:
-    tend=float(args['tend'])
+    tend = float(args['tend'])
+    
+  tstart = -1
+  if 'tstart' in args:
+    tstart = float(args['tstart'])
   
   varY = var2
   varYLower = 2*varY
@@ -64,9 +68,15 @@ def write_data(outFile, inFileName, args, var1, var2):
       
       if(time > tend):
         break
+        
       
       startStep = startStep - 1
       endStep = endStep - 1
+      
+      
+      if(time < tstart):
+        print "skipping"
+        continue
       
       if(startStep >= 0):
         continue
