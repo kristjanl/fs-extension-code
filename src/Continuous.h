@@ -13,6 +13,7 @@
 #include "Geometry.h"
 #include "MyLogger.h"
 #include "OutputWriter.h"
+#include "Utils.h"
 
 
 // extern vector<LinearConstraint> constraint_template;
@@ -221,7 +222,7 @@ public:
 	double step;					// the step size used in the reachability analysis
 	double time;					// the time horizon for the reachability analysis
 	int precondition;				// the preconditioning technique
-	int sw_step;
+	ShrinkWrappingCondition *swChecker;				// determines whether to use shrink wrapping or not
 	vector<int> outputAxes;			// the output axes
 	int plotSetting;
 	int plotFormat;

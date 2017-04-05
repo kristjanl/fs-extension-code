@@ -56,7 +56,7 @@
 %token MIN MAX
 %token REMEST
 %token INTERVAL OCTAGON GRID
-%token QRPRECOND IDPRECOND SHRINRWRAPPING
+%token QRPRECOND IDPRECOND SHRINRWRAPPING REM
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -2548,11 +2548,18 @@ IDPRECOND
 |
 SHRINRWRAPPING NUM
 {
-	logger.log("shrink");
-	int everyNthStep = $2;
-	//logger.log(everyNthStep);
+	logger.log("shrink num");
 	continuousProblem.precondition = SHRINK_WRAPPING;
-	continuousProblem.sw_step = everyNthStep;
+	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
+	continuousProblem.swChecker = cond;
+}
+|
+SHRINRWRAPPING REM
+{
+	logger.log("shrink rem");
+	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
+	continuousProblem.precondition = SHRINK_WRAPPING;
+	continuousProblem.swChecker = cond;
 }
 ;
 

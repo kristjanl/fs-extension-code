@@ -1,0 +1,5 @@
+reason: Map is not shrinkable (n = 2, t = 0.698646) Was thrown
+integration time: 0.76
+computation time: 2.17
+shrink wraps: 77
+shrink wrapping time: 0.07

@@ -116,6 +116,7 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "my mono" {return MYMONO;}
 "my hfs" {return MYHORNERFORMS;}
 "my iv" {return MYINTGVEC;}
+"rem" {return REM;}
 
 
 {number} { yylval.dblVal = atof( (char *)yytext ); return NUM; }

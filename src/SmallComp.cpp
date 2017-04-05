@@ -1038,8 +1038,7 @@ void SmallCompReachability::myRun() {
   logger.restore(old);
 }
 
-void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
-{
+void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const {
   logger.log("sc reach <");
   logger.inc();
   logger.log(sbuilder() << "# of components: " <<components.size());
@@ -1082,7 +1081,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   //for(double t = 0; t < time; t+= step) {
   
   clock_t integrClock = clock();
-  int stepCounter = sw_step;
   double t;
   for(t = 0; t < time; t+= step) {
     logger.log(sbuilder() << "t: " << t);
@@ -1103,18 +1101,25 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
           it < comps.end(); it++) {
         (*it)->isSolved = false;
         int lastIndex = (*it)->pipes.size()-1;
+        
+        //set the next initSet
         (*it)->pipes.at(lastIndex).evaluate_t((*it)->initSet,
             step_end_exp_table);
+            
         //logger.logTMV("last", (*it)->pipes.at(lastIndex));
         //logger.listVi("vars", (*it)->varIndexes);
         //logger.logTMV("evaluated", (*it)->initSet);
       }
-      if((precondition == SHRINK_WRAPPING) && (--stepCounter == 0)) {
-        smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, comps,
-            writer);
-        stepCounter = sw_step;
-      }
       
+      int old2 = logger.reset();
+      if(precondition == SHRINK_WRAPPING) {
+        if(swChecker->checkApplicability(comps, estimation)) {
+          logger.force("wrapping");
+          smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, comps,
+              writer);
+        }
+      }
+      logger.restore(old2);
       /*
       vector<Interval> polyRange;
       vector<Interval> range;
@@ -1141,6 +1146,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
   logger.log(sbuilder() << "computation time: " << integrTime);
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
+  writer.info.push_back(sbuilder() << "shrink wraps: " << swChecker->getCount());
   
   writer.addComponents(comps, domain);
   writer.writeCSV();

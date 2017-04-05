@@ -7,6 +7,7 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 $VAR_LABEL$
+$RANGE$
 plot '-' notitle with lines ls 1
 $DATA$
 e

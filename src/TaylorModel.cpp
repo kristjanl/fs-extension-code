@@ -2133,7 +2133,11 @@ void TaylorModelVec::center_nc()
 void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result, const TaylorModelVec & x0, const vector<HornerForm> & ode, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
 	TaylorModelVec tmvTemp;
-
+  /*
+  int old = logger.reset();
+  logger.log(ode[0].toString());
+  logger.restore(old);
+  */
 	if(order <= 1)
 	{
 		for(int i=0; i<ode.size(); ++i)
@@ -2246,7 +2250,6 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 	{
 		trees.push_back(NULL);
 	}
-
 	for(int i=0; i<ode.size(); ++i)
 	{
 		if(orders[i] <= 1)

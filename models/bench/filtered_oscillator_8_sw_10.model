@@ -12,7 +12,7 @@ continuous reachability
   fixed orders 8
   cutoff 1e-15
   precision 128
-  output filtered_oscillator_sw_10
+  output filtered_oscillator_8_sw_10
   alg_small_comp
   no decomposition
   print on

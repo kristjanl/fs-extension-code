@@ -1,0 +1,4 @@
+integration time: 4.05
+computation time: 61.74
+shrink wraps: 1
+shrink wrapping time: 0.01

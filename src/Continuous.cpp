@@ -9347,10 +9347,12 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 				printf("step = %f,\t", step);
 				printf("order = %d\n", order);
 			}
+			/*
 			logger.enable();
 			logger.logTMV("pre", newFlowpipe.tmvPre);
 			logger.logTMV("tmv", newFlowpipe.tmv);
 			logger.disable();
+			*/
 		}
 		else
 		{
@@ -13639,7 +13641,7 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
 	}
   
   problem.precondition = precondition;
-  problem.sw_step = sw_step;
+  problem.swChecker = swChecker;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13698,7 +13700,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
 	}
   
   problem.precondition = precondition;
-  problem.sw_step = sw_step;
+  problem.swChecker = swChecker;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13728,7 +13730,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
   
   
   SmallCompSystem* pSystem = new SmallCompSystem(system, components);
-  pSystem->sw_step = sw_step;
+  pSystem->swChecker = swChecker;
   
   problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
@@ -13757,7 +13759,7 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
 	}
   
   problem.precondition = precondition;
-  problem.sw_step = sw_step;
+  problem.swChecker = swChecker;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;

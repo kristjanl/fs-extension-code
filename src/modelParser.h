@@ -14,6 +14,7 @@
 #include "CompApp.h"
 #include "MyLogger.h"
 #include "ParsingUtils.h"
+#include "Utils.h"
 
 //extern int lineNum;
 

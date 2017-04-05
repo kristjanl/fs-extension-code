@@ -23,6 +23,10 @@ def gnuplot_for_variable(args, nameLookup):
         write_data(outFile, nameLookup['inFileName'], args, var1, var2)
       elif line.strip() == "$VAR_LABEL$":
         outFile.write('set ylabel "x' + str(var1) + '"\n')
+      elif line.strip() == "$RANGE$":
+        if 'xMin' in args:
+          outFile.write('set xrange [%s:%s]\n'%(args['xMin'],args['xMax']))
+          outFile.write('set yrange [%s:%s]\n'%(args['yMin'],args['yMax']))
       else:
         outFile.write(line)
   outFile.close()
@@ -96,7 +100,10 @@ def write_data(outFile, inFileName, args, var1, var2):
         break
       
 
-def getNameMap(scriptArg, inArg):
+def getNameMap(argv, args):
+  scriptArg = argv[0]
+  inArg = argv[1]
+  
   scriptDir = scriptArg[:scriptArg.rfind('/') + 1]
   inDir = inArg[:inArg.rfind('/') + 1]
   inParent = inDir[:-5]
@@ -118,18 +125,20 @@ def getNameMap(scriptArg, inArg):
   map['inFileName'] = inArg
   map['inDir'] = inDir
   map['inName'] = inName
-  map['pngOut'] = "%s/%s.png" %(imagesDir, inName)
   map['pltOut'] = "%s/%s.plt" %(pltsDir, inName)
   
-  print "reading '%s'" %map['inFileName']
+  if 'suffix' in args:
+    map['pngOut'] = "%s/%s_%s.png" %(imagesDir, inName, args['suffix'])
+  else:
+    map['pngOut'] = "%s/%s.png" %(imagesDir, inName)
+  
+  #print "reading '%s'" %map['inFileName']
   #print "writing '%s'" %map['pltOut']
   #print "writing '%s'" %map['pngOut']
   
   return map
-
-nameLookup = getNameMap(sys.argv[0], sys.argv[1])
-
-      
+  
+  
 def parseArgs(args):
 # var1, var2, start, end
   map = {}
@@ -145,6 +154,10 @@ def parseArgs(args):
   return map
   
 args = parseArgs(sys.argv)
+
+nameLookup = getNameMap(sys.argv, args)
+
+      
 
 gnuplot_for_variable(args, nameLookup)
 

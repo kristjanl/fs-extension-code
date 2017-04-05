@@ -45,17 +45,16 @@ pairs = pairs + [('rod_reactor_plain.model', 'rod_reactor_sw_10.model', 'rod_rea
 #pairs = pairs + [('cruise_control_plain.model', 'cruise_control_sw_10.model')]
 pairs = pairs + [('switching_5_plain.model', 'switching_5_sw_10.model', 'switching_5_sw_10_infl.model')]
 #pairs = pairs + [('vehicle_platoon_3_plain.model', 'vehicle_platoon_3_sw_10.model')]
-pairs = pairs + [('filtered_oscillator_4_plain.model', 'filtered_oscillator_4_sw_10.model', 'filtered_oscillator_4_sw_10_infl.model')]
-pairs = pairs + [('filtered_oscillator_8_plain.model', 'filtered_oscillator_8_sw_10.model', 'filtered_oscillator_4_sw_10_infl.model')]
-pairs = pairs + [('filtered_oscillator_16_plain.model', 'filtered_oscillator_16_sw_10.model', 'filtered_oscillator_4_sw_10_infl.model')]
+
+pairs = []
+pairs = pairs + [('filtered_oscillator_4_sw_10_infl.model','filtered_oscillator_8_sw_10_infl.model')]
+pairs = pairs + [('filtered_oscillator_16_plain.model', 'filtered_oscillator_16_sw_10.model', 'filtered_oscillator_16_sw_10_infl.model')]
 #pairs = pairs + [('filtered_oscillator_32_plain.model', 'filtered_oscillator_4_sw_10.model')]
 
 
 for l in pairs:
   for model in l:
-    if 'holo' not in model:
-      continue
-    print model
+    print "======%s======" %model
     modelFile = os.path.join(modelDir, model)
     modelStream = open(modelFile)
     run = subprocess.Popen(flowstar, stdin=modelStream)

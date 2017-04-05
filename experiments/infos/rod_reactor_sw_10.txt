@@ -1,4 +1,5 @@
 reason: matrix is singular Was thrown
 integration time: 0.9
-computation time: 0.14
+computation time: 0.1
+shrink wraps: 1
 shrink wrapping time: 0
