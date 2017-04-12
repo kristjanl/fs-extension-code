@@ -1,5 +1,5 @@
 set term png
-set output './images/Brusselator_plain_2_t_1.8.png
+set output './images/Brusselator_plain_plain_rem_2_t_1.8.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

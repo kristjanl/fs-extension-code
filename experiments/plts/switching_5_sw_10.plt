@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5_sw_10_5_t_0.1.png
+set output './images/switching_5_sw_10step_infl_5_t_0.1.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x5"
 set xrange [0.0:0.11]
-set yrange [-6.7383670226:8.2203533484]
+set yrange [-1.4804488645:2.9618304196]
 plot '-' notitle with lines ls 1
 0 -0.0150212349
 0 0.1585754349

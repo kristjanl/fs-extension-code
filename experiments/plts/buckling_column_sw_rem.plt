@@ -1,5 +1,5 @@
 set term png
-set output './images/buckling_column_sw_rem_2_t_0.87.png
+set output './images/buckling_column_sw_remstep_rem_2_t_0.87.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

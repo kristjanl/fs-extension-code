@@ -1,5 +1,5 @@
 set term png
-set output './images/two_tanks_sw_10_infl_2_t_1.99.png
+set output './images/two_tanks_sw_10_inflstep_infl_2_t_1.99.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

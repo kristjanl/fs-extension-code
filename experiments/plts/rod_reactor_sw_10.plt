@@ -1,5 +1,5 @@
 set term png
-set output './images/rod_reactor_sw_10_3_t_0.9.png
+set output './images/rod_reactor_sw_10step_infl_3_t_0.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x3"
 set xrange [0.0:1.0]
-set yrange [20.0:21.0]
+set yrange [19.99999:21.00001]
 plot '-' notitle with lines ls 1
 0 20
 0 20.1

@@ -1,5 +1,5 @@
 set term png
-set output './images/diabetic_2_plain_4_t_97.0.png
+set output './images/diabetic_2_plain_plain_rem_4_t_97.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5_plain_5_t_0.1.png
+set output './images/switching_5_plain_plain_rem_5_t_0.1.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

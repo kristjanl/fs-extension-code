@@ -1,5 +1,5 @@
 set term png
-set output './images/rod_reactor_sw_10_infl_3_t_0.9.png
+set output './images/rod_reactor_sw_10_inflstep_infl_3_t_0.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

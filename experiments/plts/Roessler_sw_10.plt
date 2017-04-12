@@ -1,5 +1,5 @@
 set term png
-set output './images/Roessler_sw_10_3_t_0.18.png
+set output './images/Roessler_sw_10step_infl_3_t_0.18.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x3"
 set xrange [0.0:0.2]
-set yrange [-0.2216681454:0.22922252]
+set yrange [-0.2216686006:0.2292229752]
 plot '-' notitle with lines ls 1
 0 -0.2216681454
 0 0.22922252

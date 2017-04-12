@@ -1,5 +1,5 @@
 set term png
-set output './images/Roessler_sw_rem_3_t_0.18.png
+set output './images/Roessler_sw_remstep_rem_3_t_0.18.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

@@ -1,5 +1,5 @@
 set term png
-set output './images/Lorentz_sw_10_3_t_0.507.png
+set output './images/Lorentz_sw_10step_rem_3_t_0.507.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

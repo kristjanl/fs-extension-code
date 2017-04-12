@@ -1,5 +1,5 @@
 set term png
-set output './images/biology_I_sw_10_7_t_0.29.png
+set output './images/biology_I_sw_10step_rem_7_t_0.29.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

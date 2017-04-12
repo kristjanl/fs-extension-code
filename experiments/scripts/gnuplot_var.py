@@ -128,7 +128,7 @@ def getNameMap(argv, args):
   map['pltOut'] = "%s/%s.plt" %(pltsDir, inName)
   
   if 'suffix' in args:
-    map['pngOut'] = "%s/%s_%s.png" %(imagesDir, inName, args['suffix'])
+    map['pngOut'] = "%s/%s%s.png" %(imagesDir, inName, args['suffix'])
   else:
     map['pngOut'] = "%s/%s.png" %(imagesDir, inName)
   

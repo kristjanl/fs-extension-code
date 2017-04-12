@@ -1,5 +1,5 @@
 set term png
-set output './images/moore_rot_point_sw_10_infl_2_t_10.0.png
+set output './images/moore_rot_point_sw_10_inflstep_infl_2_t_10.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

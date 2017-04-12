@@ -1,5 +1,5 @@
 set term png
-set output './images/neuron_I_sw_rem_2_t_5.58.png
+set output './images/neuron_I_sw_remstep_rem_2_t_5.58.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

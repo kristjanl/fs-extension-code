@@ -1,5 +1,5 @@
 set term png
-set output './images/Lotka_Volterra_sw_rem_2_t_2.02.png
+set output './images/Lotka_Volterra_sw_remstep_rem_2_t_2.02.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

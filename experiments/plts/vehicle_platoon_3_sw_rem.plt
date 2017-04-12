@@ -1,5 +1,5 @@
 set term png
-set output './images/vehicle_platoon_3_sw_rem_9_t_6.58.png
+set output './images/vehicle_platoon_3_sw_remstep_rem_9_t_6.58.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

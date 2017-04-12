@@ -6,11 +6,26 @@ import subprocess
 
 import my_functions as fs
 
+
+def getDimension(modelFile):
+  csv = os.path.join("csvs", "%s.csv" %fs.getParam(modelFile, "output"))
+  store = False
+  s = ""
+  with open(modelFile) as f:
+    for line in f:
+      if 'state var' in line:
+        store = True
+      if 'setting' in line:
+        break
+      if store:
+        s = s + line
+  return len(s.split(','))
+
 def getVarRange2(modelFile, csvs):
   # find time that all integrations reached
   time = min( map(lambda x: fs.find_file_max_time(x), csvs) )
   
-  dim = len(fs.getParam(modelFile, "state var").split(','))
+  dim = getDimension(modelFile)
   
   ranges = map(lambda c: [], csvs)
   
@@ -42,14 +57,14 @@ def getVarRange2(modelFile, csvs):
   return ranges
 
 
-def writeData(modelFile, modelName, outFile, varRange, commonTime):
+def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix):
   outputName = fs.getParam(modelFile, "output")
   if os.path.isfile(modelFile):
     infoFile = "infos/%s.txt" %outputName
     order = fs.getParam(modelFile, "fixed orders")
     step = fs.getParam(modelFile, "fixed steps")
     time = fs.getParam(modelFile, "time")
-    dim = len(fs.getParam(modelFile, "state var").split(','))
+    dim = getDimension(modelFile)
   else:
     infoFile = order = time = step = dim = '-'
   
@@ -73,11 +88,11 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime):
   outFile.write("    <td>%s</td>\n"%swTime)
   outFile.write("    <td>%s</td>\n"%swCount)
   outFile.write("    <td>%s</td>\n"%reason)
-  outFile.write("    <td>%s</td>\n"%str(varRange))
+  outFile.write("    <td>%s</td>\n"%str(varRange)[1:-1])
   outFile.write("    <td>\n");
   outFile.write("    <table><tr>\n")
   for i in range(1, dim+1):
-    imageName = "images/%s_%s_t_%s.png" %(outputName,i,commonTime)
+    imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, commonTime)
     outFile.write("      <td>\n")
     if os.path.isfile(imageName):
       outFile.write("        <div>\n")
@@ -89,7 +104,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime):
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
 
-def write_table_rows(modelDir, pairs, outFile):
+def write_table_rows(modelDir, pairs, outFile, nameSuffix):
   for models in pairs:
     modelFiles = map(lambda m: os.path.join(modelDir, m), models)
     
@@ -109,7 +124,8 @@ def write_table_rows(modelDir, pairs, outFile):
       #print modelFiles[i]
       #print models[i]
       #print varRange2[i]
-      writeData(modelFiles[i], models[i], outFile, varRange2[i], commonTime)
+      writeData(modelFiles[i], models[i], outFile, varRange2[i], commonTime, \
+          nameSuffix)
       
     
     outFile.write('<tr style="border-bottom:3px solid black">' + \
@@ -147,11 +163,11 @@ def write_table_end(outFile):
 def write_table(tableName, modelDir, pairs, nameSuffix):
   outFile = open(tableName, 'w')
   write_table_start(outFile)
-  write_table_rows(modelDir, pairs, outFile)
+  write_table_rows(modelDir, pairs, outFile, nameSuffix)
   write_table_end(outFile)
 
 #generate a plot for a single model
-def plot_variable(scriptsDir, modelFiles, var1, var2):
+def plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
   csvs = map(lambda m: \
       os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
   
@@ -172,7 +188,7 @@ def plot_variable(scriptsDir, modelFiles, var1, var2):
   xRange = ["xMin=%s"%bounds[0][2*var2],"xMax=%s"%bounds[1][2*var2+1]]
   yRange = ["yMin=%s"%bounds[0][2*var1],"yMax=%s"%bounds[1][2*var1+1]]
   
-  nameSuffix = ["suffix=%s_t_%s"%(var1,time)]
+  imgSuffix = ["suffix=%s_%s_t_%s"%(nameSuffix, var1,time)]
   
   #print xRange
   #print yRange
@@ -181,7 +197,7 @@ def plot_variable(scriptsDir, modelFiles, var1, var2):
     if not os.path.isfile(csv):
       continue
     args = [os.path.join(scriptsDir, 'gnuplot_var.py')] + \
-        [csv] + ['var1=%s'%var1, 'var2=%s'%var2] + [tend] + xRange + yRange + nameSuffix
+        [csv] + ['var1=%s'%var1, 'var2=%s'%var2] + [tend] + xRange + yRange + imgSuffix
     p = subprocess.Popen(args)
     p.wait()
 
@@ -195,9 +211,9 @@ def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
     if len(modelFiles) == 3:
       modelFiles = modelFiles[:-1]
     print modelFiles
-    dim = len(fs.getParam(modelFiles[0], "state var").split(','))
+    dim = getDimension(modelFiles[0])
     for i in range(1, dim+1):
-      plot_variable(scriptsDir, modelFiles, i, 0) #0 is the time
+      plot_variable(scriptsDir, modelFiles, i, 0, nameSuffix) #0 is the time
 
 
 

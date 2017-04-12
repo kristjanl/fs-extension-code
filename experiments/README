@@ -1,26 +1,36 @@
 Running experiments consist of running 2 scripts:
-1) run_flowstar.py
-2) run_comparision.py
-
-Both of these operate on models given by pairs in the variable 'pairs', the
-first model of the pair is the model without shrink wrapping and the second is
-the one with shrink wrapping.
-For example with the line:
-  pairs = pairs + [('moore_rot_plain.model', 'moore_rot_sw_10.model')]
-'moore_rot_plain.model' denotes the model without shrink wrapping and
-'moore_rot_sw_10.model' denotes the model with shrink wrapping
+1) running flowstar to generate csv files run_flowstar.py
+2) using csv files to generate html table detailing experiments
 
 1) run_flowstar.py
-  runs on flowstar on all the files to generate the csv files (containing the 
-  the variable interval, variable range and remainder term size for all the
-  variables) in the directory ./csvs
-  (some models are commented out, since running them takes a lot of time).
+  csv files should be located in experiments/csvs (running flowstar in the
+  experiments folder guarantees that).
+  Flowstar can be run either separately or by using run_flowstar.py script
+  (models are group in that script and data will be generated for all of them, 
+  some models do that a lot of time to complete).
   
-2) run_comparision.py
-  a) Generates experiments.html file from all the csvs
-  b) Generates images containing the interval boxes of the first variable up
-     the point which both the model with shrink wrapping and the model without
-     shrink wrapping managed to integrate to.
+2) 4 scripts generate html files: compare_plain_step.py, compare_plain_remainder.py, 
+  compare_step_remainder.py, compare_step_infl.py (generate 
+  experiments_plain_step.html, experiments_plain_remainder.html, 
+  experiments_step_remainder.html and step_infl.py, respectively). 
+  All the html files group models by pairs, compering 2 types of algorithms
+  'plain' denotes regular integration (no shrink wrapping), 'step' denotes 
+  shrink wrapping after a fixed number of integration steps (10), 'remainder'
+  denotes shrink wrapping after remainder is sufficiently big and 'infl' denotes
+  that point initial conditions were handled by enlarging them to a small
+  interval (instead of introducing a new parameter, like 'step' and 'remainder' 
+  are handling them).
+  All these scripts operate on models given by pairs in the variable 'pairs', the
+  first model of the pair is the model is the type of model denoted by the first
+  type part of the file name and second is the second part.
+  For example with the line:
+    pairs = pairs + [('moore_rot_plain.model', 'moore_rot_sw_10.model')]
+  'moore_rot_plain.model' denotes the model without shrink wrapping and
+  'moore_rot_sw_10.model' denotes the model with shrink wrapping
+  Both of these are then compared in the html file.
+  All 4 scripts generate the html file and images for the flowpipes of all the
+  variables up to the time that both methods could integrate successfully
+  (images use the same scales).
      
      
 * The models are taken from 
