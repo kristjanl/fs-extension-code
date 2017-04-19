@@ -922,16 +922,16 @@ namespace smallComp {
       const OutputWriter writer, int order, double step, double time, 
       vector<Interval> step_end_exp_table, TaylorModelVec tmv, 
       const vector<HornerForm> & ode, vector<Interval> domain) {
-    int old = logger.reset();
-    logger.disable();
-    logger.log("singleStepPrepareIntegrate <");
-    logger.inc();
     //if component has already been solved return
     if(component.isSolved) {
       //logger.log("solved already");
       //logger.listVi("component vars: ", component.compVars);
       return;
     }
+    int old = logger.reset();
+    logger.disable();
+    logger.log("singleStepPrepareIntegrate <");
+    logger.inc();
     for(vector<CompDependency *>::iterator it = component.dependencies.begin(); 
         it < component.dependencies.end(); it++) {
       //logger.log(sbuilder() << "link: " << (*it)->linkVar);
@@ -991,6 +991,281 @@ namespace smallComp {
     //bar12();
     //shrinkWrap(component, domain, step_end_exp_table);
   }
+  
+  
+	void findDecreasingRemainder(TaylorModelVec & p, vector<Interval> & pPolyRange, 
+	    vector<RangeTree *> & trees, MyComponent & comp, 
+	    vector<Interval> & step_exp_table, int order, 
+	    const Interval & cutoff_threshold, vector<Interval> & cutoffInt) {
+	  int old = logger.reset();
+	  logger.log("findDecreasingRemainder <");
+	  logger.inc();
+	  
+	  //number of taylor model parameters
+    int paramCount = comp.initSet.tms[0].getParamCount();
+    //number of system variables (in the component)
+    int varCount = comp.initSet.tms.size();
+	  
+	  //need to find remainders more efficiently
+	  p.polyRangeNormal(pPolyRange, step_exp_table);
+	  
+	  //initial guess for the remainder
+	  vector<Interval> guess;
+	  for(int i = 0; i < varCount; i++)
+	    guess.push_back(Interval(-1e-2,1e-2)); //TODO use remainder estimation maybe
+	  
+	  //set the remainder to be initial guess
+	  for(int i = 0; i < varCount; i++) {
+		  p.tms[i].remainder = guess[i];
+	  }
+	  
+	  //evaluate this one seperately to get the cutoff measures
+	  TaylorModelVec tmvTemp;
+	  p.Picard_ctrunc_normal(tmvTemp, trees, comp.initSet, pPolyRange, comp.odes, 
+	      step_exp_table, paramCount, order, cutoff_threshold);
+	  
+	  //should be because of the turncated parts and uncertainties (?)
+	  for(int i=0; i < varCount; i++) {
+		  Polynomial polyTemp;
+		  polyTemp = tmvTemp.tms[i].expansion - p.tms[i].expansion;
+
+		  Interval intTemp;
+		  polyTemp.intEvalNormal(intTemp, step_exp_table);
+		  
+		  cutoffInt.push_back(intTemp);
+		  
+      tmvTemp.tms[i].remainder += intTemp;
+      p.tms[i].remainder = tmvTemp.tms[i].remainder;
+	  }
+	  
+	  bool notSubset = false;
+	  for(int i=0; i < varCount; i++) {
+	    //logger.log(guess[i].toString());
+	    //logger.log(tmvTemp.tms[i].remainder.toString());
+		  if(tmvTemp.tms[i].remainder.subseteq(guess[i]) == false ) {
+		    logger.log("not subset");
+		    notSubset = true;
+		    guess[i] *= 2;
+		  }
+	  }
+	  logger.logVI("guess", guess);
+	  
+	  //new remainders are stored here
+		vector<Interval> newRemainders;
+		
+		int MAX_TRIES = 40;
+	  for(int j = 0; j < MAX_TRIES; j++) {
+	    logger.log(sbuilder() << "j: " << j);
+	    
+		  for(int i = 0; i < varCount; i++) {
+		    p.tms[i].remainder = guess[i];
+		  }
+	    
+	    
+	    //logger.logVI("nrb", newRemainders);
+	    //logger.logTMV("pb", p);
+  		p.Picard_only_remainder(newRemainders, trees, comp.initSet, comp.odes, step_exp_table[1]);
+	    //logger.logTMV("pa", p);
+	    
+	    logger.logVI("guess", guess);
+	    logger.logVI("newre", newRemainders);
+	    
+	    
+	    notSubset = false;
+		  for(int i = 0; i < varCount; i++) {
+		    newRemainders[i] += cutoffInt[i];
+		    if(newRemainders[i].subseteq(guess[i]) == false ) {
+		      logger.log("not subset");
+		      notSubset = true;
+		      guess[i] *= 2;
+		    }
+		  }
+		  if(notSubset == false)
+		    break;
+		}
+    if(notSubset) {
+      throw IntegrationException("max increase couldn't find a remainder");
+    }
+		
+	  for(int i = 0; i < varCount; i++) {
+	    p.tms[i].remainder = newRemainders[i];
+	  }
+	  logger.logTMV("last", p);
+	  
+	  logger.dec();
+	  logger.log("findDecreasingRemainder >");
+	  logger.restore(old);
+	}
+	
+	
+	void refineRemainder(TaylorModelVec & p, vector<Interval> & pPolyRange, 
+	    vector<RangeTree *> & trees, MyComponent & comp, 
+	    vector<Interval> & step_exp_table, int order, 
+	    const Interval & cutoff_threshold, vector<Interval> & cutoffInt) {
+	  int old = logger.reset();
+	  logger.log("refineRemainder <");
+	  logger.inc();
+	  
+	  //number of taylor model parameters
+    int paramCount = comp.initSet.tms[0].getParamCount();
+    //number of system variables (in the component)
+    int varCount = comp.initSet.tms.size();
+	  
+	  
+	  //new remainders are stored here
+		vector<Interval> newRemainders;
+		
+	  bool stop = true;
+	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
+		  p.Picard_only_remainder(newRemainders, trees, comp.initSet, comp.odes, step_exp_table[1]);
+      
+	    for(int i = 0; i < varCount; i++)
+	      newRemainders[i] += cutoffInt[i];
+	    
+	    stop = true;
+	    for(int i = 0; i < varCount; i++)
+	      if(p.tms[i].remainder.widthRatio(newRemainders[i]) <= STOP_RATIO) {
+          //logger.log("redoing");
+          stop = false;
+          break;
+        }
+	    
+	    //logger.logTMVRem("pre", p);
+	    //logger.logVI("new", newRemainders);
+	    logger.log(newRemainders[0].toString());
+	    
+	    for(int i = 0; i < varCount; i++) {
+	      p.tms[i].remainder = newRemainders[i];
+	    }
+	    if(stop)
+	      break;
+	  }
+	  if(stop == false)
+	    throw IntegrationException(sbuilder() << "max refinement steps");
+	  	  
+	  logger.dec();
+	  logger.log("refineRemainder >");
+	  logger.restore(old);
+	}
+	
+	void precond(TaylorModelVec & tmv, vector<Interval> & step_end_exp_table) {
+	  logger.log("precond");
+	  
+	  logger.logTMV("tmv", tmv);
+	  
+	  
+	  
+	  //number of taylor model parameters
+    int paramCount = tmv.tms[0].getParamCount();
+    //number of system variables (in the component)
+    int varCount = tmv.tms.size();
+	  
+	  logger.log(paramCount);
+	  logger.log(varCount);
+	  Matrix A(varCount,varCount), AT(varCount, varCount);
+		preconditionQR(A, tmv, varCount, paramCount);
+		
+	  logger.logMatrix(A);
+	  A.transpose(AT);
+	  logger.logMatrix(AT);
+	  
+	  vector<Interval> center;
+	  tmv.constant(center);
+	  logger.logVI("center", center);
+	  
+	  TaylorModelVec c(tmv), lin, nl, rem;
+	  tmv.getParts(c, lin, nl, rem);
+	  
+	  logger.logTMV("c", c);
+	  logger.logTMV("lin", lin);
+	  logger.logTMV("nl", nl);
+	  logger.logTMV("rem", rem);
+	  
+	  nl.linearTrans_assign(AT);
+	  rem.linearTrans_assign(AT);
+	  lin.linearTrans_assign(AT);
+	  
+	  TaylorModelVec rightPart(lin);
+	  rightPart.add_assign(nl);
+	  rightPart.add_assign(rem);
+	  
+	  
+	  vector<Interval> rightBound;
+		rightPart.intEvalNormal(rightBound, step_end_exp_table);
+	  logger.logTMV("rightPart", rightPart);
+	  logger.logVI("rightBound", rightBound);
+	  
+	  //TODO shift this to be around 0?
+	  
+	  Matrix S(varCount, varCount);
+  	Matrix invS(varCount, varCount);
+	  for(int i = 0; i < varCount; i++) {
+	    Interval intMag;
+	    rightBound[i].mag(intMag);
+	    double dMag = intMag.sup();
+	    if(intMag.subseteq(Interval()) == false) {
+			  S.set(dMag, i, i);
+			  invS.set(1/dMag, i, i);
+		  }
+		  else {
+			  S.set(0, i, i);
+			  invS.set(0, i, i); //doesn't matter if 0 or 1
+			}
+	  }
+	  
+	  logger.logMatrix(S);
+	  logger.logMatrix(invS);
+	  
+	  rightPart.linearTrans_assign(invS);
+		rightPart.intEvalNormal(rightBound, step_end_exp_table);
+	  logger.logTMV("rightPart", rightPart);
+	  logger.logVI("rightBound", rightBound);
+	  
+	  
+	  
+	}
+  
+  void foo(MyComponent & comp, int order, const Interval cutoff_threshold, 
+      vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table) {
+    logger.log("foo");
+    
+    //variable when picard approximation is stored
+    TaylorModelVec p = TaylorModelVec(comp.initSet);
+    
+    int paramCount = comp.initSet.tms[0].getParamCount();
+    int varCount = comp.initSet.tms.size();
+    
+    //find the picard polynomial
+    for(int i = 1; i <= order; i++)
+      p.Picard_no_remainder_assign(comp.initSet, comp.odes, paramCount, i, cutoff_threshold);
+    p.cutoff(cutoff_threshold);
+    
+    
+    logger.logTMV("p", p);
+    
+	  vector<Interval> pPolyRange;
+	  vector<RangeTree *> trees;
+	  vector<Interval> cutoffInt;
+	  
+	  findDecreasingRemainder(p, pPolyRange, trees, comp, step_exp_table, order, 
+	      cutoff_threshold, cutoffInt);
+	  
+	  refineRemainder(p, pPolyRange, trees, comp, step_exp_table, order, 
+	      cutoff_threshold, cutoffInt);
+	  
+    logger.logTMV("p", p);
+    
+    //TaylorModelVec temp;
+    //p.evaluate_t(temp, step_end_exp_table);
+    
+    parseSetting.addVar("t"); parseSetting.addVar("a"); parseSetting.addVar("b");
+    TaylorModelVec temp = parseTMV(
+        "my models{0.904667 + 0.0505*a + 0.005*b + [-5.09307e-5,7.86167e-5],-0.909333+0.0095*a+0.0505*b + 0.00025*a^2 + [-1.75707e-4,1.60933e-4]}");
+    
+    precond(temp, step_end_exp_table);
+	  
+    exit(0);
+  }
 }
 
 SmallCompReachability::SmallCompReachability()
@@ -1038,12 +1313,14 @@ void SmallCompReachability::myRun() {
   logger.restore(old);
 }
 
+
 void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const {
   logger.log("sc reach <");
   logger.inc();
   logger.log(sbuilder() << "# of components: " <<components.size());
   
   vector<MyComponent *> comps = createComponents(components, hfOde);
+  
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
@@ -1076,7 +1353,12 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
   //all.log();
   
-   
+  
+  MyComponent c = *comps.at(0);
+  
+  smallComp::foo(*comps.at(0), order, cutoff_threshold, step_exp_table, 
+      step_end_exp_table);
+  
   //single step integration
   //for(double t = 0; t < time; t+= step) {
   

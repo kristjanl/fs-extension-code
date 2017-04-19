@@ -12118,9 +12118,13 @@ void preconditionQR(Matrix & result, const TaylorModelVec & x0, const int rangeD
 			matCoefficients.set(intCoefficients[i][j].midpoint(), i, j-1);
 		}
 	}
+	
+	//logger.logMatrix(matCoefficients);
 
 	matCoefficients.sortColumns();
+	//logger.logMatrix(matCoefficients);
 	matCoefficients.QRfactor(result);
+	//logger.logMatrix(result);
 }
 
 Interval rho(const TaylorModelVec & tmv, const vector<Interval> & l, const vector<Interval> & domain)

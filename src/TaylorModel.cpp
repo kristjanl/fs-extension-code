@@ -3966,6 +3966,63 @@ void TaylorModel::getLinearPart2(vector<int> variables) const {
   }
 }
 
+void TaylorModel::getParts(TaylorModel & constant, TaylorModel & linear, 
+      TaylorModel & nonLinear, TaylorModel & remainder) const {
+  logger.log("tm parts");
+  
+  logger.logTM("tm", *this);
+  
+  list<Monomial> l = expansion.monomials;
+  list<Monomial> cMonos;
+  list<Monomial> linMonos;
+  list<Monomial> nlMonos;
+  for (list<Monomial>::iterator it = l.begin(); it != l.end(); ++it) {
+    //logger.log("--------------------------------");
+    int degree = it->degree();
+    
+    if(degree == 0) {
+      cMonos.push_back(*it);
+    }
+    if(degree == 1) {
+      linMonos.push_back(*it);
+    }
+    if(degree > 1) {
+      nlMonos.push_back(*it);
+    }
+  }
+  Polynomial linP(linMonos);
+  
+  constant.expansion = Polynomial(cMonos);
+  constant.remainder = Interval();
+  
+  linear.expansion = Polynomial(linMonos);
+  constant.remainder = Interval();
+  
+  nonLinear.expansion = Polynomial(nlMonos);
+  constant.remainder = Interval();
+  
+  remainder.expansion = Polynomial();
+  remainder.remainder = this->remainder;
+}
+void TaylorModelVec::getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
+      TaylorModelVec & nonLinear, TaylorModelVec & remainder) const {
+  constant.tms.clear();
+  linear.tms.clear();
+  nonLinear.tms.clear();
+  remainder.tms.clear();
+  
+  for(int i = 0; i < tms.size(); i++) {
+    TaylorModel c, lin, nl, rem;
+    tms[i].getParts(c, lin, nl, rem);
+    
+    constant.tms.push_back(c);
+    linear.tms.push_back(lin);
+    nonLinear.tms.push_back(nl);
+    remainder.tms.push_back(rem);
+  }
+}
+
+
 bool TaylorModelVec::compare(const TaylorModelVec & tmv, 
       const vector<Interval> & domain) const {
   int old = logger.reset();

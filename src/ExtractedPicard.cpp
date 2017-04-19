@@ -46,7 +46,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   //logger.logVI("step", step_end_exp_table);
   //logger.logVI("est", estimation);
 	logger.log(sbuilder() << ode.size());
-
+  
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0; //construct a empty taylormodel vec
   //logger.log(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));

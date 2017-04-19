@@ -28,6 +28,8 @@ void mylogger2::logVI(string name, vector<Interval> v) {
 	for (unsigned i=0; i<v.size(); i++) {
 		logger.log(sbuilder() << name <<"[" << i << "] = " << v.at(i).toString());
 	}
+  if(v.size() == 0)
+    logger.log(sbuilder() << name << " is empty");
 }
 
 void mylogger2::logVi(string name, vector<int> v) {
@@ -73,10 +75,34 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
 	for (unsigned i=0; i<dim; i++) {
     int paramDim = tmv.tms.at(i).getParamCount();
     //logger.log(paramDim);
-    logger.log(sbuilder() << name << "[" << i << "]=" << 
+    logger.log(sbuilder() << name << "[" << i << "] = " << 
         tmv.tms.at(i).toString(getVNames(paramDim)));
 	}
 }
+
+
+void mylogger2::logTMVRem(string name, TaylorModelVec tmv) {
+	if(disabled > 0)
+		return;
+  
+  if(tmv.tms.size() == 0)
+    logger.log(sbuilder() << name << " is empty");
+  
+	for (unsigned i=0; i<tmv.tms.size(); i++) {
+    logger.log(sbuilder() << name << "[" << i << "] = " << 
+        tmv.tms[i].remainder.toString());
+	}
+}
+
+void mylogger2::logVHF(string name, vector<HornerForm> hfs) {
+  if(disabled > 0)
+    return;
+  for(int i = 0; i < hfs.size(); i++) {
+    logger.log(sbuilder() << name << "[" << i << "]: " << hfs[i].toString());
+  }
+}
+
+
 void mylogger2::logM(Monomial m) {
 	if(disabled > 0)
 		return;

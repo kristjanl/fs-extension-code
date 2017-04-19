@@ -37,9 +37,11 @@ class mylogger2 {
 	public:
 		void logVI(vector<Interval>);
 		void logVI(string, vector<Interval>);
+		void logVHF(string, vector<HornerForm>);
 		void logVi(string, vector<int>);
 		void listVi(string, vector<int>);
 		void logTMV(string, TaylorModelVec);
+		void logTMVRem(string, TaylorModelVec);
 		void logTM(string, TaylorModel);
     void logM(Monomial m);
     void logMatrix(Matrix m);

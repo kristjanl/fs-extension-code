@@ -134,6 +134,10 @@ public:
   void getLinearPart(Interval ret[], vector<int> variables) const;
   void getLinearPart2(vector<int> variables) const;
   
+  //partitions the TaylorModel into constant, linear, nonlinear and remainder parts
+  void getParts(TaylorModel & constant, TaylorModel & linear, 
+      TaylorModel & nonLinear, TaylorModel & remainder) const;
+  
   bool isClose(const TaylorModel & tm, double d) const;
 
 	TaylorModel & operator = (const TaylorModel & tm);
@@ -220,6 +224,7 @@ public:
 	void mul(TaylorModelVec & result, const int varIndex, const int degree) const;
 	void mul_assign(const int varIndex, const int degree);
 
+  //multiplies TMV from the left using A (A*tmv)
 	void linearTrans(TaylorModelVec & result, const Matrix & A) const;		// linear transformation
 	void linearTrans_assign(const Matrix & A);
 
@@ -272,6 +277,10 @@ public:
   
   bool isClose(const TaylorModelVec & tmv, double d) const;
   TaylorModelVec addNParams(int n) const;
+  
+  //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts
+  void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
+      TaylorModelVec & nonLinear, TaylorModelVec & remainder) const;
 
 	TaylorModelVec & operator = (const TaylorModelVec & tmv);
 };
