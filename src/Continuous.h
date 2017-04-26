@@ -213,6 +213,7 @@ class SmallCompReachability;
 class SmallCompSystem;
 class SimpleImplReachability;
 class SimpleImplSystem;
+class ShrinkWrappingCondition;
 
 class ContinuousReachability		// The reachability analysis of continuous systems
 {

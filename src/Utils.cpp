@@ -1,8 +1,5 @@
 #include "Utils.h"
 
-void foo() {
-  cout << "aa" << endl;
-}
 
 ShrinkWrappingCondition::ShrinkWrappingCondition(int steps): 
       steps(steps) {
@@ -62,5 +59,16 @@ bool ShrinkWrappingCondition::checkApplicability(vector<MyComponent *> comps,
 int ShrinkWrappingCondition::getCount() const {
   return count;
 }
+
+
+MySettings::MySettings(OutputWriter & writer, const int order, 
+      const double step, const double time, const vector<Interval> & estimation, 
+      const vector<Interval> & step_end_exp_table, 
+      const vector<Interval> & domain)
+      : writer(writer), order(order), step(step), time(time), 
+      estimation(estimation), step_end_exp_table(step_end_exp_table), 
+      domain(domain) {
+}
+
 
 

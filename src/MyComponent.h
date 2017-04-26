@@ -11,6 +11,16 @@
 
 class CompDependency;
 
+class PrecondModel {
+  public:
+    PrecondModel(TaylorModelVec left, TaylorModelVec right);
+    
+    TaylorModelVec left;
+    TaylorModelVec right;
+    
+    //TaylorModelVec composed(MySettings & settings);
+};
+
 class MyComponent {
   public:
     MyComponent();
@@ -49,6 +59,7 @@ class MyComponent {
     vector<HornerForm> odes;
     vector<Interval> dom;
     vector<TaylorModelVec> pipes;
+    vector<PrecondModel> pipePairs;
     void addDependency(int linkVar, MyComponent *pComp);
     
     vector< vector<int> > previousMappers();

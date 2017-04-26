@@ -6,10 +6,10 @@
 #include "MyLogger.h"
 #include "MyComponent.h"
 #include "Interval.h"
+#include "OutputWriter.h"
+#include "Continuous.h"
 
 using namespace std;
-
-void foo();
 
 class ShrinkWrappingCondition {
 	public:
@@ -25,6 +25,20 @@ class ShrinkWrappingCondition {
     int count;
 };
 
-
+class MySettings {
+  public:
+    OutputWriter & writer;
+    const int order;
+    const double step; 
+    const double time;
+    const vector<Interval> & estimation;
+    const vector<Interval> step_end_exp_table;
+    const vector<Interval> domain;
+    MySettings(OutputWriter & writer, const int order, const double step, 
+        const double time, const vector<Interval> & estimation, 
+        const vector<Interval> & step_end_exp_table, 
+        const vector<Interval> & domain);
+  
+};
 
 #endif /* UTILS_H_ */

@@ -5,7 +5,7 @@ continuous reachability
   setting
   {
     fixed steps 0.1
-    time 10.0
+    time 1.0
     remainder estimation 1e-3
     shrink wrapping 0
     gnuplot interval x1,x2
@@ -20,8 +20,8 @@ continuous reachability
 
   poly ode 1
   {
-    x1' = x1
-    x2' = x2 * x1
+    x1' = -x1
+    x2' = -x2 * x1
   }
 
   init

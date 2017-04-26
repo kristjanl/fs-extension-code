@@ -11,6 +11,7 @@
 #include "Matrix.h"
 #include "Exceptions.h"
 #include "Utils.h"
+#include "Transformer.h"
 
 namespace smallComp {
   void bar12();
@@ -45,5 +46,6 @@ class SmallCompReachability: public ContinuousReachability {
     SmallCompReachability();
     void myRun();
 };
+
 
 #endif /* SMALLCOMP_H_ */

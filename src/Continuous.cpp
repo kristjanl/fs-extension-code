@@ -12119,7 +12119,11 @@ void preconditionQR(Matrix & result, const TaylorModelVec & x0, const int rangeD
 		}
 	}
 	
-	//logger.logMatrix(matCoefficients);
+	/*
+	logger.log("linear coefficients <");
+	logger.logMatrix(matCoefficients);
+	logger.log("linear coefficients >");
+	//*/
 
 	matCoefficients.sortColumns();
 	//logger.logMatrix(matCoefficients);
