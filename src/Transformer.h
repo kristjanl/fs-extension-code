@@ -10,13 +10,19 @@
 #include "Continuous.h"
 #include "Utils.h"
 
+class MySettings;
+class OutputWriter;
+
 using namespace std;
 
 class Transformer {
   public:
+    Transformer(bool isPreconditioned, bool isWrapper);
     virtual void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings) = 0;
     void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings);
+    const bool isPreconditioned;
+    const bool isWrapper;
 };
 
 
@@ -35,28 +41,20 @@ class QRTransformer: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
 };
+
+class IdentityTransformer: public Transformer {
+  public:
+    IdentityTransformer();
+    void transform(MyComponent & all, vector<MyComponent *> & comps, 
+        MySettings & settings);
+};
+
 class NullTransformer: public Transformer {
   public:
     NullTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
 };
-
-//TODO ugly hack, ask about it
-class Picker: public Transformer {
-  public:
-    Picker(int type, ShrinkWrapper & sw, QRTransformer & qr, 
-      NullTransformer & null);
-    void transform(MyComponent & all, vector<MyComponent *> & comps, 
-        MySettings & settings);
-    int type;
-    ShrinkWrapper & sw;
-    QRTransformer & qr;
-    NullTransformer & null;
-};
-const int PICK_SW = 0;
-const int PICK_QR = 1;
-const int PICK_NULL = 2;
 
 
 #endif /* TRANSFORMER_H_ */

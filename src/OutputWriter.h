@@ -14,6 +14,8 @@
 class TaylorModelVec;
 class Interval;
 
+class Transformer;
+
 class OutputWriter {
 	public:
 		OutputWriter(string name, int var1, int var2);
@@ -23,7 +25,10 @@ class OutputWriter {
     void writeFlowpipe(const vector<int> comp, const Interval & timeInt, 
         const TaylorModelVec & tmv, vector<Interval> domain) const;
     void addCompomentData(MyComponent & comp, vector<Interval> & domain);
-    void addComponents(vector<MyComponent *> comps, vector<Interval> & domain);
+    void addComponents(vector<MyComponent *> comps, vector<Interval> & domain, 
+        MyComponent & all, bool isPreconditioned);
+    void addPreconditioned(vector<MyComponent *> comps, vector<Interval> & domain, 
+        MyComponent & all);
     void writeCSV();
     void writeInfo();
 		void finish();

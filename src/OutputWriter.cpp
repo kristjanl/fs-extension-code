@@ -80,8 +80,47 @@ void OutputWriter::writeFlowpipe(const vector<int> comp, const Interval & timeIn
   this->writeFlowpipe(timeInt, tmv, domain);
 }
 
+
+void OutputWriter::addPreconditioned(vector<MyComponent *> comps, 
+    vector<Interval> & domain, MyComponent & all) {
+  /*TODO
+  logger.log(comps.size());
+  logger.log(comps[0]->pipes.size());
+  logger.logTMV("left", all.pipePairs[0]->left);
+  exit(0);
+  */
+  if(all.output.size() == 0)
+    return;
+  int dim = all.output[0].tms.size();
+  
+  //2 for time + (per dim) 2 for interval + remainder + range
+  int csvSize = 2 + 4*dim;
+  for(int i = 0; i < csvSize; i++) {
+    data2.push_back(vector<string>());
+  }
+  
+  for(int i = 0; i < all.output.size(); i++) {
+    Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
+    data2.at(0).push_back(timeInt.getLower());
+    data2.at(1).push_back(timeInt.getHigher());
+  }
+  
+  for(int i = 0; i < all.output.size(); i++) {
+    TaylorModelVec tmv = all.output[i];
+    for(int var = 0; var < tmv.tms.size(); var++) {
+      Interval pipe = evalVarToInterval(tmv, domain, var);
+      
+      data2.at((var +1)*2).push_back(pipe.getLower());
+      data2.at((var +1)*2+1).push_back(pipe.getHigher());
+      data2.at((dim + 1)*2 + var).push_back(sbuilder() << pipe.width());
+      data2.at((dim + 1)*2 + dim + var).push_back(
+          sbuilder() << tmv.tms[var].remainder.width());
+    }
+  }
+}
+
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
-    vector<Interval> & domain) {
+    vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
   logger.log("adding components");
   
   //for time
@@ -98,10 +137,10 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
     data.at(0).push_back(domain.at(0) + Interval(i*domain.at(0).sup()));
   }
   
-  
-  
-  
-  
+  if(isPreconditioned) {
+    addPreconditioned(comps, domain, all);
+    return;
+  }
   
   logger.inc();
   int dim = 0;

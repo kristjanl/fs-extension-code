@@ -13650,6 +13650,7 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
   
   problem.precondition = precondition;
   problem.swChecker = swChecker;
+  problem.transformer = transformer;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13709,6 +13710,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
   
   problem.precondition = precondition;
   problem.swChecker = swChecker;
+  problem.transformer = transformer;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13739,6 +13741,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
   
   SmallCompSystem* pSystem = new SmallCompSystem(system, components);
   pSystem->swChecker = swChecker;
+  pSystem->transformer = transformer;
   
   problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
@@ -13768,6 +13771,7 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
   
   problem.precondition = precondition;
   problem.swChecker = swChecker;
+  problem.transformer = transformer;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;

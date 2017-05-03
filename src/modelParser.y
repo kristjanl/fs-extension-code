@@ -56,7 +56,7 @@
 %token MIN MAX
 %token REMEST
 %token INTERVAL OCTAGON GRID
-%token QRPRECOND IDPRECOND SHRINRWRAPPING REM
+%token QRPRECOND IDPRECOND SHRINRWRAPPING REM NOPRECOND
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -2533,17 +2533,28 @@ IDENT ':' NUM
 
 precondition: QRPRECOND
 {
-	logger.log("QR1");
+	logger.log("qr precond");
 	logger.log(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
+  Transformer *transformer = new QRTransformer();
+  continuousProblem.transformer = transformer;
 }
 |
 IDPRECOND
 {
-	logger.log("QR2");
+	logger.log("id precond");
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
+  Transformer *transformer = new IdentityTransformer();
+  continuousProblem.transformer = transformer;
+}
+|
+NOPRECOND
+{
+	logger.log("no precond");
+  Transformer *transformer = new NullTransformer();
+  continuousProblem.transformer = transformer;
 }
 |
 SHRINRWRAPPING NUM
@@ -2552,6 +2563,9 @@ SHRINRWRAPPING NUM
 	continuousProblem.precondition = SHRINK_WRAPPING;
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
 	continuousProblem.swChecker = cond;
+  Transformer *transformer;
+  transformer = new ShrinkWrapper(cond);
+  continuousProblem.transformer = transformer;
 }
 |
 SHRINRWRAPPING REM
@@ -2560,6 +2574,9 @@ SHRINRWRAPPING REM
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
 	continuousProblem.precondition = SHRINK_WRAPPING;
 	continuousProblem.swChecker = cond;
+  Transformer *transformer;
+  transformer = new ShrinkWrapper(cond);
+  continuousProblem.transformer = transformer;
 }
 ;
 

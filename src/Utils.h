@@ -27,18 +27,29 @@ class ShrinkWrappingCondition {
 
 class MySettings {
   public:
-    OutputWriter & writer;
+    OutputWriter *writer;
     const int order;
     const double step; 
     const double time;
     const vector<Interval> & estimation;
     const vector<Interval> step_end_exp_table;
     const vector<Interval> domain;
-    MySettings(OutputWriter & writer, const int order, const double step, 
+    MySettings(OutputWriter *writer, const int order, const double step, 
         const double time, const vector<Interval> & estimation, 
         const vector<Interval> & step_end_exp_table, 
         const vector<Interval> & domain);
   
+};
+
+
+class PrecondModel {
+  public:
+    PrecondModel(TaylorModelVec left, TaylorModelVec right);
+    
+    TaylorModelVec left;
+    TaylorModelVec right;
+    
+    TaylorModelVec composed(MySettings *settings);
 };
 
 #endif /* UTILS_H_ */

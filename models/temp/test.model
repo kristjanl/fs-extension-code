@@ -7,7 +7,7 @@ continuous reachability
     fixed steps 0.1
     time 1.0
     remainder estimation 1e-3
-    shrink wrapping 0
+    QR precondition
     gnuplot interval x1,x2
     fixed orders 4
     cutoff 1e-15

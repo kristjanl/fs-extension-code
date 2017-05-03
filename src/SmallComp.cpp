@@ -695,6 +695,28 @@ void SmallCompReachability::myRun() {
   logger.restore(old);
 }
 
+void foo2(vector<MyComponent *> comps, MyComponent & all, 
+      Transformer *transformer, MySettings *settings) {
+  logger.log("foo2");
+  
+  if(transformer->isPreconditioned == false)
+    return;
+  
+  for(int i = 0; i < all.pipes.size(); i++) {
+    TaylorModelVec & left = all.pipes[i];
+    if(i == 0) {
+      continue;
+      all.output.push_back(left);
+    }
+    TaylorModelVec & right = all.pipePairs[i-1]->right;  
+    TaylorModelVec composed;
+    vector<Interval> rightRange;
+	  right.polyRange(rightRange, settings->domain);
+	  left.insert_ctrunc(composed, right, rightRange, settings->domain, settings->order, 0);
+	  all.output.push_back(composed);
+  }
+}
+
 void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const {
   logger.log("sc reach <");
   logger.inc();
@@ -720,7 +742,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   vector<Interval> domain = initialSet.domain;
   domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
   
-  MySettings settings(writer, order, step, step, estimation, step_end_exp_table, domain);
+  MySettings settings(&writer, order, step, step, estimation,
+      step_end_exp_table, domain);
   vector<TaylorModelVec> pipes;
   
   if(precondition == SHRINK_WRAPPING) {
@@ -742,16 +765,17 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   //single step integration
   //for(double t = 0; t < time; t+= step) {
   
+  /*
   ShrinkWrapper sw = ShrinkWrapper(swChecker);
   QRTransformer qr = QRTransformer();
   NullTransformer null = NullTransformer();
   
-  int type = PICK_NULL;
-  if(precondition == SHRINK_WRAPPING)
-    type = PICK_SW;
-  type = PICK_QR;
-  Picker picker(type, sw, qr, null);
+  Transformer *transformer;
   
+  transformer = new QRTransformer();
+  transformer = new ShrinkWrapper(swChecker);
+  //transformer = new NullTransformer();
+  */
   clock_t integrClock = clock();
   double t;
   for(t = 0; t < time; t+= step) {
@@ -764,9 +788,15 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
         smallComp::singleStepPrepareIntegrate(**it, settings);
         //logger.logTMV("0", (*it)->pipes.at(0));
       }
-      picker.transform(all, comps, settings);
+      transformer->transform(all, comps, settings);
+      logger.log(all.pipes.size());
       logger.log(all.pipePairs.size());
-      //exit(0);
+      
+      //logger.logTMV("p:l", all.lastPre()->left);
+      //logger.logTMV("p:r", all.lastPre()->right);
+      
+      //logger.logTMV("comp", all.lastPre()->composed(&settings));
+      
       //sw.evaluateStepEnd(comps, settings);
       //all, comps, settings
       
@@ -809,9 +839,13 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
   logger.log(sbuilder() << "computation time: " << integrTime);
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
-  writer.info.push_back(sbuilder() << "shrink wraps: " << swChecker->getCount());
+  if(transformer->isWrapper)
+    writer.info.push_back(sbuilder() << "shrink wraps: " << swChecker->getCount());
+  else
+    writer.info.push_back(sbuilder() << "shrink wraps: 0");
   
-  writer.addComponents(comps, domain);
+  foo2(comps, all, transformer, &settings);
+  writer.addComponents(comps, domain, all, transformer->isPreconditioned);
   writer.writeCSV();
   writer.writeInfo();
   

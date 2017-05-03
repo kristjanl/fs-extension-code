@@ -214,6 +214,7 @@ class SmallCompSystem;
 class SimpleImplReachability;
 class SimpleImplSystem;
 class ShrinkWrappingCondition;
+class Transformer;
 
 class ContinuousReachability		// The reachability analysis of continuous systems
 {
@@ -224,6 +225,7 @@ public:
 	double time;					// the time horizon for the reachability analysis
 	int precondition;				// the preconditioning technique
 	ShrinkWrappingCondition *swChecker;				// determines whether to use shrink wrapping or not
+	Transformer *transformer;				// determines how are initials sets transformed for each timestep
 	vector<int> outputAxes;			// the output axes
 	int plotSetting;
 	int plotFormat;

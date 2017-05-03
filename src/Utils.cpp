@@ -61,7 +61,7 @@ int ShrinkWrappingCondition::getCount() const {
 }
 
 
-MySettings::MySettings(OutputWriter & writer, const int order, 
+MySettings::MySettings(OutputWriter *writer, const int order, 
       const double step, const double time, const vector<Interval> & estimation, 
       const vector<Interval> & step_end_exp_table, 
       const vector<Interval> & domain)
@@ -71,4 +71,19 @@ MySettings::MySettings(OutputWriter & writer, const int order,
 }
 
 
+PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) : 
+      left(left), right(right) {
+}
+
+
+TaylorModelVec PrecondModel::composed(MySettings *settings) {
+  TaylorModelVec ret;
+  
+  vector<Interval> rightRange;
+	right.polyRange(rightRange, settings->domain);
+	
+	left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
+	
+	return ret;
+}
 

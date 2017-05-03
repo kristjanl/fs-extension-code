@@ -10,16 +10,7 @@
 #include "MyLogger.h"
 
 class CompDependency;
-
-class PrecondModel {
-  public:
-    PrecondModel(TaylorModelVec left, TaylorModelVec right);
-    
-    TaylorModelVec left;
-    TaylorModelVec right;
-    
-    //TaylorModelVec composed(MySettings & settings);
-};
+class PrecondModel;
 
 class MyComponent {
   public:
@@ -59,7 +50,10 @@ class MyComponent {
     vector<HornerForm> odes;
     vector<Interval> dom;
     vector<TaylorModelVec> pipes;
-    vector<PrecondModel> pipePairs;
+    vector<PrecondModel *> pipePairs;
+    vector<TaylorModelVec> output;
+    
+    
     void addDependency(int linkVar, MyComponent *pComp);
     
     vector< vector<int> > previousMappers();
@@ -75,6 +69,8 @@ class MyComponent {
     void prepareMappers();
     void remapFlowpipes();
     void remapLastFlowpipe();
+    
+    PrecondModel *lastPre();
     
   private:
     void remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 

@@ -6,7 +6,7 @@ continuous reachability
   fixed steps 0.03
   time 15
   remainder estimation 1e-5
-  QR precondition
+  shrink wrapping 0
   gnuplot octagon x,y
   fixed orders 3
   cutoff 1e-12

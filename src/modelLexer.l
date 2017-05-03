@@ -67,6 +67,7 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "QR precondition" {return QRPRECOND;}
 "identity precondition" {return IDPRECOND;}
 "shrink wrapping" {return SHRINRWRAPPING;}
+"no precondition" {return NOPRECOND;}
 "time" {return TIME;}
 "modes" {return MODES;}
 "jumps" {return JUMPS;}

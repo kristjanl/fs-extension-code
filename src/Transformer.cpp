@@ -451,7 +451,7 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
   
   clock_t end = clock();
   double singleSW = double(end - start) / CLOCKS_PER_SEC;
-  settings.writer.swTime += singleSW;
+  settings.writer->swTime += singleSW;
   //logger.force(sbuilder() << "single: " << singleSW);
   //logger.force(sbuilder() << (end - start));
   
@@ -463,16 +463,22 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
 
 
 
+Transformer::Transformer(bool isPreconditioned, bool isWrapper) : 
+      isPreconditioned(isPreconditioned), isWrapper(isWrapper) {
+}
 
-
-ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) : Transformer() {
+ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) : 
+      Transformer(false, true) {
   this->swChecker = swChecker;
 }
 
-QRTransformer::QRTransformer() : Transformer() {
+QRTransformer::QRTransformer() : Transformer(true, false) {
 }
 
-NullTransformer::NullTransformer() : Transformer() {
+NullTransformer::NullTransformer() : Transformer(false, false) {
+}
+IdentityTransformer::IdentityTransformer() : Transformer(false, false) {
+  //isPreconditioned = true;
 }
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
@@ -534,17 +540,17 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
   if(all.pipePairs.size() == 0) {
     previousRight = unitTmv;
   } else {
-    previousRight = all.pipePairs[all.pipePairs.size() - 1].right;
+    previousRight = all.pipePairs[all.pipePairs.size() - 1]->right;
   }
 	previousRight.polyRange(previousRange, settings.domain);
   logger.logVI("range", previousRange);
   
-  logger.log(paramCount);
-  logger.log(varCount);
+  logger.log(sbuilder() << "paramCount: " << paramCount);
+  logger.log(sbuilder() << "varCount: " << varCount);
   Matrix A(varCount,varCount), invA(varCount, varCount);
   
   if(true) { //use QR preconditioning
-  	preconditionQR(A, tmv, varCount, paramCount);
+  	preconditionQR(A, tmv, varCount, varCount+1);
     A.transpose(invA);
   } else {
     logger.force("not implementated");
@@ -618,7 +624,7 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 	unitTmv.linearTrans(desiredLinearPart, A * S);
 	left.add_assign(desiredLinearPart);
 	
-	PrecondModel pre(left, rightComp);
+	PrecondModel *pre = new PrecondModel(left, rightComp);
 	
 	logger.logTMV("left", left);
   logger.logTMV("right", rightComp);
@@ -634,11 +640,11 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 
 void QRTransformSet(MyComponent & all, MyComponent * comp) {
   int old = logger.reset();
-  logger.disable();
+  //logger.disable();
   logger.log("QRTransformSet <");
   logger.inc();
       
-  PrecondModel pre = all.pipePairs[all.pipePairs.size() - 1];
+  PrecondModel *pre = all.pipePairs[all.pipePairs.size() - 1];
 
   TaylorModelVec newCompSet;
   
@@ -646,16 +652,19 @@ void QRTransformSet(MyComponent & all, MyComponent * comp) {
     //variable in component
     int varIndex = comp->compVars.at(i);
     //index of that variable in call component
-    int indexInAll = find(all.compVars.begin(), all.compVars.end(), varIndex) - 
+    int indexInAll = 
+        find(all.compVars.begin(), all.compVars.end(), varIndex) - 
         all.compVars.begin();
+    logger.log(sbuilder() << "comp var: " << varIndex);
     logger.log(sbuilder() << "index in all: " << indexInAll);
-    logger.log(sbuilder() << "init var: " << varIndex);
     //using compVars, cause of the assumption that initial conditions 
     logger.listVi("tm paras", comp->allTMParams);
-    logger.logTM("c1", pre.left.tms.at(indexInAll));
-    TaylorModel tm = pre.left.tms.at(indexInAll).transform(comp->allTMParams);
+    logger.logTM("c1", pre->left.tms.at(indexInAll));
+    TaylorModel tm = pre->left.tms.at(indexInAll).
+        transform(comp->allTMParams);
     logger.logTM("c2", tm);
-    logger.log(sbuilder() << "tm paramCount1: " << pre.left.tms[0].getParamCount());
+    logger.log(sbuilder() << "tm paramCount1: " << 
+        pre->left.tms[0].getParamCount());
     logger.log(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
@@ -678,6 +687,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   logger.inc();
   evaluateStepEnd(comps, settings);
   
+  //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
   
   TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
@@ -687,7 +697,6 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   
   
   precond(tmv, settings, all);
-  
   logger.logTMV("tmv", tmv);
   
   
@@ -707,41 +716,12 @@ void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps
   logger.log("null transforming");
   evaluateStepEnd(comps, settings);
 }
-
-
-Picker::Picker(int type, ShrinkWrapper & sw, QRTransformer & qr, 
-      NullTransformer & null) : Transformer(), type(type), sw(sw), qr(qr),
-      null(null) {
-}
-
-void Picker::transform(MyComponent & all, vector<MyComponent *> & comps, 
+void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("introducing <");
-  logger.inc();
-      
-  logger.log("picker");
-  
-  switch(type) {
-    case PICK_SW :
-      logger.log("pick sw");
-      sw.transform(all, comps, settings);
-      break;
-    case PICK_QR :
-      logger.log("pick qr");
-      qr.transform(all, comps, settings);
-      break;
-    case PICK_NULL :
-      logger.log("pick null");
-      null.transform(all, comps, settings);
-      break;
-    default :
-    logger.force("no picker");
-      exit(0);
-  }
-  logger.dec();
-  logger.restore(old);
+  logger.log("identity transforming");
+  logger.force("no impl");
+  exit(0);
+  evaluateStepEnd(comps, settings);
 }
 
 

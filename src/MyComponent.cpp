@@ -728,20 +728,9 @@ void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init,
 int MyComponent::nextFreeParam = -1;
 
 
-PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) : 
-      left(left), right(right) {
+
+PrecondModel *MyComponent::lastPre() {
+  return pipePairs[pipePairs.size() - 1];
 }
 
-/*
-TaylorModelVec PrecondModel::composed(MySettings & settings) {
-  TaylorModelVec ret;
-  
-  vector<Interval> rightRange;
-	right.polyRange(rightRange, settings.domain);
-	
-	left.insert_ctrunc(ret, right, rightRange, settings.domain, settings.order, 0);
-	
-	return ret;
-}
-*/
 
