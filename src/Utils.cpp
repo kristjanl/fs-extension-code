@@ -61,14 +61,6 @@ int ShrinkWrappingCondition::getCount() const {
 }
 
 
-MySettings::MySettings(OutputWriter *writer, const int order, 
-      const double step, const double time, const vector<Interval> & estimation, 
-      const vector<Interval> & step_end_exp_table, 
-      const vector<Interval> & domain)
-      : writer(writer), order(order), step(step), time(time), 
-      estimation(estimation), step_end_exp_table(step_end_exp_table), 
-      domain(domain) {
-}
 
 
 PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) : 

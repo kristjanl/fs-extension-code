@@ -215,6 +215,7 @@ class SimpleImplReachability;
 class SimpleImplSystem;
 class ShrinkWrappingCondition;
 class Transformer;
+class MySettings;
 
 class ContinuousReachability		// The reachability analysis of continuous systems
 {
@@ -224,8 +225,7 @@ public:
 	double step;					// the step size used in the reachability analysis
 	double time;					// the time horizon for the reachability analysis
 	int precondition;				// the preconditioning technique
-	ShrinkWrappingCondition *swChecker;				// determines whether to use shrink wrapping or not
-	Transformer *transformer;				// determines how are initials sets transformed for each timestep
+	MySettings *settings;
 	vector<int> outputAxes;			// the output axes
 	int plotSetting;
 	int plotFormat;
@@ -352,6 +352,29 @@ void gridBox(list<vector<Interval> > & grids, const vector<Interval> & box, cons
 
 void exp_int_mat(Interval_matrix & result_ts, Interval_matrix & result_rem, const Interval_matrix & A, const int order);
 void int_exp_int_mat(Interval_matrix & result_ts, Interval_matrix & result_rem, const Interval_matrix & A, const double step, const int order);
+
+
+class MySettings {
+  public:
+    OutputWriter *writer;
+    int order;
+    double step; 
+    double time;
+    vector<Interval> estimation;
+    vector<Interval> step_exp_table;
+    vector<Interval> step_end_exp_table;
+    vector<Interval> domain;
+    Interval cutoff;
+    bool useFlow;
+    Transformer *transformer; // determines how are initials sets transformed for each timestep
+    MySettings();
+    MySettings(OutputWriter *writer, int order, double step, 
+        double time, vector<Interval> estimation, 
+        vector<Interval> step_exp_table, 
+        vector<Interval> step_end_exp_table, 
+        vector<Interval> domain, const Interval cutoff);
+  
+};
 
 //void parseODE();
 

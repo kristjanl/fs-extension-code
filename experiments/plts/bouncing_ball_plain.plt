@@ -1,5 +1,5 @@
 set term png
-set output './images/bouncing_ball_plain_plain_rem_2_t_10.0.png
+set output './images/bouncing_ball_plain_rem_QR_2_t_10.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

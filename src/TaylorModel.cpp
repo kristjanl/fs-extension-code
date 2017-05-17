@@ -4040,3 +4040,30 @@ bool TaylorModelVec::compare(const TaylorModelVec & tmv,
   logger.restore(old);
 }
 
+
+void TaylorModelVec::removeHighTerms(int order) {
+  for(int i = 0; i < tms.size(); i++)
+    tms[i].removeHighTerms(order);
+}
+void TaylorModel::removeHighTerms(int order) {
+  //logger.log("removing tm");
+  list<Monomial> l = expansion.monomials;
+  list<Monomial> retained;
+  for (list<Monomial>::iterator it = l.begin(); it != l.end(); it++) {
+    if(it->degree() <= order)
+      retained.push_back(*it);
+  }
+  expansion.monomials = retained;
+}
+
+
+vector<Interval> TaylorModelVec::getRemainders() {
+  vector<Interval> ret;
+  for(int i = 0; i < tms.size(); i++) {
+    ret.push_back(tms[i].remainder);
+  }
+  return ret;
+}
+
+
+

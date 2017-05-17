@@ -1,5 +1,5 @@
 set term png
-set output './images/buckling_column_sw_remstep_rem_2_t_0.87.png
+set output './images/buckling_column_sw_rem_rem_QR_2_t_0.87.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:0.88]
-set yrange [-1.1554211702:-0.3999999998]
+set yrange [-1.1555284439:-0.3999999998]
 plot '-' notitle with lines ls 1
 0 -0.5070530223
 0 -0.3999999998

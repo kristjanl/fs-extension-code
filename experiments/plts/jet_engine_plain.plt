@@ -1,5 +1,5 @@
 set term png
-set output './images/jet_engine_plain_plain_rem_2_t_2.1.png
+set output './images/jet_engine_plain_rem_QR_2_t_2.1.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

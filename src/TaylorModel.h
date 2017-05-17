@@ -138,6 +138,9 @@ public:
   void getParts(TaylorModel & constant, TaylorModel & linear, 
       TaylorModel & nonLinear, TaylorModel & remainder) const;
   
+  //
+  void removeHighTerms(int order);
+  
   bool isClose(const TaylorModel & tm, double d) const;
 
 	TaylorModel & operator = (const TaylorModel & tm);
@@ -281,6 +284,11 @@ public:
   //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
       TaylorModelVec & nonLinear, TaylorModelVec & remainder) const;
+  
+  //remove higher terms
+  void removeHighTerms(int order);
+  
+  vector<Interval> getRemainders();
 
 	TaylorModelVec & operator = (const TaylorModelVec & tmv);
 };

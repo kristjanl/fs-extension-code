@@ -27,8 +27,7 @@ namespace smallComp {
 
 class SmallCompSystem: public ContinuousSystem  {
   public:
-    ShrinkWrappingCondition *swChecker;
-    Transformer *transformer;
+    MySettings *settings;
     SmallCompSystem(const TaylorModelVec & ode_input, const Flowpipe & initialSet_input);
     SmallCompSystem(const ContinuousSystem & system, vector< vector<int> > components);
     void my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const;

@@ -5,6 +5,11 @@ OutputWriter::OutputWriter(string name2, int var1, int var2):
   outfile = new ofstream();
   csvfile = new ofstream();
 }
+OutputWriter::OutputWriter(string name): 
+    name(name) {
+  outfile = new ofstream();
+  csvfile = new ofstream();
+}
 void OutputWriter::init() {
   string outfname = "outputs/" + name + ".plt";
   outfile->open(outfname.c_str());
@@ -293,3 +298,9 @@ void OutputWriter::finish() {
   *outfile << "e\n";
   outfile->close();
 }
+
+/*
+void fromFlowstar(ContinuousReachability *problem) {
+  logger.force("from flowstar");
+}
+*/

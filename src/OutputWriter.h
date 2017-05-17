@@ -19,6 +19,7 @@ class Transformer;
 class OutputWriter {
 	public:
 		OutputWriter(string name, int var1, int var2);
+    OutputWriter(string name);
     void init();
     void writeFlowpipe(const Interval & timeInt, const TaylorModelVec & tmv,
         vector<Interval> & domain) const;

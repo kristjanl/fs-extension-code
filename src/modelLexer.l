@@ -118,6 +118,7 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "my hfs" {return MYHORNERFORMS;}
 "my iv" {return MYINTGVEC;}
 "rem" {return REM;}
+"flow impl" {return FLOW_IMPL;}
 
 
 {number} { yylval.dblVal = atof( (char *)yytext ); return NUM; }

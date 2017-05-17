@@ -1,5 +1,5 @@
 set term png
-set output './images/filtered_oscillator_4_sw_remstep_rem_6_t_4.0.png
+set output './images/filtered_oscillator_4_sw_rem_rem_QR_6_t_3.95.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x6"
-set xrange [0.0:4.05]
-set yrange [-733.380467861:734.778360633]
+set xrange [0.0:4.0]
+set yrange [-1e-10:0.6990940149]
 plot '-' notitle with lines ls 1
 0 -0.0000000001
 0 0.0000488282
@@ -568,13 +568,6 @@ plot '-' notitle with lines ls 1
 4 0.6989989095
 4 0.6985703861
 3.95 0.6985703861
-
-
-4 0.6987062522
-4 0.6990942638
-4.05 0.6990942638
-4.05 0.6987062522
-4 0.6987062522
 
 
 e

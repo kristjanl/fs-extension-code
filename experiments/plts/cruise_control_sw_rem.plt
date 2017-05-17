@@ -1,5 +1,5 @@
 set term png
-set output './images/cruise_control_sw_remstep_rem_2_t_100.0.png
+set output './images/cruise_control_sw_rem_rem_QR_2_t_99.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,7 +7,7 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:100.1]
+set xrange [0.0:100.0]
 set yrange [-0.0:102.6]
 plot '-' notitle with lines ls 1
 0 -0
@@ -7008,13 +7008,6 @@ plot '-' notitle with lines ls 1
 100 102.5
 100 99.9
 99.9 99.9
-
-
-100 100
-100 102.6
-100.1 102.6
-100.1 100
-100 100
 
 
 e

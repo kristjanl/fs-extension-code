@@ -640,7 +640,7 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 
 void QRTransformSet(MyComponent & all, MyComponent * comp) {
   int old = logger.reset();
-  //logger.disable();
+  logger.disable();
   logger.log("QRTransformSet <");
   logger.inc();
       
@@ -658,7 +658,7 @@ void QRTransformSet(MyComponent & all, MyComponent * comp) {
     logger.log(sbuilder() << "comp var: " << varIndex);
     logger.log(sbuilder() << "index in all: " << indexInAll);
     //using compVars, cause of the assumption that initial conditions 
-    logger.listVi("tm paras", comp->allTMParams);
+    logger.listVi("tm params", comp->allTMParams);
     logger.logTM("c1", pre->left.tms.at(indexInAll));
     TaylorModel tm = pre->left.tms.at(indexInAll).
         transform(comp->allTMParams);

@@ -9,7 +9,7 @@ continuous reachability
     remainder estimation 1e-3
     QR precondition
     gnuplot interval x1,x2
-    fixed orders 2
+    fixed orders 3
     cutoff 1e-15
     precision 53
     output moore_rot_QR

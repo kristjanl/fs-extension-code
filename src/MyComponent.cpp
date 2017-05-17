@@ -324,7 +324,8 @@ void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode,
 
   
 void MyComponent::prepareComponent(TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain) {
+    const vector<HornerForm> & ode, vector<Interval> domain, 
+    bool preconditioned) {
   //return if variables have already been prepared
   if(isPrepared) {
     return;
@@ -340,11 +341,11 @@ void MyComponent::prepareComponent(TaylorModelVec init,
         it < dependencies.end(); it++) {
     //logger.log(sbuilder() << "link: " << (*it)->linkVar);
     MyComponent *pComp = (*it)->pComp;
-    pComp->prepareComponent(init, ode, domain);
+    pComp->prepareComponent(init, ode, domain, preconditioned);
   }
 
   
-  prepareVariables(init);
+  prepareVariables(init, preconditioned);
   prepareMappers();
   remapIVP(init, ode, domain);
   
@@ -355,7 +356,7 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   logger.restore(old);
 }
   
-void MyComponent::prepareVariables(TaylorModelVec init) {
+void MyComponent::prepareVariables(TaylorModelVec init, bool preconditioned) {
   int old = logger.reset();
   logger.disable();
   logger.log("preparing variables <");
@@ -381,6 +382,7 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
       solveIndexes.push_back(pos);
     }
   }
+  
   //gather nonzero taylor model parameters from initial conditions
   for(vector<int>::iterator it = varIndexes.begin(); 
       it < varIndexes.end(); it++) {
@@ -388,6 +390,7 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
     //logger.logTM("tm", init.tms.at(*it));
     vector<int> tmParams = init.tms.at(*it).getParams();
     logger.listVi("params", tmParams);
+    
     
     //retain the parameter if started with point initial conditions
     if(tmParams.size() == 0 && retainEmptyParams) {
@@ -586,7 +589,7 @@ void MyComponent::remapLastFlowpipe() {
 void MyComponent::prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
       vector<Interval> domain) {
   logger.disable();
-  prepareVariables(tmv);
+  prepareVariables(tmv, false);
   
   //add flowpipes if the component is not initial one
   //variables in component + link vars
@@ -674,8 +677,8 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
 
 
 MyComponent getSystemComponent(vector<MyComponent *> comps,
-    TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain) {
+    TaylorModelVec init, const vector<HornerForm> & ode,
+    vector<Interval> domain, bool preconditioned) {
   MyComponent allVars;
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
@@ -684,39 +687,25 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
       allVars.addDependency(*i2, *it);
     }
   }
-  allVars.prepareComponent(init, ode, domain);
+  allVars.prepareComponent(init, ode, domain, preconditioned);
   return allVars;
 }
 
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain) {
+    const vector<HornerForm> & ode, vector<Interval> domain, 
+    bool preconditioned) {
   int old = logger.reset();
   logger.disable();
   logger.log("preparing components <");
   logger.inc();
-
-  
-  
-  //find parameters present in all variable initial conditions
-  vector<int> params;
-  for(int i = 0; i < init.tms.size(); i++) {
-    //parameters in a single variable initial condition
-    vector<int> tmParams = init.tms[i].getParams();
-    params.insert(params.end(), tmParams.begin(), tmParams.end());
-  }
-  //remove duplicate parameters
-  sort(params.begin(), params.end());
-  params.erase( unique(params.begin(), params.end()), params.end() );
-  
-  logger.listVi("params", params);
-  
-  MyComponent::nextFreeParam = params.size();
+  logger.force("shouldn't be used");
+  exit(0);
   
   logger.logTMV("init", init);
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    (*it)->prepareComponent(init, ode, domain);
+    (*it)->prepareComponent(init, ode, domain, preconditioned);
     logger.logTMV("pre Init", (*it)->initSet);
   }
 
@@ -733,4 +722,7 @@ PrecondModel *MyComponent::lastPre() {
   return pipePairs[pipePairs.size() - 1];
 }
 
+TaylorModelVec MyComponent::lastPipe() {
+  return pipes[pipes.size() - 1];
+}
 

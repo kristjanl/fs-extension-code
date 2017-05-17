@@ -10658,6 +10658,7 @@ ContinuousSystem & ContinuousSystem::operator = (const ContinuousSystem & system
 
 ContinuousReachability::ContinuousReachability()
 {
+  settings = new MySettings();
 }
 
 ContinuousReachability::~ContinuousReachability()
@@ -13649,8 +13650,7 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
 	}
   
   problem.precondition = precondition;
-  problem.swChecker = swChecker;
-  problem.transformer = transformer;
+  problem.settings = settings;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13707,10 +13707,15 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
     logger.log(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
 		problem.estimation.push_back(estimation.at(i));
 	}
+	
+	
+  settings->step = step;
+  settings->estimation = estimation;
+  settings->cutoff = cutoff_threshold;
+	
   
   problem.precondition = precondition;
-  problem.swChecker = swChecker;
-  problem.transformer = transformer;
+  problem.settings = settings;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13740,8 +13745,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
   
   
   SmallCompSystem* pSystem = new SmallCompSystem(system, components);
-  pSystem->swChecker = swChecker;
-  pSystem->transformer = transformer;
+  pSystem->settings = settings;
   
   problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
@@ -13770,8 +13774,7 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
 	}
   
   problem.precondition = precondition;
-  problem.swChecker = swChecker;
-  problem.transformer = transformer;
+  problem.settings = settings;
 	problem.bAdaptiveSteps = bAdaptiveSteps;
 	problem.step = step;
 	problem.time = time;
@@ -13819,6 +13822,8 @@ void ContinuousReachability::run()
   logger.log("run <"); 
   logger.inc();
   
+  
+  
   if(algorithm == ALGORITHM_SIMPLE_IMPL) {
     logger.force("simple impl");
     SimpleImplReachability si = createSimpleImpl();
@@ -13849,5 +13854,16 @@ void ContinuousReachability::myRun() {
   logger.log("dummy run");
   exit(0);
 }
-
+MySettings::MySettings() {
+  useFlow = false;
+}
+MySettings::MySettings(OutputWriter *writer, int order, 
+      double step, double time, vector<Interval> estimation, 
+      vector<Interval> step_exp_table, 
+      vector<Interval> step_end_exp_table, 
+      vector<Interval> domain, Interval cutoff)
+      : writer(writer), order(order), step(step), time(time), 
+      estimation(estimation), step_exp_table(step_exp_table), 
+      step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff) {
+}
 

@@ -67,7 +67,7 @@
 %token GNUPLOT MATLAB COMPUTATIONPATHS
 %token LINEARODE PAR
 %token METHOD
-%token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP
+%token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
 %token DECOMPOSITION 
 %token NODECOMPOSITION
 %token MYMODEL
@@ -173,6 +173,19 @@ model: CONTINUOUS '{' continuous '}'
 	printf("Done.\n");
 
 	fclose(fpDumping);
+  logger.reset();
+  OutputWriter writer(continuousProblem.outputFileName);
+  logger.log(continuousProblem.flowpipes.size());
+  logger.log(continuousProblem.flowpipesCompo.size());
+  list<TaylorModelVec>::const_iterator ci = continuousProblem.flowpipesCompo.begin();
+  list<Flowpipe>::const_iterator pi = continuousProblem.flowpipes.begin();
+  ci++;
+  pi++;
+  logger.logTMV("comp", *ci);
+  logger.logTMV("ppre", pi->tmvPre);
+  logger.logTMV("ptmv", pi->tmv);
+  
+  //writer.fromFlowstar(&continuousProblem);
 }
 |
 CONTINUOUS '{' continuous '}' unsafe_continuous
@@ -2538,7 +2551,7 @@ precondition: QRPRECOND
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer();
-  continuousProblem.transformer = transformer;
+  continuousProblem.settings->transformer = transformer;
 }
 |
 IDPRECOND
@@ -2547,14 +2560,14 @@ IDPRECOND
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new IdentityTransformer();
-  continuousProblem.transformer = transformer;
+  continuousProblem.settings->transformer = transformer;
 }
 |
 NOPRECOND
 {
 	logger.log("no precond");
   Transformer *transformer = new NullTransformer();
-  continuousProblem.transformer = transformer;
+  continuousProblem.settings->transformer = transformer;
 }
 |
 SHRINRWRAPPING NUM
@@ -2562,10 +2575,9 @@ SHRINRWRAPPING NUM
 	logger.log("shrink num");
 	continuousProblem.precondition = SHRINK_WRAPPING;
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
-	continuousProblem.swChecker = cond;
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
-  continuousProblem.transformer = transformer;
+  continuousProblem.settings->transformer = transformer;
 }
 |
 SHRINRWRAPPING REM
@@ -2573,10 +2585,9 @@ SHRINRWRAPPING REM
 	logger.log("shrink rem");
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
 	continuousProblem.precondition = SHRINK_WRAPPING;
-	continuousProblem.swChecker = cond;
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
-  continuousProblem.transformer = transformer;
+  continuousProblem.settings->transformer = transformer;
 }
 ;
 
@@ -2606,6 +2617,14 @@ ALG_SMALL_COMP
 {
 	logger.log("ALG_SMALL_COMP");
 	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
+}
+|
+ALG_SMALL_COMP FLOW_IMPL
+{
+	logger.log("ALG_SMALL_COMP");
+	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
+	continuousProblem.settings->useFlow = true;
+	//exit(0);
 }
 |
 ALG_FLOW

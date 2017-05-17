@@ -64,13 +64,15 @@ class MyComponent {
     void prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
        vector<Interval> domain);
     void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
-       vector<Interval> domain);
-    void prepareVariables(TaylorModelVec tmv);
+       vector<Interval> domain, bool preconditioned);
+    void prepareVariables(TaylorModelVec tmv, bool preconditioned);
     void prepareMappers();
     void remapFlowpipes();
     void remapLastFlowpipe();
     
     PrecondModel *lastPre();
+    
+    TaylorModelVec lastPipe();
     
   private:
     void remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
@@ -89,10 +91,11 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
     const vector<HornerForm> & ode);
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain);
+    const vector<HornerForm> & ode, vector<Interval> domain, 
+    bool preconditioned);
 
 MyComponent getSystemComponent(vector<MyComponent *> comps, 
     TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain);
+    vector<Interval> domain, bool preconditioned);
 
 #endif /* MYCOMPONENT_H_ */

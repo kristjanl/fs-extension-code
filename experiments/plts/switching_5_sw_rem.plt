@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5_sw_remstep_rem_5_t_0.1.png
+set output './images/switching_5_sw_rem_rem_QR_5_t_0.09.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x5"
-set xrange [0.0:0.11]
-set yrange [-6.7383670226:8.2203533484]
+set xrange [0.0:0.1]
+set yrange [-4.7081235254:6.2062792737]
 plot '-' notitle with lines ls 1
 0 -0.0150212349
 0 0.1585754349
@@ -78,13 +78,6 @@ plot '-' notitle with lines ls 1
 0.1 6.2062792737
 0.1 -4.7081235254
 0.09 -4.7081235254
-
-
-0.1 -6.7383670226
-0.1 8.2203533484
-0.11 8.2203533484
-0.11 -6.7383670226
-0.1 -6.7383670226
 
 
 e

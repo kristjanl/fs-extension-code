@@ -15,6 +15,7 @@
 #include "MyLogger.h"
 #include "ParsingUtils.h"
 #include "Utils.h"
+#include "OutputWriter.h"
 
 //extern int lineNum;
 
