@@ -1,5 +1,5 @@
 set term png
-set output './images/Lorentz_QR_QR_QR_3_t_1.554.png
+set output './images/Lorentz_QR_QR_flow_3_t_5.373.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x3"
-set xrange [0.0:1.557]
-set yrange [-275.742139271:344.429196603]
+set xrange [0.0:5.376]
+set yrange [-882.830112302:953.693190952]
 plot '-' notitle with lines ls 1
 0 36.3750767097
 0 36.7424732052

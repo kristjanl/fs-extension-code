@@ -1,0 +1,33 @@
+continuous reachability
+{
+ state var x, y, z
+	
+ setting
+ {
+  fixed steps 0.01
+  time 7.5
+  remainder estimation 1e-5
+    QR precondition
+  gnuplot octagon x,z
+  fixed orders 5
+  cutoff 1e-12
+  precision 53
+  output nonholonomic_QR_fullflow
+  print on
+ }
+	
+ poly ode 1
+ {
+    x' = 1
+    y' = 1
+    z' = x - y
+ }
+ 
+ init
+ {
+   x in [0,0]
+   y in [0,0]
+   z in [14.9,15.1]
+ }
+}
+

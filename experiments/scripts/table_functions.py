@@ -6,6 +6,8 @@ import subprocess
 
 import my_functions as fs
 
+plotToCommon = False
+#plotToCommon = True
 
 def getDimension(modelFile):
   csv = os.path.join("csvs", "%s.csv" %fs.getParam(modelFile, "output"))
@@ -111,7 +113,10 @@ def write_table_rows(modelDir, pairs, outFile, nameSuffix):
     csvs = map(lambda m: \
         os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
         
-    commonTime = min( map(lambda s: fs.find_file_max_time(s), csvs) )
+    if plotToCommon:
+      commonTime = min( map(lambda s: fs.find_file_max_time(s), csvs) )
+    else:
+      commonTime = max( map(lambda s: fs.find_file_max_time(s), csvs) )
     
     nocsvs = filter(lambda s: not os.path.isfile(s), csvs)
     
@@ -166,8 +171,53 @@ def write_table(tableName, modelDir, pairs, nameSuffix):
   write_table_rows(modelDir, pairs, outFile, nameSuffix)
   write_table_end(outFile)
 
+  
 #generate a plot for a single model
 def plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
+
+  if var2 != 0:
+    print "var2 is not time"
+    sys.exit()
+  csvs = map(lambda m: \
+      os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
+
+  if plotToCommon:
+    time = min( map(lambda s: fs.find_file_max_time(s), csvs) )
+  else:
+    time = max( map(lambda s: fs.find_file_max_time(s), csvs) )
+  
+  tend = "tend=%s" %time
+  
+  #signal for no data
+  if time == 100000000000000:
+    return
+  
+  #print "time: %s" %time
+  
+  bounds = fs.get_range_bounds(time, csvs)
+  
+  #timeValues = map(lambda s: fs.get_range_up_to(time, s), csvs)
+  #bounds = fs.get_bounds(timeValues)
+  
+  xRange = ["xMin=%s"%bounds[0][2*var2],"xMax=%s"%bounds[1][2*var2+1]]
+  yRange = ["yMin=%s"%bounds[0][2*var1],"yMax=%s"%bounds[1][2*var1+1]]
+  #print yRange
+  
+  imgSuffix = ["suffix=%s_%s_t_%s"%(nameSuffix, var1,time)]
+  
+  #print xRange
+  #print yRange
+
+  for csv in csvs:
+    if not os.path.isfile(csv):
+      continue
+    args = [os.path.join(scriptsDir, 'gnuplot_var.py')] + \
+        [csv] + ['var1=%s'%var1, 'var2=%s'%var2] + [tend] + xRange + yRange + imgSuffix
+    p = subprocess.Popen(args)
+    p.wait()  
+  
+#generate a plot for a single model
+def plot_variable_old(scriptsDir, modelFiles, var1, var2, nameSuffix):
   csvs = map(lambda m: \
       os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
   

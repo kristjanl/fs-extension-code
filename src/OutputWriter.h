@@ -30,6 +30,7 @@ class OutputWriter {
         MyComponent & all, bool isPreconditioned);
     void addPreconditioned(vector<MyComponent *> comps, vector<Interval> & domain, 
         MyComponent & all);
+    void fromFlowstar(list<TaylorModelVec> & flowpipesCompo, list<vector<Interval> > & domains);
     void writeCSV();
     void writeInfo();
 		void finish();

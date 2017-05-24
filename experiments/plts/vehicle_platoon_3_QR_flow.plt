@@ -1,5 +1,5 @@
 set term png
-set output './images/vehicle_platoon_3_QR_flow_QR_QR_9_t_11.98.png
+set output './images/vehicle_platoon_3_QR_flow_flow_fullflow_9_t_11.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

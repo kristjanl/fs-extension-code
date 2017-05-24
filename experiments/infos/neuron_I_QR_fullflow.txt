@@ -1,0 +1,4 @@
+reason: The remainder estimation is not large enough.
+integration time: 97.38
+computation time: 30.58
+shrink wrapping time: 0

@@ -157,8 +157,6 @@ args = parseArgs(sys.argv)
 
 nameLookup = getNameMap(sys.argv, args)
 
-      
-
 gnuplot_for_variable(args, nameLookup)
 
 subprocess.call(["gnuplot", nameLookup['pltOut']])

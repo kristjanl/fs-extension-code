@@ -1,5 +1,5 @@
 set term png
-set output './images/rod_reactor_QR_QR_QR_3_t_49.8.png
+set output './images/rod_reactor_QR_QR_flow_3_t_49.8.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

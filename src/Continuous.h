@@ -118,6 +118,8 @@ public:
 	friend class SimpleImplReachability;
 };
 
+class MySettings;
+
 class ContinuousSystem
 {
 private:
@@ -135,6 +137,9 @@ public:
 	ContinuousSystem(const vector<string> & strOde_input, const Flowpipe & initialSet_input);
 	ContinuousSystem(const ContinuousSystem & system);
 	~ContinuousSystem();
+  
+  
+	MySettings *settings;
 
 	// efficient integration method for linear ODEs
 	// since we can always compute a safe remainder, adaptive techniques are not needed
@@ -215,7 +220,6 @@ class SimpleImplReachability;
 class SimpleImplSystem;
 class ShrinkWrappingCondition;
 class Transformer;
-class MySettings;
 
 class ContinuousReachability		// The reachability analysis of continuous systems
 {

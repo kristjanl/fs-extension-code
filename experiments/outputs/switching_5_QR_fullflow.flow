@@ -1,0 +1,33 @@
+state var x1,x2,x3,x4,x5
+
+gnuplot octagon x1 , x2
+
+cutoff 1.000000e-15
+
+output switching_5_QR_fullflow
+
+continuous flowpipes
+{
+tm var local_var_1,local_var_2,local_var_3,local_var_4,local_var_5
+
+{
+x1 = [3.10000000000000 , 3.10000000000001] + [0 , 0]
+
+x2 = [4.00000000000000 , 4.00000000000000] + [0 , 0]
+
+x3 = [0,0] + [0 , 0]
+
+x4 = [0,0] + [0 , 0]
+
+x5 = [0,0] + [0 , 0]
+
+
+local_t in [0 , 0]
+local_var_1 in [-1.00000000000000 , 1.00000000000000]
+local_var_2 in [-1.00000000000000 , 1.00000000000000]
+local_var_3 in [-1.00000000000000 , 1.00000000000000]
+local_var_4 in [-1.00000000000000 , 1.00000000000000]
+local_var_5 in [-1.00000000000000 , 1.00000000000000]
+}
+
+}

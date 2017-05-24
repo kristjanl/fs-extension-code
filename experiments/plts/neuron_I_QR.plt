@@ -1,5 +1,5 @@
 set term png
-set output './images/neuron_I_QR_QR_QR_2_t_39.22.png
+set output './images/neuron_I_QR_QR_flow_2_t_98.72.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,7 +7,7 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:39.24]
+set xrange [0.0:98.74]
 set yrange [-680.648525256:663.62253083]
 plot '-' notitle with lines ls 1
 0 -1.0024297913

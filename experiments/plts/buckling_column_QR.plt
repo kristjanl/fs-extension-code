@@ -1,5 +1,5 @@
 set term png
-set output './images/buckling_column_QR_QR_QR_2_t_9.99.png
+set output './images/buckling_column_QR_QR_flow_2_t_9.99.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

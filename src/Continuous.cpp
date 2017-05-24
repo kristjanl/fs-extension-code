@@ -9320,7 +9320,7 @@ void ContinuousSystem::reach_linear(list<Flowpipe> & results, const double step,
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
 {
-  logger.log("REACH PIC1 <");
+  logger.force("REACH PIC1 <");
   logger.inc();
 	vector<Interval> step_exp_table, step_end_exp_table;
 
@@ -9331,8 +9331,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 	Flowpipe newFlowpipe, currentFlowpipe = initialSet;
 
 	vector<PolynomialConstraint> dummy_invariant;
-
-	for(double t=THRESHOLD_HIGH; t < time;)
+  double t=THRESHOLD_HIGH;
+	for(; t < time;)
 	{
 		int res = currentFlowpipe.advance_picard2(newFlowpipe, hfOde, hfOde_centered, precondition, step_exp_table, step_end_exp_table, order, estimation, dummy_invariant, cutoff_threshold);
 		if(res == 1)
@@ -9340,8 +9340,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 			results.push_back(newFlowpipe);
 			currentFlowpipe = newFlowpipe;
 			t += step;
-
-			if(bPrint)
+      cerr << ".";
+			if(bPrint && false)
 			{
 				printf("time = %f,\t", t);
 				printf("step = %f,\t", step);
@@ -9357,9 +9357,11 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 		else
 		{
 			fprintf(stdout, "Terminated -- The remainder estimation is not large enough.\n");
+      settings->writer->info.push_back(sbuilder() << "reason: " << "The remainder estimation is not large enough.");
 			break;
 		}
 	}
+  settings->writer->info.push_back(sbuilder() << "integration time: " << t);
   logger.dec();
   logger.log("REACH PIC1 >");
 }
@@ -10801,6 +10803,7 @@ void ContinuousReachability::contRun()
   compute_factorial_rec(globalMaxOrder+2);
 	compute_power_4(globalMaxOrder+2);
 	compute_double_factorial(2*globalMaxOrder+4);
+  system.settings = settings;
 
 /*
 	if(integrationScheme != NONPOLY_TAYLOR)

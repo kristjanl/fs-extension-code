@@ -1,5 +1,5 @@
 set term png
-set output './images/vanderpol_QR_QR_QR_2_t_6.98.png
+set output './images/vanderpol_QR_QR_flow_2_t_6.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

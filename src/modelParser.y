@@ -141,7 +141,10 @@ model: CONTINUOUS '{' continuous '}'
 		printf("Can not create the directory for images.\n");
 		exit(1);
 	}
-
+  
+  OutputWriter writer(continuousProblem.outputFileName);
+  continuousProblem.settings->writer = &writer;
+  
 	clock_t begin, end;
 	begin = clock();
 	logger.log(sbuilder() << "print: " << continuousProblem.bPrint);
@@ -173,8 +176,10 @@ model: CONTINUOUS '{' continuous '}'
 	printf("Done.\n");
 
 	fclose(fpDumping);
+  
+  
   logger.reset();
-  OutputWriter writer(continuousProblem.outputFileName);
+  /*
   logger.log(continuousProblem.flowpipes.size());
   logger.log(continuousProblem.flowpipesCompo.size());
   list<TaylorModelVec>::const_iterator ci = continuousProblem.flowpipesCompo.begin();
@@ -183,9 +188,16 @@ model: CONTINUOUS '{' continuous '}'
   pi++;
   logger.logTMV("comp", *ci);
   logger.logTMV("ppre", pi->tmvPre);
-  logger.logTMV("ptmv", pi->tmv);
+  logger.logTMV("ptmv", pi->tmv);*/
   
-  //writer.fromFlowstar(&continuousProblem);
+  
+  double integrTime = double(end - begin) / CLOCKS_PER_SEC;
+  logger.log(sbuilder() << "computation time: " << integrTime);
+  writer.info.push_back(sbuilder() << "computation time: " << integrTime);
+  
+  writer.fromFlowstar(continuousProblem.flowpipesCompo, continuousProblem.domains);
+  writer.writeCSV();
+  writer.writeInfo();
 }
 |
 CONTINUOUS '{' continuous '}' unsafe_continuous

@@ -1,5 +1,5 @@
 set term png
-set output './images/Brusselator_QR_QR_QR_2_t_9.63.png
+set output './images/Brusselator_QR_QR_flow_2_t_14.97.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,7 +7,7 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:9.66]
+set xrange [0.0:15.0]
 set yrange [-0.2505344222:3.3548863145]
 plot '-' notitle with lines ls 1
 0 0.0346368815

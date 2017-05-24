@@ -1,5 +1,5 @@
 set term png
-set output './images/Roessler_QR_QR_QR_3_t_3.3.png
+set output './images/Roessler_QR_QR_flow_3_t_5.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,7 +7,7 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x3"
-set xrange [0.0:3.32]
+set xrange [0.0:6.0]
 set yrange [-44.9335454616:45.0137803086]
 plot '-' notitle with lines ls 1
 0 -0.1928957836

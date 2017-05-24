@@ -299,8 +299,49 @@ void OutputWriter::finish() {
   outfile->close();
 }
 
-/*
-void fromFlowstar(ContinuousReachability *problem) {
+
+void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo, 
+      list<vector<Interval> > & domains) {
   logger.force("from flowstar");
+  list<TaylorModelVec>::const_iterator fIt = flowpipesCompo.begin();
+  list< vector<Interval> >::const_iterator dIt = domains.begin();
+  int i = 0;
+  
+  int dim = fIt->tms.size();
+  //2 for time + (per dim) 2 for interval + remainder + range
+  int csvSize = 2 + 4*dim;
+  for(int i = 0; i < csvSize; i++) {
+    data2.push_back(vector<string>());
+  }
+  
+  Interval shift = Interval(0);
+  
+  while(fIt != flowpipesCompo.end()) {
+    //logger.logTMV("tmv", *fIt);
+    //logger.logVI("d", *dIt);
+    Interval time = (*dIt)[0];
+    time += shift;
+    data2.at(0).push_back(time.getLower());
+    data2.at(1).push_back(time.getHigher());
+    
+    shift += (*dIt)[0].sup();
+    //logger.log(time.toString());
+    
+    const TaylorModelVec & tmv = *fIt;
+    vector<Interval> domain = *dIt;
+    for(int var = 0; var < tmv.tms.size(); var++) {
+      Interval pipe = evalVarToInterval(tmv, domain, var);
+      
+      data2.at((var +1)*2).push_back(pipe.getLower());
+      data2.at((var +1)*2+1).push_back(pipe.getHigher());
+      data2.at((dim + 1)*2 + var).push_back(sbuilder() << pipe.width());
+      data2.at((dim + 1)*2 + dim + var).push_back(
+          sbuilder() << tmv.tms[var].remainder.width());
+    }
+    
+    fIt++;
+    dIt++;
+    i++;
+  }
 }
-*/
+

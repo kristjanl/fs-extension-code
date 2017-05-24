@@ -1,5 +1,5 @@
 set term png
-set output './images/two_tanks_QR_flow_QR_QR_2_t_1.98.png
+set output './images/two_tanks_QR_flow_flow_fullflow_2_t_1.99.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:1.99]
-set yrange [-24.4299386786:14.774043899]
+set xrange [0.0:2.0]
+set yrange [-4.9936064427:1.000102034]
 plot '-' notitle with lines ls 1
 0 0.909896232
 0 0.9651590599

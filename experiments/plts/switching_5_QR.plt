@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5_QR_QR_QR_5_t_0.09.png
+set output './images/switching_5_QR_QR_flow_5_t_0.09.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

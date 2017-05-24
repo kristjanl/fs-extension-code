@@ -1,5 +1,5 @@
 set term png
-set output './images/moore_rot_QR_flow_QR_QR_2_t_9.9.png
+set output './images/moore_rot_QR_flow_flow_fullflow_2_t_9.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

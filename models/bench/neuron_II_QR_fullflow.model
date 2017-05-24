@@ -1,0 +1,31 @@
+continuous reachability
+{
+ state var v,u
+	
+ setting
+ {
+  fixed steps 0.02
+  time 200
+  remainder estimation 1e-2
+    QR precondition
+  gnuplot octagon v, u
+  fixed orders 4
+  cutoff 1e-12
+  precision 53
+  output neuron_II_QR_fullflow
+  print on
+ }
+	
+ poly ode 1
+ {
+    v' = 0.01*((v + 56)*(v + 42) - u + 300)
+    u' = 0.03*(8*(v + 56) - u)
+ }
+ 
+ init
+ {
+   v in [-50.5,-49.5]
+   u in [-0.5,0.5]
+ }
+}
+

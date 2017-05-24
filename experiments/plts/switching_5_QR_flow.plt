@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5_QR_flow_QR_QR_5_t_0.09.png
+set output './images/switching_5_QR_flow_flow_fullflow_5_t_0.09.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x5"
 set xrange [0.0:0.1]
-set yrange [-0.6943705325:2.1813262761]
+set yrange [0.0:0.8321776034]
 plot '-' notitle with lines ls 1
 0 0.1172346344
 0 0.2750409039

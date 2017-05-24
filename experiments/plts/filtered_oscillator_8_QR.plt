@@ -1,5 +1,5 @@
 set term png
-set output './images/filtered_oscillator_8_QR_QR_QR_10_t_3.95.png
+set output './images/filtered_oscillator_8_QR_QR_flow_10_t_3.95.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

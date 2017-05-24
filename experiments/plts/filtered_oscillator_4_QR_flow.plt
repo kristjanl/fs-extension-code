@@ -1,5 +1,5 @@
 set term png
-set output './images/filtered_oscillator_4_QR_flow_QR_QR_6_t_3.95.png
+set output './images/filtered_oscillator_4_QR_flow_flow_fullflow_6_t_3.95.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x6"
 set xrange [0.0:4.0]
-set yrange [2.80053e-05:0.699094015]
+set yrange [-1.19e-08:0.699094015]
 plot '-' notitle with lines ls 1
 0 0.0000280053
 0 0.0005587229
