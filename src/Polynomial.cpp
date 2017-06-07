@@ -381,6 +381,11 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec
 
 void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("hf_i_c_n");
+  logger.inc();
+  logger.log(sbuilder() << "hf: " << this->toString() << ", order: " << order << " hfs: " << hornerForms.size());
 	Interval intZero;
 	result.clear();
 
@@ -389,52 +394,83 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 		TaylorModel tmConstant(constant, numVars);
 		result = tmConstant;
 	}
-
 	RangeTree *pnode = new RangeTree;
 
 	if(hornerForms.size() > 0)						// the first variable is t
 	{
 		TaylorModel tmTemp;
 		RangeTree *child;
-
+		
+		
+	  logger.log(sbuilder() << "i: " << 0);
+	  logger.log(sbuilder() << "hfi: " << hornerForms[0].toString());
+    
+    //tmTmp is the tmv insterted in hornerforms
 		hornerForms[0].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, step_exp_table, numVars, order, cutoff_threshold);
 
+    //multiply the polynomial part by t (t's index is 0)
 		tmTemp.expansion.mul_assign(0,1);			// multiplied by t
+		//multiply the remainder by the [0,t_step]
 		tmTemp.remainder *= step_exp_table[1];
 
+    //truncate the too high terms (add them to remainder)
 		Interval intTrunc;
 		tmTemp.expansion.ctrunc_normal(intTrunc, step_exp_table, order);
 		tmTemp.remainder += intTrunc;
+		
+		//too high terms in the hf for t (after multiplying with t)
+		logger.log(sbuilder() << "pushing0: " << intTrunc.toString());
 
-		pnode->ranges.push_back(intTrunc);
+		pnode->ranges.push_back(intTrunc); //truncation for hf_t after insert
 		pnode->children.push_back(child);
 
+    logger.logTM("tmTemp", tmTemp);
 		result.add_assign(tmTemp);
 
 		for(int i=1; i<hornerForms.size(); ++i)
 		{
+		  logger.log(sbuilder() << "i: " << i);
+		  logger.log(sbuilder() << "hfi: " << hornerForms[i].toString());
 			TaylorModel tmTemp;
 			RangeTree *child;
 
-			hornerForms[i].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, step_exp_table, numVars, order, cutoff_threshold);	// recursive call
+      //insert initial set for variables in ode
+			hornerForms[i].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, 
+			    step_exp_table, numVars, order, cutoff_threshold);	// recursive call
+			logger.logTM("hf_insert", tmTemp);
 
+      //multiply inserted TM by the variable the hf corresponds too
 			Interval tm1, intTrunc2;
 			tmTemp.mul_insert_ctrunc_normal_assign(tm1, intTrunc2, vars.tms[i-1], varsPolyRange[i-1], step_exp_table, order, cutoff_threshold); 	// here coefficient_range = tm1
-
-			pnode->ranges.push_back(tm1);
-			pnode->ranges.push_back(varsPolyRange[i-1]);
-			pnode->ranges.push_back(intTrunc2);
+			
+			logger.log(sbuilder() << "pushing[1]: " << tm1.toString());
+			logger.log(sbuilder() << "pushing[2]: " << varsPolyRange[i-1].toString());
+			logger.log(sbuilder() << "pushing[3]: " << intTrunc2.toString());
+			
+      //range of the poly in inserted variables for hf[i] (before multiplying 
+      //with x1) after truncation (but only if vars[i] has nonzero polynomial)
+			pnode->ranges.push_back(tm1); 
+			pnode->ranges.push_back(varsPolyRange[i-1]); //range of picard (k-1)
+			pnode->ranges.push_back(intTrunc2); //higher terms gotten from after multiplying (purely in polynom)
 			pnode->children.push_back(child);
+      logger.logTM(sbuilder() << "x[" << i << "] * hf_insert", tmTemp);
 
 			result.add_assign(tmTemp);
 		}
 	}
 
 	tree = pnode;
+	logger.dec();
+	logger.restore(old);
 }
 
 void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const TaylorModelVec & vars, const Interval & timeStep) const
 {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("insert_only_remainder");
+  //logger.logTMV("vars", vars);
+  logger.inc();
 	Interval intZero;
 
 	result = intZero;
@@ -445,7 +481,9 @@ void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const
 	{
 		Interval intTemp;
 		hornerForms[0].insert_only_remainder(intTemp, *child, vars, timeStep);
+		logger.log(sbuilder() << "intTemp: " << intTemp.toString());
 		intTemp *= timeStep;
+  	logger.log(sbuilder() << "hf[0] iter[0]: " << iter->toString());
 
 		intTemp += (*iter);
 		result += intTemp;
@@ -457,18 +495,27 @@ void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const
 		{
 			Interval intTemp2;
 			hornerForms[i].insert_only_remainder(intTemp2, *child, vars, timeStep);
-
+			
+  		logger.log(sbuilder() << "hf[" << i << "] iter[1]: " << iter->toString());
+  		//+ range of polynomial of hf[i] * remainder of vars[i-1]
 			Interval newRemainder = (*iter) * vars.tms[i-1].remainder;
 			++iter;
+  		logger.log(sbuilder() << "hf[" << i << "] iter[2]: " << iter->toString());
+  		//range of polynomial of vars[i-1] * remainder of hf[i]
 			newRemainder += (*iter) * intTemp2;
+			//remainder of vars[i-1].remainder * remainder of hf[i]
 			newRemainder += vars.tms[i-1].remainder * intTemp2;
 			++iter;
+  		logger.log(sbuilder() << "hf[" << i << "] iter[3]: " << iter->toString());
+  		//interval evaluation of higher terms
 			newRemainder += (*iter);
 
 			result += newRemainder;
 			++iter;
 		}
 	}
+	logger.dec();
+	logger.restore(old);
 }
 
 void HornerForm::dump(FILE *fp, const vector<string> & varNames) const
@@ -1186,8 +1233,12 @@ void Polynomial::nctrunc(const int order)
 	}
 }
 
+//moves terms higher than order to remainder
 void Polynomial::ctrunc_normal(Interval & remainder, const vector<Interval> & step_exp_table, const int order)
 {
+	//logger.force("HERE");
+	//logger.log(order);
+	//logger.logPoly(this);
 	Polynomial polyTemp;
 	Monomial monoTemp;
 
@@ -1207,6 +1258,8 @@ void Polynomial::ctrunc_normal(Interval & remainder, const vector<Interval> & st
 	}
 
 	polyTemp.intEvalNormal(remainder, step_exp_table);
+	//logger.logPoly(this);
+	//logger.logPoly(&polyTemp);
 }
 
 void Polynomial::linearCoefficients(vector<Interval> & result) const

@@ -717,9 +717,34 @@ void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps
   evaluateStepEnd(comps, settings);
 }
 void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
-      MySettings & settings) {
-  logger.log("identity transforming");
-  logger.force("no impl");
+      MySettings & settings) {int old = logger.reset();
+  logger.disable();
+  logger.log("qr transforming <");
+  logger.inc();
+  evaluateStepEnd(comps, settings);
+  
+  //remaps all the last pipes to system flowpipes at all component
+  all.remapLastFlowpipe();
+  
+  TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
+  TaylorModelVec tmv;
+  last.evaluate_t(tmv, settings.step_end_exp_table);
+  
+  
+  
+  precond(tmv, settings, all);
+  logger.logTMV("tmv", tmv);
+  
+  
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    QRTransformSet(all, *it);
+  }
+  
+  
+  logger.dec();
+  logger.log("qr transforming >");
+  logger.restore(old);
   exit(0);
   evaluateStepEnd(comps, settings);
 }

@@ -75,6 +75,7 @@
 %token MYMONO
 %token MYHORNERFORMS
 %token MYINTGVEC
+%token MYINTRVEC
 
 %type <poly> polynomial
 %type <poly> ODEpolynomial
@@ -111,6 +112,7 @@
 %type <ptmVec> my_taylor_models
 %type <mono> my_mono
 %type <iVec> my_integer_vector
+%type <intVec> my_interval_vector
 %type <polyVec> my_polys
 
 
@@ -536,7 +538,11 @@ MYHORNERFORMS '{' my_polys '}'
 MYINTGVEC '<' my_integer_vector '>'
 {
 	parseResult.integerVec = *$3;
-  delete $3;
+}
+|
+MYINTRVEC '<' my_interval_vector '>'
+{
+	parseResult.intervalVec = *$3;
 }
 ;
 
@@ -5005,12 +5011,21 @@ my_integer_vector: NUM{
   degrees->push_back($1);
   $$ = degrees;
 } | NUM ',' my_integer_vector {
-  $3->insert($3->begin(),$1);
+  $3->insert($3->begin(), $1);
   $$ = $3;
 };
 
-
-
+my_interval_vector: '[' NUM ',' NUM ']' {
+  Interval I($2, $4);
+  vector<Interval> *ret = new vector<Interval>();
+  ret->push_back(I);
+  $$ = ret;
+} | '[' NUM ',' NUM ']' ',' my_interval_vector {
+  Interval I($2, $4);
+  $7->insert($7->begin(), I);
+  $$ = $7;
+}
+;
 
 
 

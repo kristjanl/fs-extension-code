@@ -57,4 +57,5 @@ class NullTransformer: public Transformer {
 };
 
 
+
 #endif /* TRANSFORMER_H_ */

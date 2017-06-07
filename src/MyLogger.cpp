@@ -81,6 +81,39 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
 }
 
 
+void mylogger2::logRT(string name, RangeTree *tree) {
+	if(disabled > 0)
+		return;
+  if(tree == NULL) {
+    logger.log("NULL");
+    return;
+  }
+  logger.log(sbuilder() << name << " " << tree->ranges.size() << ", " << tree->children.size());
+  logger.inc();
+   list<Monomial> retained;
+  list<Interval>::iterator rIt = tree->ranges.begin();
+  list<RangeTree *>::iterator cIt = tree->children.begin();
+  for(; rIt != tree->ranges.end(); rIt++) {
+    logger.log(rIt->toString());
+  }
+  for(; cIt != tree->children.end(); cIt++) {
+    logger.logRT(name, *cIt);
+  }
+  logger.dec();
+  /*
+	list<Interval> ranges;
+	list<RangeTree *> children;*/
+}
+
+void mylogger2::logVRT(string name, vector<RangeTree *> trees) {
+	if(disabled > 0)
+		return;
+	for(int i = 0; i < trees.size(); i++) {
+  	logger.logRT(sbuilder() << name << i, trees[i]);
+	}
+}
+
+
 void mylogger2::logTMVRem(string name, TaylorModelVec tmv) {
 	if(disabled > 0)
 		return;

@@ -1,6 +1,6 @@
 continuous reachability
 {
-  state var x1,x2
+  state var x1
 
   setting
   {
@@ -8,25 +8,23 @@ continuous reachability
     time 1.0
     remainder estimation 1e-3
     QR precondition
-    gnuplot interval x1,x2
-    fixed orders 4
+    gnuplot interval x1,x1
+    fixed orders 2
     cutoff 1e-15
     precision 53
     output test
-    alg_small_comp
-    decomposition [[x1,x2]]
+    alg_small_comp flow impl
+    decomposition [[x1]]
     print on
   }
 
   poly ode 1
   {
     x1' = -x1
-    x2' = -x2 * x1
   }
 
   init
   {
-    x1 in [-2,4]
-    x2 in [-1,1]
+    x1 in [-1,1]
   }
 }

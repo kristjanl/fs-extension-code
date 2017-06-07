@@ -417,6 +417,12 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, const TaylorMod
 
 void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1, Interval & intTrunc, const TaylorModel & tm, const Interval & tmPolyRange, const vector<Interval> & step_exp_table, const int order, const Interval & cutoff_threshold) const
 {
+  //int old = logger.reset();
+  //logger.disable();
+  logger.log("mul_insert_ctrunc_normal2");
+  logger.logTM("this", *this);
+  logger.logTM("tm", tm);
+  logger.log(sbuilder() << "order: " << order);
 	Polynomial P1xP2;
 	Interval P1xI2, P2xI1, I1xI2;
 
@@ -428,8 +434,10 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
 
 	if(!tm.remainder.subseteq(intZero))
 	{
+	  logger.log("evaling");
 		expansion.intEvalNormal(P1xI2, step_exp_table);
 		tm1 = P1xI2;
+		logger.log(tm1.toString());
 		P1xI2 *= tm.remainder;
 	}
 
@@ -446,13 +454,19 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
 	result.remainder += P2xI1;
 	result.remainder += P1xI2;
 
+  logger.logTM("result (before ctrunc)", result);
 	result.expansion.ctrunc_normal(intTrunc, step_exp_table, order);
+  logger.logTM("result (before cutoff)", result);
+	logger.log(sbuilder() << "intTrunc: " << intTrunc.toString());
 
 	Interval intRound;
 	result.expansion.cutoff_normal(intRound, step_exp_table, cutoff_threshold);
 	intTrunc += intRound;
+	logger.log(sbuilder() << "intRound: " << intRound.toString());
 
 	result.remainder += intTrunc;
+  logger.logTM("result (after cutoff)", result);
+  //logger.restore(old);
 }
 
 void TaylorModel::mul_insert_assign(const TaylorModel & tm, const Interval & tmPolyRange, const vector<Interval> & domain, const Interval & cutoff_threshold)
@@ -486,9 +500,18 @@ void TaylorModel::mul_insert_ctrunc_normal_assign(const TaylorModel & tm, const 
 
 void TaylorModel::mul_insert_ctrunc_normal_assign(Interval & tm1, Interval & intTrunc, const TaylorModel & tm, const Interval & tmPolyRange, const vector<Interval> & step_exp_table, const int order, const Interval & cutoff_threshold)
 {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("mul_insert_ctrunc_normal_assign2");
+  logger.inc();
 	TaylorModel result;
 	mul_insert_ctrunc_normal(result, tm1, intTrunc, tm, tmPolyRange, step_exp_table, order, cutoff_threshold);
+	logger.logTM("result", result);
+	logger.log(sbuilder() << "tm1: " << tm1.toString());
+	logger.log(sbuilder() << "intTrunc: " << intTrunc.toString());
 	*this = result;
+	logger.dec();
+	logger.restore(old);
 }
 
 void TaylorModel::div(TaylorModel & result, const Interval & I) const
@@ -2208,6 +2231,16 @@ void TaylorModelVec::Picard_ctrunc_normal_assign(const TaylorModelVec & x0, cons
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
+  int old = logger.reset();
+  logger.disable();
+  logger.inc();
+  logger.log("Picard_ctrunc_normal2");
+  logger.logTMV("x0", x0);
+  logger.logVHF("ode", ode);
+  logger.logTMV("this", *this);
+  logger.logVI("polyRange", polyRange);
+  logger.log(sbuilder() << "order: " << order);
+  logger.log(sbuilder() << "numVars: " << numVars);
 	TaylorModelVec tmvTemp;
 
 	trees.clear();
@@ -2221,28 +2254,175 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 		for(int i=0; i<ode.size(); ++i)
 		{
 			TaylorModel tmTemp;
+			logger.log(ode[i].toString());
 			ode[i].insert_ctrunc_normal(tmTemp, trees[i], *this, polyRange, step_exp_table, numVars, 0, cutoff_threshold);
 			tmvTemp.tms.push_back(tmTemp);
+			logger.logTM(sbuilder() << "tm[" << i << "]", tmTemp);
 		}
 	}
 	else
 	{
 		for(int i=0; i<ode.size(); ++i)
 		{
+		  //order - 1, since the integration makes the degree 1 higher
 			TaylorModel tmTemp;
 			ode[i].insert_ctrunc_normal(tmTemp, trees[i], *this, polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
 			tmvTemp.tms.push_back(tmTemp);
 		}
 	}
+	logger.logTMV("tmvTemp(TM)", tmvTemp);
 
 	TaylorModelVec tmvTemp2;
 	tmvTemp.integral(tmvTemp2, step_exp_table[1]);
+	logger.logTMV("tmvTemp2(TM)", tmvTemp2);
 
 	x0.add(result, tmvTemp2);
+	logger.logTMV("result", result);
+	logger.dec();
+	logger.restore(old);
 }
+
+void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
+{
+  int old = logger.reset();
+  logger.disable();
+  logger.inc();
+  logger.log("Picard_ctrunc_normal2 (i vec)");
+  logger.logTMV("x0", x0);
+  logger.logVHF("ode", ode);
+  logger.logTMV("this", *this);
+  logger.logVI("polyRange", polyRange);
+  logger.log(sbuilder() << "order: " << order);
+  logger.log(sbuilder() << "numVars: " << numVars);
+  logger.logVi("comp", comp);
+	TaylorModelVec inserted;
+
+	trees.clear();
+	for(int i=0; i<ode.size(); ++i)
+	{
+		trees.push_back(NULL);
+	}
+
+	if(order <= 1)
+	{
+		//for(int i=0; i<ode.size(); ++i) {
+	  for(int j = 0; j < comp.size(); j++) {
+	    int var = comp[j];
+	    logger.log(sbuilder() << "var: " << var);
+			TaylorModel tmTemp;
+			logger.log(ode[var].toString());
+			ode[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, 0, cutoff_threshold);
+			inserted.tms.push_back(tmTemp);
+			logger.logTM(sbuilder() << "tm[" << var << "]", tmTemp);
+		}
+	}
+	else
+	{
+		//for(int i=0; i<ode.size(); ++i) {
+	  for(int j = 0; j < comp.size(); j++) {
+	    int var = comp[j];
+	    logger.log(sbuilder() << "var: " << var);
+		  //order - 1, since the integration makes the degree 1 higher
+			TaylorModel tmTemp;
+			ode[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
+			inserted.tms.push_back(tmTemp);
+		}
+	}
+	logger.logTMV("inserted(TM)", inserted);
+
+	TaylorModelVec integrated;
+	for(int i = 0; i < inserted.tms.size(); i++) {
+		TaylorModel tmTemp;
+		inserted.tms[i].integral(tmTemp, step_exp_table[1]);
+		integrated.tms.push_back(tmTemp);
+	}
+	logger.logTMV("integrated(TM)", integrated);
+	
+	TaylorModelVec added;
+	for(int i = 0; i < comp.size(); i++) {
+	  //i is index in integrated, var is index in original
+	  int var = comp[i];
+		TaylorModel tmTemp;
+		x0.tms[var].add(tmTemp, integrated.tms[i]);
+		added.tms.push_back(tmTemp);
+	}
+	
+	result.clear();
+	
+	for(int i = 0; i < tms.size(); i++) {
+    logger.log(sbuilder() << "i: " << i);
+    vector<int>::iterator it = find(comp.begin(), comp.end(), i);
+    if(it == comp.end()) {
+      result.tms.push_back(tms[i]);
+    }else {
+      int indexInComp = it - comp.begin();
+      result.tms.push_back(added.tms[indexInComp]);
+    }
+	}
+	logger.logTMV("result", result);
+	
+	logger.dec();
+	logger.restore(old);
+}
+/*
+void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, 
+    vector<RangeTree *> & trees, MyComponent *comp, 
+    const vector<Interval> & polyRange, const vector<Interval> & step_exp_table, 
+    const int numVars, const int order, const Interval & cutoff_threshold) 
+    const {
+  int old = logger.reset();
+  logger.disable();
+  logger.inc();
+  logger.log("Picard_ctrunc_normal2 (comp)");
+  logger.logTMV("this", *this);
+  logger.logVI("polyRange", polyRange);
+  logger.log(sbuilder() << "order: " << order);
+  logger.log(sbuilder() << "numVars: " << numVars);
+	TaylorModelVec tmvTemp;
+
+	trees.clear();
+	for(int i=0; i<comp->ode.size(); ++i)
+	{
+		trees.push_back(NULL);
+	}
+
+	if(order <= 1)
+	{
+		for(int i=0; i<comp->odes.size(); ++i)
+		{
+			TaylorModel tmTemp;
+			logger.log(ode[i].toString());
+			comp->odes[i].insert_ctrunc_normal(tmTemp, trees[i], *this, polyRange, step_exp_table, numVars, 0, cutoff_threshold);
+			tmvTemp.tms.push_back(tmTemp);
+			logger.logTM(sbuilder() << "tm[" << i << "]", tmTemp);
+		}
+	}
+	else
+	{
+		for(int i=0; i<comp->odes.size(); ++i)
+		{
+		  //order - 1, since the integration makes the degree 1 higher
+			TaylorModel tmTemp;
+			comp->odes[i].insert_ctrunc_normal(tmTemp, trees[i], *this, polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
+			tmvTemp.tms.push_back(tmTemp);
+		}
+	}
+	logger.logTMV("tmvTemp(TM)", tmvTemp);
+
+	TaylorModelVec tmvTemp2;
+	tmvTemp.integral(tmvTemp2, step_exp_table[1]);
+	logger.logTMV("tmvTemp2(TM)", tmvTemp2);
+
+	comp->initSet.add(result, tmvTemp2);
+	logger.logTMV("result", result);
+	logger.dec();
+	logger.restore(old);
+}
+*/
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const
 {
+  //logger.force("Picard_ctrunc_normal3");
 	TaylorModelVec tmvTemp;
 
 	trees.clear();

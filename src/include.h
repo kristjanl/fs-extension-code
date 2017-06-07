@@ -112,13 +112,13 @@ using namespace std;
 extern void parseODE();
 extern void parse(string s);
 extern void parseTM();
-
 class TaylorModelVec;
 extern TaylorModelVec parseTMV(string s);
-
 class HornerForm;
 extern vector<HornerForm> parseHFFromPoly(string s);
 extern vector<int> parseiVec(string s);
+class Interval;
+extern vector<Interval> parseIVec(string s);
 
 
 #define ALGORITHM_DEFAULT 0

@@ -155,6 +155,8 @@ public:
 	friend class HybridReachability;
 };
 
+
+
 class TaylorModelVec			// Taylor models: R^n -> R^m
 {
 public:
@@ -244,6 +246,8 @@ public:
 	void Picard_ctrunc_normal_assign(const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold);
 
 	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
+	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
+	//void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, MyComponent *component, const vector<Interval> & polyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
 	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const;
 	void Picard_only_remainder(vector<Interval> & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<HornerForm> & ode, const Interval & timeStep) const;
 
@@ -329,6 +333,7 @@ public:
 	vector<Polynomial> *polys;
 	Monomial mono;
 	vector<int> integerVec;
+	vector<Interval> intervalVec;
 	string		strExpansion;
 
 	ParseResult();

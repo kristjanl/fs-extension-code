@@ -117,6 +117,7 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "my mono" {return MYMONO;}
 "my hfs" {return MYHORNERFORMS;}
 "my iv" {return MYINTGVEC;}
+"my Iv" {return MYINTRVEC;}
 "rem" {return REM;}
 "flow impl" {return FLOW_IMPL;}
 
@@ -214,4 +215,9 @@ vector<HornerForm> parseHFFromPoly(string s) {
 vector<int> parseiVec(string s) {
   parse(s);
   return parseResult.integerVec;
+}
+
+vector<Interval> parseIVec(string s) {
+  parse(s);
+  return parseResult.intervalVec;
 }

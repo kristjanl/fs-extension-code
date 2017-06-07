@@ -32,6 +32,12 @@ struct sbuilder
 	operator std::string() { return ss.str(); }
 };
 
+/*
+sbuilder & operator << (sbuilder & sb, const T &data) {
+	ss << data;
+	return *this;
+}
+*/
 
 class mylogger2 {
 	public:
@@ -40,6 +46,8 @@ class mylogger2 {
 		void logVHF(string, vector<HornerForm>);
 		void logVi(string, vector<int>);
 		void listVi(string, vector<int>);
+		void logVRT(string, vector<RangeTree *>);
+		void logRT(string, RangeTree *);
 		void logTMV(string, TaylorModelVec);
 		void logTMVRem(string, TaylorModelVec);
 		void logTM(string, TaylorModel);
