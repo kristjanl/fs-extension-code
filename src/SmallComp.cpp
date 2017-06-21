@@ -70,7 +70,7 @@ namespace smallComp {
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
     int old = logger.reset();
-    //logger.disable();
+    logger.disable();
     logger.log("picardIterRem <");
     logger.inc();
     TaylorModelVec integratedTMV;
@@ -154,11 +154,9 @@ namespace smallComp {
       pipe.tms.at(comp[i]).remainder = guess.at(i);
     }
     
-    // arbitrary number how many times to try to increase the remainder
     // flowstar doesn't try to increase, so they will have it as 1
-    int maxTry = 40;
     bool redo = false;
-    for(int j = 0; j < maxTry; j++) {
+    for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
       computeNewRemainder(comp, pipe, ode, init, domain);
       //logger.logVI("guess", guess);
       //logger.logVI("new", pipe.getRemainders());
@@ -244,10 +242,16 @@ namespace smallComp {
     logger.disable();
     logger.log("advancing <");
     logger.inc();
+    //logger.logTMV("pipe", pipe);
+    //logger.logTMV("init", init);
+    
+    //comy the initial condtions of the variables to be solved to pipe
     for (unsigned i=0; i<comp.size(); i++) {
       pipe.tms.at(comp.at(i)) = init.tms.at(comp.at(i));
-      //logger.logTM("pipe", pipe.tms.at(comp.at(i)));
     }
+    //logger.logTMV("pipe", pipe);
+    //logger.logTMV("init", init);
+    //logger.log("");
     //apply picard operator (order times)
     for(int i = 0; i < settings.order; i++) {
       picardIter(comp, pipe, ode, init, settings);
@@ -282,9 +286,10 @@ namespace smallComp {
 	    vector<RangeTree *> & trees, MyComponent & comp, MySettings & settings, 
       vector<Interval> & cutoffInt) {
 	  int old = logger.reset();
-    logger.disable();
+    //logger.disable();
 	  logger.log("findDecreasingRemainderFlow <");
 	  logger.inc();
+	  logger.logTMV("init", comp.initSet);
     
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
@@ -294,6 +299,7 @@ namespace smallComp {
     int paramCount = comp.initSet.tms[0].getParamCount();
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
+    logger.log(sbuilder() << "varCount: " << varCount);
 	  
 	  //need to find remainders more efficiently
 	  p.polyRangeNormal(pPolyRange, step_exp_table);
@@ -310,32 +316,33 @@ namespace smallComp {
 	  }
 	  
 	  //evaluate this one seperately to get the cutoff measures
-	  TaylorModelVec tmvTemp;
-	  p.Picard_ctrunc_normal(tmvTemp, trees, comp.initSet, pPolyRange, comp.odes, 
-	      step_exp_table, paramCount, order, cutoff_threshold);
-	  
+	  TaylorModelVec compTemp;
+    p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
+      step_exp_table, paramCount, order, cutoff_threshold);
+    
+    logger.logTMV("comTemp", compTemp);
+    
 	  logger.logVi("solve", comp.solveIndexes);
-	  exit(0);
 	  
 	  //should be because of the turncated parts and uncertainties (?)
 	  for(int i=0; i < varCount; i++) {
 		  Polynomial polyTemp;
-		  polyTemp = tmvTemp.tms[i].expansion - p.tms[i].expansion;
+		  polyTemp = compTemp.tms[i].expansion - p.tms[i].expansion;
 
 		  Interval intTemp;
 		  polyTemp.intEvalNormal(intTemp, step_exp_table);
 		  
 		  cutoffInt.push_back(intTemp);
 		  
-      tmvTemp.tms[i].remainder += intTemp;
-      p.tms[i].remainder = tmvTemp.tms[i].remainder;
+      compTemp.tms[i].remainder += intTemp;
+      p.tms[i].remainder = compTemp.tms[i].remainder;
 	  }
 	  
 	  bool notSubset = false;
 	  for(int i=0; i < varCount; i++) {
 	    //logger.log(guess[i].toString());
-	    //logger.log(tmvTemp.tms[i].remainder.toString());
-		  if(tmvTemp.tms[i].remainder.subseteq(guess[i]) == false ) {
+	    //logger.log(compTemp.tms[i].remainder.toString());
+		  if(compTemp.tms[i].remainder.subseteq(guess[i]) == false ) {
 		    logger.log("not subset");
 		    notSubset = true;
 		    guess[i] *= 2;
@@ -346,19 +353,15 @@ namespace smallComp {
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
 		
-		int MAX_TRIES = 40;
-	  for(int j = 0; j < MAX_TRIES; j++) {
+	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
 	    //logger.log(sbuilder() << "j: " << j);
 	    
 		  for(int i = 0; i < varCount; i++) {
 		    p.tms[i].remainder = guess[i];
 		  }
-	    
-	    
-	    //logger.logVI("nrb", newRemainders);
 	    //logger.logTMV("pb", p);
-  		p.Picard_only_remainder(newRemainders, trees, comp.initSet, comp.odes, step_exp_table[1]);
-	    //logger.logTMV("pa", p);
+  		p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
+	    logger.logVI("nrb", newRemainders);
 	    
 	    logger.logVI("guess", guess);
 	    logger.logVI("newre", newRemainders);
@@ -448,31 +451,39 @@ namespace smallComp {
   
   void advanceFlow(MyComponent & component, MySettings & settings) {
     int old = logger.reset();
-    logger.disable();
+    //logger.disable();
     //variable when picard approximation is stored
-    TaylorModelVec p = TaylorModelVec(component.initSet);
+    //TaylorModelVec p = TaylorModelVec(component.initSet);
+    TaylorModelVec p = TaylorModelVec(component.lastPipe());
+    logger.logTMV("lastpipe", component.lastPipe());
     
-    //logger.logTMV("p", p);
+    vector<int> & sIndexes = component.solveIndexes;
+    
+    
+    for (unsigned i=0; i<component.solveIndexes.size(); i++) {
+      p.tms.at(sIndexes[i]) = component.initSet.tms.at(sIndexes[i]);
+    }
+    
+    logger.logTMV("p", p);
     
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
     //find the picard polynomial
-    for(int i = 1; i <= settings.order; i++)
-      p.Picard_no_remainder_assign(component.initSet, component.odes, paramCount, i, settings.cutoff);
-    
+    for(int i = 1; i <= settings.order; i++) {
+      //p.Picard_no_remainder_assign(component.initSet, component.odes, paramCount, i, settings.cutoff);
+      p.Picard_no_remainder_assign(&component, paramCount, i, settings.cutoff);
+    }
     
     p.cutoff(settings.cutoff);
     
     
-    //logger.logTMV("p", p);
-    
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
 	  vector<Interval> cutoffInt;
-	  
     
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
+    
         
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
@@ -483,6 +494,8 @@ namespace smallComp {
     component.pipes[component.pipes.size() - 1] = p;
         
     logger.restore(old);
+    exit(0);
+    
   }
   
   void singleStepIntegrate(MyComponent & component, MySettings & settings) {
@@ -658,28 +671,33 @@ void foo() {
   vector<Interval> pPolyRange;
   flowPipe.polyRangeNormal(pPolyRange, step_exp_table);
   
-  TaylorModelVec tmvTemp;
+  TaylorModelVec fullc;
 	vector<RangeTree *> trees;
-  flowPipe.Picard_ctrunc_normal(tmvTemp, trees, init, pPolyRange, ode, 
+  flowPipe.Picard_ctrunc_normal(fullc, trees, init, pPolyRange, ode, 
       step_exp_table, paramCount, order, cutoff_threshold);
   
 	logger.log("-------");
   //logger.logVRT("tree", trees);
-  logger.logTMV("tmvTemp", tmvTemp);
+  logger.logTMV("fullc", fullc);
 	
-	/*
 	vector<Interval> newRemainders;
-	flowPipe.Picard_only_remainder(newRemainders, trees, init, ode, domain[0]);
-	logger.logVI("new", newRemainders);
-	*/
+	for(int i = 0; i < 10; i++) {
+	  fullc.Picard_only_remainder(newRemainders, trees, init, ode, domain[0]);
+	  for(int j = 0 ; j < fullc.tms.size(); j++) {
+	    fullc.tms[j].remainder = newRemainders[j];
+	  }
+	}
+  logger.logVI("new", newRemainders);
+	
 	
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
+	MyComponent comp1;
 	TaylorModelVec comp1Pipe = parseTMV("my models{a - a*t + a*t^2*0.5 +[-0.001,0.001]}");
-  TaylorModelVec comp1Init = parseTMV("my models{a}");
-  vector<HornerForm> comp1Ode = parseHFFromPoly("my hfs {-1*a}");
-  vector<int> comp1Vars = parseiVec("my iv <0>");
+  comp1.initSet = parseTMV("my models{a}");
+  comp1.odes = parseHFFromPoly("my hfs {-1*a}");
+  comp1.solveIndexes = parseiVec("my iv <0>");
   vector<Interval> comp1Domain = parseIVec("my Iv <[0,0.1],[-1,1]>");
   
   vector<Interval> comp1Range;
@@ -687,10 +705,14 @@ void foo() {
   
   TaylorModelVec comp1Temp;
 	vector<RangeTree *> comp1Tree;
-  comp1Pipe.Picard_ctrunc_normal(comp1Temp, comp1Tree, comp1Init, comp1Range, comp1Ode, 
+  comp1Pipe.Picard_ctrunc_normal(comp1Temp, comp1Tree, &comp1, comp1Range, 
       step_exp_table, paramCount, order, cutoff_threshold);
   //logger.logVRT("comp1_", comp1Tree);
-  logger.logTMV("comp1Temp", comp1Temp);
+  logger.logTMV("comp1", comp1Temp);
+  for(int i = 0; i < 1; i++)
+    comp1Temp.Picard_update_remainder(comp1Tree, &comp1, domain[0]);
+  logger.logTMV("comp1", comp1Temp);
+  
       
   MyComponent comp2;
 	parseSetting.clear();
@@ -698,9 +720,10 @@ void foo() {
 	parseSetting.addVar("a");
 	parseSetting.addVar("b");
 	TaylorModelVec comp2Pipe = parseTMV("my models{a - a*t + a*t^2*0.5 +[-0.001,0.001], b + t*a*b}");
-  TaylorModelVec comp2Init = parseTMV("my models{a,b}");
-  vector<HornerForm> comp2Ode = parseHFFromPoly("my hfs {0, a*b}");
-  vector<int> comp2Vars = parseiVec("my iv <1>");
+  comp2Pipe.tms[0] = comp1Temp.tms[0];
+  comp2.initSet = parseTMV("my models{a,b}");
+  comp2.odes = parseHFFromPoly("my hfs {0, a*b}");
+  comp2.solveIndexes = parseiVec("my iv <1>");
   vector<Interval> comp2Domain = parseIVec("my Iv <[0,0.1],[-1,1],[-1,1]>");
 	
   vector<Interval> comp2Range;
@@ -708,15 +731,31 @@ void foo() {
   
   TaylorModelVec comp2Temp;
 	vector<RangeTree *> comp2Tree;
-  comp2Pipe.Picard_ctrunc_normal(comp2Temp, comp2Tree, comp2Vars, comp2Init, comp2Range, comp2Ode, 
-      step_exp_table, paramCount, order, cutoff_threshold);
+  /*comp2Pipe.Picard_ctrunc_normal(comp2Temp, comp2Tree, comp2Vars, comp2Init, comp2Range, comp2Ode, 
+      step_exp_table, paramCount, order, cutoff_threshold);*/
+  comp2Pipe.Picard_ctrunc_normal(comp2Temp, comp2Tree, &comp2, comp2Range, step_exp_table, paramCount, order, cutoff_threshold);
       
-  logger.logTMV("comp2Temp", comp2Temp);
+  logger.logTMV("comp2", comp2Temp);
   
-  //logger.logVRT("comp2_", comp2Tree);
   
-	
-  //comp.initSet, comp.odes
+  for(int i = 0; i < 10; i++)
+    comp2Temp.Picard_update_remainder(comp2Tree, &comp2, domain[0]);
+  logger.logTMV("comp2", comp2Temp);
+  
+  
+  
+  
+  
+  /*
+  vector<Interval> rems;
+  comp2Temp.Picard_only_remainder(rems, comp2Tree, &comp2, domain[0]);
+  logger.logVI("rems", rems);
+  */
+  
+  
+  
+  
+  
 	exit(0);
 }
 
@@ -724,8 +763,8 @@ void SmallCompReachability::myRun() {
   int old = logger.reset();
   logger.log("Simple Comp Run <");
   logger.inc();
-  foo();
-  exit(1);
+  //foo();
+  //exit(1);
   
   clock_t begin, end;
 	begin = clock();

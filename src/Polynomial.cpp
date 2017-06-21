@@ -448,7 +448,7 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 			logger.log(sbuilder() << "pushing[3]: " << intTrunc2.toString());
 			
       //range of the poly in inserted variables for hf[i] (before multiplying 
-      //with x1) after truncation (but only if vars[i] has nonzero polynomial)
+      //with x1) after truncation (but only if vars[i] has nonzero polynomial <- removed this condition)
 			pnode->ranges.push_back(tm1); 
 			pnode->ranges.push_back(varsPolyRange[i-1]); //range of picard (k-1)
 			pnode->ranges.push_back(intTrunc2); //higher terms gotten from after multiplying (purely in polynom)
