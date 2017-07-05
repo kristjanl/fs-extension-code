@@ -286,7 +286,7 @@ namespace smallComp {
 	    vector<RangeTree *> & trees, MyComponent & comp, MySettings & settings, 
       vector<Interval> & cutoffInt) {
 	  int old = logger.reset();
-    //logger.disable();
+    logger.disable();
 	  logger.log("findDecreasingRemainderFlow <");
 	  logger.inc();
 	  logger.logTMV("init", comp.initSet);
@@ -312,9 +312,10 @@ namespace smallComp {
 	  
 	  //set the remainder to be initial guess
 	  for(int i = 0; i < varCount; i++) {
+      if(comp.isSolveVar(i) == false)
+        continue;
 		  p.tms[i].remainder = guess[i];
 	  }
-	  
 	  //evaluate this one seperately to get the cutoff measures
 	  TaylorModelVec compTemp;
     p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
@@ -340,6 +341,8 @@ namespace smallComp {
 	  
 	  bool notSubset = false;
 	  for(int i=0; i < varCount; i++) {
+      if(comp.isSolveVar(i) == false)
+        continue;
 	    //logger.log(guess[i].toString());
 	    //logger.log(compTemp.tms[i].remainder.toString());
 		  if(compTemp.tms[i].remainder.subseteq(guess[i]) == false ) {
@@ -356,7 +359,9 @@ namespace smallComp {
 	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
 	    //logger.log(sbuilder() << "j: " << j);
 	    
-		  for(int i = 0; i < varCount; i++) {
+		  for(int i = 0; i < varCount; i++) {        
+        if(comp.isSolveVar(i) == false)
+          continue;
 		    p.tms[i].remainder = guess[i];
 		  }
 	    //logger.logTMV("pb", p);
@@ -369,6 +374,8 @@ namespace smallComp {
 	    
 	    notSubset = false;
 		  for(int i = 0; i < varCount; i++) {
+        if(comp.isSolveVar(i) == false)
+          continue;
 		    newRemainders[i] += cutoffInt[i];
 		    if(newRemainders[i].subseteq(guess[i]) == false ) {
 		      //logger.log("not subset");
@@ -384,6 +391,8 @@ namespace smallComp {
     }
 		
 	  for(int i = 0; i < varCount; i++) {
+      if(comp.isSolveVar(i) == false)
+        continue;
 	    p.tms[i].remainder = newRemainders[i];
 	  }
 	  logger.logTMV("last", p);
@@ -417,7 +426,7 @@ namespace smallComp {
 		
 	  bool stop = true;
 	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
-		  p.Picard_only_remainder(newRemainders, trees, comp.initSet, comp.odes, step_exp_table[1]);
+      p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       
 	    for(int i = 0; i < varCount; i++)
 	      newRemainders[i] += cutoffInt[i];
@@ -451,7 +460,7 @@ namespace smallComp {
   
   void advanceFlow(MyComponent & component, MySettings & settings) {
     int old = logger.reset();
-    //logger.disable();
+    logger.disable();
     //variable when picard approximation is stored
     //TaylorModelVec p = TaylorModelVec(component.initSet);
     TaylorModelVec p = TaylorModelVec(component.lastPipe());
@@ -464,7 +473,7 @@ namespace smallComp {
       p.tms.at(sIndexes[i]) = component.initSet.tms.at(sIndexes[i]);
     }
     
-    logger.logTMV("p", p);
+    logger.logTMV("after init", p);
     
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
@@ -482,19 +491,20 @@ namespace smallComp {
 	  vector<RangeTree *> trees;
 	  vector<Interval> cutoffInt;
     
+    logger.logTMV("before decr", p);
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
     
-        
+
+    logger.logTMV("after decr", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
-    logger.logTMV("p", p);
+    logger.logTMV("refined rem", p);
     
     logger.log(component.pipes.size());
     
     component.pipes[component.pipes.size() - 1] = p;
         
     logger.restore(old);
-    exit(0);
     
   }
   
@@ -879,7 +889,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   clock_t integrClock = clock();
   double t;
   for(t = 0; t < time; t+= step) {
-    //logger.log(sbuilder() << "t: " << t);
+    logger.log(sbuilder() << "t: " << t);
     cerr << ".";
     
     try{
@@ -887,7 +897,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
           it < comps.end(); it++) {
         //logger.logTMV("init", (*it)->initSet);
         smallComp::singleStepPrepareIntegrate(**it, *settings);
-        //logger.logTMV("0", (*it)->pipes.at(0));
+        //logger.logTMV("last", (*it)->lastPipe());
       }
       settings->transformer->transform(all, comps, *settings);
       

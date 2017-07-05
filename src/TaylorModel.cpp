@@ -417,8 +417,8 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, const TaylorMod
 
 void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1, Interval & intTrunc, const TaylorModel & tm, const Interval & tmPolyRange, const vector<Interval> & step_exp_table, const int order, const Interval & cutoff_threshold) const
 {
-  //int old = logger.reset();
-  //logger.disable();
+  int old = logger.reset();
+  logger.disable();
   logger.log("mul_insert_ctrunc_normal2");
   logger.logTM("this", *this);
   logger.logTM("tm", tm);
@@ -432,6 +432,7 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
 	tm1 = intZero;
 	intTrunc = intZero;
 
+  //logger.force(tm.remainder.toString());
 	if(!tm.remainder.subseteq(intZero) || true)
 	{
 	  logger.log("evaling");
@@ -466,7 +467,7 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
 
 	result.remainder += intTrunc;
   logger.logTM("result (after cutoff)", result);
-  //logger.restore(old);
+  logger.restore(old);
 }
 
 void TaylorModel::mul_insert_assign(const TaylorModel & tm, const Interval & tmPolyRange, const vector<Interval> & domain, const Interval & cutoff_threshold)
@@ -2189,7 +2190,8 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result, const TaylorMo
 void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result, 
     MyComponent * comp, const int numVars, const int order, 
     const Interval & cutoff_threshold) const {
-    
+  int old = logger.reset();
+  logger.disable();
   logger.log(sbuilder() << "order: " << order);
   
 	TaylorModelVec tmvTemp;
@@ -2224,6 +2226,7 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
       result.tms.push_back(tmTemp);
     }
 	}
+  logger.restore(old);
 }
 
 void TaylorModelVec::Picard_no_remainder_assign(const TaylorModelVec & x0, const vector<HornerForm> & ode, const int numVars, const int order, const Interval & cutoff_threshold)
@@ -2243,6 +2246,7 @@ void TaylorModelVec::Picard_no_remainder_assign(MyComponent *component, const in
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
 	TaylorModelVec tmvTemp;
+  logger.force("Picard_ctrunc_normal");
 
 	if(order <= 1)
 	{
@@ -2297,7 +2301,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 	{
 		trees.push_back(NULL);
 	}
-
+  logger.force(sbuilder() << "order: " << order);
 	if(order <= 1)
 	{
 		for(int i=0; i<ode.size(); ++i)
@@ -2535,7 +2539,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 
 void TaylorModelVec::Picard_only_remainder(vector<Interval> & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<HornerForm> & ode, const Interval & timeStep) const
 {
-  logger.force("my version shoudln't call this");
+  logger.force("my version shoudln't call this (remainder)");
   exit(0);
 	result.clear();
 

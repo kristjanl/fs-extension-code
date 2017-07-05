@@ -1,0 +1,28 @@
+continuous reachability
+{
+  state var x1
+
+  setting
+  {
+    fixed steps 0.1
+    time 1
+    remainder estimation 1e-1
+    QR precondition
+    gnuplot interval x1,x1
+    fixed orders 2
+    cutoff 1e-15
+    precision 53
+    output bug
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -x1
+  }
+
+  init
+  {
+    x1 in [0 , 1]
+  }
+}

@@ -263,6 +263,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	vector<Interval> xPolyRange;
 	x.polyRangeNormal(xPolyRange, step_exp_table);
+  logger.force("before");
 	x.Picard_ctrunc_normal(tmvTemp, trees, x0, xPolyRange, ode, step_exp_table, rangeDim+1, order, cutoff_threshold);
 
 	// compute the interval evaluation of the polynomial difference, this part is not able to be reduced by Picard iteration

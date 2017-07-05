@@ -1,0 +1,35 @@
+continuous reachability
+{
+ state var r, theta, dr, dtheta
+ setting
+ {
+  fixed steps 0.003
+  time 10
+  remainder estimation 1e-10
+  shrink wrapping 0
+  gnuplot octagon theta,r
+  fixed orders 6
+  cutoff 1e-15
+  precision 512
+  output spring_pendulum_2
+  alg_small_comp flow impl
+  no decomposition
+  print on
+ }
+
+ nonpoly ode
+ {
+  r' = dr
+  theta' = dtheta
+  dr' = r*dtheta^2 + 9.8*cos(theta) - 2*(r - 1)
+  dtheta' = (-2*dr*dtheta - 9.8*sin(theta))/r
+ }
+
+ init
+ {
+  r in [1.19,1.21]
+  theta in [0.49,0.51]
+  dr in [0,0]
+  dtheta in [0,0]
+ }
+}

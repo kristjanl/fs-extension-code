@@ -70,6 +70,8 @@ class MyComponent {
     void remapFlowpipes();
     void remapLastFlowpipe();
     
+    bool isSolveVar(int var);
+    
     PrecondModel *lastPre();
     
     TaylorModelVec lastPipe();

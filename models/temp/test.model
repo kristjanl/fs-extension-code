@@ -5,7 +5,7 @@ continuous reachability
   setting
   {
     fixed steps 0.1
-    time 0.1
+    time 10
     remainder estimation 1e-3
     shrink wrapping 0
     gnuplot interval x1,x1
@@ -14,14 +14,14 @@ continuous reachability
     precision 53
     output test
     alg_small_comp flow impl
-    decomposition [[x1],[x2]]
+    decomposition [[x1,x2]]
     print on
   }
 
   poly ode 1
   {
     x1' = -x1
-    x2' = x1*x2
+    x2' = -0.1*x1*x2
   }
 
   init

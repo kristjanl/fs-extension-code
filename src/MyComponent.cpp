@@ -726,3 +726,7 @@ TaylorModelVec MyComponent::lastPipe() {
   return pipes[pipes.size() - 1];
 }
 
+bool MyComponent::isSolveVar(int var) {
+  vector<int>::iterator it = find(solveIndexes.begin(), solveIndexes.end(), var);
+  return it != solveIndexes.end();
+}
