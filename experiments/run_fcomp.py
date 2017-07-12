@@ -10,14 +10,6 @@ modelDir = os.path.join("..", "models", "bench")
 flowstar = os.path.join("..", "src", "flowstar")
 
 models = []
-
-models = models + ['test_comp.model']
-models = models + ['test_nocomp.model']
-
-models = []
-
-
-
 models = models + ['Brusselator_fcomp.model']
 models = models + ['Lorentz_fcomp.model']
 models = models + ['Lotka_Volterra_fcomp.model']
@@ -42,10 +34,6 @@ models = models + ['two_tanks_fcomp.model']
 models = models + ['vanderpol_fcomp.model']
 models = models + ['vehicle_platoon_3_fcomp.model']
 
-models = []
-models = models + ['Brusselator_fcomp.model']
-models = models + ['Lorentz_fcomp.model']
-models = models + ['Lotka_Volterra_fcomp.model']
 
 
 for model in models:

@@ -483,7 +483,7 @@ IdentityTransformer::IdentityTransformer() : Transformer(false, false) {
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  logger.log("sw transforming");
+  //logger.log("sw transforming");
   evaluateStepEnd(comps, settings);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
     logger.force("wrapping");
@@ -713,7 +713,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
 
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  logger.log("null transforming");
+  //logger.log("null transforming");
   evaluateStepEnd(comps, settings);
 }
 void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 

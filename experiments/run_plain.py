@@ -13,7 +13,7 @@ models = []
 
 
 
-models = models + ['Brusselator_plain.model']
+#models = models + ['Brusselator_plain.model']
 models = models + ['Lorentz_plain.model']
 models = models + ['Lotka_Volterra_plain.model']
 models = models + ['Roessler_plain.model']
@@ -37,10 +37,6 @@ models = models + ['two_tanks_plain.model']
 models = models + ['vanderpol_plain.model']
 models = models + ['vehicle_platoon_3_plain.model']
 
-models = []
-models = models + ['Brusselator_plain.model']
-models = models + ['Lorentz_plain.model']
-models = models + ['Lotka_Volterra_plain.model']
 
 
 for model in models:

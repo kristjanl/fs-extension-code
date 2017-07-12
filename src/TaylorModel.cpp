@@ -435,7 +435,7 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
   //logger.force(tm.remainder.toString());
 	if(!tm.remainder.subseteq(intZero) || true)
 	{
-	  logger.log("evaling");
+	  //logger.log("evaling");
 		expansion.intEvalNormal(P1xI2, step_exp_table);
 		tm1 = P1xI2;
 		logger.log(tm1.toString());

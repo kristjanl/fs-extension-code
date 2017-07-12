@@ -1,5 +1,5 @@
 set term png
-set output './images/bouncing_ball_plain_rem_QR_2_t_10.0.png
+set output './images/bouncing_ball_plain_plain_fcomp_2_t_10.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:10.1]
-set yrange [-99.081:0.0]
+set xrange [0.0:11.1]
+set yrange [-108.891:9.81]
 plot '-' notitle with lines ls 1
 0 -0.981
 0 0

@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x3"
-set xrange [0.0:6.501]
-set yrange [-2814708.38193:2814791.37063]
+set xrange [0.0:7.1508]
+set yrange [6.16523938067:45.5270038055]
 plot '-' notitle with lines ls 1
 0 35.9989999932
 0 36.3880944833

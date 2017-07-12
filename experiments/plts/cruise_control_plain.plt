@@ -1,5 +1,5 @@
 set term png
-set output './images/cruise_control_plain_rem_QR_2_t_100.0.png
+set output './images/cruise_control_plain_plain_fcomp_2_t_100.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:100.1]
-set yrange [-0.0:102.6]
+set xrange [0.0:110.1]
+set yrange [-10.0:112.6]
 plot '-' notitle with lines ls 1
 0 -0
 0 2.6

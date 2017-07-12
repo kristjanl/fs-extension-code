@@ -263,10 +263,10 @@ namespace smallComp {
     
     //inflate the remainders until picard operator is contracting
     findDecreasingRemainder(comp, pipe, ode, init, domain, settings.estimation);
-    //logger.logTMV("dec pipe", pipe);
+    logger.logTMV("dec", pipe);
     //contract the remainder with picard operator
     refineRemainder(comp, pipe, ode, init, domain);
-    //logger.logTMV("ref pipe", pipe);
+    logger.logTMV("ref", pipe);
     logger.dec();
     logger.log("advancing >");
     logger.restore(old);
@@ -495,10 +495,10 @@ namespace smallComp {
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
     
 
-    logger.logTMV("after decr", p);
+    logger.logTMV("dec", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
-    logger.logTMV("refined rem", p);
+    logger.logTMV("ref", p);
     
     logger.log(component.pipes.size());
     
@@ -507,7 +507,7 @@ namespace smallComp {
     logger.restore(old);
     
   }
-  
+  int tempp = 0;
   void singleStepIntegrate(MyComponent & component, MySettings & settings) {
     TaylorModelVec nextInit = component.initSet;
     vector<TaylorModelVec> & pipes = component.pipes;
@@ -526,10 +526,22 @@ namespace smallComp {
     //logger.logTMV("start", pipe);
     //logger.logTMV("nextInit", nextInit);
     
-    if(settings.useFlow == false)
+    int old2 = logger.reset();
+    if(settings.useFlow == false) {
+      //logger.logTMV("init", nextInit);
+      //logger.force("plain");
       smallComp::advance_step(component.solveIndexes, pipe, component.odes, nextInit, component.dom, settings);
-    else
+    } else {
+      //logger.logTMV("init", component.initSet);
+      //logger.force("flow");
       smallComp::advanceFlow(component, settings);
+    }
+    tempp++;
+    //logger.log(tempp);
+    logger.log(sbuilder() << "int: " << component.lastPipe().tms[0].remainder.toString());
+    logger.restore(old2);
+    if(tempp == 100)
+      exit(0);
     //logger.logTMV("last2", component.lastPipe());
     
     //logger.logTMV("step pipe", pipe);
@@ -889,7 +901,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   clock_t integrClock = clock();
   double t;
   for(t = 0; t < time; t+= step) {
-    logger.log(sbuilder() << "t: " << t);
+    //logger.log(sbuilder() << "t: " << t);
     cerr << ".";
     
     try{

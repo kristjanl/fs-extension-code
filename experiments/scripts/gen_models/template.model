@@ -1,0 +1,30 @@
+continuous reachability
+{
+$VARS$
+
+  setting
+  {
+    fixed steps 0.1
+    time 1
+    remainder estimation 1e-3
+    no precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+$NAME$
+    alg_small_comp flow impl
+$COMP$
+    print on
+  }
+
+  poly ode 1
+  {
+$ODES$
+  }
+
+  init
+  {
+$INIT$
+  }
+}
