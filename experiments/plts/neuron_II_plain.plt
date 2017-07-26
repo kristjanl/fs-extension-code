@@ -1,5 +1,5 @@
 set term png
-set output './images/neuron_II_plain_plain_fcomp_2_t_10.28.png
+set output './images/neuron_II_plain_plain_fcomp_2_t_10.2.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:11.328]
-set yrange [-6.69427726271:142.657383056]
+set xrange [0.0:11.24]
+set yrange [-177.981181941:546.735550993]
 plot '-' notitle with lines ls 1
 0 -0.5000000001
 0 0.5316137901

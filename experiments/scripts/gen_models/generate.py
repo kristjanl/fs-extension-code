@@ -67,10 +67,12 @@ def foo(dim):
   
   
   fileprefix,odef,compf = "lin", lin, fullcomp
-  fileprefix,odef,compf = "lin_dep", lindep, fullcomp
-  fileprefix,odef,compf = "sq_deg", sqdeg, fullcomp
-  fileprefix,odef,compf = "pair_dep", pairdep, paircomp
+  #fileprefix,odef,compf = "lin_dep", lindep, fullcomp
+  #fileprefix,odef,compf = "sq_deg", sqdeg, fullcomp
+  #fileprefix,odef,compf = "sq_deg_long", sqdeg, fullcomp
+  #fileprefix,odef,compf = "pair_dep", pairdep, paircomp
   
+  print "%s, %s" %(dim, fileprefix);
   filename1 = 'models/%s_%d_nocomp.model'%(fileprefix, dim)
   f1 = open(filename1, 'w')
   lookup1 = {'$VARS$': statevars, '$COMP$':no_comp, '$ODES$': odef, '$INIT$':initcond, '$NAME$':(lambda v,f:name(v,f,fileprefix, "nocomp"))}
@@ -97,6 +99,7 @@ def foo(dim):
   #     print line,
   
 def bar():
-  for i in range(2,51,2):
-    print i
+  for i in range(1,51,1):
+  #for i in range(2,51,2):
     foo(i)
+  foo(100)

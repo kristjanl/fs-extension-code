@@ -16,7 +16,6 @@ pairs = []
 pairs = pairs + [('test_comp.model', 'test_nocomp.model')]
 
 pairs = []
-
 pairs = pairs + [('Brusselator_plain.model', 'Brusselator_fcomp.model')]
 pairs = pairs + [('Lorentz_plain.model', 'Lorentz_fcomp.model')]
 pairs = pairs + [('Lotka_Volterra_plain.model', 'Lotka_Volterra_fcomp.model')]
@@ -46,11 +45,8 @@ pairs = pairs + [('two_tanks_plain.model', 'two_tanks_fcomp.model')]
 pairs = pairs + [('vanderpol_plain.model', 'vanderpol_fcomp.model')]
 pairs = pairs + [('vehicle_platoon_3_plain.model', 'vehicle_platoon_3_fcomp.model')]
 
-
-pairs2 = []
-pairs2 = pairs + [('Brusselator_plain.model', 'Brusselator_fcomp.model')]
-pairs2 = pairs + [('Lorentz_plain.model', 'Lorentz_fcomp.model')]
-pairs2 = pairs + [('Lotka_Volterra_plain.model', 'Lotka_Volterra_fcomp.model')]
+#pairs = []
+#pairs = pairs + [('Brusselator_plain.model', 'Brusselator_fcomp.model')]
 
 tf.generate_comparision_plots(scriptsDir, modelDir, pairs, "_plain_fcomp")
 

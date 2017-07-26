@@ -1,5 +1,5 @@
 set term png
-set output './images/Lorentz_plain_plain_fcomp_3_t_6.498.png
+set output './images/Lorentz_plain_plain_fcomp_3_t_0.936.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x3"
-set xrange [0.0:7.1508]
-set yrange [6.16523938067:45.5270038055]
+set xrange [0.0:0.993]
+set yrange [-288.914404751:375.297350287]
 plot '-' notitle with lines ls 1
 0 35.9989999932
 0 36.3880944833

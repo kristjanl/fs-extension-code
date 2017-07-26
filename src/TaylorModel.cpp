@@ -2569,7 +2569,8 @@ void TaylorModelVec::Picard_only_remainder(vector<Interval> & result,
       logger.log("computing");
       Interval intTemp;
 		  comp->odes[i].insert_only_remainder(intTemp, trees[i], *this, timeStep);
-		  intTemp *= timeStep;
+		  intTemp *= timeStep; //multiply by time interval (integration)
+      intTemp += comp->initSet.tms[0].remainder; //add the initial condition rem
 		  result.push_back(intTemp);
     }
 	}

@@ -1,5 +1,5 @@
 set term png
-set output './images/diabetic_1_plain_plain_fcomp_4_t_359.9.png
+set output './images/diabetic_1_plain_plain_fcomp_4_t_188.5.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x4"
-set xrange [0.0:395.99]
-set yrange [-35.99:395.99]
+set xrange [0.0:3.18]
+set yrange [-2.36639594045:8.21901996333]
 plot '-' notitle with lines ls 1
 0 -0
 0 0.1

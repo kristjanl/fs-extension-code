@@ -1,5 +1,5 @@
 set term png
-set output './images/jet_engine_plain_plain_fcomp_2_t_9.99.png
+set output './images/jet_engine_plain_plain_fcomp_2_t_1.8.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:11.019]
-set yrange [-3.64258935308:1.84063658707]
+set xrange [0.0:1.812]
+set yrange [-3.41899973681:1.6431841773]
 plot '-' notitle with lines ls 1
 0 0.7999072235
 0 1.2840930921

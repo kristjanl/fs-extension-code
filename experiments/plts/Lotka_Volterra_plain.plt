@@ -1,5 +1,5 @@
 set term png
-set output './images/Lotka_Volterra_plain_plain_fcomp_2_t_5.0.png
+set output './images/Lotka_Volterra_plain_plain_fcomp_2_t_2.14.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:5.52]
-set yrange [0.23238351889:3.73635662139]
+set xrange [0.0:2.374]
+set yrange [-17.6148274079:18.5632308594]
 plot '-' notitle with lines ls 1
 0 1.7999875689
 0 2.2981004789

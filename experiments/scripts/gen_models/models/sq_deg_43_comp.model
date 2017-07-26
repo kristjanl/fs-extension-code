@@ -4,8 +4,8 @@ continuous reachability
 
   setting
   {
-    fixed steps 0.1
-    time 1
+    fixed steps 1
+    time 10
     remainder estimation 1e-3
     no precondition
     gnuplot interval x1,x1
