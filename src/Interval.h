@@ -11,15 +11,26 @@
 
 #include "include.h"
 #include "Exceptions.h"
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 extern mpfr_prec_t intervalNumPrecision;
 
 class Interval
 {
 private:
+  friend class boost::serialization::access;
 	mpfr_t lo;		// the lower bound
 	mpfr_t up;		// the upper bound
-
+  template<class Archive>
+  void save(Archive & ar, const unsigned int version) const
+  {
+  }
+  template<class Archive>
+  void load(Archive & ar, const unsigned int version)
+  {
+  }
+  BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	Interval();
 	Interval(const double c);

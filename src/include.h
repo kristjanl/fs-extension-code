@@ -114,6 +114,7 @@ extern void parse(string s);
 extern void parseTM();
 class TaylorModelVec;
 extern TaylorModelVec parseTMV(string s);
+extern void parseFile(string s);
 class HornerForm;
 extern vector<HornerForm> parseHFFromPoly(string s);
 extern vector<int> parseiVec(string s);

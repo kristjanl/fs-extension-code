@@ -57,4 +57,14 @@ class PrecondModel {
     TaylorModelVec composed(MySettings *settings);
 };
 
+void serializeFlows(MyComponent *comp, string filename);
+vector<TaylorModelVec> & deserializeFlows(string filename);
+vector<TaylorModelVec *> pDeserializeFlows(string filename);
+
+void compareFlows(vector<TaylorModelVec *> & first, 
+    vector<TaylorModelVec *> & second);
+void compareFlows(vector<TaylorModelVec> & first, 
+    vector<TaylorModelVec> & second);
+void compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
+
 #endif /* UTILS_H_ */

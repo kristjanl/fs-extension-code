@@ -177,6 +177,7 @@ public:
 
 	void clear();
 	void dump_interval(FILE *fp, const vector<string> & stateVarNames, const vector<string> & tmVarNames) const;
+	void serialize(FILE *fp, const vector<string> & tmParams) const;
 	void dump_constant(FILE *fp, const vector<string> & stateVarNames, const vector<string> & tmVarNames) const;
 	void constant(vector<Interval> & result) const;
 
@@ -349,6 +350,7 @@ public:
 	Monomial mono;
 	vector<int> integerVec;
 	vector<Interval> intervalVec;
+	vector<TaylorModelVec> pipes;
 	string		strExpansion;
 
 	ParseResult();

@@ -120,6 +120,8 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 "my Iv" {return MYINTRVEC;}
 "rem" {return REM;}
 "flow impl" {return FLOW_IMPL;}
+"flowpipes" {return FLOWPIPES;}
+"vars" {return VARS;}
 
 
 {number} { yylval.dblVal = atof( (char *)yytext ); return NUM; }
@@ -191,6 +193,13 @@ void parse(string s) {
 	yy_switch_to_buffer(current);
 
 	delete [] strODE;
+}
+
+void parseFile(string name) {
+  logger.log("parsing");
+  yyin = fopen(name.c_str(), "r");
+  yyparse();
+  fclose(yyin);
 }
 
 TaylorModelVec parseTMV(string s) {

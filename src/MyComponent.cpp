@@ -730,3 +730,82 @@ bool MyComponent::isSolveVar(int var) {
   vector<int>::iterator it = find(solveIndexes.begin(), solveIndexes.end(), var);
   return it != solveIndexes.end();
 }
+
+void MyComponent::serializeFlows() {
+  logger.log("writing flows");
+  //exit(0);
+  
+  logger.reset();
+  logger.log("bar");
+  FILE *fpDumping = fopen("temp.txt", "w");
+  logger.logTM("last", lastPipe().tms[0]);
+  vector<string> names;
+  names.push_back("t");
+  names.push_back("a1");
+  names.push_back("a2");
+  
+  vector<string> varNames;
+  varNames.push_back("x1");
+  varNames.push_back("x2");
+  
+  
+  parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a1");
+	parseSetting.addVar("a2");
+  
+  
+  fprintf(fpDumping, "flowpipes{\n");
+  bool first = true;
+  int n = 1;
+  for(vector<TaylorModelVec>::iterator pipeIt = pipes.begin();
+        pipeIt < pipes.end(); pipeIt++) {
+    if(first == false)
+      fprintf(fpDumping, ",\n");
+    first = false;
+    
+    //logger.logTMV("pip", *pipeIt);
+    pipeIt->serialize(fpDumping, names);
+    //parseTMV(sbuilder() << "my models{" << n++ << " * a1 + [-0.001,0.001]}").serialize(fpDumping, varNames, names);
+    //break;
+  }
+  fprintf(fpDumping, "}\n");
+
+  fclose(fpDumping);
+}
+void MyComponent::deserializeFlows() {
+  exit(0);
+  logger.log("reading flows");
+  logger.reset();
+  logger.log("bar");
+  parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("a1");
+	parseSetting.addVar("a2");
+  parseFile("temp.txt");
+  vector<TaylorModelVec> & v = parseResult.pipes;
+  logger.log(parseResult.pipes.size());
+  for(vector<TaylorModelVec>::iterator pipeIt = v.begin();
+      pipeIt < v.end(); pipeIt++) {
+    logger.logTMV("p", *pipeIt);
+  }
+  exit(0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

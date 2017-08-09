@@ -76,6 +76,9 @@ class MyComponent {
     
     TaylorModelVec lastPipe();
     
+    void serializeFlows();
+    void deserializeFlows();
+    
   private:
     void remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
         vector<Interval> domain);

@@ -1720,6 +1720,22 @@ void TaylorModelVec::dump_interval(FILE *fp, const vector<string> & stateVarName
 	fprintf(fp, "\n");
 }
 
+void TaylorModelVec::serialize(FILE *fp, const vector<string> & tmParams) const {
+
+
+	fprintf(fp, "my models{\n");
+  
+  bool first = true;
+	for(int i=0; i<tms.size(); ++i) {
+	  if(first == false)
+	    fprintf(fp, ",");
+	  first = false;
+		tms[i].dump_interval(fp, tmParams);
+	}
+
+	fprintf(fp, "}\n");
+}
+
 void TaylorModelVec::dump_constant(FILE *fp, const vector<string> & stateVarNames, const vector<string> & tmVarNames) const
 {
 	for(int i=0; i<tms.size(); ++i)

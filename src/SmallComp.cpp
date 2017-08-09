@@ -678,6 +678,8 @@ void foo() {
 	construct_step_exp_table(step_exp_table, step_end_exp_table, domain[0].sup(), 2*order);
 	int paramCount = pipe.tms[0].getParamCount();
   
+  
+  exit(0);
   TaylorModelVec oldPipe = TaylorModelVec(pipe);
   smallComp::computeNewRemainder(comp, oldPipe, ode, init, domain);
   logger.logTMV("oldPipe", oldPipe);
@@ -777,24 +779,174 @@ void foo() {
 	exit(0);
 }
 
-void bar(MyComponent *c) {
-  logger.reset();
+
+
+void bar() {
   logger.log("bar");
-  FILE *fpDumping = fopen("temp.txt", "w");
-  logger.logTM("last", c->lastPipe().tms[0]);
-  vector<string> names;
-  names.push_back("t");
-  names.push_back("a1");
-  c->lastPipe().tms[0].dump_interval(fpDumping, names);
-  fclose(fpDumping);
+  deserializeFlows("temp.txt");
+  //parseFile("temp.model");
+}
+
+
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+class gps_position {
+private:
+    friend class boost::serialization::access;
+    template<class Archive>
+    void save(Archive & ar, const unsigned int version) const
+    {
+        logger.log("saving");
+        ar  & degrees;
+        ar  & minutes;
+        
+        char* abc = NULL;
+        int base = 2;
+        mpfr_exp_t e;
+        abc = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
+        
+        string str(abc);
+        logger.log(str);
+        ar & str;
+        ar & e;
+        mpfr_printf ("number = %.17Rg\n", number);
+  mpfr_out_str (stdout, 2, 0, number, MPFR_RNDD);
+  logger.log("");
+    }
+    template<class Archive>
+    void load(Archive & ar, const unsigned int version)
+    {
+        logger.log("loading");
+        int i;
+        int j;
+        int base = 2;
+        string str;
+        mpfr_exp_t e;
+        ar  & degrees;
+        ar  & minutes;
+        ar & str;
+        ar & e;
+        const char *cstr = str.c_str();
+        logger.log(sbuilder() << "str: " << str);
+        logger.log(sbuilder() << "cstr: " << cstr);
+        logger.log(e);
+        //char* abc = NULL;
+        //ar & abc;
+        mpfr_t back;
+        mpfr_inits2(intervalNumPrecision, back, (mpfr_ptr) 0);
+        mpfr_set_str(back, cstr, base, MPFR_RNDD);
+        mpfr_set_exp(back, e);
+        mpfr_printf ("back = %.17Rg\n", back);
+  mpfr_out_str (stdout, 2, 0, back, MPFR_RNDD);
+  logger.log("");
+        exit(0);
+        
+        
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
+    int degrees;
+    int minutes;
+    float seconds;
+    mpfr_t number;
+public:
+    string s;
+    gps_position(){};
+    gps_position(int d, int m, float s) :
+        degrees(d), minutes(m), seconds(s)
+    {
+      mpfr_inits2(intervalNumPrecision, number, (mpfr_ptr) 0);
+      mpfr_set_d(number, s, MPFR_RNDD);
+    }
+    void print() const {
+      //mpfr_printf ("mpfr = %.17Rg\n", number);
+      //mpfr_out_str (stdout, 10, 0, number, MPFR_RNDD);
+      logger.log(sbuilder() << "(" << degrees << "," << minutes << "," << seconds << "," << ")" << s);
+    }
+};
+
+void foo2() {
+  // create and open a character archive for output
+    std::ofstream ofs("filename");
+
+    // create class instance
+    gps_position g(35, 59, 24.567f);
+    g.s = "foo";
+    Interval i1(2,3);
+    logger.log(i1.toString());
+    g.print();
+    // save data to archive
+    {
+        boost::archive::text_oarchive oa(ofs);
+        // write class instance to archive
+        oa << g;
+        oa << g;
+        oa << i1;
+    	// archive and stream closed when destructors are called
+    }
+
+    // ... some time later restore the class instance to its orginal state
+    gps_position newg, newg2;
+    Interval i2;
+    {
+        // create and open an archive for input
+        std::ifstream ifs("filename");
+        boost::archive::text_iarchive ia(ifs);
+        // read class state from archive
+        ia >> newg;
+        ia >> newg2;
+        ia >> i2;
+        // archive and stream closed when destructors are called
+    }
+    newg.print();
+    newg2.print();
+    
+  
+  
+  mpfr_t number;
+  mpfr_inits2(intervalNumPrecision, number, (mpfr_ptr) 0);
+  mpfr_set_d(number, 25, MPFR_RNDD);
+  mpfr_printf ("mpfr = %.17Rg\n", number);
+  mpfr_out_str (stdout, 2, 0, number, MPFR_RNDD);
+  logger.log("");
+  
+  char* abc = NULL;
+  int base = 2;
+  mpfr_exp_t e;
+  abc = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
+  logger.log(sbuilder() << "exponent: "  << e);
+  cout << abc << endl;;
+  
+  mpfr_t back;
+  mpfr_inits2(intervalNumPrecision, back, (mpfr_ptr) 0);
+  mpfr_set_str(back, abc, base, MPFR_RNDD);
+  mpfr_set_exp(back, e);
+  mpfr_printf ("back = %.17Rg\n", back);
+  mpfr_out_str (stdout, 10, 0, back, MPFR_RNDD);
+  logger.log("");
+  
+  mpfr_free_str (abc);
+  exit(0);
+  
 }
 
 void SmallCompReachability::myRun() {
   int old = logger.reset();
   logger.log("Simple Comp Run <");
   logger.inc();
+  
+  foo2();
+  
+  /*
+  vector<TaylorModelVec *> plain = pDeserializeFlows("plain.txt");
+  vector<TaylorModelVec *> fcomp = pDeserializeFlows("fcomp.txt");
+  
+  compareFlows(fcomp, plain);
+  
   //foo();
-  //exit(1);
+  
+  //bar();
+  exit(1);
+  */
   
   clock_t begin, end;
 	begin = clock();
@@ -912,7 +1064,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
       writer.info.push_back(sbuilder() << "reason: " << e.what());
       break;
     }
-      
+    //break; //only the first step, REMOVE!
   }
   writer.info.push_back(sbuilder() << "integration time: " << t);
   clock_t end = clock();
@@ -922,8 +1074,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   if(settings->transformer->isWrapper) {
     //TODO
     //writer.info.push_back(sbuilder() << "shrink wraps: " << swChecker->getCount());
-  }
-  else
+  } else
     writer.info.push_back(sbuilder() << "shrink wraps: 0");
   
   foo2(comps, all, settings->transformer, settings);
@@ -935,5 +1086,10 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
 
   logger.dec();
   logger.log("sc reach >");
-  bar(comps[0]);
+  //comps[0]->serializeFlows();
+  serializeFlows(comps[0], "fcomp.txt");
+  vector<TaylorModelVec> & parsed = deserializeFlows("fcomp.txt");
+  compareFlows(comps[0]->pipes, parsed);
+  exit(0);
+  
 }

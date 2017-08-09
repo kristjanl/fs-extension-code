@@ -76,6 +76,8 @@
 %token MYHORNERFORMS
 %token MYINTGVEC
 %token MYINTRVEC
+%token FLOWPIPES
+%token VARS
 
 %type <poly> polynomial
 %type <poly> ODEpolynomial
@@ -518,10 +520,7 @@ MYMODEL '{' my_taylor_model '}'
 	delete $3;
 }
 |
-MYMODELS '{' my_taylor_models '}'
-{
-  parseResult.tmv = TaylorModelVec(*$3);
-}
+models_wrapper
 |
 MYMONO '{' my_mono '}'
 {
@@ -544,7 +543,33 @@ MYINTRVEC '<' my_interval_vector '>'
 {
 	parseResult.intervalVec = *$3;
 }
+|
+VARS '{' parsing_vars  '}' FLOWPIPES '{' multiple_models '}' {
+}
 ;
+
+parsing_vars:
+IDENT {
+  parseSetting.clear();
+	parseSetting.addVar(*$1);
+} | 
+parsing_vars ',' IDENT {
+	parseSetting.addVar(*$3);
+};
+
+multiple_models: 
+models_wrapper {
+  parseResult.pipes.push_back(parseResult.tmv);
+}| 
+multiple_models ','   models_wrapper  {
+  parseResult.pipes.push_back(parseResult.tmv);
+};
+
+models_wrapper: MYMODELS '{' my_taylor_models '}'
+{
+  parseResult.tmv = TaylorModelVec(*$3);
+  //logger.logTMV("tmv", parseResult.tmv);
+};
 
 continuous_flowpipes: continuous_flowpipes '{' interval_taylor_model taylor_model_domain '}'
 {
@@ -4989,8 +5014,10 @@ my_poly: my_poly '+' my_poly{
 	
   Monomial m(Interval(1), degs);
   $$ = new Polynomial(m);
-}
-| NUM {
+} | '[' NUM ',' NUM ']' {
+  int dim = parseSetting.variables.size();
+  $$ = new Polynomial(Interval($2, $4), dim);
+} | NUM {
   int dim = parseSetting.variables.size();
   Polynomial *p = new Polynomial(Interval($1), dim);
   $$ = new Polynomial(Interval($1), dim);
