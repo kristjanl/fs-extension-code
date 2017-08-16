@@ -31,6 +31,7 @@ public:
 
 	void clear();
 	void dump_interval(FILE *fp, const vector<string> & varNames) const;
+	void serialize(FILE *fp, const vector<string> & tmParams) const;
 	void dump_constant(FILE *fp, const vector<string> & varNames) const;
 	void constant(Interval & result) const;									// Return the constant part of the expansion.
 
@@ -109,6 +110,9 @@ public:
 	void center_nc();
 
 	void rmZeroTerms(const vector<int> & indices);
+	
+	//void centerRemainder();
+	void pushConstantToRemainder();
 
 	void normalize(vector<Interval> & domain);
 
@@ -177,6 +181,7 @@ public:
 
 	void clear();
 	void dump_interval(FILE *fp, const vector<string> & stateVarNames, const vector<string> & tmVarNames) const;
+	void serialize_old(FILE *fp, const vector<string> & tmParams) const;
 	void serialize(FILE *fp, const vector<string> & tmParams) const;
 	void dump_constant(FILE *fp, const vector<string> & stateVarNames, const vector<string> & tmVarNames) const;
 	void constant(vector<Interval> & result) const;
@@ -307,6 +312,9 @@ public:
   
   //remove higher terms
   void removeHighTerms(int order);
+  
+	//void centerRemainder();
+	void pushConstantToRemainder();
   
   vector<Interval> getRemainders();
 

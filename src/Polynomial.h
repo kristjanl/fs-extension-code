@@ -98,6 +98,7 @@ public:
 	void clear();
 
 	void dump_interval(FILE *fp, const vector<string> & varNames) const;
+	void serialize(FILE *fp, const vector<string> & tmParams) const;
 	void dump_constant(FILE *fp, const vector<string> & varNames) const;
 
 	void constant(Interval & result) const;											// constant part of the polynomial

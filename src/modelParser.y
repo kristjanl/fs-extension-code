@@ -15,6 +15,7 @@
 	extern int yyerror(string);
 	extern int yylex();
 	extern int yyparse();
+	extern void parseMpfr(string *str, mpfr_t num);
 	bool err;
 %}
 
@@ -45,6 +46,7 @@
 
 %token<dblVal> NUM
 %token<identifier> IDENT
+%token<identifier> MPFRNUM
 %token STATEVAR TMVAR TM EQ GEQ LEQ ASSIGN END
 %token MODE INIT BELONGSTO
 %token POLYODE1 POLYODE2 POLYODE3
@@ -116,6 +118,7 @@
 %type <iVec> my_integer_vector
 %type <intVec> my_interval_vector
 %type <polyVec> my_polys
+%type <pint> mpfr_interval
 
 
 
@@ -560,13 +563,14 @@ parsing_vars ',' IDENT {
 multiple_models: 
 models_wrapper {
   parseResult.pipes.push_back(parseResult.tmv);
-}| 
+} | 
 multiple_models ','   models_wrapper  {
   parseResult.pipes.push_back(parseResult.tmv);
 };
 
 models_wrapper: MYMODELS '{' my_taylor_models '}'
 {
+  logger.log("models wrapper");
   parseResult.tmv = TaylorModelVec(*$3);
   //logger.logTMV("tmv", parseResult.tmv);
 };
@@ -4939,10 +4943,12 @@ my_polys: my_poly {
 };
 
 my_taylor_models: my_taylor_model {
+  logger.log("my taylormodels");
   $$ = new vector<TaylorModel>();
   $$->push_back(TaylorModel(*$1));
   delete $1;
 } | my_taylor_model ',' my_taylor_models {
+  logger.log("my taylormodels list");
   //$3->push_back(*$1);
   $3->insert($3->begin(),*$1);
   $$ = $3;
@@ -4950,20 +4956,33 @@ my_taylor_models: my_taylor_model {
 }
 ;
 
-my_taylor_model: my_poly {
-  $$ = new TaylorModel(*($1), Interval());
-  delete $1;
-} | my_poly '+' '[' NUM ',' NUM ']' {
-  $$ = new TaylorModel(*($1), Interval($4,$6));
-  delete $1;
-} | my_poly '-' '[' NUM ',' NUM ']' {
-  $$ = new TaylorModel(*($1), Interval(-$6,-$4));
-  delete $1;
-} | '[' NUM ',' NUM ']' {
+
+mpfr_interval: '[' MPFRNUM ',' MPFRNUM ']' {
+  mpfr_t lower, upper;
+  parseMpfr($2, lower);
+  parseMpfr($4, upper);
   
-  $$ = new TaylorModel(
-      Polynomial(Monomial(Interval(0), parseSetting.variables.size())), 
-      Interval($2,$4));
+  mpfr_printf("lower = %.17Rg\n", lower);
+  mpfr_printf("upper = %.17Rg\n", upper);
+  logger.force("mpfr");
+  logger.force(sbuilder() << *$2);
+  logger.force(sbuilder() << *$4);
+  
+  Interval* ret = new Interval(lower, upper);
+  logger.log(ret->toString());
+  $$ = ret;
+}
+
+my_taylor_model: my_poly {
+  logger.log("my taylor model poly");
+  
+  Interval c;
+  $1->constant(c);
+  $1->rmConstant();
+  
+  $$ = new TaylorModel(*$1, c);
+  logger.logTM("tm", *$$);
+  delete $1;
 };
 
 my_poly: my_poly '+' my_poly{
@@ -5011,7 +5030,6 @@ my_poly: my_poly '+' my_poly{
 	  }
 	  degs.push_back(0);
 	}
-	
   Monomial m(Interval(1), degs);
   $$ = new Polynomial(m);
 } | '[' NUM ',' NUM ']' {
@@ -5021,6 +5039,11 @@ my_poly: my_poly '+' my_poly{
   int dim = parseSetting.variables.size();
   Polynomial *p = new Polynomial(Interval($1), dim);
   $$ = new Polynomial(Interval($1), dim);
+} | mpfr_interval {
+  logger.log("poly mpfr");
+  int dim = parseSetting.variables.size();
+  $$ = new Polynomial(Interval(*$1), dim);
+  delete $1;
 };
 
 my_mono: NUM '<' my_integer_vector '>' {

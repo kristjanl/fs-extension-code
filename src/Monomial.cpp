@@ -195,6 +195,29 @@ void Monomial::dump_interval(FILE *fp, const vector<string> & varNames) const
 	}
 }
 
+void Monomial::serialize(FILE *fp, const vector<string> & varNames) const {
+	coefficient.serialize(fp);
+
+	for(int i=0; i<degrees.size()-1; i++)
+	{
+		if(degrees[i] != 0)
+		{
+			if(degrees[i] == 1)
+				fprintf(fp, " * %s", varNames[i].c_str());
+			else
+				fprintf(fp, " * %s^%d", varNames[i].c_str(), degrees[i]);
+		}
+	}
+
+	if(degrees[degrees.size()-1] != 0)
+	{
+		if(degrees[degrees.size()-1] == 1)
+			fprintf(fp, " * %s", varNames[degrees.size()-1].c_str());
+		else
+			fprintf(fp, " * %s^%d", varNames[degrees.size()-1].c_str(), degrees[degrees.size()-1]);
+	}
+}
+
 void Monomial::dump_constant(FILE *fp, const vector<string> & varNames) const
 {
 	double c = coefficient.sup();

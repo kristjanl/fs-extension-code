@@ -57,6 +57,13 @@ Interval::Interval(const Interval & I)
 	mpfr_set(up, I.up, MPFR_RNDU);
 }
 
+Interval::Interval(const mpfr_t lower, const mpfr_t upper) {
+	mpfr_inits2(intervalNumPrecision, lo, up, (mpfr_ptr) 0);
+
+	mpfr_set(lo, lower, MPFR_RNDD);
+	mpfr_set(up, upper, MPFR_RNDU);
+}
+
 Interval::~Interval()
 {
 	mpfr_clear(lo);
@@ -1815,6 +1822,69 @@ void Interval::dump(FILE *fp) const
 	fprintf(fp, "]");
 }
 
+
+void serializeMpfr(FILE *fp, const mpfr_t number) {
+
+  /*
+	mpfr_t number;
+  mpfr_inits2(intervalNumPrecision, number, (mpfr_ptr) 0);
+  mpfr_set_d(number, -0.1, MPFR_RNDN);*/
+  
+  
+  //char* str = NULL;
+  //mpfr_exp_t e;
+  //str = mpfr_get_str (NULL, &e, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDN);
+  
+	//fprintf(fp, "%se%d", str, e);
+	
+	
+	fprintf (fp, "0m");
+  mpfr_out_str(fp, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDD);
+  
+  
+  cout << "-----" << endl;
+  mpfr_printf ("numb = %.27Rg\n", number);
+  
+  char* str = NULL;
+  mpfr_exp_t e;
+  str = mpfr_get_str (NULL, &e, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDN);
+
+  
+  
+  char buffer[64];
+  sprintf (buffer, ".%s@%ld", str, (long) e);
+  cout << "buffer: " << buffer << endl;
+  
+  
+  mpfr_t back;
+  mpfr_inits2(53, back, (mpfr_ptr) 0);
+  mpfr_set_str (back, buffer, MPFR_SERIALIZATION_BASE, MPFR_RNDD);
+  mpfr_printf ("back = %.27Rg\n", back);
+  
+  
+  mpfr_t dif;
+  mpfr_inits2(53, dif, (mpfr_ptr) 0);
+  mpfr_sub(dif, number, back, MPFR_RNDU);
+  mpfr_printf("dif1 = %.27Rg\n", dif);
+  cout << "dif2: ";
+  mpfr_out_str(stdout, 2, 0, dif, MPFR_RNDD);
+  cout << endl;
+  
+  if(mpfr_cmp (number, back) ){
+    cout <<   mpfr_cmp (number, back) << endl;
+    exit(0);  
+  }
+}
+
+void Interval::serialize(FILE *fp) const
+{
+	fprintf (fp, "[");
+  serializeMpfr(fp, lo);
+	fprintf(fp, " , ");
+  serializeMpfr(fp, up);
+	fprintf(fp, "]");
+}
+
 void Interval::output(FILE * fp, const char * msg, const char * msg2) const
 {
 	fprintf (fp, "%s [ ", msg);
@@ -1861,6 +1931,14 @@ string Interval::toString() const {
   string los = toStringHelper(lo);
   string ups = toStringHelper(up);
   return "[" + los + "," + ups + "]";
+}
+void Interval::printFull() const {
+  //logger.log("printing full");
+  //mpfr_printf ("%.55Rg\n", lo);
+  mpfr_out_str (stdout, 2, 0, lo, MPFR_RNDU);
+  cout << endl;
+  mpfr_out_str (stdout, 2, 0, lo, MPFR_RNDD);
+  cout << endl;
 }
 
 string Interval::getLower() const {

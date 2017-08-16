@@ -84,6 +84,15 @@ void TaylorModel::dump_interval(FILE *fp, vector<string> const & varNames) const
 	fprintf(fp, "\n");
 }
 
+void TaylorModel::serialize(FILE *fp, vector<string> const & tmParams) const
+{
+  logger.force("here");
+	expansion.serialize(fp, tmParams);
+	fprintf(fp, " + ");
+	remainder.serialize(fp);
+	fprintf(fp, "\n");
+}
+
 void TaylorModel::dump_constant(FILE *fp, vector<string> const & varNames) const
 {
 	expansion.dump_constant(fp, varNames);
@@ -1720,11 +1729,8 @@ void TaylorModelVec::dump_interval(FILE *fp, const vector<string> & stateVarName
 	fprintf(fp, "\n");
 }
 
-void TaylorModelVec::serialize(FILE *fp, const vector<string> & tmParams) const {
-
-
+void TaylorModelVec::serialize_old(FILE *fp, const vector<string> & tmParams) const {
 	fprintf(fp, "my models{\n");
-  
   bool first = true;
 	for(int i=0; i<tms.size(); ++i) {
 	  if(first == false)
@@ -1732,7 +1738,17 @@ void TaylorModelVec::serialize(FILE *fp, const vector<string> & tmParams) const 
 	  first = false;
 		tms[i].dump_interval(fp, tmParams);
 	}
-
+	fprintf(fp, "}\n");
+}
+void TaylorModelVec::serialize(FILE *fp, const vector<string> & tmParams) const {
+	fprintf(fp, "my models{\n");
+  bool first = true;
+	for(int i=0; i<tms.size(); ++i) {
+	  if(first == false)
+	    fprintf(fp, ",");
+	  first = false;
+		tms[i].serialize(fp, tmParams);
+	}
 	fprintf(fp, "}\n");
 }
 
@@ -4385,5 +4401,23 @@ vector<Interval> TaylorModelVec::getRemainders() {
   return ret;
 }
 
+void TaylorModel::pushConstantToRemainder() {
+  //logger.log("pushing");
+  
+  //logger.logTM("pre", *this);
+  
+  Interval c;
+  constant(c);
+  rmConstant();
+  
+  //logger.log(c.toString());
+  remainder += c;
+  //logger.logTM("aft", *this);
+}
 
+void TaylorModelVec::pushConstantToRemainder() {
+  for(int i = 0; i < tms.size(); i++) {
+    tms[i].pushConstantToRemainder();
+  }
+}
 

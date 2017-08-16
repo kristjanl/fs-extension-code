@@ -65,6 +65,6 @@ void compareFlows(vector<TaylorModelVec *> & first,
     vector<TaylorModelVec *> & second);
 void compareFlows(vector<TaylorModelVec> & first, 
     vector<TaylorModelVec> & second);
-void compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
+double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
 
 #endif /* UTILS_H_ */

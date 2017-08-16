@@ -727,6 +727,28 @@ void Polynomial::dump_interval(FILE *fp, const vector<string> & varNames) const
 	monomials.back().dump_interval(fp, varNames);
 }
 
+
+void Polynomial::serialize(FILE *fp, const vector<string> & tmParams) const {
+  
+	if(monomials.size() == 0)
+	{ 
+    ZERO_INTERVAL.serialize(fp);
+		return;
+	}
+
+	list<Monomial>::const_iterator iter, iter_last;
+	iter_last = monomials.end();
+	--iter_last;
+
+	for(iter = monomials.begin(); iter != iter_last; ++iter)
+	{
+		iter->serialize(fp, tmParams);
+		fprintf(fp, " + ");
+	}
+
+	monomials.back().serialize(fp, tmParams);
+}
+
 void Polynomial::dump_constant(FILE *fp, const vector<string> & varNames) const
 {
 	if(monomials.size() == 0)

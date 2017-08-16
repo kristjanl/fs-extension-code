@@ -109,10 +109,9 @@ void serializeFlows(MyComponent *comp, string filename) {
       fprintf(fp, ",\n");
     first = false;
     
-    //logger.logTMV("pip", *pipeIt);
+    pipeIt->pushConstantToRemainder();
+    
     pipeIt->serialize(fp,  params);
-    //parseTMV(sbuilder() << "my models{" << n++ << " * a1 + [-0.001,0.001]}").serialize(fpDumping, varNames, params);
-    //break;
   }
   fprintf(fp, "}\n");
 
@@ -148,13 +147,16 @@ vector<TaylorModelVec *> pDeserializeFlows(string filename) {
   return ret;
 }
 
-void compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
+double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
+  double sumOfMags = 0;
   if(f.size() != s.size()) {
     logger.force("different vInt sizes");
-    return;
+    exit(0);
+    return 0;
   }
   for(int i = 0; i < f.size(); i++) {
     Interval fSup, sSup, fInf, sInf;
+    
     f[i].sup(fSup);
     s[i].sup(sSup);
     
@@ -176,7 +178,9 @@ void compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
     
     Interval totalDif = infDif + supDif;
     logger.log(sbuilder() << "totalDif: " << totalDif.toString());
+    sumOfMags += totalDif.mag();
   }
+  return sumOfMags;
   //exit(0);
 }
 
@@ -185,7 +189,8 @@ void compareFlows(vector<TaylorModelVec> & first,
     vector<TaylorModelVec> & second) {
   logger.log("here");
   if(first.size() != second.size()) {
-    logger.force("compareFlows unequal size (1)");
+    logger.force(sbuilder() << "compareFlows unequal size (" << 
+        first.size() << ", " << second.size() << ")");
     exit(0);  
   }
   vector<TaylorModelVec>::iterator fi = first.begin();
@@ -213,6 +218,8 @@ void compareFlows(vector<TaylorModelVec *> & first,
     domain.push_back(Interval(-1,1));  //don't really care about time step size
   }
   
+  double sumOfMags = 0;
+  
   for(; fIt < first.end() && sIt < second.end(); fIt++, sIt++) {
     TaylorModelVec dif;
     TaylorModelVec *f = *fIt;
@@ -221,19 +228,24 @@ void compareFlows(vector<TaylorModelVec *> & first,
     //logger.logTMV("s", *s);
     f->sub(dif, *s);
     //logger.logTMV("dif", dif);
+    logger.logTMV("dif", dif);
     vector<Interval> difBound;
     dif.polyRange(difBound, domain);
     //logger.log(sbuilder() << "difBound[0]: " << difBound[0].toString());
     logger.logVI("difBound", difBound);
+    
+    for(int i = 0; i < difBound.size(); i++)
+      sumOfMags += difBound[i].mag();
     
     vector<Interval> fRems = f->getRemainders();
     vector<Interval> sRems = s->getRemainders();
     
     //logger.logVI("fRems", fRems);
     //logger.logVI("sRems", sRems);
-    //compareIntervalVecs(fRems, sRems);
-    exit(0);
+    sumOfMags += compareIntervalVecs(fRems, sRems);
+    break;
   }
+  logger.log(sbuilder() << "sum of magnitudes: " << sumOfMags);
   logger.log(first.size());
   logger.log(second.size());
 }

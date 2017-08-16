@@ -45,6 +45,7 @@ public:
 	bool isLinear(int & index) const;					// Check if the degree of the monomial is 1. If so then return the index of the variable of degree 1.
 
 	void dump_interval(FILE *fp, const vector<string> & varNames) const;	// coefficients are dumped as intervals
+	void serialize(FILE *fp, const vector<string> & varNames) const;	// coefficients are dumped as intervals
 	void dump_constant(FILE *fp, const vector<string> & varNames) const;	// coefficients are dumped as constants
 
 	void toString(string & result, const vector<string> & varNames) const;

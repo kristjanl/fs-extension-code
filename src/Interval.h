@@ -16,6 +16,7 @@
 
 extern mpfr_prec_t intervalNumPrecision;
 
+
 class Interval
 {
 private:
@@ -37,6 +38,7 @@ public:
 	Interval(const double l, const double u);
 	Interval(const char *strLo, const char *strUp);
 	Interval(const Interval & I);
+	Interval(const mpfr_t lower, const mpfr_t upper);
 	~Interval();
 
 	void set(const double l, const double u);
@@ -131,6 +133,7 @@ public:
 	double widthRatio(const Interval & I) const;
 
 	void toString(string & result) const;
+	void printFull() const;
 	string toString() const;
 	string getLower() const;
 	string getHigher() const;
@@ -139,10 +142,14 @@ public:
 	void compare(const Interval & I) const;
 	
 	void dump(FILE *fp) const;
+	void serialize(FILE *fp) const;
 	void output(FILE *fp, const char * msg, const char * msg2) const;
 };
 
 // returns true if all the intervals in I1 are subseteq to intervals in I2
 bool subseteq(const vector<Interval> & I1, const vector<Interval> & I2);
+
+
+const static Interval ZERO_INTERVAL;
 
 #endif /* INTERVAL_H_ */

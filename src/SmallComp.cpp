@@ -839,7 +839,6 @@ private:
         mpfr_printf ("back = %.17Rg\n", back);
   mpfr_out_str (stdout, 2, 0, back, MPFR_RNDD);
   logger.log("");
-        exit(0);
         
         
     }
@@ -899,32 +898,66 @@ void foo2() {
     }
     newg.print();
     newg2.print();
+  
+  logger.log("--------");
+  
+    int base = 10;
+    double input = 25;
+
+    mpfr_t number;
+    mpfr_inits2(53, number, (mpfr_ptr) 0);
+    mpfr_set_d(number, input, MPFR_RNDD);
+    mpfr_const_pi(number, MPFR_RNDD);
+    mpfr_printf ("mpfr = %.17Rg\n", number);
+
+    char* str = NULL;
+    mpfr_exp_t e;
+    str = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
+
+
     
-  
-  
-  mpfr_t number;
-  mpfr_inits2(intervalNumPrecision, number, (mpfr_ptr) 0);
-  mpfr_set_d(number, 25, MPFR_RNDD);
-  mpfr_printf ("mpfr = %.17Rg\n", number);
-  mpfr_out_str (stdout, 2, 0, number, MPFR_RNDD);
-  logger.log("");
-  
-  char* abc = NULL;
-  int base = 2;
-  mpfr_exp_t e;
-  abc = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
-  logger.log(sbuilder() << "exponent: "  << e);
-  cout << abc << endl;;
-  
-  mpfr_t back;
-  mpfr_inits2(intervalNumPrecision, back, (mpfr_ptr) 0);
-  mpfr_set_str(back, abc, base, MPFR_RNDD);
-  mpfr_set_exp(back, e);
-  mpfr_printf ("back = %.17Rg\n", back);
-  mpfr_out_str (stdout, 10, 0, back, MPFR_RNDD);
-  logger.log("");
-  
-  mpfr_free_str (abc);
+    cout << "str: " << str << endl;
+    cout << "e: " << e << endl;
+    cout << "stdout: ";
+    mpfr_out_str(stdout, base, 0, number, MPFR_RNDD);
+    cout << endl;
+    
+
+    mpfr_t back;
+    mpfr_inits2(53, back, (mpfr_ptr) 0);
+    
+    
+    char buffer[64];
+    sprintf (buffer, ".%s@%ld", str, (long) e);
+    cout << buffer << endl;
+    mpfr_set_str (back, buffer, base, MPFR_RNDD);
+    mpfr_printf ("back = %.17Rg\n", back);
+    
+    
+    mpfr_t dif;
+    mpfr_inits2(53, dif, (mpfr_ptr) 0);
+    mpfr_sub(dif, number, back, MPFR_RNDU);
+    mpfr_printf("dif = %.27Rg\n", dif);
+    cout << "dif: ";
+    mpfr_out_str(stdout, 2, 0, dif, MPFR_RNDD);
+    cout << endl;
+    
+    
+    
+    //mpfr_set_str(back, str, base, MPFR_RNDD);
+    //mpfr_set_exp(back, e);
+    //mpfr_printf("back = %.17Rg\n", back);
+    
+    /*
+    
+    string s = "2.5000000000000000";
+    const char* str2 = s.c_str();
+    mpfr_t back2;
+    mpfr_inits2(53, back2, (mpfr_ptr) 0);
+    mpfr_set_str(back2, str2, base, MPFR_RNDD);
+    mpfr_printf("back2 = %.17Rg\n", back2);
+    */
+    mpfr_free_str (str);
   exit(0);
   
 }
@@ -934,10 +967,17 @@ void SmallCompReachability::myRun() {
   logger.log("Simple Comp Run <");
   logger.inc();
   
+  /*
   foo2();
+  exit(0);
+  /**/
   
   /*
+  logger.reset();
   vector<TaylorModelVec *> plain = pDeserializeFlows("plain.txt");
+  logger.log(plain.size());
+  exit(0);
+  
   vector<TaylorModelVec *> fcomp = pDeserializeFlows("fcomp.txt");
   
   compareFlows(fcomp, plain);
@@ -946,7 +986,7 @@ void SmallCompReachability::myRun() {
   
   //bar();
   exit(1);
-  */
+  /**/
   
   clock_t begin, end;
 	begin = clock();
@@ -1064,7 +1104,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
       writer.info.push_back(sbuilder() << "reason: " << e.what());
       break;
     }
-    //break; //only the first step, REMOVE!
+    break; //only the first step, REMOVE!
   }
   writer.info.push_back(sbuilder() << "integration time: " << t);
   clock_t end = clock();
@@ -1087,7 +1127,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   logger.dec();
   logger.log("sc reach >");
   //comps[0]->serializeFlows();
+  
+  
+  
   serializeFlows(comps[0], "fcomp.txt");
+  exit(0);
   vector<TaylorModelVec> & parsed = deserializeFlows("fcomp.txt");
   compareFlows(comps[0]->pipes, parsed);
   exit(0);

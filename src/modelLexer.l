@@ -16,9 +16,13 @@ delim [ \t\r]
 line [\n]
 whitespace {delim}+
 digit [0-9]
+hexdigit [0-9a-f]
 letter [a-zA-Z_]
 ident {letter}({letter}|{digit}|".")*
 number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digit}+)))|({digit}*"."{digit}*"e"(({digit}+)|("-"{digit}+)))|({digit}*"."{digit}*"e"("+"({digit}+)|("-"{digit}+))))
+mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hexdigit}+)|("-"{hexdigit}+)))|({hexdigit}*"."{hexdigit}*"@"(({hexdigit}+)|("-"{hexdigit}+)))|({hexdigit}*"."{hexdigit}*"@"("+"({hexdigit}+)|("-"{hexdigit}+))))
+
+
 
 
 %%
@@ -128,6 +132,8 @@ number ("-"?)(({digit}+)|({digit}*"."{digit}*)|({digit}+"e"(({digit}+)|("-"{digi
 
 {ident}	{ yylval.identifier = new string(yytext); return IDENT; }
 
+{mpfrnum} { yylval.identifier = new string(yytext); return MPFRNUM; }
+
 {whitespace} 
 
 {line} { lineNum++; }
@@ -229,4 +235,21 @@ vector<int> parseiVec(string s) {
 vector<Interval> parseIVec(string s) {
   parse(s);
   return parseResult.intervalVec;
+}
+
+
+void parseMpfr(string *str, mpfr_t num) {
+  //logger.log(*str);
+  
+  size_t len = str->length();
+  size_t found = str->find('e');
+  
+  
+  string number = str->substr(2,len - 2);
+  
+  mpfr_inits2(53, num, (mpfr_ptr) 0);
+  mpfr_set_str(num, number.c_str(), MPFR_SERIALIZATION_BASE, MPFR_RNDD);
+  //mpfr_printf("num = %.17Rg\n", num);
+  
+  //logger.log(number);
 }
