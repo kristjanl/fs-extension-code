@@ -86,7 +86,6 @@ void TaylorModel::dump_interval(FILE *fp, vector<string> const & varNames) const
 
 void TaylorModel::serialize(FILE *fp, vector<string> const & tmParams) const
 {
-  logger.force("here");
 	expansion.serialize(fp, tmParams);
 	fprintf(fp, " + ");
 	remainder.serialize(fp);
@@ -4419,5 +4418,94 @@ void TaylorModelVec::pushConstantToRemainder() {
   for(int i = 0; i < tms.size(); i++) {
     tms[i].pushConstantToRemainder();
   }
+}
+
+
+TaylorModel TaylorModel::distance(const TaylorModel & tmv) const {
+  list<Monomial> l1;
+  list<Monomial> l2;
+  {
+    const list<Monomial> & l1r = expansion.monomials;
+    const list<Monomial> & l2r = tmv.expansion.monomials;
+    copy(l1r.begin(), l1r.end(), back_inserter(l1));
+    copy(l2r.begin(), l2r.end(), back_inserter(l2));
+  }
+  l1.sort();
+  l2.sort();
+  
+  
+  list<Monomial>::iterator it1 = l1.begin();
+  list<Monomial>::iterator it2 = l2.begin();
+  
+  list<Monomial> ret;
+  
+  //stop when one list is empty
+  while(it1 != l1.end() && it2 != l2.end()) {
+    //both iterators are at the same monomial
+    if(*it1 == *it2) {
+      //logger.log("equal");
+      
+      //measure coefficent distance
+      Interval dis = it1->coefficient.distance(it2->coefficient);
+      //logger.log(dis.toString());
+      vector<int> & degs = it1->degrees;
+      it1++;
+      it2++;
+      
+      //skip if coefficents were the same
+      if(dis.subseteq(ZERO_INTERVAL))
+        continue;
+      
+      //store the distance with the same monomial
+      ret.push_back(*memCreateMonomial(dis, degs));
+      continue;
+    }
+    
+    //store *it1 magnitude and advance iterator
+    if(*it1 < *it2) {
+      //logger.log("it1 < it2");
+      Interval dis = ZERO_INTERVAL.distance(it1->coefficient);
+      ret.push_back(*memCreateMonomial(dis, it1->degrees));
+      it1++;
+      continue;
+    }
+    
+    //store *it2 magnitude and advance iterator
+    //logger.log("it1 > it2");
+    Interval dis = ZERO_INTERVAL.distance(it2->coefficient);
+    ret.push_back(*memCreateMonomial(dis, it2->degrees));
+    it2++;
+  }
+  
+  //add all the remainding monomials
+  while(it1 != l1.end()) {
+    Interval dis = ZERO_INTERVAL.distance(it1->coefficient);
+    ret.push_back(*memCreateMonomial(dis, it1->degrees));
+    it1++;
+  }
+  while(it2 != l2.end()) {
+    Interval dis = ZERO_INTERVAL.distance(it2->coefficient);
+    ret.push_back(*memCreateMonomial(dis, it2->degrees));
+    it2++;
+  }
+  
+  //measure remainder term coefficient
+  Interval remDis = remainder.distance(tmv.remainder);
+  
+  return TaylorModel(Polynomial(ret), remDis);
+}
+
+TaylorModelVec TaylorModelVec::distance(const TaylorModelVec & tmv) const {
+  //logger.log("tmv dist");
+  if(tms.size() != tmv.tms.size()) {
+    logger.force("different tmv sizes");
+    exit(0);
+  }
+  TaylorModelVec ret;
+  for(int i = 0; i < tms.size(); i++) {
+    ret.tms.push_back(tms[i].distance(tmv.tms[i]));
+  }
+  
+  return ret;
 }
 

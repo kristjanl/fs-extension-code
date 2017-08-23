@@ -138,6 +138,7 @@ public:
 	string getLower() const;
 	string getHigher() const;
 	bool isClose(const Interval & I, double d) const;
+	Interval distance(const Interval & I) const;
 	
 	void compare(const Interval & I) const;
 	

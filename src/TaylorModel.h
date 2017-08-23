@@ -148,6 +148,7 @@ public:
   void removeHighTerms(int order);
   
   bool isClose(const TaylorModel & tm, double d) const;
+  TaylorModel distance(const TaylorModel & tmv) const;
 
 	TaylorModel & operator = (const TaylorModel & tm);
 
@@ -304,6 +305,7 @@ public:
   bool compare(const TaylorModelVec & tmv, const vector<Interval> & domain) const;
   
   bool isClose(const TaylorModelVec & tmv, double d) const;
+  TaylorModelVec distance(const TaylorModelVec & tmv) const;
   TaylorModelVec addNParams(int n) const;
   
   //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts

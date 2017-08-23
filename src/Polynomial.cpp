@@ -1428,6 +1428,10 @@ void Polynomial::rmConstant()
 {
 	if(monomials.size() > 0 && (monomials.begin())->d == 0)
 	{
+    if(monomials.size() == 1) {
+      monomials.push_back(
+          Monomial(ZERO_INTERVAL, monomials.begin()->degrees.size()));
+    }
 		monomials.erase( monomials.begin() );
 	}
 }
@@ -2561,3 +2565,24 @@ bool HornerForm::isClose(const HornerForm & hf, double d) const {
   }
   return true;
 }
+
+void Polynomial::filter(vector<int> powers) {
+  logger.log("fitlering");
+  
+  list<Monomial> retMonos;
+  
+  list<Monomial>::iterator iter;
+	for(iter = monomials.begin(); iter != monomials.end(); iter++) {
+	  vector<int> monoPowers = iter->degrees;
+	  bool good = true;
+	  for(int i = 0; i < powers.size(); i++) {
+	    if(powers[i] != monoPowers[i]) {
+        good = false;
+	    }
+	  }
+	  if(good)
+	    retMonos.push_back(*iter);
+	}
+	monomials = retMonos;
+}
+

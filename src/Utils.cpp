@@ -109,6 +109,11 @@ void serializeFlows(MyComponent *comp, string filename) {
       fprintf(fp, ",\n");
     first = false;
     
+    //remove
+    //pipeIt->tms.erase(pipeIt->tms.begin() + 1);
+    //pipeIt->tms[0].remainder = ZERO_INTERVAL;
+    //pipeIt->tms[0].expansion.filter(parseiVec("my iv <3,0,0>"));
+    
     pipeIt->pushConstantToRemainder();
     
     pipeIt->serialize(fp,  params);
@@ -122,7 +127,7 @@ vector<TaylorModelVec> & deserializeFlows(string filename) {
   logger.log(sbuilder() << "reading flows from " << filename);
   parseFile(filename);
   vector<TaylorModelVec> & v = parseResult.pipes;
-  logger.log(parseResult.pipes.size());
+  logger.log(sbuilder() << "parsed pipes size: " << parseResult.pipes.size());
   for(vector<TaylorModelVec>::iterator pipeIt = v.begin();
       pipeIt < v.end(); pipeIt++) {
     //logger.logTMV("p", *pipeIt);
@@ -133,9 +138,10 @@ vector<TaylorModelVec> & deserializeFlows(string filename) {
 
 vector<TaylorModelVec *> pDeserializeFlows(string filename) {
   logger.log(sbuilder() << "reading flows from " << filename);
+  parseResult.pipes.clear();
   parseFile(filename);
   vector<TaylorModelVec> & v = parseResult.pipes;
-  logger.log(parseResult.pipes.size());
+  logger.log(sbuilder() << "parsed *pipes size: " << parseResult.pipes.size());
   vector<TaylorModelVec *> ret;
   
   for(vector<TaylorModelVec>::iterator pipeIt = v.begin();
@@ -184,15 +190,17 @@ double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
   //exit(0);
 }
 
+double sumVImag(vector<Interval> vec) {
+  Interval ret;
+  for(int i = 0; i < vec.size(); i++) {
+    ret += vec[i];
+  }
+  return ret.mag();
+}
+
 
 void compareFlows(vector<TaylorModelVec> & first, 
     vector<TaylorModelVec> & second) {
-  logger.log("here");
-  if(first.size() != second.size()) {
-    logger.force(sbuilder() << "compareFlows unequal size (" << 
-        first.size() << ", " << second.size() << ")");
-    exit(0);  
-  }
   vector<TaylorModelVec>::iterator fi = first.begin();
   vector<TaylorModelVec>::iterator si = second.begin();
   vector<TaylorModelVec *> fp;
@@ -206,26 +214,47 @@ void compareFlows(vector<TaylorModelVec> & first,
 
 void compareFlows(vector<TaylorModelVec *> & first, 
     vector<TaylorModelVec *> & second) {
-  logger.log("comparing");
+  logger.log(sbuilder() << "comparing, sizes: " 
+      << first.size() << ", " << second.size());
+  
+  if(first.size() != second.size()) {
+    logger.force(sbuilder() << "compareFlows unequal size (" << 
+        first.size() << ", " << second.size() << ")");
+  }
+  
+  
   vector<TaylorModelVec *>::iterator fIt = first.begin();
   vector<TaylorModelVec *>::iterator sIt = second.begin();
   
-  logger.log(first.size());
-  logger.log(second.size());
   
   vector<Interval> domain;
   for(int i = 0; i < (*fIt)->tms[0].getParamCount(); i++) {
     domain.push_back(Interval(-1,1));  //don't really care about time step size
   }
-  
   double sumOfMags = 0;
   
   for(; fIt < first.end() && sIt < second.end(); fIt++, sIt++) {
     TaylorModelVec dif;
     TaylorModelVec *f = *fIt;
     TaylorModelVec *s = *sIt;
-    //logger.logTMV("f", *f);
-    //logger.logTMV("s", *s);
+    logger.logTMV("f", *f);
+    logger.logTMV("s", *s);
+    
+    TaylorModelVec dis = f->distance(*s);
+    vector<Interval> totalDistance;
+    dis.intEval(totalDistance, domain);
+    
+    
+    logger.logTMV("dis", dis);
+    //logger.logVI("totalDistance", totalDistance);
+    
+    double sumOfMag = sumVImag(totalDistance);
+    sumOfMags += sumOfMag;
+    logger.log(sbuilder() << "sumOfMag: " << sumOfMag);
+    exit(0);
+    
+    
+    /*
     f->sub(dif, *s);
     //logger.logTMV("dif", dif);
     logger.logTMV("dif", dif);
@@ -243,10 +272,8 @@ void compareFlows(vector<TaylorModelVec *> & first,
     //logger.logVI("fRems", fRems);
     //logger.logVI("sRems", sRems);
     sumOfMags += compareIntervalVecs(fRems, sRems);
-    break;
+    */
   }
   logger.log(sbuilder() << "sum of magnitudes: " << sumOfMags);
-  logger.log(first.size());
-  logger.log(second.size());
 }
 

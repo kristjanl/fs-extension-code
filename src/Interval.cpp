@@ -1839,41 +1839,64 @@ void serializeMpfr(FILE *fp, const mpfr_t number) {
 	
 	
 	fprintf (fp, "0m");
-  mpfr_out_str(fp, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDD);
   
   
-  cout << "-----" << endl;
-  mpfr_printf ("numb = %.27Rg\n", number);
   
+  //mpfr_out_str(fp, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDD);
+  
+  
+  
+  //get the mpfr radix into string
   char* str = NULL;
   mpfr_exp_t e;
   str = mpfr_get_str (NULL, &e, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDN);
 
   
   
+  //add radix point and exponent
   char buffer[64];
   sprintf (buffer, ".%s@%ld", str, (long) e);
-  cout << "buffer: " << buffer << endl;
   
   
+  //swap sign and radix point for negative numbers
+  if(str[0] == '-') {
+    buffer[0] = buffer[1];
+    buffer[1] = '.';
+    //cout << "buffer: " << buffer << endl;
+  }
+  
+  
+	fprintf (fp, buffer);
+  
+  /*
+  cout << "-----" << endl;
+  mpfr_printf ("numb = %.50Rg\n", number);
+  cout << "stdn = ";
+  mpfr_out_str(stdout, MPFR_SERIALIZATION_BASE, 0, number, MPFR_RNDD);
+  cout << endl;
+  
+  cout << "buff = " << buffer << endl;
   mpfr_t back;
   mpfr_inits2(53, back, (mpfr_ptr) 0);
   mpfr_set_str (back, buffer, MPFR_SERIALIZATION_BASE, MPFR_RNDD);
-  mpfr_printf ("back = %.27Rg\n", back);
+  mpfr_printf ("back = %.50Rg\n", back);
   
   
   mpfr_t dif;
   mpfr_inits2(53, dif, (mpfr_ptr) 0);
   mpfr_sub(dif, number, back, MPFR_RNDU);
-  mpfr_printf("dif1 = %.27Rg\n", dif);
-  cout << "dif2: ";
+  mpfr_printf("dif1 = %.50Rg\n", dif);
+  cout << "dif2 = ";
   mpfr_out_str(stdout, 2, 0, dif, MPFR_RNDD);
   cout << endl;
   
   if(mpfr_cmp (number, back) ){
     cout <<   mpfr_cmp (number, back) << endl;
+    logger.force("not equal");
     exit(0);  
   }
+  
+  //*/
 }
 
 void Interval::serialize(FILE *fp) const
@@ -1896,7 +1919,7 @@ void Interval::output(FILE * fp, const char * msg, const char * msg2) const
 
 string toStringHelper(const mpfr_t data) {
   char strTemp[50];
-  mpfr_sprintf(strTemp, "%.10Rf", data);
+  mpfr_sprintf(strTemp, "%.15Rf", data);
   //try to take more numbers if not enough
   if(mpfr_cmp_d(data,1e30) > 0) {
     throw IntegrationException("mpfr number was too big");
@@ -1997,6 +2020,29 @@ bool subseteq(const vector<Interval> & v1, const vector<Interval> & v2) {
 }
 
 
+Interval Interval::distance(const Interval & I) const {
+  mpfr_t lower, upper, dis;
+	mpfr_inits2(intervalNumPrecision, lower, upper, dis, (mpfr_ptr) 0);
+	
+  mpfr_sub(lower, lo, I.lo, MPFR_RNDA);
+  mpfr_sub(upper, up, I.up, MPFR_RNDA);
+  mpfr_abs (lower, lower, MPFR_RNDA);
+  mpfr_abs (upper, upper, MPFR_RNDA);
+  
+  mpfr_max(dis, lower, upper, MPFR_RNDA);
+
+  //mpfr_printf("lo1 = %.30Rg\n", lo);
+  //mpfr_printf("up2 = %.30Rg\n", I.lo);
+  //mpfr_printf("lower = %.30Rg\n", lower);
+  //mpfr_printf("upper = %.30Rg\n", upper);
+  //mpfr_printf("dista = %.30Rg\n", dis);
+  
+  Interval ret;
+  mpfr_set(ret.up, dis, MPFR_RNDA);
+  
+  //logger.log(ret.toString());
+  return ret;
+}
 
 
 

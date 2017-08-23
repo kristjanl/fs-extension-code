@@ -655,5 +655,14 @@ Monomial Monomial::addNVariables(int n) const {
 	return ret;
 }
 
+Monomial* memCreateMonomial(Interval & coef, vector<int> & powers) {
+  //cout << "creating" << endl;
+  Interval *coefCopy = new Interval(coef);
+  vector<int>* degCopy = new vector<int>();
+  copy(powers.begin(), powers.end(), back_inserter(*degCopy));
+  
+  Monomial* m = new Monomial(*coefCopy, *degCopy);
+  return m;
+}
 
 

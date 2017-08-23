@@ -972,15 +972,16 @@ void SmallCompReachability::myRun() {
   exit(0);
   /**/
   
-  /*
+  //*
   logger.reset();
   vector<TaylorModelVec *> plain = pDeserializeFlows("plain.txt");
-  logger.log(plain.size());
-  exit(0);
-  
   vector<TaylorModelVec *> fcomp = pDeserializeFlows("fcomp.txt");
   
+  //logger.logTM("p[0]", plain[0]->tms[0]);
+  //logger.logTM("f[0]", fcomp[0]->tms[0]);
+  
   compareFlows(fcomp, plain);
+  exit(0);
   
   //foo();
   
@@ -1104,7 +1105,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
       writer.info.push_back(sbuilder() << "reason: " << e.what());
       break;
     }
-    break; //only the first step, REMOVE!
+    //break; //only the first step, REMOVE!
   }
   writer.info.push_back(sbuilder() << "integration time: " << t);
   clock_t end = clock();
@@ -1129,11 +1130,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   //comps[0]->serializeFlows();
   
   
-  
-  serializeFlows(comps[0], "fcomp.txt");
-  exit(0);
-  vector<TaylorModelVec> & parsed = deserializeFlows("fcomp.txt");
-  compareFlows(comps[0]->pipes, parsed);
+  serializeFlows(comps[0], "plain.txt");
+  //vector<TaylorModelVec> & parsed = deserializeFlows("fcomp.txt");
+  //compareFlows(comps[0]->pipes, parsed);
   exit(0);
   
 }

@@ -570,7 +570,7 @@ multiple_models ','   models_wrapper  {
 
 models_wrapper: MYMODELS '{' my_taylor_models '}'
 {
-  logger.log("models wrapper");
+  //logger.log("models wrapper");
   parseResult.tmv = TaylorModelVec(*$3);
   //logger.logTMV("tmv", parseResult.tmv);
 };
@@ -4943,12 +4943,12 @@ my_polys: my_poly {
 };
 
 my_taylor_models: my_taylor_model {
-  logger.log("my taylormodels");
+  //logger.log("my taylormodels");
   $$ = new vector<TaylorModel>();
   $$->push_back(TaylorModel(*$1));
   delete $1;
 } | my_taylor_model ',' my_taylor_models {
-  logger.log("my taylormodels list");
+  //logger.log("my taylormodels list");
   //$3->push_back(*$1);
   $3->insert($3->begin(),*$1);
   $$ = $3;
@@ -4962,26 +4962,26 @@ mpfr_interval: '[' MPFRNUM ',' MPFRNUM ']' {
   parseMpfr($2, lower);
   parseMpfr($4, upper);
   
-  mpfr_printf("lower = %.17Rg\n", lower);
-  mpfr_printf("upper = %.17Rg\n", upper);
-  logger.force("mpfr");
-  logger.force(sbuilder() << *$2);
-  logger.force(sbuilder() << *$4);
+  //mpfr_printf("lower = %.17Rg\n", lower);
+  //mpfr_printf("upper = %.17Rg\n", upper);
+  //logger.force("mpfr");
+  //logger.force(sbuilder() << *$2);
+  //logger.force(sbuilder() << *$4);
   
   Interval* ret = new Interval(lower, upper);
-  logger.log(ret->toString());
+  //logger.log(ret->toString());
   $$ = ret;
 }
 
 my_taylor_model: my_poly {
-  logger.log("my taylor model poly");
+  //logger.log("my taylor model poly");
   
   Interval c;
   $1->constant(c);
   $1->rmConstant();
   
   $$ = new TaylorModel(*$1, c);
-  logger.logTM("tm", *$$);
+  //logger.logTM("tm", *$$);
   delete $1;
 };
 
@@ -5040,7 +5040,7 @@ my_poly: my_poly '+' my_poly{
   Polynomial *p = new Polynomial(Interval($1), dim);
   $$ = new Polynomial(Interval($1), dim);
 } | mpfr_interval {
-  logger.log("poly mpfr");
+  //logger.log("poly mpfr");
   int dim = parseSetting.variables.size();
   $$ = new Polynomial(Interval(*$1), dim);
   delete $1;

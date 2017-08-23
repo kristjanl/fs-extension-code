@@ -174,6 +174,7 @@ public:
   int equals(const Polynomial &) const;
   int getVariableCount() const;
   Polynomial addNVariables(int n) const;
+  void filter(vector<int> powers);
 
 	friend class TaylorModel;
 	friend class TaylorModelVec;

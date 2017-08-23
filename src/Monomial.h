@@ -71,6 +71,7 @@ public:
   vector<int> getParams() const;
   int linearVariable() const; //-1 signals not linear monomial, otherwise returns the linear parameter
   Monomial addNVariables(int n) const;
+  
 
 	friend class Polynomial;
 	friend class TaylorModel;
@@ -78,5 +79,7 @@ public:
 	friend class Flowpipe;
 };
 
+
+Monomial* memCreateMonomial(Interval & coef, vector<int> & powers);
 
 #endif
