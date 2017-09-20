@@ -7,14 +7,14 @@ continuous reachability
     fixed steps 0.1
     time 10
     remainder estimation 1e-3
-    shrink wrapping 0
+    identity precondition
     gnuplot interval x1,x1
     fixed orders 5
     cutoff 1e-15
     precision 53
     output test
     alg_small_comp flow impl
-    decomposition [[x1,x2]]
+    decomposition [[x1],[x2]]
     print on
   }
 

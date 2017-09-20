@@ -1,0 +1,30 @@
+continuous reachability
+{
+  state var x1
+
+  setting
+  {
+    fixed steps 0.1
+    time 1
+    remainder estimation 1e-3
+    identity precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output lin_1_id_comp
+    alg_small_comp flow impl
+    decomposition [[x1]]
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -0.1*x1
+  }
+
+  init
+  {
+    x1 in [0.5,1.0]
+  }
+}

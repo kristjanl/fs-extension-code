@@ -94,7 +94,8 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix):
   outFile.write("    <td>\n");
   outFile.write("    <table><tr>\n")
   for i in range(1, dim+1):
-    imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, commonTime)
+    imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, \
+        commonTime)
     outFile.write("      <td>\n")
     if os.path.isfile(imageName):
       outFile.write("        <div>\n")
@@ -267,6 +268,9 @@ def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
 
 
 
+def generateHtml(scriptsDir, modelDir, modelPairs, suffix):
+  generate_comparision_plots(scriptsDir, modelDir, modelPairs, suffix)
+  write_table("experiments%s.html" %suffix, modelDir, modelPairs, suffix)
 
 
 

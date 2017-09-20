@@ -73,10 +73,15 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
   //logger.log(sbuilder() << "dim: " << dim);
   //logger.log(sbuilder() << "pdim: " << paramDim);
 	for (unsigned i=0; i<dim; i++) {
-    int paramDim = tmv.tms.at(i).getParamCount();
+    vector<string> vNames;
+    try{
+      int paramDim = tmv.tms.at(i).getParamCount();
+      vNames = getVNames(paramDim);
+    } catch(ArgumentException& ignore) { }
+    
     //logger.log(paramDim);
     logger.log(sbuilder() << name << "[" << i << "] = " << 
-        tmv.tms.at(i).toString(getVNames(paramDim)));
+        tmv.tms.at(i).toString(vNames));
 	}
 }
 
@@ -159,6 +164,10 @@ void mylogger2::logTM(string name, TaylorModel tm) {
 	if(disabled > 0)
 		return;
   logger.log(sbuilder() << name << " = " << tm.toString(getVNames(10)));
+}
+
+void mylogger2::log() {
+  log("");
 }
 
 void mylogger2::log(string s) {

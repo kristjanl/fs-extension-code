@@ -41,6 +41,7 @@ sbuilder & operator << (sbuilder & sb, const T &data) {
 
 class mylogger2 {
 	public:
+	  void log();
 		void logVI(vector<Interval>);
 		void logVI(string, vector<Interval>);
 		void logVHF(string, vector<HornerForm>);

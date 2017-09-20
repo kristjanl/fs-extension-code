@@ -57,6 +57,7 @@ class PrecondModel {
     TaylorModelVec composed(MySettings *settings);
 };
 
+void serializeTMV(TaylorModelVec & tmv, string filename);
 void serializeFlows(MyComponent *comp, string filename);
 vector<TaylorModelVec> & deserializeFlows(string filename);
 vector<TaylorModelVec *> pDeserializeFlows(string filename);
@@ -66,5 +67,22 @@ void compareFlows(vector<TaylorModelVec *> & first,
 void compareFlows(vector<TaylorModelVec> & first, 
     vector<TaylorModelVec> & second);
 double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
+
+void printTMVFiles(string file1, string file2, int index1, int index2);
+
+vector<Interval> getUnitBox(int n);
+
+class TMVSerializer {
+  public:
+    TMVSerializer(string filename);
+    TMVSerializer(string filename, int maxSize);
+    void add(const TaylorModelVec & tmv);
+    void serialize();
+  private:
+    string filename;
+    vector<TaylorModelVec> tmvs;
+    int maxSize;
+};
+
 
 #endif /* UTILS_H_ */

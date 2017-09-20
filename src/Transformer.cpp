@@ -472,18 +472,39 @@ ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) :
   this->swChecker = swChecker;
 }
 
-QRTransformer::QRTransformer() : Transformer(true, false) {
+PreconditionedTransformer::PreconditionedTransformer() : Transformer(true, false) {
+}
+
+QRTransformer::QRTransformer() : 
+    //is preconditioned, not shrink wrapping
+    Transformer(true, false) {
 }
 
 NullTransformer::NullTransformer() : Transformer(false, false) {
 }
-IdentityTransformer::IdentityTransformer() : Transformer(false, false) {
+IdentityTransformer::IdentityTransformer() : PreconditionedTransformer() {
   //isPreconditioned = true;
+}
+
+void IdentityTransformer::getA(Matrix & result, const TaylorModelVec & x0, 
+    const int dim) {
+  logger.log("getting A");
+  for(int i=0; i<dim; ++i) {
+    result.set(1, i, i);
+	}
+}
+void IdentityTransformer::getAInv(Matrix & result, const Matrix & A) {
+  logger.log("getting A inverse");
+  //inverse of identity is also identity, just copy
+  for(int i = 0; i < A.rows(); i++) {
+    result.set(1, i, i);
+  }
 }
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  //logger.log("sw transforming");
+  logger.log("sw transforming");
+  exit(0);
   evaluateStepEnd(comps, settings);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
     logger.force("wrapping");
@@ -517,7 +538,7 @@ TaylorModelVec getUnitTmv(int varCount) {
 void precond(TaylorModelVec & tmv, MySettings & settings, 
       MyComponent & all) {
   int old = logger.reset();
-  logger.disable();
+  //logger.disable();
   logger.log("precond <");
   logger.inc();
   
@@ -554,9 +575,7 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
     A.transpose(invA);
   } else {
     logger.force("not implementated");
-    exit(0);
   }
-	
   logger.logMatrix(A);
   logger.logMatrix(invA);
   
@@ -600,7 +619,7 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
     Interval intMag;
     rightBound[i].mag(intMag);
     double dMag = intMag.sup();
-    if(intMag.subseteq(Interval()) == false) {
+    if(intMag.subseteq(ZERO_INTERVAL) == false) {
 		  S.set(dMag, i, i);
 		  invS.set(1/dMag, i, i);
 	  }
@@ -637,11 +656,145 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
   logger.restore(old);
 }
 
-
-void QRTransformSet(MyComponent & all, MyComponent * comp) {
+void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & settings, 
+      MyComponent & all) {
   int old = logger.reset();
   logger.disable();
-  logger.log("QRTransformSet <");
+  logger.log("precond <");
+  logger.inc();
+  
+  logger.log("precond");
+  
+  logger.logTMV("tmv", tmv);
+  
+  logger.disable();
+  
+  vector<Interval> previousRange;
+  TaylorModelVec previousRight;
+  
+  //number of taylor model parameters
+  int paramCount = tmv.tms[0].getParamCount();
+  //number of system variables (in the component)
+  int varCount = tmv.tms.size();
+  
+  //linear TMV where TM[i] = 1*var_i
+  TaylorModelVec unitTmv = getUnitTmv(varCount);
+  
+  
+  //no previous right
+  if(all.pipePairs.size() == 0) {
+    previousRight = unitTmv;
+  } else {
+    previousRight = all.pipePairs[all.pipePairs.size() - 1]->right;
+  }
+	previousRight.polyRange(previousRange, settings.domain);
+  logger.logVI("range", previousRange);
+  
+  logger.log(sbuilder() << "paramCount: " << paramCount);
+  logger.log(sbuilder() << "varCount: " << varCount);
+  Matrix A(varCount,varCount), invA(varCount, varCount);
+  
+  //TODO remove after unifying with QR
+  //preconditionQR(A, tmv, varCount, varCount+1);
+  //A.transpose(invA);
+  
+  getA(A, tmv, varCount);
+  getAInv(invA, A);
+  
+  logger.logMatrix(A);
+  logger.logMatrix(invA);
+  
+  vector<Interval> center;
+  tmv.constant(center);
+  logger.logVI("center", center);
+  
+  
+  //partition left model into parts: constant, linear, nonlinear and remainder
+  TaylorModelVec c(tmv), lin, nl, rem;
+  tmv.getParts(c, lin, nl, rem);
+  
+  logger.logTMV("c", c);
+  logger.logTMV("lin", lin);
+  logger.logTMV("nl", nl);
+  logger.logTMV("rem", rem);
+  
+  //InvA o non-constant-part of left model
+  nl.linearTrans_assign(invA);
+  rem.linearTrans_assign(invA);
+  lin.linearTrans_assign(invA);
+  
+  
+  //gather parts that are moving from left to right
+  TaylorModelVec leftToRight(lin);
+  leftToRight.add_assign(nl);
+  leftToRight.add_assign(rem);
+  
+  
+  //compose new parts from left model with older right model
+  TaylorModelVec rightComp;
+	leftToRight.insert_ctrunc(rightComp, previousRight, previousRange, settings.domain, settings.order, 0);
+  
+  //calculate the bounds for the new right model
+  vector<Interval> rightBound;
+	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
+  logger.logTMV("rightComp", rightComp);
+  logger.logVI("rightBound", rightBound);
+  
+  //TODO shift this to be around 0?
+  
+  //calculate scaling matrix S and it's inverse
+  Matrix S(varCount, varCount);
+	Matrix invS(varCount, varCount);
+  for(int i = 0; i < varCount; i++) {
+    Interval intMag;
+    rightBound[i].mag(intMag);
+    double dMag = intMag.sup();
+    if(intMag.subseteq(ZERO_INTERVAL) == false) {
+		  S.set(dMag, i, i);
+		  invS.set(1/dMag, i, i);
+	  }
+	  else {
+		  S.set(0, i, i);
+		  invS.set(0, i, i); //doesn't matter if 0 or 1
+		}
+  }
+  
+  logger.logMatrix(S);
+  logger.logMatrix(invS);
+  
+  //apply inverse of S to right model
+  rightComp.linearTrans_assign(invS);
+	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
+  logger.logTMV("rightComp", rightComp);
+  logger.logVI("rightBound", rightBound);
+  
+	//left part is made of constant part and with scaling
+	TaylorModelVec left(c);
+	TaylorModelVec desiredLinearPart;
+	unitTmv.linearTrans(desiredLinearPart, A * S);
+	left.add_assign(desiredLinearPart);
+	
+	PrecondModel *pre = new PrecondModel(left, rightComp);
+	
+	logger.logTMV("left", left);
+  logger.logTMV("right", rightComp);
+  
+  TaylorModelVec back = pre->composed(&settings);
+  logger.logTMV("bac", back);
+  
+	
+  all.pipePairs.push_back(pre);
+  
+  
+  logger.dec();
+  logger.log("precond >");
+  logger.restore(old);
+}
+
+void makeCompInitSets(MyComponent & all, MyComponent * comp) {
+  int old = logger.reset();
+  logger.disable();
+  logger.log("makeCompInitSets <");
   logger.inc();
       
   PrecondModel *pre = all.pipePairs[all.pipePairs.size() - 1];
@@ -674,7 +827,7 @@ void QRTransformSet(MyComponent & all, MyComponent * comp) {
   logger.logTMV("init2", comp->initSet);
   
   logger.dec();
-  logger.log("QRTransformSet >");
+  logger.log("makeCompInitSets >");
   logger.restore(old);
 }
 
@@ -702,7 +855,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    QRTransformSet(all, *it);
+    makeCompInitSets(all, *it);
   }
   
   
@@ -717,11 +870,12 @@ void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps
   evaluateStepEnd(comps, settings);
 }
 void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
-      MySettings & settings) {int old = logger.reset();
+      MySettings & settings) {
+  int old = logger.reset();
   logger.disable();
-  logger.log("qr transforming <");
+  logger.log("id transforming <");
   logger.inc();
-  evaluateStepEnd(comps, settings);
+  //evaluateStepEnd(comps, settings);
   
   //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
@@ -730,22 +884,19 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   TaylorModelVec tmv;
   last.evaluate_t(tmv, settings.step_end_exp_table);
   
+  //logger.logTMV("tmv", tmv);
   
-  
-  precond(tmv, settings, all);
-  logger.logTMV("tmv", tmv);
-  
-  
+  precond2(tmv, settings, all);
+    
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    QRTransformSet(all, *it);
+    makeCompInitSets(all, *it);
   }
   
   
   logger.dec();
-  logger.log("qr transforming >");
+  logger.log("id transforming >");
   logger.restore(old);
-  exit(0);
   evaluateStepEnd(comps, settings);
 }
 

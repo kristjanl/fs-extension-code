@@ -1,5 +1,5 @@
-set term png
-set output './images/Lorentz.png'
+set terminal postscript
+set output './images/Lorentz_flowstar.eps'
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

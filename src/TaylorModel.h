@@ -307,6 +307,7 @@ public:
   bool isClose(const TaylorModelVec & tmv, double d) const;
   TaylorModelVec distance(const TaylorModelVec & tmv) const;
   TaylorModelVec addNParams(int n) const;
+  int getParamCount() const;
   
   //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 

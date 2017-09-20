@@ -4983,6 +4983,10 @@ my_taylor_model: my_poly {
   $$ = new TaylorModel(*$1, c);
   //logger.logTM("tm", *$$);
   delete $1;
+} | '<' my_poly ',' mpfr_interval '>' {
+  $$ = new TaylorModel(*$2, *$4);
+  delete $2;
+  delete $4;
 };
 
 my_poly: my_poly '+' my_poly{

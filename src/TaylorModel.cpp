@@ -86,9 +86,11 @@ void TaylorModel::dump_interval(FILE *fp, vector<string> const & varNames) const
 
 void TaylorModel::serialize(FILE *fp, vector<string> const & tmParams) const
 {
+  fprintf(fp, "<");
 	expansion.serialize(fp, tmParams);
-	fprintf(fp, " + ");
+	fprintf(fp, " , ");
 	remainder.serialize(fp);
+	fprintf(fp, ">");
 	fprintf(fp, "\n");
 }
 
@@ -2313,8 +2315,8 @@ void TaylorModelVec::Picard_ctrunc_normal_assign(const TaylorModelVec & x0, cons
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
-  logger.force("my version shouldn't call this");
-  exit(0);
+  //logger.force("my version shouldn't call this1");
+  //exit(0);
   int old = logger.reset();
   logger.disable();
   logger.inc();
@@ -2332,7 +2334,6 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 	{
 		trees.push_back(NULL);
 	}
-  logger.force(sbuilder() << "order: " << order);
 	if(order <= 1)
 	{
 		for(int i=0; i<ode.size(); ++i)
@@ -2368,7 +2369,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
-  logger.log("my version shouldn't call this");
+  //logger.force("my version shouldn't call this2");
   int old = logger.reset();
   logger.disable();
   logger.inc();
@@ -2570,8 +2571,8 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 
 void TaylorModelVec::Picard_only_remainder(vector<Interval> & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<HornerForm> & ode, const Interval & timeStep) const
 {
-  logger.force("my version shoudln't call this (remainder)");
-  exit(0);
+  //logger.force("my version shoudln't call this (remainder)3");
+  //exit(0);
 	result.clear();
 
 	for(int i=0; i<ode.size(); ++i)
@@ -4234,7 +4235,17 @@ TaylorModel TaylorModel::prepareSecondary(int prefix) const {
 }
 
 int TaylorModel::getParamCount() const {
-  return expansion.getVariableCount();
+  int ret = expansion.getVariableCount();
+  if(ret == -1) {
+    throw ArgumentException("asked paramCount from zero TM");
+  }
+  return ret;
+}
+int TaylorModelVec::getParamCount() const {
+  if(tms.size() == 0) {
+    throw ArgumentException("no tms to get paramCount from");
+  }
+  return tms[0].getParamCount();
 }
 
 vector<int> TaylorModel::getParams() const {

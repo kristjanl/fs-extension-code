@@ -461,7 +461,9 @@ namespace smallComp {
   
   void advanceFlow(MyComponent & component, MySettings & settings) {
     int old = logger.reset();
-    logger.disable();
+    //logger.disable();
+    
+    TMVSerializer serializer("comp.txt");
     //variable when picard approximation is stored
     //TaylorModelVec p = TaylorModelVec(component.initSet);
     TaylorModelVec p = TaylorModelVec(component.lastPipe());
@@ -479,14 +481,20 @@ namespace smallComp {
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
+    serializer.add(p);
+    
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
       //p.Picard_no_remainder_assign(component.initSet, component.odes, paramCount, i, settings.cutoff);
       p.Picard_no_remainder_assign(&component, paramCount, i, settings.cutoff);
     }
     
-    p.cutoff(settings.cutoff);
+    logger.logTMV("after", p);
+    serializer.add(p);
     
+    
+    p.cutoff(settings.cutoff);
+    serializer.add(p);
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
@@ -499,6 +507,7 @@ namespace smallComp {
     logger.logTMV("dec", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
+	  serializer.add(p);
     logger.logTMV("ref", p);
     
     logger.log(component.pipes.size());
@@ -506,6 +515,7 @@ namespace smallComp {
     component.pipes[component.pipes.size() - 1] = p;
         
     logger.restore(old);
+    serializer.serialize();
     
   }
   int tempp = 0;
@@ -972,7 +982,7 @@ void SmallCompReachability::myRun() {
   exit(0);
   /**/
   
-  //*
+  /*
   logger.reset();
   vector<TaylorModelVec *> plain = pDeserializeFlows("plain.txt");
   vector<TaylorModelVec *> fcomp = pDeserializeFlows("fcomp.txt");
@@ -1056,7 +1066,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   
 
   TaylorModelVec currentTMV = initialSet.tmvPre;
-
+  //currentTMV.pushConstantToRemainder();
+  
   //domain of the TM variable
   vector<Interval> domain = initialSet.domain;
   domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
