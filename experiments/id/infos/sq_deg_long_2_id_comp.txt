@@ -1,4 +1,4 @@
 integration time: 100
-computation time: 1.06
+computation time: 0.74
 shrink wraps: 0
 shrink wrapping time: 0

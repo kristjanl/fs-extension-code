@@ -249,9 +249,11 @@ void Monomial::toString(string & result, const vector<string> & varNames) const
 
 	strMono += '(';
 
+  /* old flowstar version
 	string strInt;
 	coefficient.toString(strInt);
-	strMono += strInt;
+	strMono += strInt; */
+  strMono += coefficient.toString();
 
 	for(int i=0; i<degrees.size(); i++)
 	{
@@ -381,45 +383,9 @@ bool operator < (const Monomial & a, const Monomial & b)
 
 string Monomial::toString(const vector<string> & varNames) const
 {
-	string strMono;
-
-	strMono += '(';
-
-	string strInt;
-	coefficient.toString(strInt);
-	strMono += coefficient.toString();
-
-	for(int i=0; i<degrees.size(); i++)
-	{
-		if(degrees[i] != 0)
-		{
-			if(degrees[i] == 1)
-			{
-				strMono += ' ';
-				strMono += '*';
-				strMono += ' ';
-				strMono += varNames[i];
-			}
-			else
-			{
-				strMono += ' ';
-				strMono += '*';
-				strMono += ' ';
-				strMono += varNames[i];
-				strMono += '^';
-
-				char strNum[NUM_LENGTH];
-				sprintf(strNum, "%d", degrees[i]);
-				string num(strNum);
-				strMono += num;
-			}
-		}
-	}
-
-	strMono += ')';
-
-	//result = strMono;
-  return strMono;
+	string ret;
+	toString(ret, varNames);
+	return ret;
 }
 
 string Monomial::toString() const {

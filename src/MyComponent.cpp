@@ -243,13 +243,23 @@ void MyComponent::addVar(int var) {
   compVars.push_back(var);
 }
 
-void addEmptyTM(vector<TaylorModelVec> & pipes, int dim) {  
+void addEmptyTM(vector<TaylorModelVec> & pipes, int dim) {
+  throw invalid_argument("don't use addEmptyTM"); 
   TaylorModelVec temp;
   TaylorModel t;
   for(int i = 0; i < dim; i++) {
     temp.tms.push_back(t);
   }
   pipes.push_back(temp);
+}
+
+TaylorModelVec getEmptyTMV(int dim) {  
+  TaylorModelVec temp;
+  TaylorModel t;
+  for(int i = 0; i < dim; i++) {
+    temp.tms.push_back(t);
+  }
+  return temp;
 }
 
 void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
@@ -322,10 +332,10 @@ void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode,
 }
   
 
-  
+//prepares all the dependent components
+//prepares variables, mappers and intial set
 void MyComponent::prepareComponent(TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
-    bool preconditioned) {
+    const vector<HornerForm> & ode, vector<Interval> domain) {
   //return if variables have already been prepared
   if(isPrepared) {
     return;
@@ -341,13 +351,14 @@ void MyComponent::prepareComponent(TaylorModelVec init,
         it < dependencies.end(); it++) {
     //logger.log(sbuilder() << "link: " << (*it)->linkVar);
     MyComponent *pComp = (*it)->pComp;
-    pComp->prepareComponent(init, ode, domain, preconditioned);
+    pComp->prepareComponent(init, ode, domain);
   }
 
   
-  prepareVariables(init, preconditioned);
+  prepareVariables(init);
   prepareMappers();
   remapIVP(init, ode, domain);
+  timeStepPipe = TaylorModelVec(this->initSet);
   
   isPrepared = true;
   
@@ -356,7 +367,7 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   logger.restore(old);
 }
   
-void MyComponent::prepareVariables(TaylorModelVec init, bool preconditioned) {
+void MyComponent::prepareVariables(TaylorModelVec init) {
   int old = logger.reset();
   logger.disable();
   logger.log("preparing variables <");
@@ -507,17 +518,16 @@ void MyComponent::remapLastFlowpipe() {
   logger.log("remapping last <");
   logger.inc();
   int varSize = varIndexes.size() + dependencies.size();
-  
-  addEmptyTM(pipes, varSize);
-  
+
+  //pipes.push_back(getEmptyTMV(varSize));
+  timeStepPipe = getEmptyTMV(varSize);
   logger.log(dependencies.size());
   
   if(dependencies.size() == 0) {
-    logger.restore(old);
     logger.dec();
+    logger.restore(old);
     return;
   }
-  
   //logger.disable();
   
   //mapping of dependent component flowpipes to current component
@@ -530,12 +540,10 @@ void MyComponent::remapLastFlowpipe() {
     MyComponent *pComp = (*it)->pComp;
     logger.listVi("dts", pComp->tpIndexes);
     logger.listVi("mapper", (*it)->mapper);
-    logger.log(pComp->pipes.size());
-    logger.logTMV("p", pComp->pipes.at(0));
     
     
     //logger.log("here");
-    //logger.listVi("dcv", pComp->compVars);
+    logger.listVi("dcv", pComp->compVars);
     
     
     //position of linking variable in precomputed component
@@ -554,28 +562,20 @@ void MyComponent::remapLastFlowpipe() {
     if(linkPos >= compVars.size()) {
       throw std::invalid_argument("link wasn't in compVars");
     }
-    //logger.log(sbuilder() << "dLinkPos: " << dLinkPos);
+    logger.log(sbuilder() << "dLinkPos: " << dLinkPos);
     //logger.log(sbuilder() << "linkPos: " << linkPos);
     
     
     //logger.listVi("vars", varIndexes);
     //logger.listVi("dvars", pComp->varIndexes);
     
+    logger.log(pComp->timeStepPipe.tms.size());
     
-    //logger.logTMV("cpipeb", pipes.at(0));
-    //logger.logTMV("dpipeb", pComp->pipes.at(0));
-    
-    int lastPipeIndex = pipes.size() - 1;
-    int lastSourcePipeIndex = pComp->pipes.size() - 1;
-    logger.log(sbuilder() << "last pipe index: " << lastPipeIndex);
-    logger.logTMV("last pipe", pComp->pipes.at(lastSourcePipeIndex));
-    TaylorModel transformedLink = pComp->pipes.at(lastSourcePipeIndex).tms
+    TaylorModel transformedLink = pComp->timeStepPipe.tms
         .at(dLinkPos).transform(compMappers.at(depIndex));
-    pipes.at(lastPipeIndex).tms.at(linkPos) = transformedLink;
+    logger.log("between");
+    timeStepPipe.tms.at(linkPos) = transformedLink;
     logger.logTM("remapped", transformedLink);
-    
-    //logger.logTMV("cpipea", pipes.at(0));
-    //logger.logTMV("dpipea", pComp->pipes.at(0));
   }
   
   
@@ -589,7 +589,7 @@ void MyComponent::remapLastFlowpipe() {
 void MyComponent::prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
       vector<Interval> domain) {
   logger.disable();
-  prepareVariables(tmv, false);
+  prepareVariables(tmv);
   
   //add flowpipes if the component is not initial one
   //variables in component + link vars
@@ -675,10 +675,33 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
   return components;
 }
 
+//TODO remove! (duplicate of Transformer function
+namespace MyComponentRemove{
+  TaylorModelVec getUnitTmv(int varCount) {
+    vector<TaylorModel> tms;
+    for(int i = 0; i < varCount; i++) {
+      vector<Interval> temp;
+      temp.push_back(Interval(0));
+      for(int j = 0; j < varCount; j++) {
+        if(i == j) {
+          temp.push_back(Interval(1));
+          continue;
+        }
+        temp.push_back(Interval(0));
+      }
+	    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
+    }
+    TaylorModelVec ret(tms);
+    
+	  //logger.logTMV("ret", ret);
+    return ret;
+  }
+}
+
 
 MyComponent getSystemComponent(vector<MyComponent *> comps,
     TaylorModelVec init, const vector<HornerForm> & ode,
-    vector<Interval> domain, bool preconditioned) {
+    vector<Interval> domain) {
   MyComponent allVars;
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
@@ -687,14 +710,14 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
       allVars.addDependency(*i2, *it);
     }
   }
-  allVars.prepareComponent(init, ode, domain, preconditioned);
+  allVars.prepareComponent(init, ode, domain);
+  allVars.unpairedRight = MyComponentRemove::getUnitTmv(init.tms.size());
   return allVars;
 }
 
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
-    bool preconditioned) {
+    const vector<HornerForm> & ode, vector<Interval> domain) {
   int old = logger.reset();
   logger.disable();
   logger.log("preparing components <");
@@ -705,7 +728,7 @@ void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init,
   logger.logTMV("init", init);
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    (*it)->prepareComponent(init, ode, domain, preconditioned);
+    (*it)->prepareComponent(init, ode, domain);
     logger.logTMV("pre Init", (*it)->initSet);
   }
 
@@ -723,6 +746,7 @@ PrecondModel *MyComponent::lastPre() {
 }
 
 TaylorModelVec MyComponent::lastPipe() {
+  throw invalid_argument("don't use");
   return pipes[pipes.size() - 1];
 }
 

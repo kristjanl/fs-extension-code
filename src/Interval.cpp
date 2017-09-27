@@ -1778,6 +1778,7 @@ double Interval::widthRatio(const Interval & I) const
 
 void Interval::toString(string & result) const
 {
+  //logger.log("(string) version");
 	char strTemp[30];
 
 	string strInt;
@@ -1917,16 +1918,48 @@ void Interval::output(FILE * fp, const char * msg, const char * msg2) const
 	fprintf(fp, " ] %s", msg2);
 }
 
-string toStringHelper(const mpfr_t data) {
-  char strTemp[50];
-  mpfr_sprintf(strTemp, "%.15Rf", data);
+
+string toStringHelper(const mpfr_t data, int prec, char roundingMode) {
+  char strTemp[prec * 3];
+  int bufferSize = 8;
+  char buffer[bufferSize];
+  
+  //check that precision was small enough from the number of written characters
+  //%.{prec}RYf -- Y is round away from zero
+  
+  
+  if(sprintf(buffer, "%%.%dR%cf", prec, roundingMode) > bufferSize) {
+    throw std::invalid_argument(sbuilder() << 
+        "toStringHelper called with too big prec (" << prec << ")");
+  }
+  //logger.force(buffer);
+  //  mpfr_sprintf(strTemp, "%.15Rf", data);
+  mpfr_sprintf(strTemp, buffer, data);
+  //logger.log(sbuilder() << "strTemp: " << string(strTemp));
+  
+  
+  /**print out the data precisely *
+  //get the mpfr radix into string
+  char* str2 = NULL;
+  mpfr_exp_t e;
+  str2 = mpfr_get_str (NULL, &e, 16, 0, data, MPFR_RNDN);
+  //add radix point and exponent
+  
+  char buffer2[64];
+  sprintf (buffer2, ".%s@%ld", str2, (long) e);
+  logger.log(sbuilder() << "buffer2: " << string(buffer2));
+  //*/
+  
+  
+  
+  
   //try to take more numbers if not enough
   if(mpfr_cmp_d(data,1e30) > 0) {
     throw IntegrationException("mpfr number was too big");
   }
   if(strcmp(strTemp, "0.0000000000") == 0 | 
       strcmp(strTemp, "-0.0000000000") == 0) {
-    mpfr_sprintf(strTemp, "%.15Rf", data);
+    mpfr_sprintf(strTemp, buffer, data);
   }
   string str(strTemp);
   int removeCount = 0;
@@ -1945,14 +1978,36 @@ string toStringHelper(const mpfr_t data) {
   return ret;
 }
 
+
+string toStringHelper(const mpfr_t data, int prec) {
+  //round away from zero
+  return toStringHelper(data, prec, 'Y');
+}
+
 string Interval::toString() const {
+  //logger.log("() version");
+  return toString(5);
+}
+
+string Interval::toString(int prec) const {
+  //logger.log(sbuilder() << "(prec=" << prec << ") version");
+  
   //don't bother with intervals if width is small
-	if(width() < 1e-10) {
-    string los = toStringHelper(lo);
-    return "[" + los + "]";
+	if(width() < ::pow(10, -prec)) {
+	  string retS;
+	  mpfr_t lMag, uMag;
+	  mpfr_inits2(intervalNumPrecision, lMag, uMag, (mpfr_ptr) 0);
+    mpfr_abs(lMag, lo, MPFR_RNDA);
+    mpfr_abs(uMag, up, MPFR_RNDA);
+	  if( mpfr_cmp(lMag, uMag) > 0) {
+      retS = toStringHelper(lo, prec);
+	  } else {
+	    retS = toStringHelper(up, prec);
+	  }
+    return "[" + retS + "]";
   }
-  string los = toStringHelper(lo);
-  string ups = toStringHelper(up);
+  string los = toStringHelper(lo, prec);
+  string ups = toStringHelper(up, prec);
   return "[" + los + "," + ups + "]";
 }
 void Interval::printFull() const {
@@ -1965,12 +2020,14 @@ void Interval::printFull() const {
 }
 
 string Interval::getLower() const {
-  return toStringHelper(lo);
+  //round to nearest
+  return toStringHelper(lo, 15, 'N');
 }
 
 
 string Interval::getHigher() const {
-  return toStringHelper(up);
+  //round to nearest
+  return toStringHelper(up, 15, 'N');
 }
 
 

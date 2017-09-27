@@ -1,11 +1,16 @@
 #include "Transformer.h"
 
 void Transformer::evaluateStepEnd(vector<MyComponent *> & comps, 
-      MySettings & settings) {
-  for(vector<MyComponent *>::iterator it = comps.begin(); 
-      it < comps.end(); it++) {
-    MyComponent & comp = **it;
-    comp.isSolved = false;
+      MySettings & settings, bool fail) {
+  int old = logger.reset();
+  if(true || fail)
+    throw invalid_argument("evaluate called with fail"); //signaling need to refactor
+  for(int i = 0; i < comps.size(); i++) {
+    logger.log(comps.size());
+    logger.log("here");
+    MyComponent & comp = *(comps[i]);
+    logger.logTMV("pipe", comp.timeStepPipe);
+    continue;
     int lastIndex = comp.pipes.size()-1;
     
     //set the next initSet
@@ -16,6 +21,8 @@ void Transformer::evaluateStepEnd(vector<MyComponent *> & comps,
     //logger.listVi("vars", (*it)->varIndexes);
     //logger.logTMV("evaluated", (*it)->initSet);
   }
+  exit(0);
+  logger.restore(old);
 }
 
 
@@ -150,8 +157,7 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
       }
     }
   }
-  logger.log("matrix M");
-  logger.logMatrix(m);
+  logger.logMatrix("M", m);
   
   
   //find the inverse of m
@@ -162,13 +168,13 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
     m.inverse(inv);
   }catch(IntegrationException& e) {
     logger.reset();
-    logger.logMatrix(m);
+    logger.logMatrix("M", m);
     throw e;
   }
   gsl_set_error_handler (old_handler);
   
   logger.log("M^-1");
-  logger.logMatrix(inv);
+  logger.logMatrix("M inv", inv);
   
   
   //find the nonlinear part of m^-1 * TM
@@ -505,7 +511,7 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
       MySettings & settings) {
   logger.log("sw transforming");
   exit(0);
-  evaluateStepEnd(comps, settings);
+  evaluateStepEnd(comps, settings, true);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
     logger.force("wrapping");
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,
@@ -576,8 +582,8 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
   } else {
     logger.force("not implementated");
   }
-  logger.logMatrix(A);
-  logger.logMatrix(invA);
+  logger.logMatrix("A", A);
+  logger.logMatrix("A inv", invA);
   
   vector<Interval> center;
   tmv.constant(center);
@@ -629,8 +635,8 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 		}
   }
   
-  logger.logMatrix(S);
-  logger.logMatrix(invS);
+  logger.logMatrix("S", S);
+  logger.logMatrix("S inv", invS);
   
   rightComp.linearTrans_assign(invS);
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
@@ -656,37 +662,25 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
   logger.restore(old);
 }
 
-void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & settings, 
-      MyComponent & all) {
+void PreconditionedTransformer::precond2(TaylorModelVec & badLeft, 
+    MySettings & settings, MyComponent & all) {
   int old = logger.reset();
   logger.disable();
-  logger.log("precond <");
+  logger.log("precond2 <");
   logger.inc();
   
-  logger.log("precond");
-  
-  logger.logTMV("tmv", tmv);
-  
-  logger.disable();
-  
+  logger.logTMV("badLeft", badLeft);
   vector<Interval> previousRange;
-  TaylorModelVec previousRight;
+  TaylorModelVec previousRight = all.unpairedRight;
   
   //number of taylor model parameters
-  int paramCount = tmv.tms[0].getParamCount();
+  int paramCount = badLeft.tms[0].getParamCount();
   //number of system variables (in the component)
-  int varCount = tmv.tms.size();
+  int varCount = badLeft.tms.size();
   
   //linear TMV where TM[i] = 1*var_i
   TaylorModelVec unitTmv = getUnitTmv(varCount);
   
-  
-  //no previous right
-  if(all.pipePairs.size() == 0) {
-    previousRight = unitTmv;
-  } else {
-    previousRight = all.pipePairs[all.pipePairs.size() - 1]->right;
-  }
 	previousRight.polyRange(previousRange, settings.domain);
   logger.logVI("range", previousRange);
   
@@ -694,24 +688,19 @@ void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & sett
   logger.log(sbuilder() << "varCount: " << varCount);
   Matrix A(varCount,varCount), invA(varCount, varCount);
   
-  //TODO remove after unifying with QR
-  //preconditionQR(A, tmv, varCount, varCount+1);
-  //A.transpose(invA);
-  
-  getA(A, tmv, varCount);
+  getA(A, badLeft, varCount);
   getAInv(invA, A);
   
-  logger.logMatrix(A);
-  logger.logMatrix(invA);
+  logger.logMatrix("A", A);
+  logger.logMatrix("A inv", invA);
   
-  vector<Interval> center;
-  tmv.constant(center);
-  logger.logVI("center", center);
   
+  //center the remainder and push shift to constant part of the polynomial
+  badLeft.centerRemainder();
   
   //partition left model into parts: constant, linear, nonlinear and remainder
-  TaylorModelVec c(tmv), lin, nl, rem;
-  tmv.getParts(c, lin, nl, rem);
+  TaylorModelVec c, lin, nl, rem;
+  badLeft.getParts(c, lin, nl, rem);
   
   logger.logTMV("c", c);
   logger.logTMV("lin", lin);
@@ -734,6 +723,7 @@ void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & sett
   TaylorModelVec rightComp;
 	leftToRight.insert_ctrunc(rightComp, previousRight, previousRange, settings.domain, settings.order, 0);
   
+	
   //calculate the bounds for the new right model
   vector<Interval> rightBound;
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
@@ -752,15 +742,14 @@ void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & sett
     if(intMag.subseteq(ZERO_INTERVAL) == false) {
 		  S.set(dMag, i, i);
 		  invS.set(1/dMag, i, i);
-	  }
-	  else {
+	  } else {
 		  S.set(0, i, i);
 		  invS.set(0, i, i); //doesn't matter if 0 or 1
 		}
   }
   
-  logger.logMatrix(S);
-  logger.logMatrix(invS);
+  logger.logMatrix("S", S);
+  logger.logMatrix("S inv", invS);
   
   //apply inverse of S to right model
   rightComp.linearTrans_assign(invS);
@@ -768,24 +757,17 @@ void PreconditionedTransformer::precond2(TaylorModelVec & tmv, MySettings & sett
   logger.logTMV("rightComp", rightComp);
   logger.logVI("rightBound", rightBound);
   
+  
 	//left part is made of constant part and with scaling
-	TaylorModelVec left(c);
+	TaylorModelVec left = TaylorModelVec(c);
 	TaylorModelVec desiredLinearPart;
 	unitTmv.linearTrans(desiredLinearPart, A * S);
 	left.add_assign(desiredLinearPart);
 	
-	PrecondModel *pre = new PrecondModel(left, rightComp);
 	
-	logger.logTMV("left", left);
-  logger.logTMV("right", rightComp);
-  
-  TaylorModelVec back = pre->composed(&settings);
-  logger.logTMV("bac", back);
-  
+	all.unpairedRight = rightComp;
+  all.initSet = left;
 	
-  all.pipePairs.push_back(pre);
-  
-  
   logger.dec();
   logger.log("precond >");
   logger.restore(old);
@@ -796,8 +778,6 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   logger.disable();
   logger.log("makeCompInitSets <");
   logger.inc();
-      
-  PrecondModel *pre = all.pipePairs[all.pipePairs.size() - 1];
 
   TaylorModelVec newCompSet;
   
@@ -812,12 +792,12 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     logger.log(sbuilder() << "index in all: " << indexInAll);
     //using compVars, cause of the assumption that initial conditions 
     logger.listVi("tm params", comp->allTMParams);
-    logger.logTM("c1", pre->left.tms.at(indexInAll));
-    TaylorModel tm = pre->left.tms.at(indexInAll).
+    logger.logTM("c1", all.initSet.tms.at(indexInAll));
+    TaylorModel tm = all.initSet.tms.at(indexInAll).
         transform(comp->allTMParams);
     logger.logTM("c2", tm);
     logger.log(sbuilder() << "tm paramCount1: " << 
-        pre->left.tms[0].getParamCount());
+        all.initSet.tms[0].getParamCount());
     logger.log(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
@@ -838,7 +818,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   logger.disable();
   logger.log("qr transforming <");
   logger.inc();
-  evaluateStepEnd(comps, settings);
+  evaluateStepEnd(comps, settings, true);
   
   //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
@@ -867,7 +847,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
   //logger.log("null transforming");
-  evaluateStepEnd(comps, settings);
+  evaluateStepEnd(comps, settings, true);
 }
 void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
@@ -875,29 +855,64 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   logger.disable();
   logger.log("id transforming <");
   logger.inc();
-  //evaluateStepEnd(comps, settings);
+  //evaluateStepEnd(comps, settings, false);
+  
+  //TODO evaluate first, then remap maybe
   
   //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
   
-  TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
-  TaylorModelVec tmv;
-  last.evaluate_t(tmv, settings.step_end_exp_table);
+  TaylorModelVec tsp = all.timeStepPipe;
+  //logger.logTMV("tsp", tsp);
+  //logger.logTMV("upright", all.unpairedRight);
+  all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   
-  //logger.logTMV("tmv", tmv);
   
-  precond2(tmv, settings, all);
+  /* Comment out! ///
+  PrecondModel *pre = new PrecondModel(TaylorModelVec(), rightComp);
+  TaylorModelVec back = pre->composed(&settings);
+  logger.logTMV("bac", back);
+	pSerializer->add(back, "composed");*/
+  
+  
+  
+  
+  TaylorModelVec leftStar;
+  tsp.evaluate_t(leftStar, settings.step_end_exp_table);
+  pSerializer->add(leftStar, "ae");
+  
+  //pSerializer->serialize();
+  
+  //logger.logTMV("leftStar", leftStar);
+  precond2(leftStar, settings, all);
+  //logger.logTMV("upright", all.unpairedRight);
+  
+  
+  
+	pSerializer->add(all.initSet, "left");
+	pSerializer->add(all.initSet, "left2");
+	pSerializer->add(all.unpairedRight, "right");
+	pSerializer->add(all.unpairedRight, "right2");
+	//logger.logTMV("left", all.initSet);
+  //logger.logTMV("right", all.unpairedRight);
+  
+  
+  
+  //logger.logTMV("pair.left", all.lastPre()->left);
+  //logger.logTMV("pair.right", all.lastPre()->right);
+  
     
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     makeCompInitSets(all, *it);
+    //logger.logTMV("ci", (*it)->initSet);
   }
-  
+  pSerializer->add(comps[0]->initSet, "precond");
   
   logger.dec();
   logger.log("id transforming >");
   logger.restore(old);
-  evaluateStepEnd(comps, settings);
+  //evaluateStepEnd(comps, settings);
 }
 
 

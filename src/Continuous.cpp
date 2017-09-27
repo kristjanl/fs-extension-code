@@ -189,10 +189,18 @@ void Flowpipe::composition_normal(TaylorModelVec & result, const vector<Interval
 			orders.push_back(d2);
 		}
 	}
+	//logger.log();
+	//logger.logTMV("tmv", tmv);
+	//logger.logTMV("tmvPre", tmvPre);
+	pSerializer->add(tmv, "right2");
+	pSerializer->add(tmv, "right2");
 
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_exp_table);
-	tmvPre.insert_ctrunc_normal(result, tmv, tmvPolyRange, step_exp_table, domainDim, orders, cutoff_threshold);
+	tmvPre.insert_ctrunc_normal(result, tmv, tmvPolyRange, step_exp_table, 
+	    domainDim, orders, cutoff_threshold);
+	//logger.logTMV("result", result);
+	//logger.log();
 }
 
 void Flowpipe::intEval(vector<Interval> & result, const Interval & cutoff_threshold) const
@@ -11004,7 +11012,7 @@ void ContinuousReachability::composition()
 	{
 		vector<Interval> step_exp_table;
 		Interval intStep;
-
+		logger.reset();
 		list<Flowpipe>::const_iterator iter;
 
 		for(iter = flowpipes.begin(); iter != flowpipes.end(); ++iter)
@@ -11020,7 +11028,9 @@ void ContinuousReachability::composition()
 			iter->composition_normal(tmvTemp, step_exp_table, cutoff_threshold);
 
 			flowpipesCompo.push_back(tmvTemp);
+			pSerializer->add(tmvTemp, "composition");
 			domains.push_back(iter->domain);
+			//logger.logVI("domain", iter->domain);
 		}
 	}
 }

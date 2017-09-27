@@ -25,19 +25,19 @@ void parseError(const char *str, int lnum)
 
 int main(int argc, const char *argv[])
 {
-  if(argc >= 3) {
+  if(argc >= 4) {
     logger.force("print");
-    int index1 = -1;
-    int index2 = -1;
-    if(argc == 4) {
-      index1 = index2 = atoi(argv[3]);
-    } else if (argc == 5) {
-      index1 = atoi(argv[3]);
-      index2 = atoi(argv[4]);
+    
+    int index1 = 0;
+    int index2 = 0;
+    if (argc >= 5) {
+      index1 = atoi(argv[4]);
+      index2 = index1;
     }
-    logger.log(index1);
-    logger.log(index2);
-    printTMVFiles(argv[1], argv[2], index1, index2);
+    if (argc >= 6) {
+      index2 = atoi(argv[5]);
+    }
+    printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
     exit(0);
   }
   logger.disable();

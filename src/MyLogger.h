@@ -21,6 +21,8 @@ using namespace std;
 //class Interval;
 //class Polynomial;
 
+class PrecondModel;
+
 struct sbuilder
 {
 	std::stringstream ss;
@@ -44,16 +46,18 @@ class mylogger2 {
 	  void log();
 		void logVI(vector<Interval>);
 		void logVI(string, vector<Interval>);
+		void logVS(string, vector<string>);
 		void logVHF(string, vector<HornerForm>);
 		void logVi(string, vector<int>);
 		void listVi(string, vector<int>);
 		void logVRT(string, vector<RangeTree *>);
 		void logRT(string, RangeTree *);
 		void logTMV(string, TaylorModelVec);
+		void logPM(string, PrecondModel *);
 		void logTMVRem(string, TaylorModelVec);
 		void logTM(string, TaylorModel);
     void logM(Monomial m);
-    void logMatrix(Matrix m);
+    void logMatrix(string, Matrix m);
     void force(string s);
 		void log(string s);
     void log(int i);

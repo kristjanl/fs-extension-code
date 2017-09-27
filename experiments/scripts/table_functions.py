@@ -167,6 +167,7 @@ def write_table_end(outFile):
 
 
 def write_table(tableName, modelDir, pairs, nameSuffix):
+  print "writing '%s'" %tableName
   outFile = open(tableName, 'w')
   write_table_start(outFile)
   write_table_rows(modelDir, pairs, outFile, nameSuffix)

@@ -461,16 +461,14 @@ namespace smallComp {
   
   void advanceFlow(MyComponent & component, MySettings & settings) {
     int old = logger.reset();
-    //logger.disable();
+    logger.disable();
+    logger.logTMV("init", component.initSet);
     
-    TMVSerializer serializer("comp.txt");
     //variable when picard approximation is stored
-    //TaylorModelVec p = TaylorModelVec(component.initSet);
-    TaylorModelVec p = TaylorModelVec(component.lastPipe());
-    logger.logTMV("lastpipe", component.lastPipe());
+    TaylorModelVec & p = component.timeStepPipe;
+    logger.logTMV("tsp", component.timeStepPipe);
     
     vector<int> & sIndexes = component.solveIndexes;
-    
     
     for (unsigned i=0; i<component.solveIndexes.size(); i++) {
       p.tms.at(sIndexes[i]) = component.initSet.tms.at(sIndexes[i]);
@@ -481,7 +479,8 @@ namespace smallComp {
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
-    serializer.add(p);
+    pSerializer->add(p, "i0");
+    pSerializer->add(p, "i1");
     
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
@@ -490,11 +489,11 @@ namespace smallComp {
     }
     
     logger.logTMV("after", p);
-    serializer.add(p);
+    pSerializer->add(p, "i2");
     
     
     p.cutoff(settings.cutoff);
-    serializer.add(p);
+    pSerializer->add(p, "i3");
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
@@ -507,18 +506,20 @@ namespace smallComp {
     logger.logTMV("dec", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
-	  serializer.add(p);
+	  pSerializer->add(p, "i4");
     logger.logTMV("ref", p);
+    
+	  pSerializer->add(p, "be");
     
     logger.log(component.pipes.size());
     
-    component.pipes[component.pipes.size() - 1] = p;
+    logger.logTMV("comp.tsp", component.timeStepPipe);
+    logger.logTMV("tsp", p);
         
     logger.restore(old);
-    serializer.serialize();
     
   }
-  int tempp = 0;
+  
   void singleStepIntegrate(MyComponent & component, MySettings & settings) {
     TaylorModelVec nextInit = component.initSet;
     vector<TaylorModelVec> & pipes = component.pipes;
@@ -530,10 +531,8 @@ namespace smallComp {
     Interval stepTime = Interval(t, t + settings.step);
     //logger.log(sbuilder() << "counter: " << counter);
     //add empty Taylor model in first component
-    
     //logger.logTMV("nextInit", nextInit);
-    
-    TaylorModelVec & pipe = pipes.at(pipes.size() - 1);
+
     //logger.logTMV("start", pipe);
     //logger.logTMV("nextInit", nextInit);
     
@@ -541,19 +540,14 @@ namespace smallComp {
     if(settings.useFlow == false) {
       //logger.logTMV("initp", nextInit);
       //logger.force("plain");
-      smallComp::advance_step(component.solveIndexes, pipe, component.odes, nextInit, component.dom, settings);
+      TaylorModelVec & pipe = component.timeStepPipe;
+      smallComp::advance_step(component.solveIndexes, pipe, component.odes, 
+          nextInit, component.dom, settings);
     } else {
       //logger.logTMV("initf", component.initSet);
       //logger.force("flow");
       smallComp::advanceFlow(component, settings);
     }
-    tempp++;
-    /*logger.log(tempp);
-    logger.log(sbuilder() << "int: " << component.lastPipe().tms[0].remainder.toString());
-    logger.restore(old2);
-    if(tempp == 3)
-      exit(0);
-    */
     //logger.logTMV("last2", component.lastPipe());
     
     //logger.logTMV("step pipe", pipe);
@@ -594,16 +588,18 @@ namespace smallComp {
       //solve all dependencies
       smallComp::singleStepPrepareIntegrate(*pComp, settings);
     }
-    //logger.log("solving");
+    logger.log("solving");
     logger.listVi("component vars: ", component.compVars);
     
     
     //remaps previous components flowpipes
     component.remapLastFlowpipe();
+    logger.log("remapping done");
     
     //component.log();
     
     singleStepIntegrate(component, settings);
+    logger.log("single done");
     component.isSolved = true;
     
     logger.dec();
@@ -671,7 +667,6 @@ SmallCompSystem::SmallCompSystem(const ContinuousSystem & system, vector< vector
 
 void foo() {
   logger.reset();
-  
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
@@ -791,213 +786,10 @@ void foo() {
 
 
 
-void bar() {
-  logger.log("bar");
-  deserializeFlows("temp.txt");
-  //parseFile("temp.model");
-}
-
-
-#include <boost/archive/text_oarchive.hpp>
-#include <boost/archive/text_iarchive.hpp>
-class gps_position {
-private:
-    friend class boost::serialization::access;
-    template<class Archive>
-    void save(Archive & ar, const unsigned int version) const
-    {
-        logger.log("saving");
-        ar  & degrees;
-        ar  & minutes;
-        
-        char* abc = NULL;
-        int base = 2;
-        mpfr_exp_t e;
-        abc = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
-        
-        string str(abc);
-        logger.log(str);
-        ar & str;
-        ar & e;
-        mpfr_printf ("number = %.17Rg\n", number);
-  mpfr_out_str (stdout, 2, 0, number, MPFR_RNDD);
-  logger.log("");
-    }
-    template<class Archive>
-    void load(Archive & ar, const unsigned int version)
-    {
-        logger.log("loading");
-        int i;
-        int j;
-        int base = 2;
-        string str;
-        mpfr_exp_t e;
-        ar  & degrees;
-        ar  & minutes;
-        ar & str;
-        ar & e;
-        const char *cstr = str.c_str();
-        logger.log(sbuilder() << "str: " << str);
-        logger.log(sbuilder() << "cstr: " << cstr);
-        logger.log(e);
-        //char* abc = NULL;
-        //ar & abc;
-        mpfr_t back;
-        mpfr_inits2(intervalNumPrecision, back, (mpfr_ptr) 0);
-        mpfr_set_str(back, cstr, base, MPFR_RNDD);
-        mpfr_set_exp(back, e);
-        mpfr_printf ("back = %.17Rg\n", back);
-  mpfr_out_str (stdout, 2, 0, back, MPFR_RNDD);
-  logger.log("");
-        
-        
-    }
-    BOOST_SERIALIZATION_SPLIT_MEMBER()
-    int degrees;
-    int minutes;
-    float seconds;
-    mpfr_t number;
-public:
-    string s;
-    gps_position(){};
-    gps_position(int d, int m, float s) :
-        degrees(d), minutes(m), seconds(s)
-    {
-      mpfr_inits2(intervalNumPrecision, number, (mpfr_ptr) 0);
-      mpfr_set_d(number, s, MPFR_RNDD);
-    }
-    void print() const {
-      //mpfr_printf ("mpfr = %.17Rg\n", number);
-      //mpfr_out_str (stdout, 10, 0, number, MPFR_RNDD);
-      logger.log(sbuilder() << "(" << degrees << "," << minutes << "," << seconds << "," << ")" << s);
-    }
-};
-
-void foo2() {
-  // create and open a character archive for output
-    std::ofstream ofs("filename");
-
-    // create class instance
-    gps_position g(35, 59, 24.567f);
-    g.s = "foo";
-    Interval i1(2,3);
-    logger.log(i1.toString());
-    g.print();
-    // save data to archive
-    {
-        boost::archive::text_oarchive oa(ofs);
-        // write class instance to archive
-        oa << g;
-        oa << g;
-        oa << i1;
-    	// archive and stream closed when destructors are called
-    }
-
-    // ... some time later restore the class instance to its orginal state
-    gps_position newg, newg2;
-    Interval i2;
-    {
-        // create and open an archive for input
-        std::ifstream ifs("filename");
-        boost::archive::text_iarchive ia(ifs);
-        // read class state from archive
-        ia >> newg;
-        ia >> newg2;
-        ia >> i2;
-        // archive and stream closed when destructors are called
-    }
-    newg.print();
-    newg2.print();
-  
-  logger.log("--------");
-  
-    int base = 10;
-    double input = 25;
-
-    mpfr_t number;
-    mpfr_inits2(53, number, (mpfr_ptr) 0);
-    mpfr_set_d(number, input, MPFR_RNDD);
-    mpfr_const_pi(number, MPFR_RNDD);
-    mpfr_printf ("mpfr = %.17Rg\n", number);
-
-    char* str = NULL;
-    mpfr_exp_t e;
-    str = mpfr_get_str (NULL, &e, base, 0, number, MPFR_RNDN);
-
-
-    
-    cout << "str: " << str << endl;
-    cout << "e: " << e << endl;
-    cout << "stdout: ";
-    mpfr_out_str(stdout, base, 0, number, MPFR_RNDD);
-    cout << endl;
-    
-
-    mpfr_t back;
-    mpfr_inits2(53, back, (mpfr_ptr) 0);
-    
-    
-    char buffer[64];
-    sprintf (buffer, ".%s@%ld", str, (long) e);
-    cout << buffer << endl;
-    mpfr_set_str (back, buffer, base, MPFR_RNDD);
-    mpfr_printf ("back = %.17Rg\n", back);
-    
-    
-    mpfr_t dif;
-    mpfr_inits2(53, dif, (mpfr_ptr) 0);
-    mpfr_sub(dif, number, back, MPFR_RNDU);
-    mpfr_printf("dif = %.27Rg\n", dif);
-    cout << "dif: ";
-    mpfr_out_str(stdout, 2, 0, dif, MPFR_RNDD);
-    cout << endl;
-    
-    
-    
-    //mpfr_set_str(back, str, base, MPFR_RNDD);
-    //mpfr_set_exp(back, e);
-    //mpfr_printf("back = %.17Rg\n", back);
-    
-    /*
-    
-    string s = "2.5000000000000000";
-    const char* str2 = s.c_str();
-    mpfr_t back2;
-    mpfr_inits2(53, back2, (mpfr_ptr) 0);
-    mpfr_set_str(back2, str2, base, MPFR_RNDD);
-    mpfr_printf("back2 = %.17Rg\n", back2);
-    */
-    mpfr_free_str (str);
-  exit(0);
-  
-}
-
 void SmallCompReachability::myRun() {
   int old = logger.reset();
   logger.log("Simple Comp Run <");
   logger.inc();
-  
-  /*
-  foo2();
-  exit(0);
-  /**/
-  
-  /*
-  logger.reset();
-  vector<TaylorModelVec *> plain = pDeserializeFlows("plain.txt");
-  vector<TaylorModelVec *> fcomp = pDeserializeFlows("fcomp.txt");
-  
-  //logger.logTM("p[0]", plain[0]->tms[0]);
-  //logger.logTM("f[0]", fcomp[0]->tms[0]);
-  
-  compareFlows(fcomp, plain);
-  exit(0);
-  
-  //foo();
-  
-  //bar();
-  exit(1);
-  /**/
   
   clock_t begin, end;
 	begin = clock();
@@ -1024,34 +816,35 @@ void SmallCompReachability::myRun() {
   logger.restore(old);
 }
 
-void foo2(vector<MyComponent *> comps, MyComponent & all, 
+
+//TODO move to OutputWriter
+void createOutput(vector<MyComponent *> comps, MyComponent & all, 
       Transformer *transformer, MySettings *settings) {
-  
+      
+  logger.log("here");
   if(transformer->isPreconditioned == false)
     return;
   
-  for(int i = 0; i < all.pipes.size(); i++) {
+  for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
-    TaylorModelVec & left = all.pipes[i];
-    if(i == 0) {
-      continue;
-      all.output.push_back(left);
-    }
-    TaylorModelVec & right = all.pipePairs[i-1]->right;  
-    TaylorModelVec composed;
-    vector<Interval> rightRange;
-	  right.polyRange(rightRange, settings->domain);
-	  left.insert_ctrunc(composed, right, rightRange, settings->domain, settings->order, 0);
+    TaylorModelVec composed = all.pipePairs[i]->composed(settings);
+    //logger.logTMV("com", com);
 	  all.output.push_back(composed);
+	  pSerializer->add(composed, "composition");
   }
   cout << endl;
-  
 }
 
 void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const {
   logger.log("sc reach <");
   logger.inc();
   logger.log(sbuilder() << "# of components: " <<components.size());
+  
+  
+  if(pSerializer == NULL) {
+    //pSerializer = new TMVSerializer("comp.txt", 8*11);
+    pSerializer = new TMVSerializer("comp.txt");
+  }
   
   vector<MyComponent *> comps = createComponents(components, hfOde);
   
@@ -1085,28 +878,34 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
       comps.at(i)->retainEmptyParams = true;
     }
   }
+  
+  //logger.log("before preparing");
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    (*it)->prepareComponent(currentTMV, hfOde, domain, 
-        settings->transformer->isPreconditioned);
+    (*it)->prepareComponent(currentTMV, hfOde, domain);
   }
-  MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain, 
-      settings->transformer->isPreconditioned);
+  MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
   
-
+  settings->transformer->transform(all, comps, *settings);
   clock_t integrClock = clock();
   double t;
   for(t = 0; t < time; t+= step) {
     //logger.log(sbuilder() << "t: " << t);
-    cerr << ".";
+    cout << ".";
     
     try{
+      //solve components
       for(vector<MyComponent *>::iterator it = comps.begin(); 
           it < comps.end(); it++) {
         //logger.logTMV("init", (*it)->initSet);
         smallComp::singleStepPrepareIntegrate(**it, *settings);
         //logger.logTMV("last", (*it)->lastPipe());
       }
+      //don't intdicate that components are solved anymore
+      for(int i = 0; i < comps.size(); i++) {
+        comps[i]->isSolved = false;
+      }
+      //make apppropriate next initial set
       settings->transformer->transform(all, comps, *settings);
       
     }catch(IntegrationException& e) {
@@ -1118,6 +917,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
     }
     //break; //only the first step, REMOVE!
   }
+  
   writer.info.push_back(sbuilder() << "integration time: " << t);
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
@@ -1129,7 +929,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   } else
     writer.info.push_back(sbuilder() << "shrink wraps: 0");
   
-  foo2(comps, all, settings->transformer, settings);
+  
+  createOutput(comps, all, settings->transformer, settings);
   writer.addComponents(comps, domain, all, settings->transformer->isPreconditioned);
   writer.writeCSV();
   writer.writeInfo();
@@ -1138,10 +939,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
 
   logger.dec();
   logger.log("sc reach >");
+  pSerializer->serialize();
   //comps[0]->serializeFlows();
   
   
-  serializeFlows(comps[0], "plain.txt");
+  //serializeFlows(comps[0], "plain.txt");
   //vector<TaylorModelVec> & parsed = deserializeFlows("fcomp.txt");
   //compareFlows(comps[0]->pipes, parsed);
   exit(0);

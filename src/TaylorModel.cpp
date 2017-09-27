@@ -110,6 +110,8 @@ void TaylorModel::constant(Interval & result) const
 void TaylorModel::intEval(Interval & result, const vector<Interval> & domain) const
 {
 	expansion.intEval(result, domain);
+	//logger.log(sbuilder() << "res: " << result.toString(70));
+	//logger.log(sbuilder() << "rem: " << remainder.toString(70));
 	result += remainder;
 }
 
@@ -2220,8 +2222,13 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result, const TaylorMo
 	x0.add(result, tmvTemp2);
 }
 
+
+//find next iteration of with Picard operator (no remainder version)
+//if variables is not to be solved in component, then it's just copied over
+//otherwise it's substituted into odes, integrated and added it's intial 
+//condition (from component.initSet)
 void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result, 
-    MyComponent * comp, const int numVars, const int order, 
+    MyComponent *comp, const int numVars, const int order, 
     const Interval & cutoff_threshold) const {
   int old = logger.reset();
   logger.disable();
@@ -2231,15 +2238,14 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
 	vector<int> sIndexes = comp->solveIndexes;
 	int lowerOrder = max(0, order - 1);
 	
+	//find picard iteration for variables that need to be solved
   TaylorModelVec compPicard;
 	for(int i=0; i<sIndexes.size(); ++i) {
 	  TaylorModel tmTemp;
-		comp->odes[i].insert_no_remainder(tmTemp, *this, numVars, order-1, cutoff_threshold);
+		comp->odes[sIndexes[i]].insert_no_remainder(tmTemp, *this, numVars, order-1, cutoff_threshold);
 		compPicard.tms.push_back(tmTemp);
 	}
-	
-	logger.logTMV("compPic", compPicard);
-	
+	//logger.logTMV("compPic", compPicard);
 	
 	TaylorModelVec integrated;
 	compPicard.integral_no_remainder(integrated);
@@ -2248,14 +2254,17 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
 	for(int i = 0; i < tms.size(); i++) {
     logger.log(sbuilder() << "i: " << i);
     vector<int>::iterator it = find(comp->solveIndexes.begin(), comp->solveIndexes.end(), i);
-    //old variable
+    //old variable (alrady has solution, just copy it)
     if(it == comp->solveIndexes.end()) {
+      //logger.logTM("old", tms[i]);
       result.tms.push_back(tms[i]);
     }else {
+      //new variable
       int indexInComp = it - comp->solveIndexes.begin();
-      
       TaylorModel tmTemp;
+      //add initial conditon to integration result
   		comp->initSet.tms[i].add(tmTemp, integrated.tms[indexInComp]);
+  		//logger.logTM("new", tmTemp);
       result.tms.push_back(tmTemp);
     }
 	}
@@ -4339,13 +4348,13 @@ void TaylorModel::getParts(TaylorModel & constant, TaylorModel & linear,
   Polynomial linP(linMonos);
   
   constant.expansion = Polynomial(cMonos);
-  constant.remainder = Interval();
+  constant.remainder = ZERO_INTERVAL;
   
   linear.expansion = Polynomial(linMonos);
-  constant.remainder = Interval();
+  constant.remainder = ZERO_INTERVAL;
   
   nonLinear.expansion = Polynomial(nlMonos);
-  constant.remainder = Interval();
+  constant.remainder = ZERO_INTERVAL;
   
   remainder.expansion = Polynomial();
   remainder.remainder = this->remainder;
@@ -4520,3 +4529,23 @@ TaylorModelVec TaylorModelVec::distance(const TaylorModelVec & tmv) const {
   return ret;
 }
 
+void TaylorModel::centerRemainder() {
+  int old = logger.reset();
+  logger.disable();
+  Interval mid;
+  logger.logTM("th", *this);
+  remainder.remove_midpoint(mid);
+  int numOfParams = getParamCount(); //TODO maybe catch -1 error, and return
+  TaylorModel centeredModel(mid, numOfParams);
+  this->add_assign(centeredModel);
+  logger.log(mid.toString());
+  logger.logTM("cm", centeredModel);
+  logger.logTM("th", *this);
+  logger.log("centering");
+  logger.restore(old);
+}
+void TaylorModelVec::centerRemainder() {
+  for(int i = 0; i < tms.size(); i++) {
+    tms[i].centerRemainder();
+  }
+}

@@ -73,7 +73,6 @@ TaylorModelVec PrecondModel::composed(MySettings *settings) {
   
   vector<Interval> rightRange;
 	right.polyRange(rightRange, settings->domain);
-	
 	left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
 	
 	return ret;
@@ -91,6 +90,28 @@ namespace utilsprivate {
     
     //add other parameters
     for(int i = 1; i < tmv.getParamCount(); i++) {
+      string param = sbuilder() << "a" << i;
+      params.push_back(param);
+    }
+    return params;
+  }
+  
+  vector<string> createParams(const vector<TaylorModelVec> & tmvs) {
+    //logger.log("creating");
+    
+    vector<string> params;
+    
+    // time will always be a parameter
+    params.push_back("t");
+    
+    int maxParams = 0;
+    for(int i = 0; i < tmvs.size(); i++) {
+      if(maxParams < tmvs[i].getParamCount())
+        maxParams = tmvs[i].getParamCount();
+    }
+    
+    //add other parameters
+    for(int i = 1; i < maxParams; i++) {
       string param = sbuilder() << "a" << i;
       params.push_back(param);
     }
@@ -125,6 +146,7 @@ void serializeTMV(TaylorModelVec & tmv, string filename) {
 }
 
 void serializeFlows(MyComponent *comp, string filename) {
+  throw runtime_error("shoudln't call this anymore");
   logger.log("serializing");
   logger.log(sbuilder() << "writing flows to " << filename);
   FILE *fp = fopen(filename.c_str(), "w");
@@ -183,6 +205,7 @@ vector<TaylorModelVec *> pDeserializeFlows(string filename) {
   }
   return ret;
 }
+
 
 double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
   double sumOfMags = 0;
@@ -285,55 +308,42 @@ void compareFlows(vector<TaylorModelVec *> & first,
     logger.log(sbuilder() << "sumOfMag: " << sumOfMag);
     exit(0);
     
-    
-    /*
-    f->sub(dif, *s);
-    //logger.logTMV("dif", dif);
-    logger.logTMV("dif", dif);
-    vector<Interval> difBound;
-    dif.polyRange(difBound, domain);
-    //logger.log(sbuilder() << "difBound[0]: " << difBound[0].toString());
-    logger.logVI("difBound", difBound);
-    
-    for(int i = 0; i < difBound.size(); i++)
-      sumOfMags += difBound[i].mag();
-    
-    vector<Interval> fRems = f->getRemainders();
-    vector<Interval> sRems = s->getRemainders();
-    
-    //logger.logVI("fRems", fRems);
-    //logger.logVI("sRems", sRems);
-    sumOfMags += compareIntervalVecs(fRems, sRems);
-    */
   }
   logger.log(sbuilder() << "sum of magnitudes: " << sumOfMags);
 }
 
 
-void printTMVFiles(string file1, string file2, int index1, int index2) {
+void printTMVFiles(string file1, string file2, string name, 
+    int index1, int index2) {
   logger.log("printing");
-  vector<TaylorModelVec *> v1 = pDeserializeFlows(file1);
-  vector<TaylorModelVec *> v2 = pDeserializeFlows(file2);
-  
-  
-  //why is -1 >= v1.size() true???
-  if(index1 != -1 && index1 >= v1.size() || 
-      index2 != -1 && index2 >= v2.size()) {
-    logger.force(
-        sbuilder() << "different sizes: " << v1.size() << ", " << v2.size());
-    throw std::invalid_argument("index was bigger than tmvs count");
+  vector<NamedTMV> p1 = pDeserializeNamedFlows(file1);
+  vector<NamedTMV> p2 = pDeserializeNamedFlows(file2);
+
+  vector<TaylorModelVec> v1;
+  vector<TaylorModelVec> v2;  
+  for(int i = 0; i < p1.size(); i++) {
+    if(p1[i].name == name)
+      v1.push_back(p1[i].tmv);
   }
+  for(int i = 0; i < p2.size(); i++) {
+    if(p2[i].name == name)
+      v2.push_back(p2[i].tmv);
+  }
+  logger.log(sbuilder() << "name: " << name <<
+      ", index1: " << index1 << ", index2: " << index2);
+  logger.log(v1.size());
+  logger.log(v2.size());
   
-  //set the indexes to last if they were -1
-  if(index1 == -1) {
-    index1 = v1.size() - 1;
+  if(index1 >= v1.size()) {
+    throw std::invalid_argument(
+        sbuilder() << "index was bigger than tmvs count in " << file1);
   }
-  if(index2 == -1) {  
-    index2 = v2.size() - 1;
+  if(index2 >= v2.size()) {
+    throw std::invalid_argument(
+        sbuilder() << "index was bigger than tmvs count in " << file2);
   }
-  logger.log(sbuilder() << "indexes: " << index1 << ", " << index2);
-  TaylorModelVec & first = *v1[index1];
-  TaylorModelVec & second = *v2[index2];
+  TaylorModelVec & first = v1[index1];
+  TaylorModelVec & second = v2[index2];
   
   logger.log();
   logger.logTMV("f", first);
@@ -342,64 +352,129 @@ void printTMVFiles(string file1, string file2, int index1, int index2) {
   logger.log();
   
   TaylorModelVec dis = first.distance(second);
+  
   logger.logTMV("dis", dis);
+  //logger.log(sbuilder() << "rem" << dis.tms[0].remainder.toString(50));
+  
+  vector<Interval> domain = getUnitBox(first.getParamCount());
+  domain[0] = Interval(0, 0.1);
+  
   vector<Interval> totalDistance;
-  dis.intEval(totalDistance, getUnitBox(first.getParamCount()));
+  dis.intEval(totalDistance, domain);
+  
+  
+  for(int i = 0; i < totalDistance.size(); i++) {
+    Interval mag;
+    totalDistance[i].mag(mag);
+    logger.log(sbuilder() << "totalDistance[" << i << "] = " 
+        << mag.toString(30));
+  }
+  
+  cout << "----------------------";
+  for(int i = 1; i < 31; i++) {
+    cout << (i%10);
+  }
+  cout << endl;
+  /*
   logger.logVI("totalDistance", totalDistance);
   
   double sumOfMag = sumVImag(totalDistance);
   logger.log(sbuilder() << "sumOfMag: " << sumOfMag);
+  */
+  
 }
 
 
 vector<Interval> getUnitBox(int n) {
   vector<Interval> ret;
   for(int i = 0; i < n; i++) {
+    if(i == 0) {
+      ret.push_back(Interval(INT_MIN, INT_MAX)); //fail with time variable
+      continue;
+    }
     ret.push_back(Interval(-1,1));
   }
   return ret;
 }
 
-TMVSerializer::TMVSerializer(string filename) {
-  TMVSerializer(filename, INT_MAX);
+TMVSerializer::TMVSerializer(string filename) : 
+    filename(filename), maxSize(INT_MAX), active(true) {
 }
 TMVSerializer::TMVSerializer(string filename, int maxSize) : 
-    filename(filename), maxSize(maxSize) {
+    filename(filename), maxSize(maxSize), active(true) {
+}
+TMVSerializer::TMVSerializer(string filename, int maxSize, bool active) : 
+    filename(filename), maxSize(maxSize), active(active) {
 }
 void TMVSerializer::add(const TaylorModelVec & tmv) {
-  logger.force("adding");
-  logger.force(sbuilder() << tmvs.size());
-  logger.force(sbuilder() << (tmvs.size() >= maxSize));
+  add(tmv, "NULL");
+}
+void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
+  //logger.force("adding");
+  if(active == false)
+    return;
+  //logger.force(sbuilder() << tmvs.size());
+  //logger.force(sbuilder() << "adding '" << name << "'");
   tmvs.push_back(tmv);
+  names.push_back(name);
   if(tmvs.size() >= maxSize) {
-    logger.force("forced serialization");
     serialize();
   }
 }
 
 void TMVSerializer::serialize() {
-  logger.reset();
+  int old = logger.reset();
   logger.log();
   logger.force(sbuilder() << "serializing tmvs to '" << filename << "'");
   logger.log(sbuilder() << "size: " << tmvs.size());
   FILE *fp = fopen(filename.c_str(), "w");
   
   
-  vector<string> params = utilsprivate::createParams(tmvs[0]);
+  vector<string> params = utilsprivate::createParams(tmvs);
   utilsprivate::writeParamsToFile(params, fp);
-  
+  logger.log("here");
   fprintf(fp, "flowpipes{\n");
   for(int i = 0; i < tmvs.size(); i++) {
-    logger.logTMV(sbuilder() << "tmv[" << i << "]", tmvs[i]);
+    //logger.log(sbuilder() << "i: " << i << " out of " << tmvs.size());
+    //logger.logTMV(sbuilder() << names[i] << "[" << i << "]", tmvs[i]);
     if(i != 0) {
       fprintf(fp, ",\n");
     }
+    fprintf(fp, "%s:", names[i].c_str());
     tmvs[i].serialize(fp,  params);
   }
-  
   fprintf(fp, "}\n");
   
   fclose(fp);
   exit(0);
 }
+
+void TMVSerializer::activate() {
+  active = true;
+}
+
+vector<NamedTMV> pDeserializeNamedFlows(string filename) {
+  logger.log(sbuilder() << "reading flows from " << filename);
+  parseResult.pipes.clear();
+  parseResult.names.clear();
+  parseFile(filename);
+  vector<TaylorModelVec> & v = parseResult.pipes;
+  logger.log(sbuilder() << "parsed *pipes size: " << parseResult.pipes.size());
+  vector<TaylorModelVec *> ret;
+  vector<NamedTMV> ret2;
+  
+  logger.log(parseResult.names.size());
+  
+  for(int i = 0; i < parseResult.pipes.size(); i++) {
+    logger.logTMV(parseResult.names[i], parseResult.pipes[i]);
+    //pipeIt should be memory leak
+    //TaylorModelVec *tmv = new TaylorModelVec(parseResult.pipes[i]);
+    ret2.push_back(NamedTMV(parseResult.names[i], parseResult.pipes[i]));
+  }
+  return ret2;
+}
+
+NamedTMV::NamedTMV(string name, TaylorModelVec tmv) : name(name), tmv(tmv) { }
+
+TMVSerializer *pSerializer;
 

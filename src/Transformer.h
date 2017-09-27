@@ -20,7 +20,8 @@ class Transformer {
     Transformer(bool isPreconditioned, bool isWrapper);
     virtual void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings) = 0;
-    void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings);
+    void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings, 
+        bool fail);
     const bool isPreconditioned;
     const bool isWrapper;
 };
@@ -41,8 +42,8 @@ class PreconditionedTransformer: public Transformer {
     virtual void getA(Matrix & result, const TaylorModelVec & x0, 
         const int dim) = 0;
     virtual void getAInv(Matrix & result, const Matrix & A) = 0;
-    void precond2(TaylorModelVec & tmv, MySettings & settings, 
-      MyComponent & all);
+    void precond2(TaylorModelVec & badLeft, MySettings & settings, 
+        MyComponent & all);
 };
 
 class QRTransformer: public Transformer {

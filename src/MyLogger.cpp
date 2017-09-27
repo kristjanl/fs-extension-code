@@ -32,6 +32,16 @@ void mylogger2::logVI(string name, vector<Interval> v) {
     logger.log(sbuilder() << name << " is empty");
 }
 
+void mylogger2::logVS(string name, vector<string> v) {
+	if(disabled > 0)
+		return;
+	for (unsigned i=0; i<v.size(); i++) {
+		logger.log(sbuilder() << name <<"[" << i << "] = " << v[i]);
+	}
+  if(v.size() == 0)
+    logger.log(sbuilder() << name << " is empty");
+}
+
 void mylogger2::logVi(string name, vector<int> v) {
 	if(disabled > 0)
 		return;
@@ -83,6 +93,13 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
     logger.log(sbuilder() << name << "[" << i << "] = " << 
         tmv.tms.at(i).toString(vNames));
 	}
+}
+void mylogger2::logPM(string name, PrecondModel *pm) {
+	if(disabled > 0)
+		return;
+  logger.force("a");
+  //logger.logTMV("left", pm->left);
+  throw invalid_argument("don't call logPM");
 }
 
 
@@ -146,10 +163,10 @@ void mylogger2::logM(Monomial m) {
 		return;
   logger.log(sbuilder() << m.toString(getVNames(10)));
 }
-void mylogger2::logMatrix(Matrix m) {
+void mylogger2::logMatrix(string name, Matrix m) {
 	if(disabled > 0)
 		return;
-  logger.log(sbuilder() << "matrix");
+  logger.log(sbuilder() << "matrix " << name);
   
   for(int i = 0; i < m.rows(); i++) {
     sbuilder s;

@@ -114,15 +114,24 @@ void HornerForm::clear()
 
 void HornerForm::intEval(Interval & result, const vector<Interval> & domain) const
 {
+  //logger.inc();
+  //logger.log(sbuilder() << "h_result0: " << result.toString(60));
 	result = constant;
+  //logger.log(sbuilder() << "constant: " << constant.toString(60));
 
 	for(int i=0; i<hornerForms.size(); ++i)
 	{
+	  //logger.log(i);
 		Interval intHF;
 		hornerForms[i].intEval(intHF, domain);
+		//logger.log(sbuilder() << "intHF0: " << intHF.toString(60));
 		intHF *= domain[i];
+		//logger.log(sbuilder() << "domain: " << domain[i].toString(60));
+		//logger.log(sbuilder() << "intHF1: " << intHF.toString(60));
 		result += intHF;
 	}
+  //logger.log(sbuilder() << "h_result1: " << result.toString(60));
+	//logger.dec();
 }
 
 void HornerForm::insert(TaylorModel & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & domain, const Interval & cutoff_threshold) const
@@ -570,6 +579,7 @@ string HornerForm::toString() const {
     ss << "x" << i << "(" << s << ") + ";
 	}
   //remove last " + "
+  
   string ret = ss.str().substr(0, ss.str().length() - 3);
   //if(ret.length() != 0)
   //  logger.log(ret);
@@ -790,9 +800,14 @@ void Polynomial::constant(Interval & result) const
 
 void Polynomial::intEval(Interval & result, const vector<Interval> & domain) const
 {
+  //logger.log("here");
+  //logger.log(sbuilder() << "poly: " << toString(getVNames(10)));
 	HornerForm hf;
 	toHornerForm(hf);
+  //logger.log(sbuilder() << "hf: " << hf.toString());
+  //logger.log(sbuilder() << "p_result0: " << result.toString(60));
 	hf.intEval(result, domain);
+  //logger.log(sbuilder() << "p_result1: " << result.toString(60));
 }
 
 void Polynomial::intEvalNormal(Interval & result, const vector<Interval> & step_exp_table) const

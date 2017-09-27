@@ -88,16 +88,9 @@ void OutputWriter::writeFlowpipe(const vector<int> comp, const Interval & timeIn
 
 void OutputWriter::addPreconditioned(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all) {
-  /*TODO
-  logger.log(comps.size());
-  logger.log(comps[0]->pipes.size());
-  logger.logTMV("left", all.pipePairs[0]->left);
-  exit(0);
-  */
   if(all.output.size() == 0)
     return;
   int dim = all.output[0].tms.size();
-  
   //2 for time + (per dim) 2 for interval + remainder + range
   int csvSize = 2 + 4*dim;
   for(int i = 0; i < csvSize; i++) {
@@ -305,7 +298,15 @@ void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo,
   logger.force("from flowstar");
   list<TaylorModelVec>::const_iterator fIt = flowpipesCompo.begin();
   list< vector<Interval> >::const_iterator dIt = domains.begin();
-  int i = 0;
+  if(fIt == flowpipesCompo.end())
+    return;
+  
+  //skip the first one (initial conditions)
+  fIt++;
+  dIt++;
+  
+  
+  int i = 1;
   
   int dim = fIt->tms.size();
   //2 for time + (per dim) 2 for interval + remainder + range

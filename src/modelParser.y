@@ -205,6 +205,8 @@ model: CONTINUOUS '{' continuous '}'
   writer.fromFlowstar(continuousProblem.flowpipesCompo, continuousProblem.domains);
   writer.writeCSV();
   writer.writeInfo();
+  if(pSerializer != NULL)
+    pSerializer->serialize();
 }
 |
 CONTINUOUS '{' continuous '}' unsafe_continuous
@@ -560,18 +562,25 @@ parsing_vars ',' IDENT {
 	parseSetting.addVar(*$3);
 };
 
-multiple_models: 
-models_wrapper {
+multiple_models: models_wrapper {
   parseResult.pipes.push_back(parseResult.tmv);
+  if(parseResult.name.empty() == false)
+    parseResult.names.push_back(parseResult.name);
 } | 
-multiple_models ','   models_wrapper  {
+multiple_models ',' models_wrapper  {
   parseResult.pipes.push_back(parseResult.tmv);
+  if(parseResult.name.empty() == false)
+    parseResult.names.push_back(parseResult.name);
 };
 
-models_wrapper: MYMODELS '{' my_taylor_models '}'
-{
+models_wrapper: MYMODELS '{' my_taylor_models '}' {
   //logger.log("models wrapper");
   parseResult.tmv = TaylorModelVec(*$3);
+  //logger.logTMV("tmv", parseResult.tmv);
+} | IDENT ':' MYMODELS '{' my_taylor_models '}' {
+  //logger.log("models wrapper");
+  parseResult.name = *$1;
+  parseResult.tmv = TaylorModelVec(*$5);
   //logger.logTMV("tmv", parseResult.tmv);
 };
 

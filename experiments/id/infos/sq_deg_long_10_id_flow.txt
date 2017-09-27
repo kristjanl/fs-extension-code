@@ -1,3 +1,0 @@
-integration time: 100
-computation time: 5.95
-shrink wrapping time: 0

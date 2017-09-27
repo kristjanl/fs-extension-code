@@ -45,8 +45,13 @@ class MyComponent {
     vector<MyComponent> previous;
     
     //first are component's variables, then come dependencies
+    TaylorModelVec timeStepPipe;
     TaylorModelVec initSet;
     TaylorModelVec swInput;
+    TaylorModelVec unpairedRight;
+    
+    
+    
     vector<HornerForm> odes;
     vector<Interval> dom;
     vector<TaylorModelVec> pipes;
@@ -64,8 +69,8 @@ class MyComponent {
     void prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
        vector<Interval> domain);
     void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
-       vector<Interval> domain, bool preconditioned);
-    void prepareVariables(TaylorModelVec tmv, bool preconditioned);
+       vector<Interval> domain);
+    void prepareVariables(TaylorModelVec tmv);
     void prepareMappers();
     void remapFlowpipes();
     void remapLastFlowpipe();
@@ -96,11 +101,10 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
     const vector<HornerForm> & ode);
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
-    bool preconditioned);
+    const vector<HornerForm> & ode, vector<Interval> domain);
 
 MyComponent getSystemComponent(vector<MyComponent *> comps, 
     TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain, bool preconditioned);
+    vector<Interval> domain);
 
 #endif /* MYCOMPONENT_H_ */

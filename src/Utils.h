@@ -57,10 +57,19 @@ class PrecondModel {
     TaylorModelVec composed(MySettings *settings);
 };
 
+
+class NamedTMV {
+  public:
+    string name;
+    TaylorModelVec tmv;
+    NamedTMV(string name, TaylorModelVec tmv);
+};
+
 void serializeTMV(TaylorModelVec & tmv, string filename);
 void serializeFlows(MyComponent *comp, string filename);
 vector<TaylorModelVec> & deserializeFlows(string filename);
 vector<TaylorModelVec *> pDeserializeFlows(string filename);
+vector<NamedTMV> pDeserializeNamedFlows(string filename);
 
 void compareFlows(vector<TaylorModelVec *> & first, 
     vector<TaylorModelVec *> & second);
@@ -68,7 +77,8 @@ void compareFlows(vector<TaylorModelVec> & first,
     vector<TaylorModelVec> & second);
 double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
 
-void printTMVFiles(string file1, string file2, int index1, int index2);
+void printTMVFiles(string file1, string file2, string name, 
+    int index1, int index2);
 
 vector<Interval> getUnitBox(int n);
 
@@ -76,13 +86,20 @@ class TMVSerializer {
   public:
     TMVSerializer(string filename);
     TMVSerializer(string filename, int maxSize);
+    TMVSerializer(string filename, int maxSize, bool active);
     void add(const TaylorModelVec & tmv);
+    void add(const TaylorModelVec & tmv, string name);
     void serialize();
+    void activate();
   private:
     string filename;
     vector<TaylorModelVec> tmvs;
+    vector<string> names;
     int maxSize;
+    bool active;
 };
 
+extern TMVSerializer *pSerializer;
 
 #endif /* UTILS_H_ */
+

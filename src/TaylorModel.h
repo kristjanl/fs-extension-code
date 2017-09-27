@@ -143,6 +143,7 @@ public:
   //partitions the TaylorModel into constant, linear, nonlinear and remainder parts
   void getParts(TaylorModel & constant, TaylorModel & linear, 
       TaylorModel & nonLinear, TaylorModel & remainder) const;
+  void centerRemainder();
   
   //
   void removeHighTerms(int order);
@@ -312,6 +313,7 @@ public:
   //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
       TaylorModelVec & nonLinear, TaylorModelVec & remainder) const;
+  void centerRemainder();
   
   //remove higher terms
   void removeHighTerms(int order);
@@ -357,11 +359,13 @@ public:
 	Interval	remainder;
 	TaylorModel model;
 	TaylorModelVec tmv;
+	string name;
 	vector<Polynomial> *polys;
 	Monomial mono;
 	vector<int> integerVec;
 	vector<Interval> intervalVec;
 	vector<TaylorModelVec> pipes;
+	vector<string> names;
 	string		strExpansion;
 
 	ParseResult();

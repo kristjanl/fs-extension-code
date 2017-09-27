@@ -4,11 +4,17 @@ ExtractedPicard::ExtractedPicard(const vector<Interval> & box, const Interval & 
 : Flowpipe(box, I) {
 }
 
-TMVSerializer serializer("flow.txt", 6);
+//class TMVSerializer;
+//TMVSerializer *pSerializer;
+//pSerializer = new TMVSerializer("flow2.txt", 10)
 
 // Taylor model integration by only using Picard iteration
 int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const int order, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
+  if(pSerializer == NULL) {
+    //pSerializer = new TMVSerializer("flow.txt", 4 + 7*(10-1), false);
+    pSerializer = new TMVSerializer("flow.txt", INT_MAX, false);
+  }
   int old = logger.reset();
   logger.disable();
   logger.log("Picard1 (ext) <");
@@ -22,14 +28,15 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   //logger.logVI("est", estimation);
 	logger.log(sbuilder() << ode.size());
 	
-	//serializer.add(tmvPre);
+	//pSerializer->add(tmvPre);
   
+	pSerializer->add(tmvPre, "be"); //0, 4
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0; //construct a empty taylormodel vec
   //logger.log(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	
-	serializer.add(range_of_x0); //0, 4
+	pSerializer->add(range_of_x0, "ae"); //0, 4
   // the center point of x0's polynomial part
 	vector<Interval> intVecCenter;
 	range_of_x0.constant(intVecCenter);
@@ -88,7 +95,6 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 		result.tmv.intEvalNormal(boundOfr0, step_end_exp_table);
 	}
 
-
 	// Compute the scaling matrix S.
 	Matrix S(rangeDim, rangeDim);
 	Matrix invS(rangeDim, rangeDim);
@@ -132,6 +138,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	result.tmv.linearTrans_assign(invS);
 	result.tmv.cutoff_normal(step_end_exp_table, cutoff_threshold);
+	
 
 
 	TaylorModelVec x, x0;
@@ -154,19 +161,32 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	x0 = c0_plus_Ar0;
 	x = x0;
 	
+  /* Comment out! */
+	pSerializer->add(x, "left");
+	pSerializer->add(result.tmv, "right");
+	PrecondModel pre = PrecondModel(x, result.tmv);
+	MySettings settings;
+  settings.order = order;
+  settings.domain = getUnitBox(result.tmv.getParamCount());
+	TaylorModelVec back = pre.composed(&settings);
+	pSerializer->add(back, "composed");
 	
 	
+	pSerializer->add(x, "precond");
 	
+  pSerializer->activate();
+	
+	pSerializer->add(x, "i1");
 	for(int i=1; i<=order; ++i)
 	{
 		x.Picard_no_remainder_assign(x0, ode_centered, rangeDim+1, i, cutoff_threshold);
 	}
 	
-	serializer.add(x); //1, 5
+	pSerializer->add(x, "i2"); //1, 5
 	
 	x.cutoff(cutoff_threshold);
 	
-	serializer.add(x); //2, 6
+	pSerializer->add(x, "i3"); //2, 6
 
 	bool bfound = true;
 
@@ -253,7 +273,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			x.tms[i].remainder = newRemainders[i];
 		}
 	}
-  serializer.add(x); //3, 7
+  pSerializer->add(x, "i4"); //3, 7
 	result.tmvPre = x;
 	result.domain = domain;
 	result.domain[0] = step_exp_table[1];
