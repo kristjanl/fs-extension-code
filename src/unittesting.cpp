@@ -589,9 +589,9 @@ BOOST_AUTO_TEST_CASE (apply_sw_with_introduction) {
   MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
   
   /*
-  logger.logTMV("c1", c1.initSet);
-  logger.logTMV("c2", c2.initSet);
-  logger.logTMV("c3", c3.initSet);
+  mlog("c1", c1.initSet);
+  mlog("c2", c2.initSet);
+  mlog("c3", c3.initSet);
   */
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);

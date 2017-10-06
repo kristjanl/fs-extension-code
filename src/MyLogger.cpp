@@ -7,22 +7,7 @@ void mylogger2::force(string s) {
   disabled = temp;
 }
 
-void mylogger2::logVI(vector<Interval> v) {
-	if(disabled > 0)
-		return;
-	logger.log("vec interval <");
-	logger.inc();
-	for (unsigned i=0; i<v.size(); i++) {
-		string s;
-		v.at(i).toString(s);
-		logger.log(sbuilder() << "v[" << i << "] = " << s);
-	}
-	logger.dec();
-	logger.log("vec interval >");
-}
-
-
-void mylogger2::logVI(string name, vector<Interval> v) {
+void mylogger2::log(string name, vector<Interval> v) {
 	if(disabled > 0)
 		return;
 	for (unsigned i=0; i<v.size(); i++) {
@@ -32,7 +17,7 @@ void mylogger2::logVI(string name, vector<Interval> v) {
     logger.log(sbuilder() << name << " is empty");
 }
 
-void mylogger2::logVS(string name, vector<string> v) {
+void mylogger2::log(string name, vector<string> v) {
 	if(disabled > 0)
 		return;
 	for (unsigned i=0; i<v.size(); i++) {
@@ -42,19 +27,8 @@ void mylogger2::logVS(string name, vector<string> v) {
     logger.log(sbuilder() << name << " is empty");
 }
 
-void mylogger2::logVi(string name, vector<int> v) {
-	if(disabled > 0)
-		return;
-	for (unsigned i=0; i<v.size(); i++) {
-		logger.log(sbuilder() << name <<"[" << i << "] = " << v.at(i));
-	}
-  if(v.size() == 0)
-    logger.log(sbuilder() << name << " is empty");
-}
 
-
-
-void mylogger2::listVi(string name, vector<int> v) {
+void mylogger2::log(string name, vector<int> v) {
 	if(disabled > 0)
 		return;
   if(v.size() == 0) {
@@ -72,8 +46,8 @@ void mylogger2::listVi(string name, vector<int> v) {
   logger.log(sbuilder() << name <<" = [" << s << "]");
 }
 
-void mylogger2::logTMV(string name, TaylorModelVec tmv) {
-	if(disabled > 0)
+void mylogger2::log(string name, TaylorModelVec tmv) {
+  if(disabled > 0)
 		return;
   int dim = tmv.tms.size();
   
@@ -94,16 +68,15 @@ void mylogger2::logTMV(string name, TaylorModelVec tmv) {
         tmv.tms.at(i).toString(vNames));
 	}
 }
-void mylogger2::logPM(string name, PrecondModel *pm) {
+void mylogger2::log(string name, TaylorModel tm) {
 	if(disabled > 0)
 		return;
-  logger.force("a");
-  //logger.logTMV("left", pm->left);
-  throw invalid_argument("don't call logPM");
+  logger.log(sbuilder() << name << " = " << 
+      tm.toString(getVNames(tm.getParamCount()))
+  );
 }
 
-
-void mylogger2::logRT(string name, RangeTree *tree) {
+void mylogger2::log(string name, RangeTree *tree) {
 	if(disabled > 0)
 		return;
   if(tree == NULL) {
@@ -119,7 +92,7 @@ void mylogger2::logRT(string name, RangeTree *tree) {
     logger.log(rIt->toString());
   }
   for(; cIt != tree->children.end(); cIt++) {
-    logger.logRT(name, *cIt);
+    logger.log(name, *cIt);
   }
   logger.dec();
   /*
@@ -127,29 +100,15 @@ void mylogger2::logRT(string name, RangeTree *tree) {
 	list<RangeTree *> children;*/
 }
 
-void mylogger2::logVRT(string name, vector<RangeTree *> trees) {
+void mylogger2::log(string name, vector<RangeTree *> trees) {
 	if(disabled > 0)
 		return;
 	for(int i = 0; i < trees.size(); i++) {
-  	logger.logRT(sbuilder() << name << i, trees[i]);
+  	logger.log(sbuilder() << name << i, trees[i]);
 	}
 }
 
-
-void mylogger2::logTMVRem(string name, TaylorModelVec tmv) {
-	if(disabled > 0)
-		return;
-  
-  if(tmv.tms.size() == 0)
-    logger.log(sbuilder() << name << " is empty");
-  
-	for (unsigned i=0; i<tmv.tms.size(); i++) {
-    logger.log(sbuilder() << name << "[" << i << "] = " << 
-        tmv.tms[i].remainder.toString());
-	}
-}
-
-void mylogger2::logVHF(string name, vector<HornerForm> hfs) {
+void mylogger2::log(string name, vector<HornerForm> hfs) {
   if(disabled > 0)
     return;
   for(int i = 0; i < hfs.size(); i++) {
@@ -158,12 +117,12 @@ void mylogger2::logVHF(string name, vector<HornerForm> hfs) {
 }
 
 
-void mylogger2::logM(Monomial m) {
+void mylogger2::log(Monomial m) {
 	if(disabled > 0)
 		return;
   logger.log(sbuilder() << m.toString(getVNames(10)));
 }
-void mylogger2::logMatrix(string name, Matrix m) {
+void mylogger2::log(string name, Matrix m) {
 	if(disabled > 0)
 		return;
   logger.log(sbuilder() << "matrix " << name);
@@ -177,15 +136,6 @@ void mylogger2::logMatrix(string name, Matrix m) {
   }
   
 }
-void mylogger2::logTM(string name, TaylorModel tm) {
-	if(disabled > 0)
-		return;
-  logger.log(sbuilder() << name << " = " << tm.toString(getVNames(10)));
-}
-
-void mylogger2::log() {
-  log("");
-}
 
 void mylogger2::log(string s) {
 	if(disabled > 0)
@@ -194,18 +144,11 @@ void mylogger2::log(string s) {
 	cout << s << endl;
 }
 
-void mylogger2::printLevel() {
-	cout << string(ltab, ' ');
-	cout << disabled << endl;
-}
 void mylogger2::log(int i) {
 	log(sbuilder() << i);
 }
-void mylogger2::logd(double d) {
-	log(sbuilder() << d);
-}
 
-void mylogger2::logPoly(Polynomial *p) {
+void mylogger2::log(Polynomial *p) {
 	if(disabled)
 		return;
 	

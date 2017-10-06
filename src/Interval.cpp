@@ -1778,7 +1778,7 @@ double Interval::widthRatio(const Interval & I) const
 
 void Interval::toString(string & result) const
 {
-  //logger.log("(string) version");
+  //mlog1("(string) version");
 	char strTemp[30];
 
 	string strInt;
@@ -1893,7 +1893,7 @@ void serializeMpfr(FILE *fp, const mpfr_t number) {
   
   if(mpfr_cmp (number, back) ){
     cout <<   mpfr_cmp (number, back) << endl;
-    logger.force("not equal");
+    mforce("not equal");
     exit(0);  
   }
   
@@ -1932,10 +1932,10 @@ string toStringHelper(const mpfr_t data, int prec, char roundingMode) {
     throw std::invalid_argument(sbuilder() << 
         "toStringHelper called with too big prec (" << prec << ")");
   }
-  //logger.force(buffer);
+  //mforce(buffer);
   //  mpfr_sprintf(strTemp, "%.15Rf", data);
   mpfr_sprintf(strTemp, buffer, data);
-  //logger.log(sbuilder() << "strTemp: " << string(strTemp));
+  //mlog1(sbuilder() << "strTemp: " << string(strTemp));
   
   
   /**print out the data precisely *
@@ -1947,7 +1947,7 @@ string toStringHelper(const mpfr_t data, int prec, char roundingMode) {
   
   char buffer2[64];
   sprintf (buffer2, ".%s@%ld", str2, (long) e);
-  logger.log(sbuilder() << "buffer2: " << string(buffer2));
+  mlog1(sbuilder() << "buffer2: " << string(buffer2));
   //*/
   
   
@@ -1985,12 +1985,12 @@ string toStringHelper(const mpfr_t data, int prec) {
 }
 
 string Interval::toString() const {
-  //logger.log("() version");
+  //mlog1("() version");
   return toString(5);
 }
 
 string Interval::toString(int prec) const {
-  //logger.log(sbuilder() << "(prec=" << prec << ") version");
+  //mlog1(sbuilder() << "(prec=" << prec << ") version");
   
   //don't bother with intervals if width is small
 	if(width() < ::pow(10, -prec)) {
@@ -2011,7 +2011,7 @@ string Interval::toString(int prec) const {
   return "[" + los + "," + ups + "]";
 }
 void Interval::printFull() const {
-  //logger.log("printing full");
+  //mlog1("printing full");
   //mpfr_printf ("%.55Rg\n", lo);
   mpfr_out_str (stdout, 2, 0, lo, MPFR_RNDU);
   cout << endl;
@@ -2032,8 +2032,8 @@ string Interval::getHigher() const {
 
 
 void Interval::compare(const Interval & I) const {
-  logger.log("comparing (needs to be in increasing order)");
-  logger.log(I.toString());
+  mlog1("comparing (needs to be in increasing order)");
+  mlog1(I.toString());
   
   int size = 40;
   char s[] = "%.20RDe";
@@ -2049,30 +2049,30 @@ void Interval::compare(const Interval & I) const {
 	mpfr_sprintf(up2Str, s, I.up);
 
   //needs to be in increasing order
-	logger.log(lo2Str);
-	logger.log(lo1Str);
-	logger.log(up1Str);
-	logger.log(up2Str);
+	mlog1(lo2Str);
+	mlog1(lo1Str);
+	mlog1(up1Str);
+	mlog1(up2Str);
 }
 
 bool subseteq(const vector<Interval> & v1, const vector<Interval> & v2) {
-  int old = logger.reset();
+  mreset(old);
   if(v1.size() != v2.size())
     throw invalid_argument("Different domains of vectors");
   for(int i = 0; i < v1.size(); i++) {
     if(v1[i].subseteq(v2[i]) == false) {
-      logger.log(sbuilder() << "[" << i << "] wasn't subset");
+      mlog1(sbuilder() << "[" << i << "] wasn't subset");
       string s1, s2;
       v1[i].toString(s1);
       v2[i].toString(s2);
-      logger.log(s1);
-      logger.log(s2);
+      mlog1(s1);
+      mlog1(s2);
       v1[i].compare(v2[i]);
-      logger.restore(old);
+      mrestore(old);
       return false;
     }
   }
-  logger.restore(old);
+  mrestore(old);
   return true;
 }
 
@@ -2097,7 +2097,7 @@ Interval Interval::distance(const Interval & I) const {
   Interval ret;
   mpfr_set(ret.up, dis, MPFR_RNDA);
   
-  //logger.log(ret.toString());
+  //mlog1(ret.toString());
   return ret;
 }
 

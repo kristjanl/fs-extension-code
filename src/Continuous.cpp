@@ -189,18 +189,21 @@ void Flowpipe::composition_normal(TaylorModelVec & result, const vector<Interval
 			orders.push_back(d2);
 		}
 	}
-	//logger.log();
-	//logger.logTMV("tmv", tmv);
-	//logger.logTMV("tmvPre", tmvPre);
-	pSerializer->add(tmv, "right2");
-	pSerializer->add(tmv, "right2");
+	//mlog1();
+	//mlog("tmv", tmv);
+	//mlog("tmvPre", tmvPre);
+	
+	pSerializer->add(tmv, "comp_right");
+	pSerializer->add(tmvPre, "comp_left");
 
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_exp_table);
 	tmvPre.insert_ctrunc_normal(result, tmv, tmvPolyRange, step_exp_table, 
 	    domainDim, orders, cutoff_threshold);
-	//logger.logTMV("result", result);
-	//logger.log();
+	
+	//pSerializer->add(result, "comp_comp");
+	//mlog("result", result);
+	//mlog1();
 }
 
 void Flowpipe::intEval(vector<Interval> & result, const Interval & cutoff_threshold) const
@@ -299,8 +302,8 @@ void Flowpipe::normalize()
 // Taylor model integration by only using Picard iteration
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const int order, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard1 <");
-  logger.inc();
+  mlog1("Picard1 <");
+  minc();
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -309,13 +312,13 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
   vector<Interval>::iterator i1 = step_end_exp_table.begin();
 	string s;
 	(*i1).toString(s);
-	logger.log(sbuilder() << s);
+	mlog1(sbuilder() << s);
 	for (unsigned i=0; i<estimation.size(); i++) {
 		string s;
 		estimation.at(i).toString(s);
-		logger.log(sbuilder() << "estimation[" <<  i << "] = " << s);
+		mlog1(sbuilder() << "estimation[" <<  i << "] = " << s);
 	}
-	logger.log(sbuilder() << ode.size());
+	mlog1(sbuilder() << ode.size());
 
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0;
@@ -330,7 +333,7 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	for (unsigned i=0; i<intVecCenter.size(); i++) {
 		string s;
 		intVecCenter.at(i).toString(s);
-		//logger.log(sbuilder() << "intVecCenter[" << i << "] = " << s);
+		//mlog1(sbuilder() << "intVecCenter[" << i << "] = " << s);
 	}
 
 	// the center point of the remainder of x0
@@ -614,14 +617,14 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-	logger.dec();
-	logger.log("Picard1 >");
+	mdec();
+	mlog1("Picard1 >");
 	return 1;
 }
 
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const vector<int> & orders, const int globalMaxOrder, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard2 <");
+  mlog1("Picard2 <");
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -914,7 +917,7 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-  logger.log("Picard2 >");
+  mlog1("Picard2 >");
 	return 1;
 }
 
@@ -922,7 +925,7 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 // adaptive step sizes and fixed orders
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const double step, const double miniStep, const int order, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard3 <");
+  mlog1("Picard3 <");
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -1246,13 +1249,13 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-  logger.log("Picard3 >");
+  mlog1("Picard3 >");
 	return 1;
 }
 
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const double step, const double miniStep, const vector<int> & orders, const int globalMaxOrder, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard4 <");
+  mlog1("Picard4 <");
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -1577,14 +1580,14 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-  logger.log("Picard4 >");
+  mlog1("Picard4 >");
 	return 1;
 }
 
 // adaptive orders and fixed step sizes
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, int & order, const int maxOrder, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard5 <");
+  mlog1("Picard5 <");
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -1920,13 +1923,13 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-  logger.log("Picard5 >");
+  mlog1("Picard5 >");
 	return 1;
 }
 
 int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, vector<int> & orders, const int localMaxOrder, const vector<int> & maxOrders, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  logger.log("Picard5 <");
+  mlog1("Picard5 <");
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
@@ -2338,7 +2341,7 @@ int Flowpipe::advance_picard(Flowpipe & result, const vector<HornerForm> & ode, 
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-  logger.log("Picard6 >");
+  mlog1("Picard6 >");
 	return 1;
 }
 
@@ -6810,7 +6813,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-    //logger.force("1");exit(0);
+    //mforce("1");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7152,7 +7155,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 				parseODE();		// call the parser
-				//logger.force("2");exit(0);
+				//mforce("2");exit(0);
 
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7496,7 +7499,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-    //logger.force("3");exit(0);
+    //mforce("3");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7869,7 +7872,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-    //logger.force("4");exit(0);
+    //mforce("4");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8241,14 +8244,13 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 	TaylorModelVec Adrdt;
 	for(int i=0; i<rangeDim; ++i)
 	{
-	  logger.enable();
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
-		logger.log(prefix);
-		logger.log(suffix);
-		logger.log(strOde_centered[i]);
+		mlog1(prefix);
+		mlog1(suffix);
+		mlog1(strOde_centered[i]);
 
 		parseODE();		// call the parser
-    //logger.force("5");exit(0);
+    //mforce("5");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8631,7 +8633,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-    //logger.force("6");exit(0);
+    //mforce("6");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8962,7 +8964,7 @@ ContinuousSystem::ContinuousSystem(const vector<string> & strOde_input, const Fl
 		parseSetting.clear();
 		parseSetting.strODE = prefix + strOde[i] + suffix;
 		parseODE();
-    //logger.force("7");exit(0);
+    //mforce("7");exit(0);
     
 		strOde_centered.push_back(parseResult.strExpansion);
 	}
@@ -9328,8 +9330,8 @@ void ContinuousSystem::reach_linear(list<Flowpipe> & results, const double step,
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
 {
-  logger.force("REACH PIC1 <");
-  logger.inc();
+  mforce("REACH PIC1 <");
+  minc();
 	vector<Interval> step_exp_table, step_end_exp_table;
 
 	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
@@ -9344,7 +9346,7 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 	{
 		int res = currentFlowpipe.advance_picard2(newFlowpipe, hfOde, hfOde_centered, precondition, step_exp_table, step_end_exp_table, order, estimation, dummy_invariant, cutoff_threshold);
 		if(res == 1)
-		{
+		{ 
 			results.push_back(newFlowpipe);
 			currentFlowpipe = newFlowpipe;
 			t += step;
@@ -9356,10 +9358,9 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 				printf("order = %d\n", order);
 			}
 			/*
-			logger.enable();
-			logger.logTMV("pre", newFlowpipe.tmvPre);
-			logger.logTMV("tmv", newFlowpipe.tmv);
-			logger.disable();
+			mlog("pre", newFlowpipe.tmvPre);
+			mlog("tmv", newFlowpipe.tmv);
+			mdisable();
 			*/
 		}
 		else
@@ -9369,9 +9370,15 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 			break;
 		}
 	}
-  settings->writer->info.push_back(sbuilder() << "integration time: " << t);
-  logger.dec();
-  logger.log("REACH PIC1 >");
+  settings->writer->info.push_back(sbuilder() << "int progress: " << t);
+  
+  taddToInfo("evaluate t", fl_eval, settings->writer->info);
+  taddToInfo("precond time", fl_precond, settings->writer->info);
+  taddToInfo("int time", fl_integrate, settings->writer->info);
+  cout << endl;
+  tprint("fl_");
+  mdec();
+  mlog1("REACH PIC1 >");
 }
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const vector<int> & orders, const int globalMaxOrder, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
@@ -10805,8 +10812,8 @@ void ContinuousReachability::dump(FILE *fp) const
 
 void ContinuousReachability::contRun()
 {
-  logger.log("ContRun <");
-  logger.inc();
+  mlog1("ContRun <");
+  minc();
   
   compute_factorial_rec(globalMaxOrder+2);
 	compute_power_4(globalMaxOrder+2);
@@ -10836,7 +10843,7 @@ void ContinuousReachability::contRun()
 		}
 	}
 */
-  logger.log("run switch 1");
+  mlog1("run switch 1");
 	switch(integrationScheme)
 	{
 	case ONLY_PICARD:
@@ -10910,7 +10917,7 @@ void ContinuousReachability::contRun()
 		}
 		break;
 	}
-  logger.log("run switch 2");
+  mlog1("run switch 2");
 	case HIGH_DEGREE:
 	{
 		switch(orderType)
@@ -10989,8 +10996,8 @@ void ContinuousReachability::contRun()
 		break;
 	}
 	}
-  logger.dec();
-  logger.log("ContRun >");
+  mdec();
+  mlog1("ContRun >");
 }
 
 void ContinuousReachability::composition()
@@ -11012,7 +11019,6 @@ void ContinuousReachability::composition()
 	{
 		vector<Interval> step_exp_table;
 		Interval intStep;
-		logger.reset();
 		list<Flowpipe>::const_iterator iter;
 
 		for(iter = flowpipes.begin(); iter != flowpipes.end(); ++iter)
@@ -11028,9 +11034,9 @@ void ContinuousReachability::composition()
 			iter->composition_normal(tmvTemp, step_exp_table, cutoff_threshold);
 
 			flowpipesCompo.push_back(tmvTemp);
-			pSerializer->add(tmvTemp, "composition");
+			pSerializer->add(tmvTemp, "comp_comp");
 			domains.push_back(iter->domain);
-			//logger.logVI("domain", iter->domain);
+			//mlog("domain", iter->domain);
 		}
 	}
 }
@@ -12134,15 +12140,15 @@ void preconditionQR(Matrix & result, const TaylorModelVec & x0, const int rangeD
 	}
 	
 	/*
-	logger.log("linear coefficients <");
-	logger.logMatrix(matCoefficients);
-	logger.log("linear coefficients >");
+	mlog1("linear coefficients <");
+	mlog(matCoefficients);
+	mlog1("linear coefficients >");
 	//*/
 
 	matCoefficients.sortColumns();
-	//logger.logMatrix(matCoefficients);
+	//mlog(matCoefficients);
 	matCoefficients.QRfactor(result);
-	//logger.logMatrix(result);
+	//mlog(result);
 }
 
 Interval rho(const TaylorModelVec & tmv, const vector<Interval> & l, const vector<Interval> & domain)
@@ -13642,23 +13648,22 @@ void build_constraint_template(const int d)
 
 void ContinuousSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
 {
-  logger.reset();
-  logger.log("dummy reach");
+  mreset(old);
+  mlog1("dummy reach");
   exit(0);
 }
 
 
 SimpleCompReachability ContinuousReachability::createSimpleComp(){
-  logger.log("creating sc");
-  logger.disable();
+  mlog1("creating sc");
   SimpleCompReachability problem;
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
-    logger.log(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
+    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
     problem.declareStateVar(stateVarNames.at(i));
   }
   for(int i = 0; i < estimation.size(); i++) {
-    logger.log(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
+    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
 		problem.estimation.push_back(estimation.at(i));
 	}
   
@@ -13672,7 +13677,7 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
 	problem.globalMaxOrder = globalMaxOrder;
   
   for(int i = 0; i < orders.size(); i++) {
-    logger.log(sbuilder() << "orders(" << i << ") = " << orders.at(i));
+    mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
 		problem.orders.push_back(orders.at(i));
 	}
   
@@ -13680,14 +13685,14 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
 	strcpy(problem.outputFileName, outputFileName);
   
   for(int i = 0; i < outputAxes.size(); i++) {
-    logger.log(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
+    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
 		problem.outputAxes.push_back(outputAxes.at(i));
 	}
 	problem.plotSetting = plotSetting;
 	problem.plotFormat = plotFormat;
   
   for(int i = 0; i < tmVarNames.size(); i++) {
-    logger.log(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
+    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
 		problem.tmVarNames.push_back(tmVarNames.at(i));
 	}
   
@@ -13697,27 +13702,25 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
   problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
   if(integrationScheme != ONLY_PICARD) {
-    logger.reset();
-    logger.log("not picard scheme");
-    logger.log(sbuilder() << "scheme: " << problem.integrationScheme);
+    mreset(old);
+    mlog1("not picard scheme");
+    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
-  logger.enable();
   return problem;
 }
 
 
 SmallCompReachability ContinuousReachability::createSmallComp(){
-  logger.log("creating sc");
-  logger.disable();
+  mlog1("creating sc");
   SmallCompReachability problem = SmallCompReachability();
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
-    logger.log(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
+    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
     problem.declareStateVar(stateVarNames.at(i));
   }
   for(int i = 0; i < estimation.size(); i++) {
-    logger.log(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
+    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
 		problem.estimation.push_back(estimation.at(i));
 	}
 	
@@ -13737,7 +13740,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
 	problem.globalMaxOrder = globalMaxOrder;
   
   for(int i = 0; i < orders.size(); i++) {
-    logger.log(sbuilder() << "orders(" << i << ") = " << orders.at(i));
+    mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
 		problem.orders.push_back(orders.at(i));
 	}
   
@@ -13745,14 +13748,14 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
 	strcpy(problem.outputFileName, outputFileName);
   
   for(int i = 0; i < outputAxes.size(); i++) {
-    logger.log(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
+    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
 		problem.outputAxes.push_back(outputAxes.at(i));
 	}
 	problem.plotSetting = plotSetting;
 	problem.plotFormat = plotFormat;
   
   for(int i = 0; i < tmVarNames.size(); i++) {
-    logger.log(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
+    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
 		problem.tmVarNames.push_back(tmVarNames.at(i));
 	}
   
@@ -13763,26 +13766,24 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
   problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
   if(integrationScheme != ONLY_PICARD) {
-    logger.reset();
-    logger.log("not picard scheme");
-    logger.log(sbuilder() << "scheme: " << problem.integrationScheme);
+    mreset(old);
+    mlog1("not picard scheme");
+    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
-  logger.enable();
   return problem;
 }
 
 SimpleImplReachability ContinuousReachability::createSimpleImpl(){
-  logger.log("creating si");
-  logger.disable();
+  mlog1("creating si");
   SimpleImplReachability problem;
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
-    logger.log(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
+    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
     problem.declareStateVar(stateVarNames.at(i));
   }
   for(int i = 0; i < estimation.size(); i++) {
-    logger.log(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
+    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
 		problem.estimation.push_back(estimation.at(i));
 	}
   
@@ -13796,7 +13797,7 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
 	problem.globalMaxOrder = globalMaxOrder;
   
   for(int i = 0; i < orders.size(); i++) {
-    logger.log(sbuilder() << "orders(" << i << ") = " << orders.at(i));
+    mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
 		problem.orders.push_back(orders.at(i));
 	}
   
@@ -13804,14 +13805,14 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
 	strcpy(problem.outputFileName, outputFileName);
   
   for(int i = 0; i < outputAxes.size(); i++) {
-    logger.log(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
+    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
 		problem.outputAxes.push_back(outputAxes.at(i));
 	}
 	problem.plotSetting = plotSetting;
 	problem.plotFormat = plotFormat;
   
   for(int i = 0; i < tmVarNames.size(); i++) {
-    logger.log(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
+    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
 		problem.tmVarNames.push_back(tmVarNames.at(i));
 	}
   
@@ -13821,50 +13822,49 @@ SimpleImplReachability ContinuousReachability::createSimpleImpl(){
 	problem.pSystem = pSystem;
 	problem.integrationScheme = ONLY_PICARD;
   if(integrationScheme != ONLY_PICARD) {
-    logger.reset();
-    logger.log("not picard scheme");
-    logger.log(sbuilder() << "scheme: " << problem.integrationScheme);
+    mreset(old);
+    mlog1("not picard scheme");
+    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
-  logger.enable();
   return problem;
 }
 
 void ContinuousReachability::run()
 {
-  logger.log("run <"); 
-  logger.inc();
+  mlog1("run <"); 
+  minc();
   
   
   
   if(algorithm == ALGORITHM_SIMPLE_IMPL) {
-    logger.force("simple impl");
+    mforce("simple impl");
     SimpleImplReachability si = createSimpleImpl();
     si.myRun();
     exit(2);
   } else if(algorithm == ALGORITHM_SIMPLE_COMP) {
-    logger.force("simple comp");
+    mforce("simple comp");
     SimpleCompReachability sc = createSimpleComp();
     sc.myRun();
     exit(2);
   } else if(algorithm == ALGORITHM_SMALL_COMP) {
-    logger.force("small comp");
+    mforce("small comp");
     SmallCompReachability sc = createSmallComp();
     sc.myRun();
     exit(2);
   } else {
-    logger.force("default");
+    mforce("default");
     contRun();
   }
   //exit(2);
-  logger.dec();
-  logger.log("run >");
+  mdec();
+  mlog1("run >");
 }
 
 
 void ContinuousReachability::myRun() {
-  logger.reset();
-  logger.log("dummy run");
+  mreset(old);
+  mlog1("dummy run");
   exit(0);
 }
 MySettings::MySettings() {

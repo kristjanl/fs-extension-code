@@ -1,3 +1,5 @@
-integration time: 10
-computation time: 0.09
-shrink wrapping time: 0
+int progress: 10
+evaluate t: 0
+precond time: 0
+int time: 0.05
+computation time: 0.05

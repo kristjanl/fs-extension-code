@@ -15,7 +15,7 @@ flowstar = os.path.join("..", "..", "src", "flowstar")
 
 modelTypes = ["lin", "lin_dep", "pair_dep", "sq_deg", "sq_deg_long"]
 dims = [2]# + range(10, 51, 10)
-dims = [2] + [20]
+dims = [2] + [10]
 algos = ["flow", "comp", "nocomp"]
 
 models = ["%s_%s_id_%s.model"%(modelType, dim, algo) for modelType in modelTypes for dim in dims for algo in algos]

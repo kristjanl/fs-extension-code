@@ -114,31 +114,31 @@ void HornerForm::clear()
 
 void HornerForm::intEval(Interval & result, const vector<Interval> & domain) const
 {
-  //logger.inc();
-  //logger.log(sbuilder() << "h_result0: " << result.toString(60));
+  //minc();
+  //mlog1(sbuilder() << "h_result0: " << result.toString(60));
 	result = constant;
-  //logger.log(sbuilder() << "constant: " << constant.toString(60));
+  //mlog1(sbuilder() << "constant: " << constant.toString(60));
 
 	for(int i=0; i<hornerForms.size(); ++i)
 	{
-	  //logger.log(i);
+	  //mlog1(i);
 		Interval intHF;
 		hornerForms[i].intEval(intHF, domain);
-		//logger.log(sbuilder() << "intHF0: " << intHF.toString(60));
+		//mlog1(sbuilder() << "intHF0: " << intHF.toString(60));
 		intHF *= domain[i];
-		//logger.log(sbuilder() << "domain: " << domain[i].toString(60));
-		//logger.log(sbuilder() << "intHF1: " << intHF.toString(60));
+		//mlog1(sbuilder() << "domain: " << domain[i].toString(60));
+		//mlog1(sbuilder() << "intHF1: " << intHF.toString(60));
 		result += intHF;
 	}
-  //logger.log(sbuilder() << "h_result1: " << result.toString(60));
-	//logger.dec();
+  //mlog1(sbuilder() << "h_result1: " << result.toString(60));
+	//mdec();
 }
 
 void HornerForm::insert(TaylorModel & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & domain, const Interval & cutoff_threshold) const
 {
-  //logger.inc();
-  //logger.log(sbuilder() << "ode: " << this->toString());
-  //logger.logTMV("vars", vars);
+  //minc();
+  //mlog1(sbuilder() << "ode: " << this->toString());
+  //mlog("vars", vars);
 	Interval intZero;
 	int numVars = domain.size();
 	result.clear();
@@ -156,26 +156,26 @@ void HornerForm::insert(TaylorModel & result, const TaylorModelVec & vars, const
 
 		tmTemp.expansion.mul_assign(0,1);			// multiplied by t
 		tmTemp.remainder *= domain[0];
-    //logger.log(sbuilder() << "rem0: " << result.remainder.toString());
+    //mlog1(sbuilder() << "rem0: " << result.remainder.toString());
 		result.add_assign(tmTemp);
-    //logger.log(sbuilder() << "rem1: " << result.remainder.toString());
+    //mlog1(sbuilder() << "rem1: " << result.remainder.toString());
 
 		for(int i=1; i<hornerForms.size(); ++i) {
-      //logger.log(sbuilder() << "rem2(" << i << "): " << 
+      //mlog1(sbuilder() << "rem2(" << i << "): " << 
       //    result.remainder.toString());
 			hornerForms[i].insert(tmTemp, vars, varsPolyRange, domain,
 			    cutoff_threshold);	// recursive call
-      //logger.log(sbuilder() << "rem3: " << result.remainder.toString());
-      //logger.logTM("tm(insert)", vars.tms[i-1]);
+      //mlog1(sbuilder() << "rem3: " << result.remainder.toString());
+      //mlog("tm(insert)", vars.tms[i-1]);
 			tmTemp.mul_insert_assign(vars.tms[i-1], varsPolyRange[i-1], domain,
 			    cutoff_threshold);
 			result.add_assign(tmTemp);
-      //logger.log(sbuilder() << "rem4: " << result.remainder.toString());
+      //mlog1(sbuilder() << "rem4: " << result.remainder.toString());
 		}
 	}
-	//logger.logTM("result", result);
-	//logger.log(sbuilder() << "rem: " << result.remainder.toString());
-	//logger.dec();
+	//mlog("result", result);
+	//mlog1(sbuilder() << "rem: " << result.remainder.toString());
+	//mdec();
 }
 
 void HornerForm::insert_normal(TaylorModel & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const Interval & cutoff_threshold) const
@@ -390,11 +390,11 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec
 
 void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("hf_i_c_n");
-  logger.inc();
-  logger.log(sbuilder() << "hf: " << this->toString() << ", order: " << order << " hfs: " << hornerForms.size());
+  mreset(old);
+  mdisable();
+  mlog1("hf_i_c_n");
+  minc();
+  mlog1(sbuilder() << "hf: " << this->toString() << ", order: " << order << " hfs: " << hornerForms.size());
 	Interval intZero;
 	result.clear();
 
@@ -411,8 +411,8 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 		RangeTree *child;
 		
 		
-	  logger.log(sbuilder() << "i: " << 0);
-	  logger.log(sbuilder() << "hfi: " << hornerForms[0].toString());
+	  mlog1(sbuilder() << "i: " << 0);
+	  mlog1(sbuilder() << "hfi: " << hornerForms[0].toString());
     
     //tmTmp is the tmv insterted in hornerforms
 		hornerForms[0].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, step_exp_table, numVars, order, cutoff_threshold);
@@ -428,33 +428,33 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 		tmTemp.remainder += intTrunc;
 		
 		//too high terms in the hf for t (after multiplying with t)
-		logger.log(sbuilder() << "pushing0: " << intTrunc.toString());
+		mlog1(sbuilder() << "pushing0: " << intTrunc.toString());
 
 		pnode->ranges.push_back(intTrunc); //truncation for hf_t after insert
 		pnode->children.push_back(child);
 
-    logger.logTM("tmTemp", tmTemp);
+    mlog("tmTemp", tmTemp);
 		result.add_assign(tmTemp);
 
 		for(int i=1; i<hornerForms.size(); ++i)
 		{
-		  logger.log(sbuilder() << "i: " << i);
-		  logger.log(sbuilder() << "hfi: " << hornerForms[i].toString());
+		  mlog1(sbuilder() << "i: " << i);
+		  mlog1(sbuilder() << "hfi: " << hornerForms[i].toString());
 			TaylorModel tmTemp;
 			RangeTree *child;
 
       //insert initial set for variables in ode
 			hornerForms[i].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, 
 			    step_exp_table, numVars, order, cutoff_threshold);	// recursive call
-			logger.logTM("hf_insert", tmTemp);
+			mlog("hf_insert", tmTemp);
 
       //multiply inserted TM by the variable the hf corresponds too
 			Interval tm1, intTrunc2;
 			tmTemp.mul_insert_ctrunc_normal_assign(tm1, intTrunc2, vars.tms[i-1], varsPolyRange[i-1], step_exp_table, order, cutoff_threshold); 	// here coefficient_range = tm1
 			
-			logger.log(sbuilder() << "pushing[1]: " << tm1.toString());
-			logger.log(sbuilder() << "pushing[2]: " << varsPolyRange[i-1].toString());
-			logger.log(sbuilder() << "pushing[3]: " << intTrunc2.toString());
+			mlog1(sbuilder() << "pushing[1]: " << tm1.toString());
+			mlog1(sbuilder() << "pushing[2]: " << varsPolyRange[i-1].toString());
+			mlog1(sbuilder() << "pushing[3]: " << intTrunc2.toString());
 			
       //range of the poly in inserted variables for hf[i] (before multiplying 
       //with x1) after truncation (but only if vars[i] has nonzero polynomial <- removed this condition)
@@ -462,24 +462,24 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 			pnode->ranges.push_back(varsPolyRange[i-1]); //range of picard (k-1)
 			pnode->ranges.push_back(intTrunc2); //higher terms gotten from after multiplying (purely in polynom)
 			pnode->children.push_back(child);
-      logger.logTM(sbuilder() << "x[" << i << "] * hf_insert", tmTemp);
+      mlog(sbuilder() << "x[" << i << "] * hf_insert", tmTemp);
 
 			result.add_assign(tmTemp);
 		}
 	}
 
 	tree = pnode;
-	logger.dec();
-	logger.restore(old);
+	mdec();
+	mrestore(old);
 }
 
 void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const TaylorModelVec & vars, const Interval & timeStep) const
 {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("insert_only_remainder");
-  //logger.logTMV("vars", vars);
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("insert_only_remainder");
+  //mlog("vars", vars);
+  minc();
 	Interval intZero;
 
 	result = intZero;
@@ -490,9 +490,9 @@ void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const
 	{
 		Interval intTemp;
 		hornerForms[0].insert_only_remainder(intTemp, *child, vars, timeStep);
-		logger.log(sbuilder() << "intTemp: " << intTemp.toString());
+		mlog1(sbuilder() << "intTemp: " << intTemp.toString());
 		intTemp *= timeStep;
-  	logger.log(sbuilder() << "hf[0] iter[0]: " << iter->toString());
+  	mlog1(sbuilder() << "hf[0] iter[0]: " << iter->toString());
 
 		intTemp += (*iter);
 		result += intTemp;
@@ -505,17 +505,17 @@ void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const
 			Interval intTemp2;
 			hornerForms[i].insert_only_remainder(intTemp2, *child, vars, timeStep);
 			
-  		logger.log(sbuilder() << "hf[" << i << "] iter[1]: " << iter->toString());
+  		mlog1(sbuilder() << "hf[" << i << "] iter[1]: " << iter->toString());
   		//+ range of polynomial of hf[i] * remainder of vars[i-1]
 			Interval newRemainder = (*iter) * vars.tms[i-1].remainder;
 			++iter;
-  		logger.log(sbuilder() << "hf[" << i << "] iter[2]: " << iter->toString());
+  		mlog1(sbuilder() << "hf[" << i << "] iter[2]: " << iter->toString());
   		//range of polynomial of vars[i-1] * remainder of hf[i]
 			newRemainder += (*iter) * intTemp2;
 			//remainder of vars[i-1].remainder * remainder of hf[i]
 			newRemainder += vars.tms[i-1].remainder * intTemp2;
 			++iter;
-  		logger.log(sbuilder() << "hf[" << i << "] iter[3]: " << iter->toString());
+  		mlog1(sbuilder() << "hf[" << i << "] iter[3]: " << iter->toString());
   		//interval evaluation of higher terms
 			newRemainder += (*iter);
 
@@ -523,8 +523,8 @@ void HornerForm::insert_only_remainder(Interval & result, RangeTree *tree, const
 			++iter;
 		}
 	}
-	logger.dec();
-	logger.restore(old);
+	mdec();
+	mrestore(old);
 }
 
 void HornerForm::dump(FILE *fp, const vector<string> & varNames) const
@@ -565,7 +565,7 @@ void HornerForm::dump(FILE *fp, const vector<string> & varNames) const
 }
 
 string HornerForm::toString() const {
-  logger.inc();
+  minc();
   std::stringstream ss;
   //don't add "[0] + " in the beginning
   if(string("[0]").compare(constant.toString()) != 0)
@@ -582,8 +582,8 @@ string HornerForm::toString() const {
   
   string ret = ss.str().substr(0, ss.str().length() - 3);
   //if(ret.length() != 0)
-  //  logger.log(ret);
-  logger.dec();
+  //  mlog1(ret);
+  mdec();
   return ret;
 }
 
@@ -786,10 +786,10 @@ void Polynomial::constant(Interval & result) const
 
 	if(monomials.size() > 0 && (monomials.begin())->d == 0)
 	{
-    //logger.log(sbuilder() << "result: " << monomials.begin());
-		//logger.log(sbuilder() << (monomials.back())->coefficient.toString());
-		//logger.log(sbuilder() << "size: " << monomials.size());
-    //logger.log(sbuilder() << "begin: " << (monomials.begin())->coefficient.toString());
+    //mlog1(sbuilder() << "result: " << monomials.begin());
+		//mlog1(sbuilder() << (monomials.back())->coefficient.toString());
+		//mlog1(sbuilder() << "size: " << monomials.size());
+    //mlog1(sbuilder() << "begin: " << (monomials.begin())->coefficient.toString());
 		result = (monomials.begin())->coefficient;
 	}
 	else
@@ -800,14 +800,14 @@ void Polynomial::constant(Interval & result) const
 
 void Polynomial::intEval(Interval & result, const vector<Interval> & domain) const
 {
-  //logger.log("here");
-  //logger.log(sbuilder() << "poly: " << toString(getVNames(10)));
+  //mlog1("here");
+  //mlog1(sbuilder() << "poly: " << toString(getVNames(10)));
 	HornerForm hf;
 	toHornerForm(hf);
-  //logger.log(sbuilder() << "hf: " << hf.toString());
-  //logger.log(sbuilder() << "p_result0: " << result.toString(60));
+  //mlog1(sbuilder() << "hf: " << hf.toString());
+  //mlog1(sbuilder() << "p_result0: " << result.toString(60));
 	hf.intEval(result, domain);
-  //logger.log(sbuilder() << "p_result1: " << result.toString(60));
+  //mlog1(sbuilder() << "p_result1: " << result.toString(60));
 }
 
 void Polynomial::intEvalNormal(Interval & result, const vector<Interval> & step_exp_table) const
@@ -1273,9 +1273,9 @@ void Polynomial::nctrunc(const int order)
 //moves terms higher than order to remainder
 void Polynomial::ctrunc_normal(Interval & remainder, const vector<Interval> & step_exp_table, const int order)
 {
-	//logger.force("HERE");
-	//logger.log(order);
-	//logger.logPoly(this);
+	//mforce("HERE");
+	//mlog1(order);
+	//mlog1(this);
 	Polynomial polyTemp;
 	Monomial monoTemp;
 
@@ -1295,8 +1295,8 @@ void Polynomial::ctrunc_normal(Interval & remainder, const vector<Interval> & st
 	}
 
 	polyTemp.intEvalNormal(remainder, step_exp_table);
-	//logger.logPoly(this);
-	//logger.logPoly(&polyTemp);
+	//mlog1(this);
+	//mlog1(&polyTemp);
 }
 
 void Polynomial::linearCoefficients(vector<Interval> & result) const
@@ -2111,8 +2111,8 @@ void Polynomial::toString(string & result, const vector<string> & varNames) cons
 void compute_factorial_rec(const int order)
 {
 	Interval I(1);
-	//logger.log("compute_factorial <");
-	//logger.inc();
+	//mlog1("compute_factorial <");
+	//minc();
 	factorial_rec.push_back(I);
 
 	for(int i=1; i<=order; ++i)
@@ -2121,10 +2121,10 @@ void compute_factorial_rec(const int order)
 		factorial_rec.push_back(I);
 		//string s;
 		//I.toString(s);
-		//logger.log(sbuilder() << s);
+		//mlog1(sbuilder() << s);
 	}
-	//logger.dec();
-	//logger.log("compute_factorial >");
+	//mdec();
+	//mlog1("compute_factorial >");
 }
 
 //4, 4^2, 4^3, 4^4, ...
@@ -2139,7 +2139,7 @@ void compute_power_4(const int order)
 		I.mul_assign(4.0);
 		//string s;
 		//I.toString(s);
-		//logger.log(sbuilder() << s);
+		//mlog1(sbuilder() << s);
 		power_4.push_back(I);
 	}
 }
@@ -2160,7 +2160,7 @@ void compute_double_factorial(const int order)
 			double_factorial.push_back(even);
 			//string s;
 			//even.toString(s);
-			//logger.log(sbuilder() << s);
+			//mlog1(sbuilder() << s);
 		}
 		else
 		{
@@ -2168,7 +2168,7 @@ void compute_double_factorial(const int order)
 			double_factorial.push_back(odd);
 			//string s;
 			//odd.toString(s);
-			//logger.log(sbuilder() << s);
+			//mlog1(sbuilder() << s);
 		}
 		
 	}
@@ -2438,15 +2438,15 @@ string Polynomial::toString(const vector<string> & varNames) const {
 }
 
 HornerForm HornerForm::transform(map<int, int> lookup, int size) const{
-  //logger.log("h transform");
+  //mlog1("h transform");
   if(hornerForms.size() == 0) {
     return HornerForm(constant);
   }
-  logger.log(hornerForms.size());
+  mlog1(hornerForms.size());
   Interval intZero;
   for(int i = 0; i < hornerForms.size(); i++) {
-    //logger.log(sbuilder() << i << ": " << hornerForms.at(i).toString());
-    //logger.log(hornerForms.at(i).constant.subseteq(intZero));
+    //mlog1(sbuilder() << i << ": " << hornerForms.at(i).toString());
+    //mlog1(hornerForms.at(i).constant.subseteq(intZero));
     //check that all non zero parts are retained
     if(!hornerForms.at(i).constant.subseteq(intZero)) {
       if(lookup.find(i) == lookup.end()) {
@@ -2461,7 +2461,7 @@ HornerForm HornerForm::transform(map<int, int> lookup, int size) const{
   
   //remap the new hfs
   for(map<int,int>::iterator it=lookup.begin(); it!=lookup.end(); ++it) {
-    //logger.log(sbuilder() << (it->second) << "->" << (it->first));
+    //mlog1(sbuilder() << (it->second) << "->" << (it->first));
     hfs.at(it->second) = hornerForms.at(it->first).transform(lookup, size);
   }
   
@@ -2475,16 +2475,16 @@ HornerForm HornerForm::transform(vector<int> indexes) const {
     return HornerForm(constant);
   }
   Interval intZero;
-  logger.listVi("indexes", indexes);
-  logger.log(sbuilder() << "hf size: " << hornerForms.size());
+  mlog("indexes", indexes);
+  mlog1(sbuilder() << "hf size: " << hornerForms.size());
   for(int i = 0; i < hornerForms.size(); i++) {
-    //logger.log(sbuilder() << i << ": " << hornerForms.at(i).toString());
-    //logger.log(hornerForms.at(i).constant.subseteq(intZero));
+    //mlog1(sbuilder() << i << ": " << hornerForms.at(i).toString());
+    //mlog1(hornerForms.at(i).constant.subseteq(intZero));
     //check that all non zero parts are retained
     if(!hornerForms.at(i).constant.subseteq(intZero)) {
       //find nonzero variable in component indexes (-1 since time is the first one)
       if(find(indexes.begin(), indexes.end(), i - 1) != indexes.end()) {
-        //logger.log(sbuilder() << "if, i: " << i);
+        //mlog1(sbuilder() << "if, i: " << i);
       } else {
         throw std::invalid_argument("error: non zero hf in transforming");
       }
@@ -2536,9 +2536,9 @@ Polynomial Polynomial::addNVariables(int n) const {
 
 //returns true if the polynomial is not zero
 bool HornerForm::getVars(int vars[]) const {
-  logger.inc();
-  //logger.log(sbuilder() << "this: " << toString());
-  //logger.log(sbuilder() << constant.toString() << ", " << hornerForms.size());
+  minc();
+  //mlog1(sbuilder() << "this: " << toString());
+  //mlog1(sbuilder() << constant.toString() << ", " << hornerForms.size());
   
   //return true if constant is non zero
   bool ret = !constant.subseteq(Interval());
@@ -2555,22 +2555,22 @@ bool HornerForm::getVars(int vars[]) const {
     }
     //return true if any of the sub polynomials are non zero
     ret |= nonZero;
-    //logger.log(sbuilder() << "b:" << nonZero);
+    //mlog1(sbuilder() << "b:" << nonZero);
   }
   
-  //logger.log(sbuilder() << "ret: " << ret);
-  logger.dec();
+  //mlog1(sbuilder() << "ret: " << ret);
+  mdec();
   return ret;
 }
 
 
 bool HornerForm::isClose(const HornerForm & hf, double d) const {
-//  logger.log("checking close");
-//  logger.log(sbuilder() << constant.toString() << " and " << 
+//  mlog1("checking close");
+//  mlog1(sbuilder() << constant.toString() << " and " << 
 //      hf.constant.toString());
   if(constant.isClose(hf.constant, d) == false)
     return false;
-//  logger.log(sbuilder() << "s1: " << hornerForms.size() << ", s2: " 
+//  mlog1(sbuilder() << "s1: " << hornerForms.size() << ", s2: " 
 //      << hf.hornerForms.size());
   if(hornerForms.size() != hf.hornerForms.size())
     return false;
@@ -2582,7 +2582,7 @@ bool HornerForm::isClose(const HornerForm & hf, double d) const {
 }
 
 void Polynomial::filter(vector<int> powers) {
-  logger.log("fitlering");
+  mlog1("fitlering");
   
   list<Monomial> retMonos;
   

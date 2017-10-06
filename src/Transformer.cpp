@@ -2,14 +2,14 @@
 
 void Transformer::evaluateStepEnd(vector<MyComponent *> & comps, 
       MySettings & settings, bool fail) {
-  int old = logger.reset();
+  mreset(old);
   if(true || fail)
     throw invalid_argument("evaluate called with fail"); //signaling need to refactor
   for(int i = 0; i < comps.size(); i++) {
-    logger.log(comps.size());
-    logger.log("here");
+    mlog1(comps.size());
+    mlog1("here");
     MyComponent & comp = *(comps[i]);
-    logger.logTMV("pipe", comp.timeStepPipe);
+    mlog("pipe", comp.timeStepPipe);
     continue;
     int lastIndex = comp.pipes.size()-1;
     
@@ -17,12 +17,12 @@ void Transformer::evaluateStepEnd(vector<MyComponent *> & comps,
     comp.pipes.at(lastIndex).evaluate_t(comp.initSet,
         settings.step_end_exp_table);
         
-    //logger.logTMV("last", (*it)->pipes.at(lastIndex));
-    //logger.listVi("vars", (*it)->varIndexes);
-    //logger.logTMV("evaluated", (*it)->initSet);
+    //mlog("last", (*it)->pipes.at(lastIndex));
+    //mlog("vars", (*it)->varIndexes);
+    //mlog("evaluated", (*it)->initSet);
   }
   exit(0);
-  logger.restore(old);
+  mrestore(old);
 }
 
 
@@ -54,19 +54,19 @@ TaylorModelVec shrinkWrapTMV(TaylorModelVec tmv, double factor) {
 //wraps all.swInput
 void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor, 
       vector<Interval> domain) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("sw set <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("sw set <");
+  minc();
   TaylorModelVec orig = comp->initSet;
   //comp->initSet = shrinkWrapTMV(comp->initSet, factor);
   
-  logger.logTMV("input", all.swInput);
+  mlog("input", all.swInput);
   TaylorModelVec wrapped = shrinkWrapTMV(all.swInput, factor);
-  logger.log("");
-  logger.logTMV("wrapped", wrapped);
+  mlog1("");
+  mlog("wrapped", wrapped);
   
-  logger.listVi("compVars", all.compVars);
+  mlog("compVars", all.compVars);
   
   TaylorModelVec newCompSet;
   
@@ -76,15 +76,15 @@ void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor,
     //index of that variable in call component
     int indexInAll = find(all.compVars.begin(), all.compVars.end(), varIndex) - 
         all.compVars.begin();
-    logger.log(sbuilder() << "index in all: " << indexInAll);
-    logger.log(sbuilder() << "init var: " << varIndex);
+    mlog1(sbuilder() << "index in all: " << indexInAll);
+    mlog1(sbuilder() << "init var: " << varIndex);
     //using compVars, cause of the assumption that initial conditions 
-    logger.listVi("tm paras", comp->allTMParams);
-    logger.logTM("c1", wrapped.tms.at(indexInAll));
+    mlog("tm paras", comp->allTMParams);
+    mlog("c1", wrapped.tms.at(indexInAll));
     TaylorModel tm = wrapped.tms.at(indexInAll).transform(comp->allTMParams);
-    logger.logTM("c2", tm);
-    logger.log(sbuilder() << "tm paramCount1: " << wrapped.tms[0].getParamCount());
-    logger.log(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+    mlog("c2", tm);
+    mlog1(sbuilder() << "tm paramCount1: " << wrapped.tms[0].getParamCount());
+    mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
   }
@@ -93,18 +93,18 @@ void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor,
   //comp->initSet is the old set, newCompSet is the shrink wrapped one
   if(true) { // TODO add compiler flag
     if(comp->initSet.compare(newCompSet, domain) == false) {
-      //throw std::runtime_error("something decreased after shrink wrapping");
+      throw std::runtime_error("something decreased after shrink wrapping");
     }
   }
   
   
-  logger.logTMV("old", comp->initSet);
+  mlog("old", comp->initSet);
   comp->initSet = newCompSet;
-  logger.logTMV("new", newCompSet);
+  mlog("new", newCompSet);
   
-  logger.dec();
-  logger.log("sw set >");
-  logger.restore(old);
+  mdec();
+  mlog1("sw set >");
+  mrestore(old);
 }
 
 void my_handler (const char * reason, const char * file, int line, 
@@ -114,10 +114,10 @@ void my_handler (const char * reason, const char * file, int line,
   
 double shrinkWrap(MyComponent & component, vector<Interval> domain, 
      vector<Interval> step_end_exp_table) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("sw <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("sw <");
+  minc();
   double s = -1, t = -1, d = -1, q;
   
   //TaylorModelVec last = component.pipes.at(component.pipes.size() - 1);
@@ -126,9 +126,9 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
   
   TaylorModelVec next = component.swInput;
   
-  //logger.logTMV("next", next);
+  //mlog("next", next);
   TaylorModelVec orig(next);
-  logger.logTMV("orig", orig);
+  mlog("orig", orig);
   
   int varSize = orig.tms.size();
   int paramCount = next.tms.at(0).getParamCount();
@@ -137,10 +137,10 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
   //remove the constant part
   next.rmConstant(); 
   
-  //logger.logTMV("noconst", next);
+  //mlog("noconst", next);
   
   
-  //logger.log(sbuilder() << d);
+  //mlog1(sbuilder() << d);
   
   vector<int> vars;
   for(int i = 0; i < varSize; i++)
@@ -157,7 +157,7 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
       }
     }
   }
-  logger.logMatrix("M", m);
+  mlog("M", m);
   
   
   //find the inverse of m
@@ -167,36 +167,35 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
   try{
     m.inverse(inv);
   }catch(IntegrationException& e) {
-    logger.reset();
-    logger.logMatrix("M", m);
+    mreset(old2);
+    mlog("M", m);
     throw e;
   }
   gsl_set_error_handler (old_handler);
   
-  logger.log("M^-1");
-  logger.logMatrix("M inv", inv);
+  mlog1("M^-1");
+  mlog("M inv", inv);
   
   
   //find the nonlinear part of m^-1 * TM
   vector<TaylorModel> linUnitTMs;
   for(int row = 0; row < varSize; row++) {
-    //logger.log(sbuilder() << "row:" << row);
+    //mlog1(sbuilder() << "row:" << row);
     
     //^m-1 * TM part
     TaylorModel result;
     
     for(int col = 0; col < varSize; col++) {
-      //logger.log(sbuilder() << "(" << row << "," << col <<")");
-      //logger.logd(m.get(row, col));
+      //mlog1(sbuilder() << "(" << row << "," << col <<")");
       TaylorModel temp;
       next.tms.at(col).mul(temp, inv.get(row,col));
       result.add_assign(temp);
     }
-    logger.logTM("m^-1 * TM", result);
+    mlog("m^-1 * TM", result);
     
     linUnitTMs.push_back(result);
   }
-  logger.logTMV("linear unit TMs", linUnitTMs);
+  mlog("linear unit TMs", linUnitTMs);
   
   
   
@@ -207,17 +206,17 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
     vector<Interval> coefs;
     coefs.push_back(0); //time
     for(int i = 0; i < paramCount - 1; i++) { //-1 because time is counted too
-      //logger.log(i);
+      //mlog1(i);
       if(i == row) // TODO assuming that varIndex == paramIndex
         coefs.push_back(-1);
       else
         coefs.push_back(0);
     }
-    logger.logVI("coefs", coefs);
+    mlog("coefs", coefs);
     TaylorModel tm(Polynomial(coefs), Interval(0));
-    logger.logTM("-1*lin", tm);
+    mlog("-1*lin", tm);
     result.add_assign(tm);
-    //logger.logTM("res2", result);
+    //mlog("res2", result);
     nlTMs.push_back(result);
   }
   
@@ -230,63 +229,63 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
   TaylorModelVec nlPart(nlTMs);
   
   
-  logger.logTMV("nlPart", nlPart);
+  mlog("nlPart", nlPart);
   
-  //logger.logTMV("C^-1 * ", tms);
+  //mlog("C^-1 * ", tms);
   //finding d
   for(vector<TaylorModel>::iterator it = linUnitTMs.begin(); 
       it < linUnitTMs.end(); it++) {
-    //logger.log(it->remainder.toString());
-    //logger.log(sbuilder() << it->remainder.mag());
+    //mlog1(it->remainder.toString());
+    //mlog1(sbuilder() << it->remainder.mag());
     if(it->remainder.mag() > d)
       d = it->remainder.mag();
   }
-  logger.log(sbuilder() << "d: " << d);
+  mlog1(sbuilder() << "d: " << d);
   
   
   
   //finding s
-  //logger.logTMV("nl", nlPart);
+  //mlog("nl", nlPart);
   //bound the nonlinear part
   vector<Interval> nlRange;
   
   nlPart.polyRange(nlRange, domain);
   
-  //logger.logVI("nl", nlRange);
+  //mlog("nl", nlRange);
   for(vector<Interval>::iterator it = nlRange.begin();
       it < nlRange.end(); it++) {
     double mag = it->mag();
     s = max(s,mag);
   }
-  logger.log(sbuilder() << "s: " << s);
+  mlog1(sbuilder() << "s: " << s);
   
-  //logger.listVi("params", component.allTMParams);
+  //mlog("params", component.allTMParams);
   
   //find t
   for(int param = 1; param < paramCount; param++) {
     TaylorModelVec pDer;
     nlPart.derivative(pDer, param); //derivative wrt to parameter
-    //logger.log(param);
-    //logger.logTMV("pDer", pDer);
+    //mlog1(param);
+    //mlog("pDer", pDer);
     
     //bound of the derivative
     vector<Interval> pDerRange;
     pDer.polyRange(pDerRange, domain);
-    //logger.logVI("pd", pDerRange);
+    //mlog("pd", pDerRange);
     for(vector<Interval>::iterator it2 = pDerRange.begin();
         it2 < pDerRange.end(); it2++) {
       double mag = it2->mag();
-      //logger.log(sbuilder() << mag);
+      //mlog1(sbuilder() << mag);
       t = max(t,mag);
     }
   }
-  logger.log(sbuilder() << "t: " << t);
+  mlog1(sbuilder() << "t: " << t);
   
   int n = paramCount - 1;
   q = 1 + d*(1/((1-(n-1)*t)*(1-s))); //TODO not safe floating point rounding
-  //logger.force(sbuilder() << "f(t): " << (1-(n-1)*t));
-  //logger.force(sbuilder() << "f(s): " << (1-s));
-  //logger.force(sbuilder() << (1/((1-s))));
+  //mforce(sbuilder() << "f(t): " << (1-(n-1)*t));
+  //mforce(sbuilder() << "f(s): " << (1-s));
+  //mforce(sbuilder() << (1/((1-s))));
   if((1 - s) <= 0) {
     throw IntegrationException(sbuilder() << 
         "Map is not shrinkable (s = " << s << ")");
@@ -296,26 +295,26 @@ double shrinkWrap(MyComponent & component, vector<Interval> domain,
         "Map is not shrinkable (n = " << n << ", t = " << t << ")");
   }
   
-  logger.log(sbuilder() << "1 - s: " << (1-s));
-  logger.log(sbuilder() << "1 - nt: " << (1-n*t));
-  logger.log(sbuilder() << "q:" << q);
-  logger.dec();
-  logger.log("sw >");
-  logger.restore(old);
+  mlog1(sbuilder() << "1 - s: " << (1-s));
+  mlog1(sbuilder() << "1 - nt: " << (1-n*t));
+  mlog1(sbuilder() << "q:" << q);
+  mdec();
+  mlog1("sw >");
+  mrestore(old);
   return q;
 }
 
 
 void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce, 
      int paramCount) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("parametrizing <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("parametrizing <");
+  minc();
   //int paramCount = tmv.tms[0].getParamCount();
   for(int i = 0; i < varsToIntroduce.size(); i++) {
     int var = varsToIntroduce[i];
-    //logger.log(sbuilder() << "var: " << var);
+    //mlog1(sbuilder() << "var: " << var);
     TaylorModel & tm = tmv.tms[var];
     
     Interval & rem = tm.remainder;
@@ -328,19 +327,19 @@ void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce,
     Interval shift = inf + sup;
     shift.div_assign(2);
     
-    //logger.log(sbuilder() << "shift: " << shift.toString());
-    //logger.log(sbuilder() << "inf: " << inf.toString());
-    //logger.log(sbuilder() << "sup: " << sup.toString());
-    //logger.log(sbuilder() << "tm: " << tm.remainder.toString());
+    //mlog1(sbuilder() << "shift: " << shift.toString());
+    //mlog1(sbuilder() << "inf: " << inf.toString());
+    //mlog1(sbuilder() << "sup: " << sup.toString());
+    //mlog1(sbuilder() << "tm: " << tm.remainder.toString());
     
     
     tm.expansion.add_assign(Monomial(shift, paramCount));
     Interval coef = (rem - shift).sup();
     
-    //logger.log(sbuilder() << "coef: " << coef.toString());
+    //mlog1(sbuilder() << "coef: " << coef.toString());
     
     vector<int> degs;
-    //logger.log(tm.getParamCount());
+    //mlog1(tm.getParamCount());
     for(int j = 0; j < paramCount; j++) {
       if(j == var + 1)
         degs.push_back(1);
@@ -351,32 +350,32 @@ void parametrizeVars(TaylorModelVec & tmv, vector<int> varsToIntroduce,
     tm.expansion.add_assign(Monomial(coef, degs));
     tm.remainder = Interval();
   }
-  logger.dec();
-  logger.log("parametrizing >");
-  logger.restore(old);
+  mdec();
+  mlog1("parametrizing >");
+  mrestore(old);
 }
 
 void introduceParam(MyComponent & comp, vector<MyComponent *> comps, 
       vector<Interval> & domain) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("introducing <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("introducing <");
+  minc();
   TaylorModelVec tmv = comp.swInput;
   
   
-  //logger.logTMV("last", last);
-  logger.logTMV("original", tmv);
+  //mlog("last", last);
+  mlog("original", tmv);
   
   vector<int> varsToIntroduce;
   for(int i = 0; i < comps.size(); i++) {
     vector<int> & compVars = comps[i]->varsToBeIntroduced;
     varsToIntroduce.insert(varsToIntroduce.end(), 
         compVars.begin(), compVars.end());
-    logger.listVi("vs: ", comps[i]->varsToBeIntroduced);
+    mlog("vs: ", comps[i]->varsToBeIntroduced);
     comps[i]->varsToBeIntroduced.clear();
   }
-  logger.listVi("introducing", varsToIntroduce);
+  mlog("introducing", varsToIntroduce);
   
   //no need to add more parameters now
   //int oParamCount = tmv.tms[0].getParamCount();
@@ -390,7 +389,7 @@ void introduceParam(MyComponent & comp, vector<MyComponent *> comps,
     parametrizeVars(padded, varsToIntroduce, paramCount);
   }
   
-  logger.logTMV("introduced", padded);
+  mlog("introduced", padded);
   comp.swInput = padded;
   
   
@@ -400,18 +399,18 @@ void introduceParam(MyComponent & comp, vector<MyComponent *> comps,
       throw std::runtime_error("something decreased after introducing param");
     }
   }
-  logger.dec();
-  logger.log("introducing >");
-  logger.restore(old);
+  mdec();
+  mlog1("introducing >");
+  mrestore(old);
 }
 
 double applyShrinkWrapping(MyComponent & all, vector<Interval> domain, 
       vector<Interval> step_end_exp_table, vector<MyComponent *> comps,
       MySettings & settings) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("applying sw <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("applying sw <");
+  minc();
   
   clock_t start = clock();
   
@@ -422,31 +421,31 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
   last.evaluate_t(tmv, step_end_exp_table);
   all.swInput = tmv;
   
-  logger.logTMV("swInput", all.swInput);
+  mlog("swInput", all.swInput);
   //introduces a parameter to swInput
   
   
   introduceParam(all, comps, domain);
-  logger.log(all.swInput.tms[0].getParamCount());
+  mlog1(all.swInput.tms[0].getParamCount());
   /*
-  logger.log(all.compMappers.size());
-  logger.listVi("0", all.compMappers.at(0));
-  logger.listVi("1", all.compMappers.at(1));
-  logger.listVi("2", all.compMappers.at(2));
-  logger.listVi("3", all.compMappers.at(3));
-  logger.listVi("4", all.compMappers.at(4));
+  mlog1(all.compMappers.size());
+  mlog("0", all.compMappers.at(0));
+  mlog("1", all.compMappers.at(1));
+  mlog("2", all.compMappers.at(2));
+  mlog("3", all.compMappers.at(3));
+  mlog("4", all.compMappers.at(4));
   */
-  logger.logTMV("swI aft", all.swInput);
+  mlog("swI aft", all.swInput);
   
   
-  //logger.logTMV("all", all.pipes.at(all.pipes.size() - 1));
+  //mlog("all", all.pipes.at(all.pipes.size() - 1));
   //vector<TaylorModelVec> p2 = all.dependencies.at(0)->pComp->pipes;
-  //logger.logTMV("p2", p2.at(p2.size() - 1));
+  //mlog("p2", p2.at(p2.size() - 1));
   
   //calculate the shrink wrapping factor for swInput
   double swQ = shrinkWrap(all, domain, step_end_exp_table);
   
-  logger.log(sbuilder() << "swQ: " << swQ);
+  mlog1(sbuilder() << "swQ: " << swQ);
   
   //use the computed shrink wrapping factor to modify the initial sets
   for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -458,12 +457,12 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
   clock_t end = clock();
   double singleSW = double(end - start) / CLOCKS_PER_SEC;
   settings.writer->swTime += singleSW;
-  //logger.force(sbuilder() << "single: " << singleSW);
-  //logger.force(sbuilder() << (end - start));
+  //mforce(sbuilder() << "single: " << singleSW);
+  //mforce(sbuilder() << (end - start));
   
-  logger.dec();
-  logger.log("applying sw >");
-  logger.restore(old);
+  mdec();
+  mlog1("applying sw >");
+  mrestore(old);
 }
 
 
@@ -494,13 +493,13 @@ IdentityTransformer::IdentityTransformer() : PreconditionedTransformer() {
 
 void IdentityTransformer::getA(Matrix & result, const TaylorModelVec & x0, 
     const int dim) {
-  logger.log("getting A");
+  mlog1("getting A");
   for(int i=0; i<dim; ++i) {
     result.set(1, i, i);
 	}
 }
 void IdentityTransformer::getAInv(Matrix & result, const Matrix & A) {
-  logger.log("getting A inverse");
+  mlog1("getting A inverse");
   //inverse of identity is also identity, just copy
   for(int i = 0; i < A.rows(); i++) {
     result.set(1, i, i);
@@ -509,11 +508,11 @@ void IdentityTransformer::getAInv(Matrix & result, const Matrix & A) {
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  logger.log("sw transforming");
+  mlog1("sw transforming");
   exit(0);
   evaluateStepEnd(comps, settings, true);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
-    logger.force("wrapping");
+    mforce("wrapping");
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,
         settings);
   }
@@ -521,7 +520,7 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
 
 TaylorModelVec getUnitTmv(int varCount) {
   vector<TaylorModel> tms;
-  logger.log(varCount);
+  mlog1(varCount);
   for(int i = 0; i < varCount; i++) {
     vector<Interval> temp;
     temp.push_back(Interval(0));
@@ -536,21 +535,21 @@ TaylorModelVec getUnitTmv(int varCount) {
   }
   TaylorModelVec ret(tms);
   
-	logger.logTMV("ret", ret);
+	mlog("ret", ret);
   return ret;
 }
 
 
 void precond(TaylorModelVec & tmv, MySettings & settings, 
       MyComponent & all) {
-  int old = logger.reset();
-  //logger.disable();
-  logger.log("precond <");
-  logger.inc();
+  mreset(old);
+  //mdisable();
+  mlog1("precond <");
+  minc();
   
-  logger.log("precond");
+  mlog1("precond");
   
-  logger.logTMV("tmv", tmv);
+  mlog("tmv", tmv);
   
   vector<Interval> previousRange;
   TaylorModelVec previousRight;
@@ -570,32 +569,32 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
     previousRight = all.pipePairs[all.pipePairs.size() - 1]->right;
   }
 	previousRight.polyRange(previousRange, settings.domain);
-  logger.logVI("range", previousRange);
+  mlog("range", previousRange);
   
-  logger.log(sbuilder() << "paramCount: " << paramCount);
-  logger.log(sbuilder() << "varCount: " << varCount);
+  mlog1(sbuilder() << "paramCount: " << paramCount);
+  mlog1(sbuilder() << "varCount: " << varCount);
   Matrix A(varCount,varCount), invA(varCount, varCount);
   
   if(true) { //use QR preconditioning
   	preconditionQR(A, tmv, varCount, varCount+1);
     A.transpose(invA);
   } else {
-    logger.force("not implementated");
+    mforce("not implementated");
   }
-  logger.logMatrix("A", A);
-  logger.logMatrix("A inv", invA);
+  mlog("A", A);
+  mlog("A inv", invA);
   
   vector<Interval> center;
   tmv.constant(center);
-  logger.logVI("center", center);
+  mlog("center", center);
   
   TaylorModelVec c(tmv), lin, nl, rem;
   tmv.getParts(c, lin, nl, rem);
   
-  logger.logTMV("c", c);
-  logger.logTMV("lin", lin);
-  logger.logTMV("nl", nl);
-  logger.logTMV("rem", rem);
+  mlog("c", c);
+  mlog("lin", lin);
+  mlog("nl", nl);
+  mlog("rem", rem);
   
   nl.linearTrans_assign(invA);
   rem.linearTrans_assign(invA);
@@ -614,8 +613,8 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
   
   vector<Interval> rightBound;
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
-  logger.logTMV("rightComp", rightComp);
-  logger.logVI("rightBound", rightBound);
+  mlog("rightComp", rightComp);
+  mlog("rightBound", rightBound);
   
   //TODO shift this to be around 0?
   
@@ -635,13 +634,13 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 		}
   }
   
-  logger.logMatrix("S", S);
-  logger.logMatrix("S inv", invS);
+  mlog("S", S);
+  mlog("S inv", invS);
   
   rightComp.linearTrans_assign(invS);
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
-  logger.logTMV("rightComp", rightComp);
-  logger.logVI("rightBound", rightBound);
+  mlog("rightComp", rightComp);
+  mlog("rightBound", rightBound);
   
 	//left part is made of constant part and desired linear part
 	TaylorModelVec left(c);
@@ -651,25 +650,25 @@ void precond(TaylorModelVec & tmv, MySettings & settings,
 	
 	PrecondModel *pre = new PrecondModel(left, rightComp);
 	
-	logger.logTMV("left", left);
-  logger.logTMV("right", rightComp);
+	mlog("left", left);
+  mlog("right", rightComp);
 	
   all.pipePairs.push_back(pre);
   
   
-  logger.dec();
-  logger.log("precond >");
-  logger.restore(old);
+  mdec();
+  mlog1("precond >");
+  mrestore(old);
 }
 
 void PreconditionedTransformer::precond2(TaylorModelVec & badLeft, 
     MySettings & settings, MyComponent & all) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("precond2 <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("precond2 <");
+  minc();
   
-  logger.logTMV("badLeft", badLeft);
+  mlog("badLeft", badLeft);
   vector<Interval> previousRange;
   TaylorModelVec previousRight = all.unpairedRight;
   
@@ -682,17 +681,17 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   TaylorModelVec unitTmv = getUnitTmv(varCount);
   
 	previousRight.polyRange(previousRange, settings.domain);
-  logger.logVI("range", previousRange);
+  mlog("range", previousRange);
   
-  logger.log(sbuilder() << "paramCount: " << paramCount);
-  logger.log(sbuilder() << "varCount: " << varCount);
+  mlog1(sbuilder() << "paramCount: " << paramCount);
+  mlog1(sbuilder() << "varCount: " << varCount);
   Matrix A(varCount,varCount), invA(varCount, varCount);
   
   getA(A, badLeft, varCount);
   getAInv(invA, A);
   
-  logger.logMatrix("A", A);
-  logger.logMatrix("A inv", invA);
+  mlog("A", A);
+  mlog("A inv", invA);
   
   
   //center the remainder and push shift to constant part of the polynomial
@@ -702,10 +701,10 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   TaylorModelVec c, lin, nl, rem;
   badLeft.getParts(c, lin, nl, rem);
   
-  logger.logTMV("c", c);
-  logger.logTMV("lin", lin);
-  logger.logTMV("nl", nl);
-  logger.logTMV("rem", rem);
+  mlog("c", c);
+  mlog("lin", lin);
+  mlog("nl", nl);
+  mlog("rem", rem);
   
   //InvA o non-constant-part of left model
   nl.linearTrans_assign(invA);
@@ -727,8 +726,8 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   //calculate the bounds for the new right model
   vector<Interval> rightBound;
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
-  logger.logTMV("rightComp", rightComp);
-  logger.logVI("rightBound", rightBound);
+  mlog("rightComp", rightComp);
+  mlog("rightBound", rightBound);
   
   //TODO shift this to be around 0?
   
@@ -748,14 +747,14 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
 		}
   }
   
-  logger.logMatrix("S", S);
-  logger.logMatrix("S inv", invS);
+  mlog("S", S);
+  mlog("S inv", invS);
   
   //apply inverse of S to right model
   rightComp.linearTrans_assign(invS);
 	rightComp.intEvalNormal(rightBound, settings.step_end_exp_table);
-  logger.logTMV("rightComp", rightComp);
-  logger.logVI("rightBound", rightBound);
+  mlog("rightComp", rightComp);
+  mlog("rightBound", rightBound);
   
   
 	//left part is made of constant part and with scaling
@@ -768,16 +767,16 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
 	all.unpairedRight = rightComp;
   all.initSet = left;
 	
-  logger.dec();
-  logger.log("precond >");
-  logger.restore(old);
+  mdec();
+  mlog1("precond >");
+  mrestore(old);
 }
 
 void makeCompInitSets(MyComponent & all, MyComponent * comp) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("makeCompInitSets <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("makeCompInitSets <");
+  minc();
 
   TaylorModelVec newCompSet;
   
@@ -788,36 +787,36 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     int indexInAll = 
         find(all.compVars.begin(), all.compVars.end(), varIndex) - 
         all.compVars.begin();
-    logger.log(sbuilder() << "comp var: " << varIndex);
-    logger.log(sbuilder() << "index in all: " << indexInAll);
+    mlog1(sbuilder() << "comp var: " << varIndex);
+    mlog1(sbuilder() << "index in all: " << indexInAll);
     //using compVars, cause of the assumption that initial conditions 
-    logger.listVi("tm params", comp->allTMParams);
-    logger.logTM("c1", all.initSet.tms.at(indexInAll));
+    mlog("tm params", comp->allTMParams);
+    mlog("c1", all.initSet.tms.at(indexInAll));
     TaylorModel tm = all.initSet.tms.at(indexInAll).
         transform(comp->allTMParams);
-    logger.logTM("c2", tm);
-    logger.log(sbuilder() << "tm paramCount1: " << 
+    mlog("c2", tm);
+    mlog1(sbuilder() << "tm paramCount1: " << 
         all.initSet.tms[0].getParamCount());
-    logger.log(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+    mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
   }
-  logger.logTMV("init1", comp->initSet);
+  mlog("init1", comp->initSet);
   comp->initSet = newCompSet;
-  logger.logTMV("init2", comp->initSet);
+  mlog("init2", comp->initSet);
   
-  logger.dec();
-  logger.log("makeCompInitSets >");
-  logger.restore(old);
+  mdec();
+  mlog1("makeCompInitSets >");
+  mrestore(old);
 }
 
 
 void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("qr transforming <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("qr transforming <");
+  minc();
   evaluateStepEnd(comps, settings, true);
   
   //remaps all the last pipes to system flowpipes at all component
@@ -830,7 +829,7 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   
   
   precond(tmv, settings, all);
-  logger.logTMV("tmv", tmv);
+  mlog("tmv", tmv);
   
   
   for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -839,81 +838,119 @@ void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps,
   }
   
   
-  logger.dec();
-  logger.log("qr transforming >");
-  logger.restore(old);
+  mdec();
+  mlog1("qr transforming >");
+  mrestore(old);
 }
 
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  //logger.log("null transforming");
+  //mlog1("null transforming");
   evaluateStepEnd(comps, settings, true);
 }
 void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  int old = logger.reset();
-  logger.disable();
-  logger.log("id transforming <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("id transforming <");
+  minc();
   //evaluateStepEnd(comps, settings, false);
   
   //TODO evaluate first, then remap maybe
-  
+  tstart(tr_remap1);
   //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
+  tend(tr_remap1);
   
+  tstart(tr_pipe);
   TaylorModelVec tsp = all.timeStepPipe;
-  //logger.logTMV("tsp", tsp);
-  //logger.logTMV("upright", all.unpairedRight);
-  all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
+  //mlog("tsp", tsp);
+  //mlog("upright", all.unpairedRight); 
   
+  all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
+  tend(tr_pipe);
   
   /* Comment out! ///
   PrecondModel *pre = new PrecondModel(TaylorModelVec(), rightComp);
   TaylorModelVec back = pre->composed(&settings);
-  logger.logTMV("bac", back);
+  mlog("bac", back);
 	pSerializer->add(back, "composed");*/
   
   
+  pSerializer->add(tsp, "after_int");
   
-  
+  tstart(tr_eval);
   TaylorModelVec leftStar;
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
+  tend(tr_eval);
   pSerializer->add(leftStar, "ae");
+  
+  pSerializer->add(all.unpairedRight, "a_right");
   
   //pSerializer->serialize();
   
-  //logger.logTMV("leftStar", leftStar);
-  precond2(leftStar, settings, all);
-  //logger.logTMV("upright", all.unpairedRight);
+  mlog1(sbuilder() << "size: " << leftStar.tms.size());
+  //mlog("leftStar", leftStar);
   
+  
+	pSerializer->add(leftStar, "leftStar");
+  
+  tstart(tr_precond);
+  precond2(leftStar, settings, all);
+  tend(tr_precond);
+  //mlog("upright", all.unpairedRight);
   
   
 	pSerializer->add(all.initSet, "left");
 	pSerializer->add(all.initSet, "left2");
 	pSerializer->add(all.unpairedRight, "right");
 	pSerializer->add(all.unpairedRight, "right2");
-	//logger.logTMV("left", all.initSet);
-  //logger.logTMV("right", all.unpairedRight);
+	//mlog("left", all.initSet);
+  //mlog("right", all.unpairedRight);
   
   
-  
-  //logger.logTMV("pair.left", all.lastPre()->left);
-  //logger.logTMV("pair.right", all.lastPre()->right);
-  
-    
+  //mlog("pair.left", all.lastPre()->left);
+  //mlog("pair.right", all.lastPre()->right);
+
+  tstart(tr_remap2);  
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     makeCompInitSets(all, *it);
-    //logger.logTMV("ci", (*it)->initSet);
+    //mlog("ci", (*it)->initSet);
   }
-  pSerializer->add(comps[0]->initSet, "precond");
+  tend(tr_remap2);
   
-  logger.dec();
-  logger.log("id transforming >");
-  logger.restore(old);
+  mdec();
+  mlog1("id transforming >");
+  mrestore(old);
   //evaluateStepEnd(comps, settings);
 }
+
+void PreconditionedTransformer::addInfo(vector<string> & info) {
+  logger.log("adding");
+  logger.log(sbuilder() << timeLookup["tr_precond"]);
+  
+  taddToInfo("remap 1", tr_remap1, info);
+  taddToInfo("evaluate t", tr_eval, info);
+  taddToInfo("precond time", tr_precond, info);
+  taddToInfo("remap 2", tr_remap2, info);
+  taddToInfo("int time", sc_integrate, info);
+  
+  
+  
+  logger.log(info[info.size() - 1]);
+}
+
+void QRTransformer::addInfo(vector<string> & info) {
+  throw std::runtime_error("don't call add info on QR yet");
+}
+void NullTransformer::addInfo(vector<string> & info) {
+  throw std::runtime_error("don't call add info on Null yet");
+}
+void ShrinkWrapper::addInfo(vector<string> & info) {
+  throw std::runtime_error("don't call add info on SW yet");
+}
+
 
 
 

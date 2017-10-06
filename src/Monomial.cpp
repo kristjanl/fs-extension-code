@@ -442,7 +442,7 @@ Monomial Monomial::transform(vector<int> indexes) {
     //check that all nonzero degrees are retained
     if(*it != 0) {
       if(find(indexes.begin(), indexes.end(), i - 1) != indexes.end()) {
-        //logger.log(sbuilder() << "if, i: " << i);
+        //mlog1(sbuilder() << "if, i: " << i);
       } else {
         throw std::invalid_argument(
             "no index for a non zero degree in transforming monomial");
@@ -485,7 +485,7 @@ Monomial* Monomial::ptransform(vector<int> indexes) {
     //check that all nonzero degrees are retained
     if(*it != 0) {
       if(find(indexes.begin(), indexes.end(), i - 1) != indexes.end()) {
-        //logger.log(sbuilder() << "if, i: " << i);
+        //mlog1(sbuilder() << "if, i: " << i);
       } else {
         throw std::invalid_argument(
             "no index for a non zero degree in transforming monomial");
@@ -523,7 +523,7 @@ Monomial & Monomial::rtransform(vector<int> indexes) {
     //check that all nonzero degrees are retained
     if(*it != 0) {
       if(find(indexes.begin(), indexes.end(), i - 1) != indexes.end()) {
-        //logger.log(sbuilder() << "if, i: " << i);
+        //mlog1(sbuilder() << "if, i: " << i);
       } else {
         throw std::invalid_argument(
             "no index for a non zero degree in transforming monomial");

@@ -13,35 +13,39 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 {
   if(pSerializer == NULL) {
     //pSerializer = new TMVSerializer("flow.txt", 4 + 7*(10-1), false);
-    pSerializer = new TMVSerializer("flow.txt", INT_MAX, false);
+    pSerializer = new TMVSerializer("flow.txt", INT_MAX, true);
   }
-  int old = logger.reset();
-  logger.disable();
-  logger.log("Picard1 (ext) <");
-  logger.inc();
+  mreset(old);
+  mdisable();
+  mlog1("Picard1 (ext) <");
+  minc();
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
 	
 	
-  //logger.logVI("step", step_end_exp_table);
-  //logger.logVI("est", estimation);
-	logger.log(sbuilder() << ode.size());
+	tstart(fl_eval);
+  //mlog("step", step_end_exp_table);
+  //mlog("est", estimation);
+	mlog1(sbuilder() << ode.size());
 	
 	//pSerializer->add(tmvPre);
   
-	pSerializer->add(tmvPre, "be"); //0, 4
+	//pSerializer->add(tmvPre, "be"); //0, 4
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0; //construct a empty taylormodel vec
-  //logger.log(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
+  //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	
-	pSerializer->add(range_of_x0, "ae"); //0, 4
+	tend(fl_eval);
+	
+  tstart(fl_precond);
+	//pSerializer->add(range_of_x0, "leftStar"); //0, 4
   // the center point of x0's polynomial part
 	vector<Interval> intVecCenter;
 	range_of_x0.constant(intVecCenter);
 	
-  logger.logVI("iVC", intVecCenter);
+  mlog("iVC", intVecCenter);
 	
 	// the center point of the remainder of x0
 	for(int i=0; i<rangeDim; ++i)
@@ -160,33 +164,43 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	x0 = c0_plus_Ar0;
 	x = x0;
+  tend(fl_precond);
 	
   /* Comment out! */
-	pSerializer->add(x, "left");
-	pSerializer->add(result.tmv, "right");
+  //pSerializer->add(result.tmv, "a_right");
+	//pSerializer->add(x, "left");
+	//pSerializer->add(result.tmv, "right");
+	//pSerializer->add(result.tmv, "right");
+	
+	/*
 	PrecondModel pre = PrecondModel(x, result.tmv);
 	MySettings settings;
   settings.order = order;
   settings.domain = getUnitBox(result.tmv.getParamCount());
 	TaylorModelVec back = pre.composed(&settings);
-	pSerializer->add(back, "composed");
+	*/
+	//pSerializer->add(back, "composed");
 	
 	
-	pSerializer->add(x, "precond");
+	//pSerializer->add(x, "precond");
 	
-  pSerializer->activate();
+  //pSerializer->activate();
 	
-	pSerializer->add(x, "i1");
+	//pSerializer->add(x, "i1");
+	
+	
+	
+  tstart(fl_integrate);
 	for(int i=1; i<=order; ++i)
 	{
 		x.Picard_no_remainder_assign(x0, ode_centered, rangeDim+1, i, cutoff_threshold);
 	}
 	
-	pSerializer->add(x, "i2"); //1, 5
+	//pSerializer->add(x, "i2"); //1, 5
 	
 	x.cutoff(cutoff_threshold);
 	
-	pSerializer->add(x, "i3"); //2, 6
+	//pSerializer->add(x, "i3"); //2, 6
 
 	bool bfound = true;
 
@@ -273,15 +287,17 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			x.tms[i].remainder = newRemainders[i];
 		}
 	}
-  pSerializer->add(x, "i4"); //3, 7
+  //pSerializer->add(x, "after_int");
 	result.tmvPre = x;
 	result.domain = domain;
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-	logger.dec();
-	logger.log("Picard1 >");
-	logger.restore(old);
+	mdec();
+	mlog1("Picard1 >");
+	mrestore(old);
+  tend(fl_integrate);
+  
 	return 1;
 }
 
@@ -292,32 +308,32 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 // Taylor model integration by only using Picard iteration
 int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode, const vector<HornerForm> & ode_centered, const int precondition, vector<Interval> & step_exp_table, vector<Interval> & step_end_exp_table, const int order, const vector<Interval> & estimation, const vector<PolynomialConstraint> & invariant, const Interval & cutoff_threshold) const
 {
-  int old = logger.reset();
-  //logger.disable();
-  logger.log("Picard1 (ext) <");
-  logger.inc();
+  mreset(old);
+  //mdisable();
+  mlog1("Picard1 (ext) <");
+  minc();
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
 	
-  //logger.logVI("step", step_end_exp_table);
-  //logger.logVI("est", estimation);
-	logger.log(sbuilder() << ode.size());
+  //mlog("step", step_end_exp_table);
+  //mlog("est", estimation);
+	mlog1(sbuilder() << ode.size());
   
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0; //construct a empty taylormodel vec
-  //logger.log(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
+  //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	serializeTMV(range_of_x0, "flow.txt");
-  //logger.logVI(step_end_exp_table);
-  //logger.log(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
-  //logger.log(sbuilder() << "tmvPre: " << tmvPre.toString(getVNames(3)));
+  //mlog(step_end_exp_table);
+  //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
+  //mlog1(sbuilder() << "tmvPre: " << tmvPre.toString(getVNames(3)));
 	
   // the center point of x0's polynomial part
 	vector<Interval> intVecCenter;
 	range_of_x0.constant(intVecCenter);
 	
-  logger.logVI("iVC", intVecCenter);
+  mlog("iVC", intVecCenter);
 	
 	// the center point of the remainder of x0
 	for(int i=0; i<rangeDim; ++i)
@@ -600,9 +616,9 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
-	logger.dec();
-	logger.log("Picard1 >");
-	logger.restore(old);
+	mdec();
+	mlog1("Picard1 >");
+	mrestore(old);
 	return 1;
 }*/
 

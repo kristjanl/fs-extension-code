@@ -2,14 +2,14 @@
 
 
 TaylorModelVec picardIter(const vector<HornerForm> & ode, TaylorModelVec init, TaylorModelVec prev, int order) {
-  logger.log("picardIter <");
-  logger.inc();
+  mlog1("picardIter <");
+  minc();
   TaylorModelVec integratedTMV;
-	logger.log(sbuilder() << "last: " << prev.toString(getVNames(3)));
-  logger.log("-----------");
+	mlog1(sbuilder() << "last: " << prev.toString(getVNames(3)));
+  mlog1("-----------");
   
   for (unsigned i=0; i<ode.size(); i++) {
-		logger.log(ode.at(i).toString());
+		mlog1(ode.at(i).toString());
     TaylorModel insertedTM;
     
     //substitute variables with taylormodels
@@ -19,44 +19,44 @@ TaylorModelVec picardIter(const vector<HornerForm> & ode, TaylorModelVec init, T
     TaylorModel tmInt;
     //integrate with respect to time
     insertedTM.integral_no_remainder(tmInt);
-    logger.log(sbuilder() << "integratedTMV[" << i <<"]=" << tmInt.toString(getVNames(3)));
+    mlog1(sbuilder() << "integratedTMV[" << i <<"]=" << tmInt.toString(getVNames(3)));
     
     integratedTMV.tms.push_back(tmInt);
     
 	}
-  logger.log("-----------");
+  mlog1("-----------");
   
   TaylorModelVec ret;
   //add the initial conditions
   integratedTMV.add(ret, init);
-  logger.logTMV("nextIter", ret);
-  logger.dec();
-  logger.log("picardIter >");
+  mlog("nextIter", ret);
+  mdec();
+  mlog1("picardIter >");
   return ret;
 }
 
 
 void computeNewRemainder(const vector<HornerForm> & ode, const TaylorModelVec & init, TaylorModelVec & tmv, const vector<Interval> & domain) {
-  logger.log("picardIterRem <");
-  logger.inc();
+  mlog1("picardIterRem <");
+  minc();
   TaylorModelVec integratedTMV;
-  //logger.logTMV("tmv: ", tmv);
+  //mlog("tmv: ", tmv);
   
   for (unsigned i=0; i<ode.size(); i++) {
-    //logger.log(sbuilder() << "-------- " << i << " --------");
-		//logger.log(sbuilder() << "ode: " << ode.at(i).toString());
+    //mlog1(sbuilder() << "-------- " << i << " --------");
+		//mlog1(sbuilder() << "ode: " << ode.at(i).toString());
     TaylorModel insertedTM;
     
-    //logger.logTMV("tmv: ", tmv);
+    //mlog("tmv: ", tmv);
     vector<Interval> polyRange;
     tmv.polyRange(polyRange, domain);
-    //logger.logVI("range", polyRange);
+    //mlog("range", polyRange);
     
     Interval cutoff(-1e-55,1e-55); //don't want cutoff atm
     
     //substitute variables in TM, includes remainder
     ode.at(i).insert(insertedTM, tmv, polyRange, domain, cutoff);
-    //logger.log(sbuilder() << "inserted: " << insertedTM.toString(getVNames(3)));
+    //mlog1(sbuilder() << "inserted: " << insertedTM.toString(getVNames(3)));
     
     
     TaylorModel tmInt;
@@ -71,26 +71,26 @@ void computeNewRemainder(const vector<HornerForm> & ode, const TaylorModelVec & 
 		Polynomial higherTerms;
 		higherTerms = added.expansion - tmv.tms[i].expansion;
     
-    //logger.log(sbuilder() << "tmv: " << tmv.tms[i].toString(getVNames(3)));
-    //logger.log(sbuilder() << "added: " << added.toString(getVNames(3)));
-    //logger.log(sbuilder() << "higherTerms: " << higherTerms.toString(getVNames(3)));
+    //mlog1(sbuilder() << "tmv: " << tmv.tms[i].toString(getVNames(3)));
+    //mlog1(sbuilder() << "added: " << added.toString(getVNames(3)));
+    //mlog1(sbuilder() << "higherTerms: " << higherTerms.toString(getVNames(3)));
       
     Interval termsBound;
     higherTerms.intEval(termsBound, domain);
-    //logger.log(termsBound.toString());
-    //logger.log(sbuilder() << "added rem: " << added.remainder.toString());
+    //mlog1(termsBound.toString());
+    //mlog1(sbuilder() << "added rem: " << added.remainder.toString());
     Interval newRemainder = termsBound + added.remainder;
     tmv.tms[i].remainder = newRemainder;
-    //logger.log(newRemainder.toString());
+    //mlog1(newRemainder.toString());
 	}
-  logger.logTMV("end", tmv);
-  logger.dec();
-  logger.log("picardIterRem >");
+  mlog("end", tmv);
+  mdec();
+  mlog1("picardIterRem >");
 }
 
 void findDecreasingRemainder(const vector<HornerForm> & ode, const TaylorModelVec & init, TaylorModelVec & tmv, const vector<Interval> & domain) {
-  logger.log("decRem <");
-  logger.inc();
+  mlog1("decRem <");
+  minc();
 
   vector<Interval> guess;
   for(int i=0; i<tmv.tms.size(); i++) {
@@ -109,8 +109,8 @@ void findDecreasingRemainder(const vector<HornerForm> & ode, const TaylorModelVe
     computeNewRemainder(ode, init, tmv, domain);
     redo = false;
     for(int i=0; i<tmv.tms.size(); i++) {
-      //logger.log(tmv.tms[i].remainder.toString());
-      //logger.log(guess.at(i).toString());
+      //mlog1(tmv.tms[i].remainder.toString());
+      //mlog1(guess.at(i).toString());
       
       //new remainder is not a subset of the old one - so it's bad
       if(tmv.tms[i].remainder.subseteq(guess.at(i)) == false) {
@@ -125,17 +125,17 @@ void findDecreasingRemainder(const vector<HornerForm> & ode, const TaylorModelVe
     }
   }
   if(redo) {
-    logger.reset();
-    logger.log("max increase couldn't find a remainder");
+    mreset(old2);
+    mlog1("max increase couldn't find a remainder");
     exit(10);
   }
-  logger.dec();
-  logger.log("decRem >");
+  mdec();
+  mlog1("decRem >");
 }
 
 void refineRemainder(const vector<HornerForm> & ode, const TaylorModelVec & init, TaylorModelVec & tmv, const vector<Interval> & domain) {
-  logger.log("refRem <");
-  logger.inc();
+  mlog1("refRem <");
+  minc();
   
   
   //store the original remainders
@@ -166,19 +166,19 @@ void refineRemainder(const vector<HornerForm> & ode, const TaylorModelVec & init
       break;
     }
     if(j == MAX_REFINEMENT_STEPS-1) {
-      logger.reset();
-      logger.log("max refinements steps");
+      mreset(old2);
+      mlog1("max refinements steps");
       exit(11);
     }
   }
-  //logger.logTMV("tmv", tmv);
-  logger.dec();
-  logger.log("refRem >");
+  //mlog("tmv", tmv);
+  mdec();
+  mlog1("refRem >");
 }
 
 TaylorModelVec advance_step(const vector<HornerForm> & ode, const TaylorModelVec & init, const vector<Interval> & domain, int order) {
-  logger.log("advancing <");
-  logger.inc();
+  mlog1("advancing <");
+  minc();
   
   TaylorModelVec tmv = init;
   
@@ -193,8 +193,8 @@ TaylorModelVec advance_step(const vector<HornerForm> & ode, const TaylorModelVec
   //contract the remainder with picard operator
   refineRemainder(ode, init, tmv, domain);
   
-  logger.dec();
-  logger.log("advancing >");
+  mdec();
+  mlog1("advancing >");
   return tmv;
 }
 
@@ -203,8 +203,8 @@ SimpleImplReachability::SimpleImplReachability()
 }
 
 void SimpleImplReachability::myRun() {
-  logger.log("Simple Run <");
-  logger.inc();
+  mlog1("Simple Run <");
+  minc();
   
   clock_t begin, end;
 	begin = clock();
@@ -224,8 +224,8 @@ void SimpleImplReachability::myRun() {
   end = clock();
 	printf("simple impl time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
   
-  logger.dec();
-  logger.log("Simple Run >");
+  mdec();
+  mlog1("Simple Run >");
 }
 
 
@@ -234,15 +234,14 @@ SimpleImplSystem::SimpleImplSystem(const TaylorModelVec & ode_input, const Flowp
 }
 SimpleImplSystem::SimpleImplSystem(const ContinuousSystem & system)
 : ContinuousSystem(system) {
-  logger.log("simple impl system cons (sys)");
+  mlog1("simple impl system cons (sys)");
 }
 
 
 void SimpleImplSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
 {
-  logger.log("si reach <");
-  logger.inc();
-  logger.reset();
+  mlog1("si reach <");
+  minc();
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
@@ -260,8 +259,7 @@ void SimpleImplSystem::my_reach_picard(list<Flowpipe> & results, const double st
   domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
   
 	for(double t=THRESHOLD_HIGH; t < time;) {
-    logger.log(sbuilder() << "t: " << t);
-    logger.disable();
+    mlog1(sbuilder() << "t: " << t);
     //flowpipe for the timestep
     TaylorModelVec step_flowpipe = advance_step(hfOde, currentTMV, domain, order);
     
@@ -280,10 +278,9 @@ void SimpleImplSystem::my_reach_picard(list<Flowpipe> & results, const double st
 			fprintf(stdout, "Terminated -- The remainder estimation is not large enough.\n");
 			break;
 		}
-    logger.enable();
 	}
   writer.finish();
 
-  logger.dec();
-  logger.log("si reach >");
+  mdec();
+  mlog1("si reach >");
 }

@@ -218,12 +218,12 @@ void component() {
   for(int i = 0; i < expected.size(); i++) {
     vector<int> v1 = expected.at(i);
     vector<int> v2 = mappers.at(i);
-    //logger.logVi("v1", v1);
-    //logger.logVi("m2", v2);
-    //logger.log(v1.size());
-    //logger.log(v2.size());
+    //mlog("v1", v1);
+    //mlog("m2", v2);
+    //mlog1(v1.size());
+    //mlog1(v2.size());
     for(int j = 0; j < v1.size(); j++) {
-      logger.log(sbuilder() << "v1(" << j << ") = " << v1.at(j) << ", m2(" << j << ") = " << v2.at(j));
+      mlog1(sbuilder() << "v1(" << j << ") = " << v1.at(j) << ", m2(" << j << ") = " << v2.at(j));
     }
     if(equal(v1.begin(), v1.end(), v2.begin())) {
       cout << "eq" << endl;
@@ -274,7 +274,7 @@ void sw2() {
 	parseSetting.addVar("a");
 	parseSetting.addVar("b");
 	parse("my models {a + [-1,1],2*b + [-2,2]}");
-	logger.logTMV("res", parseResult.tmv);
+	mlog("res", parseResult.tmv);
 	component.pipes.push_back(parseResult.tmv);
 	
   double q;
@@ -294,13 +294,13 @@ void swSet() {
 	parseSetting.addVar("a");
 	parse("my models {3 + a + [-1,1]}");
 	component.swInput = parseResult.tmv;
-	logger.logTMV("tmv1", component.initSet);
+	mlog("tmv1", component.initSet);
 	smallComp::shrinkWrapSet(component, &component, 2.0, domain);
   TaylorModelVec expected = parseTMV("my models {3 + 2 * a}");
 	
-	logger.logTMV("tmv", expected);
-	logger.logTMV("set",  component.initSet);
-	logger.log(sbuilder() << "is close: " << expected.isClose(component.initSet, 0));
+	mlog("tmv", expected);
+	mlog("set",  component.initSet);
+	mlog1(sbuilder() << "is close: " << expected.isClose(component.initSet, 0));
 }
 void comp() {
   vector<Interval> domain;
@@ -343,17 +343,17 @@ void comp() {
 	parseSetting.addVar("b");
   TaylorModelVec tmv1 = parseTMV("my models {a,b}");
   vector<HornerForm> hfs1 = parseHFFromPoly("my hfs {a+b,b}");
-	logger.log(c1.initSet.isClose(tmv1, 1e-20));
-	logger.log(c1.odes.size() == hfs1.size());
+	mlog1(c1.initSet.isClose(tmv1, 1e-20));
+	mlog1(c1.odes.size() == hfs1.size());
 	for(int i = 0; i < c1.odes.size(); i++) {
-  	logger.log(c1.odes[0].isClose(hfs1[0], 1e-20));
+  	mlog1(c1.odes[0].isClose(hfs1[0], 1e-20));
   }
-  logger.log(c1.varIndexes == parseiVec("my iv <0,1>"));
-  logger.log(c1.solveIndexes == parseiVec("my iv <0,1>"));
-  logger.log(c1.tpIndexes == parseiVec("my iv <0,1>"));
-  logger.log(c1.allTMParams == parseiVec("my iv <0,1>"));
+  mlog1(c1.varIndexes == parseiVec("my iv <0,1>"));
+  mlog1(c1.solveIndexes == parseiVec("my iv <0,1>"));
+  mlog1(c1.tpIndexes == parseiVec("my iv <0,1>"));
+  mlog1(c1.allTMParams == parseiVec("my iv <0,1>"));
   
-  logger.log(c1.compMappers.size() == 0);
+  mlog1(c1.compMappers.size() == 0);
   
   c3.log();
 	parseSetting.clear();
@@ -362,18 +362,18 @@ void comp() {
 	parseSetting.addVar("d");
   TaylorModelVec tmv3 = parseTMV("my models {d, c}");
   vector<HornerForm> hfs3 = parseHFFromPoly("my hfs {c + d, 0}");
-	logger.log(c3.initSet.isClose(tmv3, 1e-20));
-	logger.log(c3.odes.size() == hfs3.size());
+	mlog1(c3.initSet.isClose(tmv3, 1e-20));
+	mlog1(c3.odes.size() == hfs3.size());
 	for(int i = 0; i < c3.odes.size(); i++) {
-  	logger.log(c3.odes[i].isClose(hfs3[i], 1e-20));
+  	mlog1(c3.odes[i].isClose(hfs3[i], 1e-20));
   }
-  logger.log(c3.varIndexes == parseiVec("my iv <3>"));
-  logger.log(c3.solveIndexes == parseiVec("my iv <0>"));
-  logger.log(c3.tpIndexes == parseiVec("my iv <3>"));
-  logger.log(c3.allTMParams == parseiVec("my iv <2,3>"));
-  logger.log(c3.allTMParams == parseiVec("my iv <2,3>"));
+  mlog1(c3.varIndexes == parseiVec("my iv <3>"));
+  mlog1(c3.solveIndexes == parseiVec("my iv <0>"));
+  mlog1(c3.tpIndexes == parseiVec("my iv <3>"));
+  mlog1(c3.allTMParams == parseiVec("my iv <2,3>"));
+  mlog1(c3.allTMParams == parseiVec("my iv <2,3>"));
   
-  logger.log(c3.compMappers.at(0) == parseiVec("my iv <0,-2>"));
+  mlog1(c3.compMappers.at(0) == parseiVec("my iv <0,-2>"));
   
   exit(0);
 }
@@ -421,16 +421,16 @@ void applySw() {
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);
       
-  logger.logTMV("c1", c1.initSet);
-  logger.logTMV("c2", c2.initSet);
+  mlog("c1", c1.initSet);
+  mlog("c2", c2.initSet);
   
 	parseSetting.clear();
 	parseSetting.addVar("t");
 	parseSetting.addVar("a");
   TaylorModelVec e1 = parseTMV("my models {1+4*a}");
   TaylorModelVec e2 = parseTMV("my models {2+2*a}");
-	logger.log(sbuilder() << "is close: " << e1.isClose(c1.initSet, 0));
-	logger.log(sbuilder() << "is close: " << e2.isClose(c2.initSet, 0));
+	mlog1(sbuilder() << "is close: " << e1.isClose(c1.initSet, 0));
+	mlog1(sbuilder() << "is close: " << e2.isClose(c2.initSet, 0));
 }
 void sw3() {
   vector<Interval> domain;
@@ -490,9 +490,9 @@ void sw3() {
   MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
   
   /*
-  logger.logTMV("c1", c1.initSet);
-  logger.logTMV("c2", c2.initSet);
-  logger.logTMV("c3", c3.initSet);
+  mlog("c1", c1.initSet);
+  mlog("c2", c2.initSet);
+  mlog("c3", c3.initSet);
   */
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);
@@ -507,9 +507,9 @@ void sw3() {
 	parseSetting.addVar("d");
 	TaylorModelVec e3 = parseTMV("my models{5 + 3*d, 1 + 3*a}");
 	
-	logger.log(e1.isClose(c1.initSet, 1e-14));
-	logger.log(e2.isClose(c2.initSet, 1e-14));
-	logger.log(e3.isClose(c3.initSet, 1e-14));
+	mlog1(e1.isClose(c1.initSet, 1e-14));
+	mlog1(e2.isClose(c2.initSet, 1e-14));
+	mlog1(e3.isClose(c3.initSet, 1e-14));
 	
 }
 

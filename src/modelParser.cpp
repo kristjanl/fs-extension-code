@@ -26,7 +26,7 @@ void parseError(const char *str, int lnum)
 int main(int argc, const char *argv[])
 {
   if(argc >= 4) {
-    logger.force("print");
+    mforce("print");
     
     int index1 = 0;
     int index2 = 0;
@@ -40,7 +40,7 @@ int main(int argc, const char *argv[])
     printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
     exit(0);
   }
-  logger.disable();
+  mdisable();
   yyparse();
 	//simpleImplMain();
   //compMain();

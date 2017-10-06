@@ -154,7 +154,7 @@ model: CONTINUOUS '{' continuous '}'
   
 	clock_t begin, end;
 	begin = clock();
-	logger.log(sbuilder() << "print: " << continuousProblem.bPrint);
+	mlog1(sbuilder() << "print: " << continuousProblem.bPrint);
 	continuousProblem.run();
 	end = clock();
 	printf("%ld flowpipes computed4.\n", continuousProblem.numOfFlowpipes());
@@ -187,21 +187,28 @@ model: CONTINUOUS '{' continuous '}'
   
   logger.reset();
   /*
-  logger.log(continuousProblem.flowpipes.size());
-  logger.log(continuousProblem.flowpipesCompo.size());
+  mlog1(continuousProblem.flowpipes.size());
+  mlog1(continuousProblem.flowpipesCompo.size());
   list<TaylorModelVec>::const_iterator ci = continuousProblem.flowpipesCompo.begin();
   list<Flowpipe>::const_iterator pi = continuousProblem.flowpipes.begin();
   ci++;
   pi++;
-  logger.logTMV("comp", *ci);
-  logger.logTMV("ppre", pi->tmvPre);
-  logger.logTMV("ptmv", pi->tmv);*/
+  mlog("comp", *ci);
+  mlog("ppre", pi->tmvPre);
+  mlog("ptmv", pi->tmv);*/
   
   
   double integrTime = double(end - begin) / CLOCKS_PER_SEC;
-  logger.log(sbuilder() << "computation time: " << integrTime);
+  mlog1(sbuilder() << "computation time: " << integrTime);
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
   
+  logger.log(continuousProblem.flowpipesCompo.size());
+  
+  
+  list<Flowpipe>::const_iterator iter =  
+      continuousProblem.flowpipes.begin();
+  iter++;
+    
   writer.fromFlowstar(continuousProblem.flowpipesCompo, continuousProblem.domains);
   writer.writeCSV();
   writer.writeInfo();
@@ -520,7 +527,7 @@ NONPOLY_CENTER '{' non_polynomial_rhs_center '}'
 |
 MYMODEL '{' my_taylor_model '}'
 {
-  logger.log("tm");
+  mlog1("tm");
   parseResult.model = TaylorModel(*($3));
 	delete $3;
 }
@@ -574,14 +581,14 @@ multiple_models ',' models_wrapper  {
 };
 
 models_wrapper: MYMODELS '{' my_taylor_models '}' {
-  //logger.log("models wrapper");
+  //mlog1("models wrapper");
   parseResult.tmv = TaylorModelVec(*$3);
-  //logger.logTMV("tmv", parseResult.tmv);
+  //mlog("tmv", parseResult.tmv);
 } | IDENT ':' MYMODELS '{' my_taylor_models '}' {
-  //logger.log("models wrapper");
+  //mlog1("models wrapper");
   parseResult.name = *$1;
   parseResult.tmv = TaylorModelVec(*$5);
-  //logger.logTMV("tmv", parseResult.tmv);
+  //mlog("tmv", parseResult.tmv);
 };
 
 continuous_flowpipes: continuous_flowpipes '{' interval_taylor_model taylor_model_domain '}'
@@ -1284,11 +1291,11 @@ linear_constraints linear_polynomial BELONGSTO '[' IDENT ',' IDENT ']'
 
 continuous: stateVarDecls SETTING '{' settings print '}' POLYODE1 '{' ode '}' INIT '{' init '}'
 {
-	logger.log("CONT1");
-	logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
-	//logger.log(sbuilder() << *$9); // const TaylorModelVec’
-	//logger.log(sbuilder() << *$13); // const Flowpipe
-	logger.log(sbuilder() << "ONLY_PICARD: " << ONLY_PICARD);
+	mlog1("CONT1");
+	mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	//mlog1(sbuilder() << *$9); // const TaylorModelVec’
+	//mlog1(sbuilder() << *$13); // const Flowpipe
+	mlog1(sbuilder() << "ONLY_PICARD: " << ONLY_PICARD);
 	
 	ContinuousSystem system(*$9, *$13);
 	continuousProblem.system = system;
@@ -1612,7 +1619,7 @@ parameters REMEST '{' remainders '}'
 |
 parameters QRPRECOND
 {
-	logger.log("QR1.\n");
+	mlog1("QR1.\n");
 	mode_local_setting.precondition = QR_PRE;
 }
 |
@@ -1986,9 +1993,9 @@ stateVarDecls: STATEVAR stateIdDeclList
 
 stateIdDeclList: stateIdDeclList ',' IDENT
 {
-	//logger.log("stateIdDeclList1");
+	//mlog1("stateIdDeclList1");
   logger.inc();
-	//logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	if(!continuousProblem.declareStateVar(*$3))
 	{
 		char errMsg[MSG_SIZE];
@@ -1997,7 +2004,7 @@ stateIdDeclList: stateIdDeclList ',' IDENT
 		exit(1);
 	}
 
-	//logger.log(sbuilder() << "*$3: " << *$3);
+	//mlog1(sbuilder() << "*$3: " << *$3);
   logger.dec();
 	hybridProblem.declareStateVar(*$3);
 	delete $3;
@@ -2005,10 +2012,10 @@ stateIdDeclList: stateIdDeclList ',' IDENT
 |
 IDENT
 {
-	//logger.log("stateIdDeclList2");
+	//mlog1("stateIdDeclList2");
   logger.inc();
-	//logger.log(sbuilder() << "*$1: " << *$1);
-	//logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	//mlog1(sbuilder() << "*$1: " << *$1);
+	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	if(!continuousProblem.declareStateVar(*$1))
 	{
 		char errMsg[MSG_SIZE];
@@ -2017,9 +2024,9 @@ IDENT
 		exit(1);
 	}
 	
-	//logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	hybridProblem.declareStateVar(*$1);
-	//logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
   logger.dec();
 	delete $1;
 }
@@ -2087,8 +2094,8 @@ IDENT EQ NUM
 
 settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm decomposition
 {
-	logger.log("settings1");
-  logger.log(continuousProblem.algorithm);
+	mlog1("settings1");
+  mlog1(continuousProblem.algorithm);
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2102,7 +2109,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 		parseError("Orders should be larger than zero.", lineNum);
 		exit(1);
 	}
-	logger.log(sbuilder() << "step: " << $2 << ", time: " << time << ", order: " << order);
+	mlog1(sbuilder() << "step: " << $2 << ", time: " << time << ", order: " << order);
 	continuousProblem.bAdaptiveSteps = false;
 	continuousProblem.step = $2;
 	continuousProblem.time = $4;
@@ -2133,7 +2140,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 
 	strcpy(continuousProblem.outputFileName, (*$15).c_str());
 	strcpy(hybridProblem.outputFileName, (*$15).c_str());
-	logger.log(sbuilder() << "cutoff_thrs: " << $11 << ", intnumprec: " << $13 << ", outFname: " << *$15);
+	mlog1(sbuilder() << "cutoff_thrs: " << $11 << ", intnumprec: " << $13 << ", outFname: " << *$15);
 	
 
 	delete $15;
@@ -2141,7 +2148,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' MIN NUM ',' MAX NUM '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	logger.log("settings2");
+	mlog1("settings2");
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2201,7 +2208,7 @@ FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' 
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD '{' orders '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	logger.log("settings3");
+	mlog1("settings3");
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2264,7 +2271,7 @@ FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD '{' ord
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' MIN '{' orders '}' ',' MAX '{' orders '}' '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	logger.log("settings4");
+	mlog1("settings4");
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2342,7 +2349,7 @@ FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' 
 |
 ADAPTIVEST '{' MIN NUM ',' MAX NUM '}' TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	logger.log("settings5");
+	mlog1("settings5");
 	if($4 <= 0 || $7 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2401,7 +2408,7 @@ ADAPTIVEST '{' MIN NUM ',' MAX NUM '}' TIME NUM remainder_estimation preconditio
 |
 ADAPTIVEST '{' MIN NUM ',' MAX NUM '}' TIME NUM remainder_estimation precondition plotting FIXEDORD '{' orders '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	logger.log("settings6");
+	mlog1("settings6");
 	if($4 <= 0 || $7 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2473,7 +2480,7 @@ ADAPTIVEST '{' MIN NUM ',' MAX NUM '}' TIME NUM remainder_estimation preconditio
 
 remainder_estimation: REMEST NUM
 {
-	//logger.log("remainder_estimation1");
+	//mlog1("remainder_estimation1");
 	if($2 <= 0)
 	{
 		parseError("Remainder estimation should be a positive number.", lineNum);
@@ -2484,7 +2491,7 @@ remainder_estimation: REMEST NUM
 
 	for(int i=0; i<continuousProblem.stateVarNames.size(); ++i)
 	{
-		//logger.log(sbuilder() << "i: " << i << " - " << $2);
+		//mlog1(sbuilder() << "i: " << i << " - " << $2);
 		continuousProblem.estimation.push_back(I);
 		hybridProblem.global_setting.estimation.push_back(I);
 	}
@@ -2492,7 +2499,7 @@ remainder_estimation: REMEST NUM
 |
 REMEST '{' remainders '}'
 {
-	logger.log("remainder_estimation2");
+	mlog1("remainder_estimation2");
 	for(int i=0; i<$3->size(); ++i)
 	{
 		if((*$3)[i].inf() >= (*$3)[i].sup() - THRESHOLD_LOW)
@@ -2602,8 +2609,8 @@ IDENT ':' NUM
 
 precondition: QRPRECOND
 {
-	logger.log("qr precond");
-	logger.log(sbuilder() << "QR_PRE: " << QR_PRE);
+	mlog1("qr precond");
+	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer();
@@ -2612,7 +2619,7 @@ precondition: QRPRECOND
 |
 IDPRECOND
 {
-	logger.log("id precond");
+	mlog1("id precond");
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new IdentityTransformer();
@@ -2621,14 +2628,14 @@ IDPRECOND
 |
 NOPRECOND
 {
-	logger.log("no precond");
+	mlog1("no precond");
   Transformer *transformer = new NullTransformer();
   continuousProblem.settings->transformer = transformer;
 }
 |
 SHRINRWRAPPING NUM
 {
-	logger.log("shrink num");
+	mlog1("shrink num");
 	continuousProblem.precondition = SHRINK_WRAPPING;
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
   Transformer *transformer;
@@ -2638,7 +2645,7 @@ SHRINRWRAPPING NUM
 |
 SHRINRWRAPPING REM
 {
-	logger.log("shrink rem");
+	mlog1("shrink rem");
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
 	continuousProblem.precondition = SHRINK_WRAPPING;
   Transformer *transformer;
@@ -2649,7 +2656,7 @@ SHRINRWRAPPING REM
 
 algorithm: ALG_SIMPLE_IMPL
 {
-	logger.log("ALG_SIMPLE_IMPL");
+	mlog1("ALG_SIMPLE_IMPL");
 	if(continuousProblem.precondition == SHRINK_WRAPPING) {
     parseError(
         "Only small component algorith supports shrink wrapping", lineNum);
@@ -2660,7 +2667,7 @@ algorithm: ALG_SIMPLE_IMPL
 |
 ALG_SIMPLE_COMP
 {
-	logger.log("ALG_SIMPLE_COMP");
+	mlog1("ALG_SIMPLE_COMP");
 	if(continuousProblem.precondition == SHRINK_WRAPPING) {
     parseError(
         "Only small component algorith supports shrink wrapping", lineNum);
@@ -2671,13 +2678,13 @@ ALG_SIMPLE_COMP
 |
 ALG_SMALL_COMP
 {
-	logger.log("ALG_SMALL_COMP");
+	mlog1("ALG_SMALL_COMP");
 	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
 }
 |
 ALG_SMALL_COMP FLOW_IMPL
 {
-	logger.log("ALG_SMALL_COMP");
+	mlog1("ALG_SMALL_COMP");
 	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
 	continuousProblem.settings->useFlow = true;
 	//exit(0);
@@ -2685,20 +2692,20 @@ ALG_SMALL_COMP FLOW_IMPL
 |
 ALG_FLOW
 {
-	logger.log(sbuilder() << "type: " << typeid(continuousProblem).name());
-	logger.log("ALG_DEF");
+	mlog1(sbuilder() << "type: " << typeid(continuousProblem).name());
+	mlog1("ALG_DEF");
 	continuousProblem.algorithm = ALGORITHM_DEFAULT;
 }
 | {
-  logger.log(sbuilder() << "type: " << typeid(continuousProblem).name());
-	logger.log("ALG_DEF");
+  mlog1(sbuilder() << "type: " << typeid(continuousProblem).name());
+	mlog1("ALG_DEF");
 	continuousProblem.algorithm = ALGORITHM_DEFAULT;
 }
 ;
 
 decomposition: DECOMPOSITION '[' components ']'
 {
-	logger.log("DECOMPOSITION");
+	mlog1("DECOMPOSITION");
 }
 | NODECOMPOSITION
 {
@@ -2750,8 +2757,8 @@ component: '[' compVarIds ']'
 
 compVarIds: compVarIds ',' IDENT
 {
-	//logger.log("compVarIds1");
-	//logger.log(sbuilder() << "*$3: " << *$3);
+	//mlog1("compVarIds1");
+	//mlog1(sbuilder() << "*$3: " << *$3);
   
 	$$ = $1;
   int varId = continuousProblem.getIDForStateVar(*$3);
@@ -2775,8 +2782,8 @@ compVarIds: compVarIds ',' IDENT
 |
 IDENT
 {
-	//logger.log("compVarIds2");
-	//logger.log(sbuilder() << "*$1: " << *$1);
+	//mlog1("compVarIds2");
+	//mlog1(sbuilder() << "*$1: " << *$1);
   int varId = continuousProblem.getIDForStateVar(*$1);
   
   if(varId < 0) {
@@ -2795,7 +2802,7 @@ IDENT
 
 plotting: GNUPLOT INTERVAL IDENT ',' IDENT
 {
-  logger.log("plotting1");
+  mlog1("plotting1");
 	int x = continuousProblem.getIDForStateVar(*$3);
 	int y = continuousProblem.getIDForStateVar(*$5);
 
@@ -2831,7 +2838,7 @@ plotting: GNUPLOT INTERVAL IDENT ',' IDENT
 |
 GNUPLOT OCTAGON IDENT ',' IDENT
 {
-  logger.log("plotting2");
+  mlog1("plotting2");
 	int x = continuousProblem.getIDForStateVar(*$3);
 	int y = continuousProblem.getIDForStateVar(*$5);
 
@@ -2867,7 +2874,7 @@ GNUPLOT OCTAGON IDENT ',' IDENT
 |
 GNUPLOT GRID NUM IDENT ',' IDENT
 {
-  logger.log("plotting3");
+  mlog1("plotting3");
 	int x = continuousProblem.getIDForStateVar(*$4);
 	int y = continuousProblem.getIDForStateVar(*$6);
 
@@ -2905,7 +2912,7 @@ GNUPLOT GRID NUM IDENT ',' IDENT
 |
 MATLAB INTERVAL IDENT ',' IDENT
 {
-  logger.log("plotting4");
+  mlog1("plotting4");
 	int x = continuousProblem.getIDForStateVar(*$3);
 	int y = continuousProblem.getIDForStateVar(*$5);
 
@@ -2941,7 +2948,7 @@ MATLAB INTERVAL IDENT ',' IDENT
 |
 MATLAB OCTAGON IDENT ',' IDENT
 {
-  logger.log("plotting5");
+  mlog1("plotting5");
 	int x = continuousProblem.getIDForStateVar(*$3);
 	int y = continuousProblem.getIDForStateVar(*$5);
 
@@ -2977,7 +2984,7 @@ MATLAB OCTAGON IDENT ',' IDENT
 |
 MATLAB GRID NUM IDENT ',' IDENT
 {
-  logger.log("plotting6");
+  mlog1("plotting6");
 	int x = continuousProblem.getIDForStateVar(*$4);
 	int y = continuousProblem.getIDForStateVar(*$6);
 
@@ -3016,7 +3023,7 @@ MATLAB GRID NUM IDENT ',' IDENT
 
 init: tmVarDecls taylor_model taylor_model_domain
 {
-	logger.log("INIT1");
+	mlog1("INIT1");
 	$$ = new Flowpipe(*$2, *$3);
 
 	delete $2;
@@ -3025,10 +3032,9 @@ init: tmVarDecls taylor_model taylor_model_domain
 |
 intervals
 {
-  logger.log("INIT2");
+  mlog1("INIT2");
 	Interval intZero;
-  logger.logVI(*$1);
-	logger.log("INIT2e");
+	mlog1("INIT2e");
 	$$ = new Flowpipe(*$1, intZero);
 
 	delete $1;
@@ -3114,7 +3120,7 @@ IDENT
 
 taylor_model: taylor_model IDENT EQ polynomial '+' '[' NUM ',' NUM ']'
 {
-	logger.log("taylor_model");
+	mlog1("taylor_model");
 	int id = continuousProblem.getIDForStateVar(*$2);
 
 	if(id < 0)
@@ -3208,9 +3214,9 @@ IDENT BELONGSTO '[' NUM ',' NUM ']'
 
 intervals: intervals IDENT BELONGSTO '[' NUM ',' NUM ']'
 {
-	logger.log("intervals1");
+	mlog1("intervals1");
 	int id = continuousProblem.getIDForStateVar(*$2);
-	logger.log(*$2);
+	mlog1(*$2);
 	
 	if(id < 0)
 	{
@@ -3229,16 +3235,15 @@ intervals: intervals IDENT BELONGSTO '[' NUM ',' NUM ']'
 	Interval I($5,$7);
 	$$ = $1;
 	(*$$)[id] = I;
-	logger.logVI(*$$);
 
 	delete $2;
 }
 |
 {
-	logger.log("intervals2");
+	mlog1("intervals2");
 	//exit(1);
 	int numVars = continuousProblem.stateVarNames.size();
-	logger.log(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
+	mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	$$ = new vector<Interval>(numVars);
 
 	string tVar("local_t");
@@ -3246,12 +3251,12 @@ intervals: intervals IDENT BELONGSTO '[' NUM ',' NUM ']'
 
 	char name[NAME_SIZE];
 
-	logger.log(local_var_name);
+	mlog1(local_var_name);
 	for(int i=0; i<numVars; ++i)
 	{
 		sprintf(name, "%s%d", local_var_name, i+1);
 		string tmVarName(name);
-		logger.log(sbuilder() << "name: " << name);
+		mlog1(sbuilder() << "name: " << name);
 		continuousProblem.declareTMVar(tmVarName);
 	}
 }
@@ -3259,7 +3264,7 @@ intervals: intervals IDENT BELONGSTO '[' NUM ',' NUM ']'
 
 ode: ode IDENT '\'' EQ ODEpolynomial
 {
-	logger.log("ODE1");
+	mlog1("ODE1");
 	$$ = $1;
 	int id = continuousProblem.getIDForStateVar(*$2);
 
@@ -3280,9 +3285,9 @@ ode: ode IDENT '\'' EQ ODEpolynomial
 }
 |
 {	
-	logger.log("ODE2");
+	mlog1("ODE2");
 	int numVars = continuousProblem.stateVarNames.size();
-	logger.log(sbuilder() << "numVars: " << numVars);
+	mlog1(sbuilder() << "numVars: " << numVars);
 	$$ = new TaylorModelVec;
 	TaylorModel tmTemp;
 	Interval intZero;
@@ -3475,7 +3480,7 @@ NUM
 
 ODEpolynomial: ODEpolynomial '+' ODEpolynomial
 {
-	logger.log("ODEpolynomial+");
+	mlog1("ODEpolynomial+");
 	$$ = $1;
 	(*$$) += (*$3);
 
@@ -3497,7 +3502,7 @@ ODEpolynomial '-' ODEpolynomial
 |
 ODEpolynomial '*' ODEpolynomial
 {
-	logger.log("ODEpolynomial*");
+	mlog1("ODEpolynomial*");
 	$$ = $1;
 	(*$$) *= (*$3);
 	delete $3;
@@ -3530,9 +3535,9 @@ ODEpolynomial '^' NUM
 |
 IDENT
 {
-	logger.log("ODEpolynomialIDENT");
+	mlog1("ODEpolynomialIDENT");
 	int id = continuousProblem.getIDForPar(*$1);
-	logger.log(sbuilder() << "idPar: " << id);
+	mlog1(sbuilder() << "idPar: " << id);
 	if(id >= 0)
 	{
 		Interval range;
@@ -3544,7 +3549,7 @@ IDENT
 	else
 	{
 		id = continuousProblem.getIDForStateVar(*$1);
-		logger.log(sbuilder() << "idSV: " << id);
+		mlog1(sbuilder() << "idSV: " << id);
 
 		if(id < 0)
 		{
@@ -3574,7 +3579,7 @@ IDENT
 |
 '[' NUM ',' NUM ']'
 {
-	logger.log("ODEpolynomial[,]");
+	mlog1("ODEpolynomial[,]");
 	int numVars = continuousProblem.stateVarNames.size()+1;
 	Interval I($2, $4);
 	$$ = new Polynomial(I, numVars);
@@ -3582,13 +3587,13 @@ IDENT
 |
 NUM
 {
-	logger.log("ODEpolynomialNUM");
-	logger.log(sbuilder() << "$1: " << $1);
+	mlog1("ODEpolynomialNUM");
+	mlog1(sbuilder() << "$1: " << $1);
 	int numVars = continuousProblem.stateVarNames.size()+1;
-	logger.log(sbuilder() << "numVars+1:" << numVars);
+	mlog1(sbuilder() << "numVars+1:" << numVars);
 	Interval I($1);
 	$$ = new Polynomial(I, numVars);
-	logger.logPoly($$);
+	mlog1($$);
 }
 ;
 
@@ -4518,8 +4523,8 @@ IDENT
 	}
 
 	$$ = new Polynomial;
-	logger.logPoly($$);
-	logger.log(*$1);
+	mlog1($$);
+	mlog1(*$1);
 	exit(0);
 	
 	parseSetting.flowpipe.tms[id].getExpansion(*$$);
@@ -4952,12 +4957,12 @@ my_polys: my_poly {
 };
 
 my_taylor_models: my_taylor_model {
-  //logger.log("my taylormodels");
+  //mlog1("my taylormodels");
   $$ = new vector<TaylorModel>();
   $$->push_back(TaylorModel(*$1));
   delete $1;
 } | my_taylor_model ',' my_taylor_models {
-  //logger.log("my taylormodels list");
+  //mlog1("my taylormodels list");
   //$3->push_back(*$1);
   $3->insert($3->begin(),*$1);
   $$ = $3;
@@ -4978,19 +4983,19 @@ mpfr_interval: '[' MPFRNUM ',' MPFRNUM ']' {
   //logger.force(sbuilder() << *$4);
   
   Interval* ret = new Interval(lower, upper);
-  //logger.log(ret->toString());
+  //mlog1(ret->toString());
   $$ = ret;
 }
 
 my_taylor_model: my_poly {
-  //logger.log("my taylor model poly");
+  //mlog1("my taylor model poly");
   
   Interval c;
   $1->constant(c);
   $1->rmConstant();
   
   $$ = new TaylorModel(*$1, c);
-  //logger.logTM("tm", *$$);
+  //mlog("tm", *$$);
   delete $1;
 } | '<' my_poly ',' mpfr_interval '>' {
   $$ = new TaylorModel(*$2, *$4);
@@ -4999,12 +5004,12 @@ my_taylor_model: my_poly {
 };
 
 my_poly: my_poly '+' my_poly{
-  //logger.log("+");
+  //mlog1("+");
   $$ = $1;
   *$$ += *($3);
   delete $3;
 } | my_poly '-' my_poly{
-  //logger.log("-");
+  //mlog1("-");
   $$ = $1;
   *$$ -= *($3);
   delete $3;
@@ -5019,12 +5024,12 @@ my_poly: my_poly '+' my_poly{
 	}
 	delete $1;
 } | my_poly '*' my_poly{
-  //logger.log("*");
+  //mlog1("*");
   $$ = $1;
   *$$ *= *($3);
   delete $3;
 } | IDENT {
-  //logger.log(*$1);
+  //mlog1(*$1);
   vector<string> vars = parseSetting.variables;
   int dim = parseSetting.variables.size();
   int pos = find(vars.begin(), vars.end(), *$1) - vars.begin();
@@ -5053,7 +5058,7 @@ my_poly: my_poly '+' my_poly{
   Polynomial *p = new Polynomial(Interval($1), dim);
   $$ = new Polynomial(Interval($1), dim);
 } | mpfr_interval {
-  //logger.log("poly mpfr");
+  //mlog1("poly mpfr");
   int dim = parseSetting.variables.size();
   $$ = new Polynomial(Interval(*$1), dim);
   delete $1;

@@ -1,6 +1,8 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <map>
+
 #include "include.h"
 #include "TaylorModel.h"
 #include "MyLogger.h"
@@ -8,6 +10,24 @@
 #include "Interval.h"
 #include "OutputWriter.h"
 #include "Continuous.h"
+
+//start the clock with variable name <name>Start
+#define tstart(name) clock_t name##Start = clock();
+
+//start the clock with variable name <name>End, subtract <name>Start from it
+// and store it in timeLookup with key "<name>"
+#define tend(name) clock_t name##End = clock(); \
+  double name##Dur = double(name##End - name##Start) / CLOCKS_PER_SEC; \
+  timeLookup[#name] += name##Dur;
+#define treset(name) timeLookup[#name] = 0;
+
+#define tprint(prefix) printTimes(prefix);
+
+#define taddToInfo(infoName, clockName, infos) addTimeToInfo(infoName, #clockName , infos)
+
+extern map<string, double> timeLookup;
+
+void printTimes(string prefix);
 
 using namespace std;
 
@@ -100,6 +120,8 @@ class TMVSerializer {
 };
 
 extern TMVSerializer *pSerializer;
+
+void addTimeToInfo(string name, string clockName, vector<string> & infos);
 
 #endif /* UTILS_H_ */
 

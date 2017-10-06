@@ -24,6 +24,7 @@ class Transformer {
         bool fail);
     const bool isPreconditioned;
     const bool isWrapper;
+    virtual void addInfo(vector<string> & info) = 0;
 };
 
 
@@ -32,6 +33,7 @@ class ShrinkWrapper: public Transformer {
     ShrinkWrapper(ShrinkWrappingCondition *swChecker);
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void addInfo(vector<string> & info);
   private:
     ShrinkWrappingCondition *swChecker;
 };
@@ -44,6 +46,7 @@ class PreconditionedTransformer: public Transformer {
     virtual void getAInv(Matrix & result, const Matrix & A) = 0;
     void precond2(TaylorModelVec & badLeft, MySettings & settings, 
         MyComponent & all);
+    void addInfo(vector<string> & info);
 };
 
 class QRTransformer: public Transformer {
@@ -51,6 +54,7 @@ class QRTransformer: public Transformer {
     QRTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void addInfo(vector<string> & info); //remove after extending preconditioned
 };
 
 class IdentityTransformer: public PreconditionedTransformer {
@@ -69,6 +73,7 @@ class NullTransformer: public Transformer {
     NullTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void addInfo(vector<string> & info);
 };
 
 

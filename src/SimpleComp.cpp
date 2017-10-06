@@ -3,16 +3,16 @@
 
 namespace simpleComp {
   void picardIter(const vector<int> comp, TaylorModelVec & pipe, const vector<HornerForm> & ode, TaylorModelVec init, int order) {
-    logger.log("picardIter <");
-    logger.inc();
+    mlog1("picardIter <");
+    minc();
     TaylorModelVec integratedTMV;
-    logger.log("-----------");
+    mlog1("-----------");
     
     vector<TaylorModel> newModels;
     
     for(int i = 0; i < comp.size(); i++) {
-      logger.log(sbuilder() << "comp[i] = " << comp[i]);
-      logger.log(ode.at(comp[i]).toString());
+      mlog1(sbuilder() << "comp[i] = " << comp[i]);
+      mlog1(ode.at(comp[i]).toString());
       
       
       TaylorModel insertedTM;
@@ -23,47 +23,47 @@ namespace simpleComp {
       TaylorModel tmInt;
       //integrate with respect to time
       insertedTM.integral_no_remainder(tmInt);
-      logger.log(sbuilder() << "integratedTMV[" << comp[i] <<"]=" << tmInt.toString(getVNames(3)));
+      mlog1(sbuilder() << "integratedTMV[" << comp[i] <<"]=" << tmInt.toString(getVNames(3)));
       TaylorModel currentInit = init.tms.at(comp[i]);
       
       
       TaylorModel added;
       tmInt.add(added, currentInit);
-      logger.log(added.toString(getVNames(3)));
+      mlog1(added.toString(getVNames(3)));
       newModels.push_back(added);
     }
     for(int i = 0; i < comp.size(); i++) {
       pipe.tms.at(comp[i]) = newModels.at(i);
     }
-    logger.logTMV("pipe", pipe);
+    mlog("pipe", pipe);
     
-    logger.dec();
-    logger.log("picardIter >");
+    mdec();
+    mlog1("picardIter >");
   }
 
 
   void computeNewRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
-    logger.log("picardIterRem <");
-    logger.inc();
+    mlog1("picardIterRem <");
+    minc();
     TaylorModelVec integratedTMV;
-    //logger.logTMV("tmv: ", tmv);
+    //mlog("tmv: ", tmv);
     
     
     for(int i = 0; i < comp.size(); i++) {
       TaylorModel insertedTM;
       
-      //logger.logTMV("tmv: ", tmv);
+      //mlog("tmv: ", tmv);
       vector<Interval> polyRange;
       pipe.polyRange(polyRange, domain);
-      //logger.logVI("range", polyRange);
+      //mlog("range", polyRange);
       
       Interval cutoff(-1e-55,1e-55); //don't want cutoff atm
       
       //substitute variables in TM, includes remainder
       ode.at(comp[i]).insert(insertedTM, pipe, polyRange, domain, cutoff);
-      //logger.log(sbuilder() << "inserted: " << insertedTM.toString(getVNames(3)));
+      //mlog1(sbuilder() << "inserted: " << insertedTM.toString(getVNames(3)));
       
       
       TaylorModel tmInt;
@@ -78,28 +78,28 @@ namespace simpleComp {
       Polynomial higherTerms;
       higherTerms = added.expansion - pipe.tms[comp[i]].expansion;
       
-      //logger.log(sbuilder() << "tmv: " << tmv.tms[i].toString(getVNames(3)));
-      //logger.log(sbuilder() << "added: " << added.toString(getVNames(3)));
-      //logger.log(sbuilder() << "higherTerms: " << higherTerms.toString(getVNames(3)));
+      //mlog1(sbuilder() << "tmv: " << tmv.tms[i].toString(getVNames(3)));
+      //mlog1(sbuilder() << "added: " << added.toString(getVNames(3)));
+      //mlog1(sbuilder() << "higherTerms: " << higherTerms.toString(getVNames(3)));
         
       Interval termsBound;
       higherTerms.intEval(termsBound, domain);
-      //logger.log(termsBound.toString());
-      //logger.log(sbuilder() << "added rem: " << added.remainder.toString());
+      //mlog1(termsBound.toString());
+      //mlog1(sbuilder() << "added rem: " << added.remainder.toString());
       Interval newRemainder = termsBound + added.remainder;
       pipe.tms[comp[i]].remainder = newRemainder;
-      //logger.log(newRemainder.toString());
+      //mlog1(newRemainder.toString());
     }
-    logger.logTMV("end", pipe);
-    logger.dec();
-    logger.log("picardIterRem >");
+    mlog("end", pipe);
+    mdec();
+    mlog1("picardIterRem >");
   }
 
   void findDecreasingRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
-    logger.log("decRem <");
-    logger.inc();
+    mlog1("decRem <");
+    minc();
 
     vector<Interval> guess;
     for(int i=0; i<comp.size(); i++) {
@@ -118,8 +118,8 @@ namespace simpleComp {
       computeNewRemainder(comp, pipe, ode, init, domain);
       redo = false;
       for(int i=0; i<comp.size(); i++) {
-        //logger.log(tmv.tms[i].remainder.toString());
-        //logger.log(guess.at(i).toString());
+        //mlog1(tmv.tms[i].remainder.toString());
+        //mlog1(guess.at(i).toString());
         
         //new remainder is not a subset of the old one - so it's bad
         if(pipe.tms[comp[i]].remainder.subseteq(guess.at(i)) == false) {
@@ -134,18 +134,18 @@ namespace simpleComp {
       }
     }
     if(redo) {
-      logger.log("max increase couldn't find a remainder");
+      mlog1("max increase couldn't find a remainder");
       exit(10);
     }
-    logger.dec();
-    logger.log("decRem >");
+    mdec();
+    mlog1("decRem >");
   }
 
   void refineRemainder(const vector<int> comp, TaylorModelVec & pipe, 
       const vector<HornerForm> & ode, const TaylorModelVec & init, 
       const vector<Interval> & domain) {
-    logger.log("refRem <");
-    logger.inc();
+    mlog1("refRem <");
+    minc();
     
     
     //store the original remainders
@@ -158,9 +158,7 @@ namespace simpleComp {
     for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
       bool redo = false;
       //apply picard operator to get new remainders
-      logger.disable();
       computeNewRemainder(comp, pipe, ode, init, domain);
-      logger.enable();
       
       for(int i=0; i<comp.size(); i++) {
         
@@ -170,26 +168,25 @@ namespace simpleComp {
           redo = true;
         }
         prevRems.at(i) = pipe.tms[comp[i]].remainder;
-        //logger.logVI("r", prevRems);
+        //mlog("r", prevRems);
       }
       if(redo == false) {
         break;
       }
       if(j == MAX_REFINEMENT_STEPS-1) {
-        logger.reset();
-        logger.log("max refinement steps");
+        mreset(old2);
+        mlog1("max refinement steps");
         exit(0);
       }
     }
-    //logger.logTMV("tmv", tmv);
-    logger.dec();
-    logger.log("refRem >");
+    //mlog("tmv", tmv);
+    mdec();
+    mlog1("refRem >");
   }
 
   void advance_step(const vector<int> comp, TaylorModelVec & pipe, const vector<HornerForm> & ode, const TaylorModelVec & init, const vector<Interval> & domain, int order) {
-    logger.log("advancing <");
-    logger.inc();
-    logger.disable();
+    mlog1("advancing <");
+    minc();
     
     for (unsigned i=0; i<comp.size(); i++) {
       pipe.tms.at(comp.at(i)) = init.tms.at(comp.at(i));
@@ -204,27 +201,26 @@ namespace simpleComp {
     findDecreasingRemainder(comp, pipe, ode, init, domain);
     //contract the remainder with picard operator
     refineRemainder(comp, pipe, ode, init, domain);
-    logger.enable();
-    logger.logTMV("end", pipe);
-    logger.dec();
-    logger.log("advancing >");
+    mlog("end", pipe);
+    mdec();
+    mlog1("advancing >");
   }
 }
 
 SimpleCompReachability::SimpleCompReachability()
 : ContinuousReachability() {
-  logger.log("simple comp reach constructor");
+  mlog1("simple comp reach constructor");
 }
 
 
 
 SimpleCompSystem::SimpleCompSystem(const TaylorModelVec & ode_input, const Flowpipe & initialSet_input)
 : ContinuousSystem(ode_input, initialSet_input) {
-  logger.log("simple comp system cons (ode, pipe)");
+  mlog1("simple comp system cons (ode, pipe)");
 }
 SimpleCompSystem::SimpleCompSystem(const ContinuousSystem & system)
 : ContinuousSystem(system) {
-  logger.log("simple comp system cons (sys)");
+  mlog1("simple comp system cons (sys)");
 }
 
 void SimpleCompSystem::addEmptyTM(vector<TaylorModelVec> & pipes) const {  
@@ -246,28 +242,26 @@ void SimpleCompSystem::integrateComponent(const vector<int> comp, vector<TaylorM
   
   int counter = 0;
   for(double t=THRESHOLD_HIGH; t < time;) {
-    logger.log("");
-    logger.log(sbuilder() << "t: " << t);
+    mlog1("");
+    mlog1(sbuilder() << "t: " << t);
     Interval stepTime = Interval(t, t + step);
-    //logger.log(sbuilder() << "counter: " << counter);
+    //mlog1(sbuilder() << "counter: " << counter);
     
     //add empty Taylor model in first component
     if(pipes.size() == counter) {
       addEmptyTM(pipes);
     }
     
-    //logger.logTMV("nextInit", nextInit);
+    //mlog("nextInit", nextInit);
     TaylorModelVec & pipe = pipes.at(counter);
-    //logger.logTMV("start", pipe);
+    //mlog("start", pipe);
     
-    logger.disable();
     simpleComp::advance_step(comp, pipe, ode, nextInit, domain, order);
-    logger.enable();
     
-    //logger.logTMV("end", pipe);
+    //mlog("end", pipe);
     //evaluate TM at the end of the timestep
 	  pipe.evaluate_t(nextInit, step_end_exp_table);
-    //logger.logTMV("next", nextInit);
+    //mlog("next", nextInit);
     
     //output the flowpipe for plotting
     writer.writeFlowpipe(comp, stepTime, pipe, domain);
@@ -285,8 +279,8 @@ void SimpleCompSystem::integrateComponent(const vector<int> comp, vector<TaylorM
 
 
 void SimpleCompReachability::myRun() {
-  logger.log("Simple Comp Run <");
-  logger.inc();
+  mlog1("Simple Comp Run <");
+  minc();
   
   
   clock_t begin, end;
@@ -306,15 +300,15 @@ void SimpleCompReachability::myRun() {
   
 	end = clock();
 	printf("simple comp time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
-  logger.dec();
-  logger.log("Simple Comp Run >");
+  mdec();
+  mlog1("Simple Comp Run >");
 }
 
 
 void SimpleCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
 {
-  logger.log("sc reach <");
-  logger.inc();
+  mlog1("sc reach <");
+  minc();
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
 	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
@@ -331,13 +325,12 @@ void SimpleCompSystem::my_reach_picard(list<Flowpipe> & results, const double st
   vector<Interval> domain = initialSet.domain;
   domain.at(0) = step_exp_table[1]; //set domain[0] to timestep
   
-  //logger.disable();
   vector<TaylorModelVec> pipes;
   
   for(int i = 0; i < 10; i++) {
     vector<int> comp1;
     comp1.push_back(i);
-    logger.log(i);
+    mlog1(i);
     integrateComponent(comp1, pipes, writer, hfOde, currentTMV, domain, order, step, time,  step_end_exp_table);
   }
   
@@ -356,11 +349,10 @@ void SimpleCompSystem::my_reach_picard(list<Flowpipe> & results, const double st
   */
   
   
-  logger.log(sbuilder() << "order: " << order);
-  //logger.enable();
+  mlog1(sbuilder() << "order: " << order);
   
   writer.finish();
 
-  logger.dec();
-  logger.log("sc reach >");
+  mdec();
+  mlog1("sc reach >");
 }

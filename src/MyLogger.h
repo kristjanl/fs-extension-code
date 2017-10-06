@@ -9,10 +9,48 @@
 #include <vector>
 #include <stdexcept>
 
-
 #include "Interval.h"
 #include "Polynomial.h"
 #include "TaylorModel.h"
+
+
+#define mreset(name) int name = logger.reset()
+#define mrestore(name) logger.restore(name)
+
+#define minc() logger.inc()
+#define mdec() logger.dec()
+#define mdisable() logger.disable()
+
+#define mlog(name, o) logger.log(name, o)
+#define mlog1(o) logger.log(o)
+#define mforce(o) logger.force(o)
+#define mlist(name, o) logger.log(name, o) 
+
+#ifdef enablelog
+  #define LOGGING_STATUS "logging enabled"
+#else
+  #define LOGGING_STATUS "logging disabled"
+  #undef mreset
+  #define mreset(name)
+  #undef mrestore
+  #define mrestore(name)
+  
+  #undef minc
+  #define minc()
+  #undef mdec
+  #define mdec()
+  #undef mdisable
+  #define mdisable()
+  
+  #undef mlog
+  #define mlog(name, o)
+  #undef mlog1
+  #define mlog1(o)
+  #undef mlist
+  #define mlist(name, o)
+#endif
+
+
 
 using namespace std;
 
@@ -21,7 +59,6 @@ using namespace std;
 //class Interval;
 //class Polynomial;
 
-class PrecondModel;
 
 struct sbuilder
 {
@@ -43,31 +80,28 @@ sbuilder & operator << (sbuilder & sb, const T &data) {
 
 class mylogger2 {
 	public:
-	  void log();
-		void logVI(vector<Interval>);
-		void logVI(string, vector<Interval>);
-		void logVS(string, vector<string>);
-		void logVHF(string, vector<HornerForm>);
-		void logVi(string, vector<int>);
-		void listVi(string, vector<int>);
-		void logVRT(string, vector<RangeTree *>);
-		void logRT(string, RangeTree *);
-		void logTMV(string, TaylorModelVec);
-		void logPM(string, PrecondModel *);
-		void logTMVRem(string, TaylorModelVec);
-		void logTM(string, TaylorModel);
-    void logM(Monomial m);
-    void logMatrix(string, Matrix m);
+		mylogger2();
+		mylogger2(bool disabled);
+		
+		void log(string, TaylorModelVec);
+		void log(string, TaylorModel);
+		void log(string, vector<Interval>);
+		void log(string, vector<int>);
+		void log(string, vector<string>);
+		void log(string, vector<HornerForm>);
+		void log(string, vector<RangeTree *>);
+		void log(string, RangeTree *);
+    void log(string, Matrix m);
+		
+		void log(Polynomial *);
+    void log(Monomial m);
+    
     void force(string s);
 		void log(string s);
     void log(int i);
-    void logd(double d);
-    void printLevel();
-		void logPoly(Polynomial *);
+		
 		void inc();
 		void dec();
-		mylogger2();
-		mylogger2(bool disabled);
 		void disable();
 		void enable();
 		int reset();

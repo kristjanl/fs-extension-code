@@ -59,7 +59,26 @@ def getVarRange2(modelFile, csvs):
   return ranges
 
 
-def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix):
+def filterVarRange(varRange):
+  #include first 3
+  indexes = [0, 1, 2]
+  indexes = filter(lambda x: x < len(varRange), indexes)
+  
+  #include 5, 10, 20, 40, 80 etc
+  for i in range(10):
+    indexValue = 5*2**i
+    if indexValue >= len(varRange):
+      break
+    indexes.append(indexValue)
+  
+  #get rid of indexes too big
+  varRange = [varRange[i] for i in indexes]
+  
+  #discard list '[', ']'
+  return str(varRange)[1:-1]
+
+def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
+    infoFields):
   outputName = fs.getParam(modelFile, "output")
   if os.path.isfile(modelFile):
     infoFile = "infos/%s.txt" %outputName
@@ -79,19 +98,24 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix):
   else:
     reason = intTime = compTime = swTime = swCount = '-'
   
-  outFile.write("  <tr>\n")
+  outFile.write("  <tr align=\"center\">\n")
   outFile.write("    <td><a href='%s'>%s</a></td>\n"%(modelFile,modelName))
   outFile.write("    <td>%s</td> \n"%dim)
   outFile.write("    <td>%s</td>\n"%order)
   outFile.write("    <td>%s</td>\n"%step)
   outFile.write("    <td>%s</td>\n"%time)
-  outFile.write("    <td>%s</td>\n"%intTime)
-  outFile.write("    <td>%s</td>\n"%compTime)
-  outFile.write("    <td>%s</td>\n"%swTime)
-  outFile.write("    <td>%s</td>\n"%swCount)
-  outFile.write("    <td>%s</td>\n"%reason)
-  outFile.write("    <td>%s</td>\n"%str(varRange)[1:-1])
-  outFile.write("    <td>\n");
+  
+  for (a,_) in infoFields:
+    if os.path.isfile(infoFile):
+      value = fs.getParam(infoFile, "%s:"%a)
+      if value == None:
+        value = '-'
+      outFile.write("    <td>%s</td>\n"%value)
+    else:
+      outFile.write("    <td>--</td>\n")
+    
+  outFile.write("    <td>%s</td>\n"%filterVarRange(varRange))
+  outFile.write("    <td align=\"left\">\n");
   outFile.write("    <table><tr>\n")
   for i in range(1, dim+1):
     imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, \
@@ -107,7 +131,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix):
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
 
-def write_table_rows(modelDir, pairs, outFile, nameSuffix):
+def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:
     modelFiles = map(lambda m: os.path.join(modelDir, m), models)
     
@@ -131,29 +155,28 @@ def write_table_rows(modelDir, pairs, outFile, nameSuffix):
       #print models[i]
       #print varRange2[i]
       writeData(modelFiles[i], models[i], outFile, varRange2[i], commonTime, \
-          nameSuffix)
+          nameSuffix, infoFields)
       
     
     outFile.write('<tr style="border-bottom:3px solid black">' + \
         '<td colspan="100%"><hr /></td></tr>\n')
 
 
-def write_table_start(outFile):
+def write_table_start(outFile, infoFields):
   outFile.write("<html>\n")
   outFile.write("<body>\n")
 
-  outFile.write("<table >\n")
+  outFile.write("<table>\n")
   outFile.write("  <tr>\n")
   outFile.write("    <th>Model</th>\n")
   outFile.write("    <th>Dim</th> \n")
   outFile.write("    <th>Order</th>\n")
   outFile.write("    <th>step</th>\n")
   outFile.write("    <th>Time (goal)</th>\n")
-  outFile.write("    <th>Time (actual)</th>\n")
-  outFile.write("    <th>Computation time</th>\n")
-  outFile.write("    <th>Shrink wrapping time</th>\n")
-  outFile.write("    <th>Shrink wrapping count</th>\n")
-  outFile.write("    <th>Stop reason</th>\n")
+  
+  for (_,b) in infoFields:
+    outFile.write("    <th>%s</th>\n" %b)
+  
   outFile.write("    <th>Size of the variables range</th>\n")
   outFile.write("    <th>Plots</th>\n")
   outFile.write("  </tr>\n")
@@ -166,11 +189,11 @@ def write_table_end(outFile):
   outFile.close()
 
 
-def write_table(tableName, modelDir, pairs, nameSuffix):
+def write_table(tableName, modelDir, pairs, nameSuffix, infoFields):
   print "writing '%s'" %tableName
   outFile = open(tableName, 'w')
-  write_table_start(outFile)
-  write_table_rows(modelDir, pairs, outFile, nameSuffix)
+  write_table_start(outFile, infoFields)
+  write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields)
   write_table_end(outFile)
 
   
@@ -268,12 +291,20 @@ def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
       plot_variable(scriptsDir, modelFiles, i, 0, nameSuffix) #0 is the time
 
 
-
 def generateHtml(scriptsDir, modelDir, modelPairs, suffix):
+  oldFields = [
+      ("integration time", "Time (actual)"), 
+      ("computation time", "Computation time"), 
+      ("shrink wrapping time", "Shrink wrapping time"), 
+      ("shrink wraps", "Shrink wrapping count"),
+      ("reason", "Stop reason"), 
+  ]
+  generateHtml(scriptsDir, modelDir, modelPairs, suffix, oldFields)
+
+def generateHtml(scriptsDir, modelDir, modelPairs, suffix, infoFields):
   generate_comparision_plots(scriptsDir, modelDir, modelPairs, suffix)
-  write_table("experiments%s.html" %suffix, modelDir, modelPairs, suffix)
-
-
+  write_table("experiments%s.html" %suffix, modelDir, modelPairs, \
+      suffix, infoFields)
 
 
 

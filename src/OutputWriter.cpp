@@ -54,7 +54,6 @@ Interval evalVarToInterval(const Interval & timeInt, const TaylorModelVec & tmv,
 
 void OutputWriter::writeFlowpipe(const Interval & timeInt, 
     const TaylorModelVec & tmv, vector<Interval> & domain) const {
-  logger.enable();
   //intervals for the timestep
   Interval xInterval = evalVarToInterval(timeInt, tmv, domain, var1Index);
   Interval yInterval = evalVarToInterval(timeInt, tmv, domain, var2Index);
@@ -66,7 +65,6 @@ void OutputWriter::writeFlowpipe(const Interval & timeInt,
   *outfile << xInterval.getLower() << " " << yInterval.getHigher() << "\n";
   *outfile << xInterval.getLower() << " " << yInterval.getLower() << "\n";
   *outfile << "\n\n";
-  logger.disable();
 }
 
 bool checkIndex(const vector<int> comp, int index) {
@@ -97,11 +95,16 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
     data2.push_back(vector<string>());
   }
   
-  for(int i = 0; i < all.output.size(); i++) {
+  //if it's preconditioned then the first timeinterval is [0,0]
+  data2.at(0).push_back("0");
+  data2.at(1).push_back("0");
+  //size - 1, since first one was added manually
+  for(int i = 0; i < all.output.size() - 1; i++) {
     Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
     data2.at(0).push_back(timeInt.getLower());
     data2.at(1).push_back(timeInt.getHigher());
   }
+  
   
   for(int i = 0; i < all.output.size(); i++) {
     TaylorModelVec tmv = all.output[i];
@@ -119,7 +122,7 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
 
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
-  logger.log("adding components");
+  mlog1("adding components");
   
   //for time
   data.push_back(vector<Interval>());
@@ -140,13 +143,13 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
     return;
   }
   
-  logger.inc();
+  minc();
   int dim = 0;
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     dim += (*it)->varIndexes.size();
   }
-  logger.log(sbuilder() << "dim: " << dim);
+  mlog1(sbuilder() << "dim: " << dim);
   //2 for time + (per dim) 2 for interval + remainder + range
   int csvSize = 2 + 4*dim;
   for(int i = 0; i < csvSize; i++) {
@@ -159,7 +162,7 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
     data2.at(1).push_back(timeInt.getHigher());
   }
   
-  logger.dec();
+  mdec();
   
   
   
@@ -212,7 +215,7 @@ void OutputWriter::addCompomentData(MyComponent & comp,
 void createDir(string pathname) {
   struct stat info;
   if( stat( pathname.c_str(), &info ) != 0 ) {
-    logger.force(sbuilder() << "creating directory '" << pathname << "'");
+    mforce(sbuilder() << "creating directory '" << pathname << "'");
     string cmd = sbuilder() << "mkdir " << pathname;
     system(cmd.c_str());
   } else if( info.st_mode & S_IFDIR ) {
@@ -226,7 +229,7 @@ void OutputWriter::writeCSV() {
   
   createDir("csvs");
   
-  logger.log(sbuilder() << "writingCSV (" << csvfname << ")");
+  mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
   csvfile->open(csvfname.c_str());
   
   /*
@@ -244,12 +247,12 @@ void OutputWriter::writeCSV() {
       
     for(int var = 0; var < vars; var++) {
       Interval varInt = data.at(var).at(step);
-      //logger.log(
+      //mlog1(
       //    sbuilder() << varInt.getLower() << "," <<  varInt.getHigher());
       *csvfile << varInt.getLower() << "," << varInt.getHigher() << ",";
     }
     *csvfile << endl;
-    //logger.log("");
+    //mlog1("");
     
   }
   */
@@ -272,14 +275,14 @@ void OutputWriter::writeInfo() {
   string infoName = "infos/" + name + ".txt";
   
   createDir("infos");
-  logger.log(sbuilder() << "writingInfo (" << infoName << ")");
+  mlog1(sbuilder() << "writingInfo (" << infoName << ")");
   ofstream infoFile;
   infoFile.open(infoName.c_str());
   
-  info.push_back(sbuilder() << "shrink wrapping time: " << swTime);
+  //info.push_back(sbuilder() << "shrink wrapping time: " << swTime);
   
   for(vector<string>::iterator it = info.begin(); it < info.end(); it++) {
-    //logger.log(*it);  
+    //mlog1(*it);  
     infoFile << *it << endl;
   }
   infoFile.close();
@@ -287,7 +290,7 @@ void OutputWriter::writeInfo() {
 
 
 void OutputWriter::finish() {
-  //logger.log(sbuilder() << "finishing writing " << name);
+  //mlog1(sbuilder() << "finishing writing " << name);
   *outfile << "e\n";
   outfile->close();
 }
@@ -295,16 +298,11 @@ void OutputWriter::finish() {
 
 void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo, 
       list<vector<Interval> > & domains) {
-  logger.force("from flowstar");
+  mforce("from flowstar");
   list<TaylorModelVec>::const_iterator fIt = flowpipesCompo.begin();
   list< vector<Interval> >::const_iterator dIt = domains.begin();
   if(fIt == flowpipesCompo.end())
     return;
-  
-  //skip the first one (initial conditions)
-  fIt++;
-  dIt++;
-  
   
   int i = 1;
   
@@ -318,15 +316,15 @@ void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo,
   Interval shift = Interval(0);
   
   while(fIt != flowpipesCompo.end()) {
-    //logger.logTMV("tmv", *fIt);
-    //logger.logVI("d", *dIt);
+    //mlog("tmv", *fIt);
+    //mlog("d", *dIt);
     Interval time = (*dIt)[0];
     time += shift;
     data2.at(0).push_back(time.getLower());
     data2.at(1).push_back(time.getHigher());
     
     shift += (*dIt)[0].sup();
-    //logger.log(time.toString());
+    //mlog1(time.toString());
     
     const TaylorModelVec & tmv = *fIt;
     vector<Interval> domain = *dIt;

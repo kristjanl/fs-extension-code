@@ -6,8 +6,18 @@ CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
 CFLAGS = -I . -I $(GMP_HOME) -g -O3
+#CFLAGS += -Denablelog
 CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
 LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
+
+### rewriting since not using local GMP
+CFLAGS = -I . -g -O3
+#CFLAGS += -Denablelog
+CXXFLAGS = -I . -g -O3
+LINK_FLAGS = -g
+
+
+
 OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o
 
 TESTOBJS = Interval.o Monomial.o Polynomial.o Matrix.o MyLogger.o TaylorModel.o MyComponent.o Exceptions.o
@@ -42,14 +52,14 @@ myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
-	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
+	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.cc %.d
 	$(CXX) -c $(CFLAGS) -o $@ $<
 %.o: %.cpp %.h %.d
-	$(CXX) -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $<
 unittestingfast.o: unittestingfast.cpp unittesting.h
-	$(CXX) -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 #%.o: %.cpp $(DEPDIR)/%.d
 #	$(CXX) -c $(DEPFLAGS) $(CFLAGS) -o $@ $<

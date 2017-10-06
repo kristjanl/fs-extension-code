@@ -96,7 +96,7 @@ namespace compApp {
   //construct a derivative TaylorModelVector
   TaylorModelVec* derivativeTMV(ContinuousReachability continuousProblem) {
     int numVars = continuousProblem.stateVarNames.size();
-    logger.log("derTMV");
+    mlog1("derTMV");
     TaylorModelVec *myTMV = new TaylorModelVec;
     TaylorModel tmTemp;
 
@@ -129,8 +129,8 @@ namespace compApp {
 }
 
 int compMain() {
-	logger.log("compapp <");
-	logger.inc();
+	mlog1("compapp <");
+	minc();
 	
 	SimpleCompReachability continuousProblem;
 	
@@ -142,7 +142,7 @@ int compMain() {
 	//setttings
 	Interval estimationI(-0.001, 0.001);
 	for(int i=0; i<continuousProblem.stateVarNames.size(); ++i) {
-    logger.log(i);
+    mlog1(i);
 		continuousProblem.estimation.push_back(estimationI);
 	}
 	continuousProblem.precondition = QR_PRE;
@@ -186,8 +186,8 @@ int compMain() {
 	(*initVec)[continuousProblem.getIDForStateVar("x3")] = Interval(0.0,0.0);
 	
   
-  logger.logTMV("tmv", *myTMV);
-  logger.logVI("init", *initVec);
+  mlog("tmv", *myTMV);
+  mlog("init", *initVec);
   
 	Interval intZero;
 	Flowpipe *initCond = new ExtractedPicard(*initVec, intZero);
@@ -195,17 +195,17 @@ int compMain() {
 	
 	SimpleCompSystem system(*myTMV, *initCond);
   
-  //logger.log(sbuilder() << "type1: " << typeid(system).name());
+  //mlog1(sbuilder() << "type1: " << typeid(system).name());
   continuousProblem.system = system;
   continuousProblem.pSystem = &system;
-  //logger.log(sbuilder() << "type2: " << typeid(continuousProblem.system).name());
-  //logger.log(sbuilder() << "type3: " << typeid(*(continuousProblem.pSystem)).name());
+  //mlog1(sbuilder() << "type2: " << typeid(continuousProblem.system).name());
+  //mlog1(sbuilder() << "type3: " << typeid(*(continuousProblem.pSystem)).name());
 	continuousProblem.integrationScheme = ONLY_PICARD;
   
 	//continuousProblem.run();
   continuousProblem.myRun();
 	
-	logger.dec();
-	logger.log("compapp >");
+	mdec();
+	mlog1("compapp >");
 	return 0;
 }

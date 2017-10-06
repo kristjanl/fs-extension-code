@@ -82,7 +82,7 @@ Polynomial* dX3(ContinuousReachability continuousProblem) {
 //construct a derivative TaylorModelVector
 TaylorModelVec* derivativeTMV(ContinuousReachability continuousProblem) {
 	int numVars = continuousProblem.stateVarNames.size();
-	logger.log("derTMV");
+	mlog1("derTMV");
 	TaylorModelVec *myTMV = new TaylorModelVec;
 	TaylorModel tmTemp;
 
@@ -110,16 +110,16 @@ TaylorModelVec* derivativeTMV(ContinuousReachability continuousProblem) {
 	myTMV->tms[idX3] = tmX3;
 	//is it safe to delete tmXi?
 	
-	logger.log(sbuilder() << "&tmX1: " << &(myTMV->tms[idX1]));
-	logger.log(sbuilder() << "&tmX2: " << &(myTMV->tms[idX2]));
-	logger.log(sbuilder() << "&tmX3: " << &(myTMV->tms[idX3]));
+	mlog1(sbuilder() << "&tmX1: " << &(myTMV->tms[idX1]));
+	mlog1(sbuilder() << "&tmX2: " << &(myTMV->tms[idX2]));
+	mlog1(sbuilder() << "&tmX3: " << &(myTMV->tms[idX3]));
 	return myTMV;
 }
 
 int simpleImplMain() {
 
-	logger.log("simpleapp <");
-	logger.inc();
+	mlog1("simpleapp <");
+	minc();
 	
 	SimpleImplReachability continuousProblem;
 	
@@ -161,9 +161,9 @@ int simpleImplMain() {
 	
 	//odes
 	TaylorModelVec *myTMV = derivativeTMV(continuousProblem);
-	logger.log(sbuilder() << "&tmX1: " << &(myTMV->tms[0]));
-	logger.log(sbuilder() << "&tmX2: " << &(myTMV->tms[1]));
-	logger.log(sbuilder() << "&tmX3: " << &(myTMV->tms[2]));
+	mlog1(sbuilder() << "&tmX1: " << &(myTMV->tms[0]));
+	mlog1(sbuilder() << "&tmX2: " << &(myTMV->tms[1]));
+	mlog1(sbuilder() << "&tmX3: " << &(myTMV->tms[2]));
 	
 	
 	continuousProblem.declareTMVar("local_t");
@@ -188,7 +188,7 @@ int simpleImplMain() {
 	//continuousProblem.run();
   continuousProblem.myRun();
 	
-	logger.dec();
-	logger.log("simpleapp >");
+	mdec();
+	mlog1("simpleapp >");
 	return 0;
 }
