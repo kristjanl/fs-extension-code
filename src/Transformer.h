@@ -46,6 +46,8 @@ class PreconditionedTransformer: public Transformer {
     virtual void getAInv(Matrix & result, const Matrix & A) = 0;
     void precond2(TaylorModelVec & badLeft, MySettings & settings, 
         MyComponent & all);
+    void precond3(TaylorModelVec & leftStar, MySettings & settings, 
+        MyComponent & all);
     void addInfo(vector<string> & info);
 };
 

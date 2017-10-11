@@ -162,10 +162,17 @@ model: CONTINUOUS '{' continuous '}'
 	
 	continuousProblem.bSafetyChecking = false;
 
-	printf("Preparing for plotting and dumping...\n");
-	continuousProblem.composition();
-	printf("Done.\n");
 
+  
+  #ifdef no_output
+    cout << "not creating flow output" << endl;
+  #else
+  	printf("Preparing for plotting and dumping...\n");
+  	continuousProblem.composition();
+  	printf("Done.\n");
+  #endif
+	
+  /* FLOWSTAR OUTPUT REMOVED
 	continuousProblem.plot_2D();
 
 	char filename[NAME_SIZE+10];
@@ -181,37 +188,28 @@ model: CONTINUOUS '{' continuous '}'
 	printf("Dumping the Taylor model flowpipes...\n");
 	continuousProblem.dump(fpDumping);
 	printf("Done.\n");
-
 	fclose(fpDumping);
-  
-  
+	*/
   logger.reset();
-  /*
-  mlog1(continuousProblem.flowpipes.size());
-  mlog1(continuousProblem.flowpipesCompo.size());
-  list<TaylorModelVec>::const_iterator ci = continuousProblem.flowpipesCompo.begin();
-  list<Flowpipe>::const_iterator pi = continuousProblem.flowpipes.begin();
-  ci++;
-  pi++;
-  mlog("comp", *ci);
-  mlog("ppre", pi->tmvPre);
-  mlog("ptmv", pi->tmv);*/
   
+  tprint("fl_part");
   
   double integrTime = double(end - begin) / CLOCKS_PER_SEC;
   mlog1(sbuilder() << "computation time: " << integrTime);
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
   
-  logger.log(continuousProblem.flowpipesCompo.size());
+  #ifdef no_output
+    ;
+  #else
+    cout << "creating flow output" << endl;
+    logger.log(continuousProblem.flowpipesCompo.size());
+    writer.fromFlowstar(continuousProblem.flowpipesCompo,
+        continuousProblem.domains);
+    writer.writeCSV();
+    writer.writeInfo();
+  #endif
   
   
-  list<Flowpipe>::const_iterator iter =  
-      continuousProblem.flowpipes.begin();
-  iter++;
-    
-  writer.fromFlowstar(continuousProblem.flowpipesCompo, continuousProblem.domains);
-  writer.writeCSV();
-  writer.writeInfo();
   if(pSerializer != NULL)
     pSerializer->serialize();
 }
@@ -2718,7 +2716,6 @@ decomposition: DECOMPOSITION '[' components ']'
   continuousProblem.components.push_back(vs);
 }
 | {
-  logger.force("NO DECOMPOSITION");
   if(continuousProblem.algorithm == ALGORITHM_SMALL_COMP) {
     parseError("No decompostion given for composition algorithm.", lineNum);
     exit(1);

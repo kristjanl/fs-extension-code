@@ -9330,7 +9330,7 @@ void ContinuousSystem::reach_linear(list<Flowpipe> & results, const double step,
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
 {
-  mforce("REACH PIC1 <");
+  mforce("Reach Pic 1 <");
   minc();
 	vector<Interval> step_exp_table, step_end_exp_table;
 
@@ -9376,9 +9376,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
   taddToInfo("precond time", fl_precond, settings->writer->info);
   taddToInfo("int time", fl_integrate, settings->writer->info);
   cout << endl;
-  tprint("fl_");
   mdec();
-  mlog1("REACH PIC1 >");
+  mlog1("Reach Pic 1 >");
 }
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const vector<int> & orders, const int globalMaxOrder, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
@@ -13853,7 +13852,7 @@ void ContinuousReachability::run()
     sc.myRun();
     exit(2);
   } else {
-    mforce("default");
+    //mforce("default");
     contRun();
   }
   //exit(2);

@@ -142,7 +142,8 @@ public:
 // returns true if all the intervals in I1 are subseteq to intervals in I2
 bool subseteq(const vector<Interval> & I1, const vector<Interval> & I2);
 
-
 const static Interval ZERO_INTERVAL;
+const static Interval ONE_INTERVAL(1,1);
+const static Interval UNIT_INTERVAL(-1,1);
 
 #endif /* INTERVAL_H_ */

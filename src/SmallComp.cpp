@@ -479,8 +479,6 @@ namespace smallComp {
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
-    pSerializer->add(p, "i0");
-    pSerializer->add(p, "i1");
     
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
@@ -489,11 +487,9 @@ namespace smallComp {
     }
     
     mlog("after", p);
-    pSerializer->add(p, "i2");
     
     
     p.cutoff(settings.cutoff);
-    pSerializer->add(p, "i3");
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
@@ -506,10 +502,8 @@ namespace smallComp {
     mlog("dec", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
-	  pSerializer->add(p, "i4");
     mlog("ref", p);
     
-	  pSerializer->add(p, "be");
     
     mlog1(component.pipes.size());
     
@@ -830,7 +824,6 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     TaylorModelVec composed = all.pipePairs[i]->composed(settings);
     //mlog("com", com);
 	  all.output.push_back(composed);
-	  pSerializer->add(composed, "composition");
   }
   cout << endl;
 }
@@ -846,8 +839,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   }
   
   vector<MyComponent *> comps = createComponents(components, hfOde);
-  
-  cout << LOGGING_STATUS << endl;
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
@@ -890,7 +881,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   settings->transformer->transform(all, comps, *settings);
   clock_t integrClock = clock();
   double t;
-  cout << "before" << endl;
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";
@@ -924,8 +914,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
     }
     //break; //only the first step, REMOVE!
   }
+  cerr << endl;
   
-  tprint("");
+  tprint("tr_part");
   
   settings->transformer->addInfo(writer.info);
   
@@ -934,6 +925,20 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
   cout << "computation time: " << integrTime << endl;
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
+  
+  
+  #ifdef no_output
+    cout << "not creating my output" << endl;
+  #else
+    cout << "creating my output" << endl;
+    createOutput(comps, all, settings->transformer, settings);
+    writer.addComponents(comps, domain, all, 
+        settings->transformer->isPreconditioned);
+    writer.writeCSV();
+    writer.writeInfo();
+    writer.finish();
+  #endif
+  
   
   /*
   if(settings->transformer->isWrapper) {
@@ -944,16 +949,12 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   */
   
   
-  createOutput(comps, all, settings->transformer, settings);
-  writer.addComponents(comps, domain, all, settings->transformer->isPreconditioned);
-  writer.writeCSV();
-  writer.writeInfo();
-  
-  writer.finish();
 
   mdec();
   mlog1("sc reach >");
-  pSerializer->serialize();
+  
+  if(pSerializer != NULL)
+    pSerializer->serialize();
   //comps[0]->serializeFlows();
   
   

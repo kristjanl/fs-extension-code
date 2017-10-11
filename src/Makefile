@@ -6,13 +6,14 @@ CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
 CFLAGS = -I . -I $(GMP_HOME) -g -O3
-#CFLAGS += -Denablelog
+CFLAGS += -Denablelog
 CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
 LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
 
-### rewriting since not using local GMP
+### overriding since not using local GMP
 CFLAGS = -I . -g -O3
 #CFLAGS += -Denablelog
+#CFLAGS += -Dno_output
 CXXFLAGS = -I . -g -O3
 LINK_FLAGS = -g
 

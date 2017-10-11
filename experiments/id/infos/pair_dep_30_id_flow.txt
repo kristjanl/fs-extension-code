@@ -1,0 +1,5 @@
+int progress: 1
+evaluate t: 0
+precond time: 1.25
+int time: 1.26
+computation time: 2.54

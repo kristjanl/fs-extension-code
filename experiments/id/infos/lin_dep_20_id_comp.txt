@@ -1,4 +1,7 @@
-integration time: 1.1
-computation time: 0.81
-shrink wraps: 0
-shrink wrapping time: 0
+remap 1: 0.02
+evaluate t: 0
+precond time: 0.1
+remap 2: 0
+int time: 0.25
+int progress: 1
+computation time: 0.36

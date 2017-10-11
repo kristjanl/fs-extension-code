@@ -1,5 +1,5 @@
 int progress: 100
-evaluate t: 0
-precond time: 0.07
-int time: 0.3
+evaluate t: 0.01
+precond time: 0.03
+int time: 0.33
 computation time: 0.37

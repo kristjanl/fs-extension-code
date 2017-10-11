@@ -680,15 +680,19 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   //linear TMV where TM[i] = 1*var_i
   TaylorModelVec unitTmv = getUnitTmv(varCount);
   
+  tstart(tr_part_range1);
 	previousRight.polyRange(previousRange, settings.domain);
+	tend(tr_part_range1);
   mlog("range", previousRange);
   
   mlog1(sbuilder() << "paramCount: " << paramCount);
   mlog1(sbuilder() << "varCount: " << varCount);
   Matrix A(varCount,varCount), invA(varCount, varCount);
   
+  tstart(tr_part_matrix);
   getA(A, badLeft, varCount);
   getAInv(invA, A);
+  tend(tr_part_matrix);
   
   mlog("A", A);
   mlog("A inv", invA);
@@ -697,15 +701,19 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   //center the remainder and push shift to constant part of the polynomial
   badLeft.centerRemainder();
   
+  tstart(tr_part_partitioning);
   //partition left model into parts: constant, linear, nonlinear and remainder
   TaylorModelVec c, lin, nl, rem;
   badLeft.getParts(c, lin, nl, rem);
+  tend(tr_part_partitioning);
   
   mlog("c", c);
   mlog("lin", lin);
   mlog("nl", nl);
   mlog("rem", rem);
   
+  
+  tstart(tr_part_part1);
   //InvA o non-constant-part of left model
   nl.linearTrans_assign(invA);
   rem.linearTrans_assign(invA);
@@ -722,6 +730,7 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   TaylorModelVec rightComp;
 	leftToRight.insert_ctrunc(rightComp, previousRight, previousRange, settings.domain, settings.order, 0);
   
+  tend(tr_part_part1);
 	
   //calculate the bounds for the new right model
   vector<Interval> rightBound;
@@ -731,6 +740,7 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
   
   //TODO shift this to be around 0?
   
+  tstart(tr_part_part2);
   //calculate scaling matrix S and it's inverse
   Matrix S(varCount, varCount);
 	Matrix invS(varCount, varCount);
@@ -763,14 +773,126 @@ void PreconditionedTransformer::precond2(TaylorModelVec & badLeft,
 	unitTmv.linearTrans(desiredLinearPart, A * S);
 	left.add_assign(desiredLinearPart);
 	
+	//pSerializer->add(left, "left_after_precond");
 	
 	all.unpairedRight = rightComp;
   all.initSet = left;
 	
+  tend(tr_part_part2);
   mdec();
   mlog1("precond >");
   mrestore(old);
 }
+
+
+void PreconditionedTransformer::precond3(TaylorModelVec & leftStar, 
+    MySettings & settings, MyComponent & all) {
+  mreset(old);
+  mdisable();
+  mlog1("precond3 <");
+  minc();
+  
+  int paramCount = leftStar.tms[0].getParamCount();
+  int varCount = leftStar.tms.size();
+  
+  int rangeDim = varCount;
+  	
+	//center remainder around zero and push the shift to constant
+	leftStar.centerRemainder();
+  
+  vector<Interval> constantVec;
+	leftStar.constant(constantVec);
+	TaylorModelVec c0(constantVec, paramCount);
+
+  //remove constant part from old part
+	leftStar.rmConstant();
+	
+	mlog("left", leftStar);
+	
+	
+	
+	Matrix A(varCount,varCount), invA(varCount, varCount);
+  
+  getA(A, leftStar, varCount);
+  getAInv(invA, A);
+  
+  
+  // if we want left model to be c0 + A id
+  // then we need to move A^-1 * <old left without constant part> to right model
+  TaylorModelVec leftToRight;
+  leftStar.linearTrans(leftToRight, invA);
+  
+  mlog("leftToRight", leftToRight); 
+    
+  TaylorModelVec & prevRight = all.unpairedRight;
+  
+	vector<Interval> prevRightPolyRange;
+	prevRight.polyRangeNormal(prevRightPolyRange,
+	    settings.step_end_exp_table);
+	mlog("range", prevRightPolyRange);
+	
+	
+	//current right is leftToRight o previousRight
+	TaylorModelVec currentRight;
+	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+	    prevRightPolyRange, settings.step_end_exp_table, paramCount, 
+	    settings.order, settings.cutoff);
+  mlog("currentRight", currentRight);
+  
+  vector<Interval> currentRightRange;
+  currentRight.intEvalNormal(currentRightRange, settings.step_end_exp_table);
+  mlog("currentRightRange", currentRightRange);
+  
+  //calculate scaling matrix from current right model
+  Matrix S(varCount, varCount);
+	Matrix invS(varCount, varCount);
+	for(int i=0; i<varCount; i++) {
+		Interval intSup;
+		currentRightRange[i].mag(intSup);
+		if(intSup.subseteq(ZERO_INTERVAL)) {
+			S.set(0,i,i);
+			invS.set(1,i,i);
+		} else {
+			double dSup = intSup.sup();
+			S.set(dSup, i, i);
+			invS.set(1/dSup, i, i);
+			//assuming that this is overriden to be domain
+			currentRightRange[i] = UNIT_INTERVAL;
+		}
+	}
+  
+  
+  //apply scaling
+  A = A * S;
+	invA = invS * invA; //not needed actually
+	
+
+  //apply scaling to right model
+	currentRight.linearTrans_assign(invS);
+	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	
+	
+
+  //construct left matrix using A coefficients and constant part
+	Matrix leftLinCoefs(rangeDim, rangeDim+1);
+	for(int i=0; i<rangeDim; ++i) {
+		for(int j=0; j<rangeDim; ++j) {
+			leftLinCoefs.set( A.get(i,j) , i, j+1);
+		}
+	}
+	TaylorModelVec newLeft(leftLinCoefs);
+  newLeft.add_assign(c0);
+  
+  
+	mlog("newLeft", newLeft);
+	mlog("right", currentRight);
+	
+	
+	all.unpairedRight = currentRight;
+  all.initSet = newLeft;
+  
+}
+
 
 void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   mreset(old);
@@ -870,41 +992,27 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   tend(tr_pipe);
   
-  /* Comment out! ///
-  PrecondModel *pre = new PrecondModel(TaylorModelVec(), rightComp);
-  TaylorModelVec back = pre->composed(&settings);
-  mlog("bac", back);
-	pSerializer->add(back, "composed");*/
-  
-  
-  pSerializer->add(tsp, "after_int");
   
   tstart(tr_eval);
   TaylorModelVec leftStar;
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
   tend(tr_eval);
-  pSerializer->add(leftStar, "ae");
+  //pSerializer->add(leftStar, "leftStar");
   
-  pSerializer->add(all.unpairedRight, "a_right");
   
   //pSerializer->serialize();
   
   mlog1(sbuilder() << "size: " << leftStar.tms.size());
   //mlog("leftStar", leftStar);
   
-  
-	pSerializer->add(leftStar, "leftStar");
-  
   tstart(tr_precond);
-  precond2(leftStar, settings, all);
+  tstart(tr_part_all);
+  precond3(leftStar, settings, all);
+  tend(tr_part_all);
   tend(tr_precond);
   //mlog("upright", all.unpairedRight);
   
   
-	pSerializer->add(all.initSet, "left");
-	pSerializer->add(all.initSet, "left2");
-	pSerializer->add(all.unpairedRight, "right");
-	pSerializer->add(all.unpairedRight, "right2");
 	//mlog("left", all.initSet);
   //mlog("right", all.unpairedRight);
   
@@ -927,8 +1035,10 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
 }
 
 void PreconditionedTransformer::addInfo(vector<string> & info) {
-  logger.log("adding");
-  logger.log(sbuilder() << timeLookup["tr_precond"]);
+  int old = logger.reset();
+  logger.disable();
+  mlog1("adding");
+  mlog1(sbuilder() << timeLookup["tr_precond"]);
   
   taddToInfo("remap 1", tr_remap1, info);
   taddToInfo("evaluate t", tr_eval, info);
@@ -936,9 +1046,7 @@ void PreconditionedTransformer::addInfo(vector<string> & info) {
   taddToInfo("remap 2", tr_remap2, info);
   taddToInfo("int time", sc_integrate, info);
   
-  
-  
-  logger.log(info[info.size() - 1]);
+  logger.restore(old);
 }
 
 void QRTransformer::addInfo(vector<string> & info) {
