@@ -127,6 +127,8 @@ public:
 	void printFull() const;
 	string toString() const;
 	string toString(int prec) const;
+	string getLower(int prec) const;
+	string getHigher(int prec) const;
 	string getLower() const;
 	string getHigher() const;
 	bool isClose(const Interval & I, double d) const;

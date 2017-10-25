@@ -58,18 +58,18 @@ def getVarRange2(modelFile, csvs):
         ranges[j][i] = "<b>%s</b>"%ranges[j][i]
   return ranges
 
+def getSkippingIndexes(dim):
+  #include first 3
+  indexes = [0, 1]
+  #remove if too big
+  indexes = filter(lambda x: x < dim, indexes)
+  
+  #0, 1, 2, 5, 10, 20, 40, 80 etc
+  powers = [5*2**i for i in range( int(math.ceil(math.log(dim /5.0, 2))) )]
+  return indexes + powers
 
 def filterVarRange(varRange):
-  #include first 3
-  indexes = [0, 1, 2]
-  indexes = filter(lambda x: x < len(varRange), indexes)
-  
-  #include 5, 10, 20, 40, 80 etc
-  for i in range(10):
-    indexValue = 5*2**i
-    if indexValue >= len(varRange):
-      break
-    indexes.append(indexValue)
+  indexes = getSkippingIndexes(len(varRange))
   
   #get rid of indexes too big
   varRange = [varRange[i] for i in indexes]
@@ -117,14 +117,18 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    <td>%s</td>\n"%filterVarRange(varRange))
   outFile.write("    <td align=\"left\">\n");
   outFile.write("    <table><tr>\n")
-  for i in range(1, dim+1):
+  
+  variables = map(lambda x: x + 1, getSkippingIndexes(dim))
+  for i in variables:
     imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, \
         commonTime)
     outFile.write("      <td>\n")
     if os.path.isfile(imageName):
       outFile.write("        <div>\n")
-      outFile.write("          <div align='center'>%s</div>\n"%varRange[i-1])
-      outFile.write("          <a href='%s'><img src='%s' style='width:200px;height:150px;'></a>\n" %(imageName,imageName))
+      outFile.write("          <div align='center'>x%s</div>\n"%i)
+      outFile.write("          " + 
+          "<a href='%s'><img src='%s' style='width:200px;height:150px;'></a>\n"\
+          %(imageName,imageName))
       outFile.write("        </div>\n")
     outFile.write("      </td>\n")
   outFile.write("    </tr></table>\n")
@@ -280,16 +284,16 @@ def plot_variable_old(scriptsDir, modelFiles, var1, var2, nameSuffix):
 
 def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
   for models in pairs:
+    print models
     modelFiles = map(lambda m: os.path.join(modelDir, m), models)
     
     #skip inflated model
     if len(modelFiles) == 3:
       modelFiles = modelFiles[:-1]
-    print modelFiles
     dim = getDimension(modelFiles[0])
-    for i in range(1, dim+1):
+    
+    for i in map(lambda x: x + 1, getSkippingIndexes(dim)):
       plot_variable(scriptsDir, modelFiles, i, 0, nameSuffix) #0 is the time
-
 
 def generateHtml(scriptsDir, modelDir, modelPairs, suffix):
   oldFields = [

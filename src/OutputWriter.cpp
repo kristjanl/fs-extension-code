@@ -101,8 +101,8 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
   //size - 1, since first one was added manually
   for(int i = 0; i < all.output.size() - 1; i++) {
     Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
-    data2.at(0).push_back(timeInt.getLower());
-    data2.at(1).push_back(timeInt.getHigher());
+    data2.at(0).push_back(timeInt.getLower(5));
+    data2.at(1).push_back(timeInt.getHigher(5));
   }
   
   
@@ -320,8 +320,8 @@ void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo,
     //mlog("d", *dIt);
     Interval time = (*dIt)[0];
     time += shift;
-    data2.at(0).push_back(time.getLower());
-    data2.at(1).push_back(time.getHigher());
+    data2.at(0).push_back(time.getLower(5));
+    data2.at(1).push_back(time.getHigher(5));
     
     shift += (*dIt)[0].sup();
     //mlog1(time.toString());

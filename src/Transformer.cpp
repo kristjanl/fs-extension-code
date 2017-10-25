@@ -792,6 +792,9 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
   mlog1("precond3 <");
   minc();
   
+  tstart(tr_part_all);
+  tstart(tr_part1);
+  
   int paramCount = leftStar.tms[0].getParamCount();
   int varCount = leftStar.tms.size();
   
@@ -812,7 +815,8 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
 	
 	
 	Matrix A(varCount,varCount), invA(varCount, varCount);
-  
+  tend(tr_part1);
+  tstart(tr_part_matrix);
   getA(A, leftStar, varCount);
   getAInv(invA, A);
   
@@ -820,7 +824,12 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
   // if we want left model to be c0 + A id
   // then we need to move A^-1 * <old left without constant part> to right model
   TaylorModelVec leftToRight;
-  leftStar.linearTrans(leftToRight, invA);
+  //leftStar.linearTrans(leftToRight, invA);
+  leftToRight = leftStar; //TODO remove this
+  
+  tend(tr_part_matrix);
+  
+  tstart(tr_part2);
   
   mlog("leftToRight", leftToRight); 
     
@@ -891,6 +900,8 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
 	all.unpairedRight = currentRight;
   all.initSet = newLeft;
   
+  tend(tr_part2);
+  tend(tr_part_all);
 }
 
 
@@ -997,6 +1008,7 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   TaylorModelVec leftStar;
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
   tend(tr_eval);
+  
   //pSerializer->add(leftStar, "leftStar");
   
   
@@ -1006,9 +1018,7 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   //mlog("leftStar", leftStar);
   
   tstart(tr_precond);
-  tstart(tr_part_all);
   precond3(leftStar, settings, all);
-  tend(tr_part_all);
   tend(tr_precond);
   //mlog("upright", all.unpairedRight);
   

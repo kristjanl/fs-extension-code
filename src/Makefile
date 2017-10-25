@@ -29,7 +29,9 @@ SRCS= $(OBJS:.o=.cpp)
 # All dependency files
 DFILES= $(SRCS:.cpp=.d)
 
-all: flowstar
+all: 
+	make outputToggle.txt
+	make flowstar
 
 .PHONY: test
 
@@ -39,6 +41,14 @@ test:
 
 testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o 
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	
+.PHONE: outputToggle
+
+# recompile only those .o files that are concerned with making output
+outputToggle.txt: outputToggle.txt
+	rm SmallComp.o
+	rm modelParser.tab.o
+	touch outputToggle.txt
 
 
 .PHONY: fast

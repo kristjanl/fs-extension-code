@@ -341,6 +341,10 @@ void printTMVFiles(string file1, string file2, string name,
   mlog1(v1.size());
   mlog1(v2.size());
   
+  if(index1 >= v1.size() && index2 >= v2.size()) {
+    throw std::invalid_argument(
+        sbuilder() << "index was bigger than tmvs count in both files");
+  }
   if(index1 >= v1.size()) {
     throw std::invalid_argument(
         sbuilder() << "index was bigger than tmvs count in " << file1);

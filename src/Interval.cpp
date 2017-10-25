@@ -2019,15 +2019,25 @@ void Interval::printFull() const {
   cout << endl;
 }
 
-string Interval::getLower() const {
+
+string Interval::getLower(int prec) const {
   //round to nearest
-  return toStringHelper(lo, 15, 'N');
+  return toStringHelper(lo, prec, 'N');
+}
+
+
+string Interval::getHigher(int prec) const {
+  //round to nearest
+  return toStringHelper(up, prec, 'N');
+}
+
+string Interval::getLower() const {
+  return getLower(15);
 }
 
 
 string Interval::getHigher() const {
-  //round to nearest
-  return toStringHelper(up, 15, 'N');
+  return getHigher(15);
 }
 
 

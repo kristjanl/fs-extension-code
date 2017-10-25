@@ -307,7 +307,7 @@ namespace smallComp {
 	  //initial guess for the remainder
 	  vector<Interval> guess;
 	  for(int i = 0; i < varCount; i++) {
-	    guess.push_back(settings.estimation[0]); //TODO maybe support each variable
+	    guess.push_back(settings.estimation[i]);
 	  }
 	  
 	  //set the remainder to be initial guess
@@ -316,7 +316,12 @@ namespace smallComp {
         continue;
 		  p.tms[i].remainder = guess[i];
 	  }
-	  //evaluate this one seperately to get the cutoff measures
+	  //evaluate this one seperately to get the cutoff measure
+	  //and higher order terms
+	  
+	  //TODO make this one compositional!!!
+	  
+    //tstart(sc_int_noncomp);
 	  TaylorModelVec compTemp;
     p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
       step_exp_table, paramCount, order, cutoff_threshold);
@@ -328,6 +333,9 @@ namespace smallComp {
 	  
 	  //should be because of the turncated parts and uncertainties (?)
 	  for(int i=0; i < varCount; i++) {
+  	  //TODO make this one compositional!!! (no need to find remainders for 
+  	  //solved variables
+	    //bound higher order terms
 		  Polynomial polyTemp;
 		  polyTemp = compTemp.tms[i].expansion - p.tms[i].expansion;
 
@@ -337,8 +345,9 @@ namespace smallComp {
 		  cutoffInt.push_back(intTemp);
 		  
       compTemp.tms[i].remainder += intTemp;
-      p.tms[i].remainder = compTemp.tms[i].remainder;
 	  }
+	  
+    //tend(sc_int_noncomp);
 	  
 	  bool notSubset = false;
 	  for(int i=0; i < varCount; i++) {
@@ -347,58 +356,59 @@ namespace smallComp {
 	    //mlog1(guess[i].toString());
 	    //mlog1(compTemp.tms[i].remainder.toString());
 		  if(compTemp.tms[i].remainder.subseteq(guess[i]) == false ) {
-		    mlog1("not subset");
 		    notSubset = true;
 		    guess[i] *= 2;
 		  }
 	  }
-	  mlog("guess", guess);
-	  mlog("compTemp", compTemp);
 	  
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
 		
-	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
-	    //mlog1(sbuilder() << "j: " << j);
+		int counter = 0;
+		//increase until you get subset remainders
+	  while( notSubset ) {
+	    //error when can't find decreasing
+      if(counter++ == MAX_REFINEMENT_STEPS) {
+        throw IntegrationException("max increase couldn't find a remainder");
+      }
 	    
+	    //set remainder to guess
 		  for(int i = 0; i < varCount; i++) {        
         if(comp.isSolveVar(i) == false)
           continue;
 		    p.tms[i].remainder = guess[i];
 		  }
-	    //mlog("pb", p);
+		  
+		  //compute new remainders
   		p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
-	    mlog("nrb", newRemainders);
-	    
-	    mlog("guess", guess);
-	    mlog("newre", newRemainders);
-	    
-	    
+  		
+  		//check whether any of the remainders were not subsets
 	    notSubset = false;
 		  for(int i = 0; i < varCount; i++) {
         if(comp.isSolveVar(i) == false)
           continue;
+          
 		    newRemainders[i] += cutoffInt[i];
 		    if(newRemainders[i].subseteq(guess[i]) == false ) {
-		      //mlog1("not subset");
 		      notSubset = true;
 		      guess[i] *= 2;
 		    }
 		  }
-		  if(notSubset == false)
-		    break;
 		}
-    if(notSubset) {
-      throw IntegrationException("max increase couldn't find a remainder");
-    }
 		
+		//set the remainders to such that they decrease
 	  for(int i = 0; i < varCount; i++) {
       if(comp.isSolveVar(i) == false)
         continue;
-	    p.tms[i].remainder = newRemainders[i];
+        
+      //didn't need to go into while loop (newRemainders are empty)
+      if(newRemainders.size() == 0) {
+        //use the remainders from before loop
+        p.tms[i].remainder = compTemp.tms[i].remainder;
+      } else {
+  	    p.tms[i].remainder = newRemainders[i];
+  	  }
 	  }
-	  mlog("last", p);
-	  
 	  mdec();
 	  mlog1("findDecreasingRemainderFlow >");
 	  mrestore(old);
@@ -426,33 +436,37 @@ namespace smallComp {
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
 		
-	  bool stop = true;
-	  for(int j = 0; j < MAX_REFINEMENT_STEPS; j++) {
+	  bool stop = false;
+	  int counter = 0;
+	  while( stop == false ) {
+  	  if(counter++ == MAX_REFINEMENT_STEPS - 1)
+	      throw IntegrationException(sbuilder() << "max refinement steps");
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       
-	    for(int i = 0; i < varCount; i++)
-	      newRemainders[i] += cutoffInt[i];
-	    
 	    stop = true;
+	    
 	    for(int i = 0; i < varCount; i++) {
-	      mlog1(sbuilder() << "ratio: " << p.tms[i].remainder.widthRatio(newRemainders[i]));
+        if(comp.isSolveVar(i) == false)
+          continue;
+	      newRemainders[i] += cutoffInt[i];
+	    }
+	    
+	    for(int i = 0; i < varCount; i++) {
+        if(comp.isSolveVar(i) == false)
+          continue;
 	      if(p.tms[i].remainder.widthRatio(newRemainders[i]) <= STOP_RATIO) {
           //mlog1("redoing");
           stop = false;
           break;
         }
 	    }
-	    //mlog("new", newRemainders);
-	    mlog1(newRemainders[0].toString());
 	    
 	    for(int i = 0; i < varCount; i++) {
+        if(comp.isSolveVar(i) == false)
+          continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
-	    if(stop)
-	      break;
 	  }
-	  if(stop == false)
-	    throw IntegrationException(sbuilder() << "max refinement steps");
 	  	  
 	  mdec();
 	  mlog1("refineRemainderFlow >");
@@ -460,9 +474,12 @@ namespace smallComp {
 	}
   
   void advanceFlow(MyComponent & component, MySettings & settings) {
+  
+    //tstart(sc_int_pre);
     mreset(old);
     mdisable();
     mlog("init", component.initSet);
+    //tstart(sc_int_all);
     
     //variable when picard approximation is stored
     TaylorModelVec & p = component.timeStepPipe;
@@ -479,30 +496,41 @@ namespace smallComp {
     int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
+    //tend(sc_int_pre);
     
+    
+    //tstart(sc_int_norem);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
-      //p.Picard_no_remainder_assign(component.initSet, component.odes, paramCount, i, settings.cutoff);
       p.Picard_no_remainder_assign(&component, paramCount, i, settings.cutoff);
     }
     
     mlog("after", p);
     
-    
     p.cutoff(settings.cutoff);
+    
+    //tend(sc_int_norem);
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
 	  vector<Interval> cutoffInt;
     
     mlog("before decr", p);
-	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
     
-
+    pSerializer->add(p, "no_rem");
+    
+    
+    tstart(sc_int_rest);
+    //tstart(sc_int_find_dec);
+	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings,
+	      cutoffInt);
+    //tend(sc_int_find_dec);
+	  
     mlog("dec", p);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
 	  
     mlog("ref", p);
+    //tend(sc_int_all);
     
     
     mlog1(component.pipes.size());
@@ -511,6 +539,7 @@ namespace smallComp {
     mlog("tsp", p);
         
     mrestore(old);
+    tend(sc_int_rest);
     
   }
   
@@ -798,6 +827,7 @@ void SmallCompReachability::myRun() {
   OutputWriter writer = OutputWriter(sbuilder() << outputFileName, -1, 0);
   writer.init();
   
+  
   //analog of flowstar function
   pSystem->my_reach_picard(flowpipes, step, time, orders[0], precondition, estimation, bPrint, stateVarNames, cutoff_threshold, writer);
   
@@ -814,10 +844,14 @@ void SmallCompReachability::myRun() {
 //TODO move to OutputWriter
 void createOutput(vector<MyComponent *> comps, MyComponent & all, 
       Transformer *transformer, MySettings *settings) {
-      
+  tstart(sc_post_composing);
   mlog1("here");
   if(transformer->isPreconditioned == false)
     return;
+  
+  //add the last pipe
+  all.remapLastFlowpipe();
+  all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
   
   for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
@@ -826,9 +860,14 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
 	  all.output.push_back(composed);
   }
   cout << endl;
+  tend(sc_post_composing);
 }
 
-void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const {
+void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, 
+    const double step, const double time, const int order, 
+    const int precondition, const vector<Interval> & estimation, 
+    const bool bPrint, const vector<string> & stateVarNames, 
+    const Interval & cutoff_threshold, OutputWriter & writer) const {
   mlog1("sc reach <");
   minc();
   mlog1(sbuilder() << "# of components: " <<components.size());
@@ -878,7 +917,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   }
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
   
-  settings->transformer->transform(all, comps, *settings);
   clock_t integrClock = clock();
   double t;
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
@@ -886,6 +924,10 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
     cerr << ".";
     
     try{
+      tstart(sc_transfrom);
+      settings->transformer->transform(all, comps, *settings);
+      tend(sc_transfrom);
+      
       tstart(sc_integrate);
       //solve components
       for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -900,15 +942,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
         comps[i]->isSolved = false;
       }
       //make apppropriate next initial set
-      tstart(sc_transfrom);
-      settings->transformer->transform(all, comps, *settings);
-      tend(sc_transfrom);
       //cout << "integrate: " << timeLookup["sc_integrate"] << endl;
       //cout << "transform: " << timeLookup["sc_transfrom"] << endl;
     }catch(IntegrationException& e) {
-      mreset(old);
-      mlog1("IntegrationException caught");
-      mlog1(e.what());
+      logger.force("IntegrationException caught");
+      logger.force(e.what());
       writer.info.push_back(sbuilder() << "reason: " << e.what());
       break;
     }
@@ -916,7 +954,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   }
   cerr << endl;
   
-  tprint("tr_part");
+  //tprint("tr_part");
+  tprint("sc_int");
   
   settings->transformer->addInfo(writer.info);
   
@@ -932,13 +971,18 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results, const double ste
   #else
     cout << "creating my output" << endl;
     createOutput(comps, all, settings->transformer, settings);
+    tstart(sc_post_add);
     writer.addComponents(comps, domain, all, 
         settings->transformer->isPreconditioned);
+    tend(sc_post_add);
+    tstart(sc_post_write);
     writer.writeCSV();
     writer.writeInfo();
     writer.finish();
+    tend(sc_post_write);
   #endif
   
+  tprint("sc_post");
   
   /*
   if(settings->transformer->isWrapper) {

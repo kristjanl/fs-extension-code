@@ -39,6 +39,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	
   tstart(fl_precond);
   tstart(fl_part_all);
+  
+  tstart(fl_part1);
 	//pSerializer->add(range_of_x0, "leftStar"); //0, 4
   // the center point of x0's polynomial part
 	vector<Interval> intVecCenter;
@@ -63,6 +65,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	Matrix A(rangeDim,rangeDim), invA(rangeDim,rangeDim);
 	TaylorModelVec range_of_r0;
 
+  tend(fl_part1);
   tstart(fl_part_matrix);
   //serializeTMV(range_of_x0, "flow.txt");
 	switch(precondition)
@@ -84,6 +87,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	}
 	}
   tend(fl_part_matrix);
+  
+  tstart(fl_part2);
 
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_end_exp_table);
@@ -164,19 +169,29 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	x0 = c0_plus_Ar0;
 	x = x0;
+	
+  tend(fl_part2);
   tend(fl_part_all);
   tend(fl_precond);
   
+  tstart(fl_int_all);
   //pSerializer->add(x, "left_after_precond");
 	
   tstart(fl_integrate);
+  
+  
+  
+  
+  tstart(fl_int_norem);
 	for(int i=1; i<=order; ++i)
 	{
 		x.Picard_no_remainder_assign(x0, ode_centered, rangeDim+1, i, cutoff_threshold);
-	}
-	
-	
+	}	
 	x.cutoff(cutoff_threshold);
+  tend(fl_int_norem);
+  
+  tstart(fl_int_rest);
+  pSerializer->add(x, "no_rem");
 	
 
 	bool bfound = true;
@@ -270,6 +285,11 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
+	
+  tend(fl_int_rest);
+	
+  tend(fl_int_all);
+	
 	mdec();
 	mlog1("Picard1 >");
 	mrestore(old);

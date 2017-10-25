@@ -21,8 +21,11 @@ modelDir = os.path.join("..", "..", "models", "compositional", "id")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
 modelTypes = ["lin", "lin_dep", "pair_dep", "sq_deg", "sq_deg_long"]
+modelTypes = ["pair_dep"]
 dims = [2] + range(10, 51, 10)
+dims = [2]
 algos = ["flow", "comp", "nocomp"]
+algos = ["flow", "comp"]
 
 infoFields = [
     ("int progress", "Int Progress"), 
@@ -33,8 +36,6 @@ infoFields = [
     ("precond time", "Precondition time"), 
     ("remap 2", "Remap 2"),
 ]
-
-
 
 models = ["%s_%s_id_%s.model"%(modelType, dim, algo) \
     for modelType in modelTypes \

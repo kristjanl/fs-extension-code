@@ -1,0 +1,7 @@
+remap 1: 0.09
+evaluate t: 0.06
+precond time: 9.54
+remap 2: 0.02
+int time: 4.25
+int progress: 60
+computation time: 14.02

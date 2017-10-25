@@ -1,14 +1,14 @@
 set term png
-set output './images/lin_50_id_flow_flow_nocomp_50_t_0.9.png
+set output './images/lin_50_id_flow_flow_nocomp_41_t_0.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
 set xtic auto
 set ytic auto
 set xlabel "t"
-set ylabel "x50"
-set xrange [0.0:1.1]
-set yrange [0.442608908848:1.00860688147]
+set ylabel "x41"
+set xrange [0.0:0.99]
+set yrange [0.447559710691:1.00768836536]
 plot '-' notitle with lines ls 1
 0 0.5
 0 1

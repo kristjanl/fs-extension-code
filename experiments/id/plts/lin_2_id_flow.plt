@@ -1,5 +1,5 @@
 set term png
-set output './images/lin_2_id_flow_flow_nocomp_2_t_0.9.png
+set output './images/lin_2_id_flow_flow_comp_2_t_0.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -82,8 +82,8 @@ plot '-' notitle with lines ls 1
 
 0.9 0.447826280771352
 0.9 0.913931185282801
-1.000000000000001 0.913931185282801
-1.000000000000001 0.447826280771352
+1 0.913931185282801
+1 0.447826280771352
 0.9 0.447826280771352
 
 

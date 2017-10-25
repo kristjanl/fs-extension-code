@@ -192,7 +192,8 @@ model: CONTINUOUS '{' continuous '}'
 	*/
   logger.reset();
   
-  tprint("fl_part");
+  //tprint("fl_part");
+  tprint("fl_int");
   
   double integrTime = double(end - begin) / CLOCKS_PER_SEC;
   mlog1(sbuilder() << "computation time: " << integrTime);
@@ -1289,12 +1290,6 @@ linear_constraints linear_polynomial BELONGSTO '[' IDENT ',' IDENT ']'
 
 continuous: stateVarDecls SETTING '{' settings print '}' POLYODE1 '{' ode '}' INIT '{' init '}'
 {
-	mlog1("CONT1");
-	mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
-	//mlog1(sbuilder() << *$9); // const TaylorModelVec’
-	//mlog1(sbuilder() << *$13); // const Flowpipe
-	mlog1(sbuilder() << "ONLY_PICARD: " << ONLY_PICARD);
-	
 	ContinuousSystem system(*$9, *$13);
 	continuousProblem.system = system;
 	continuousProblem.integrationScheme = ONLY_PICARD;
@@ -3029,9 +3024,7 @@ init: tmVarDecls taylor_model taylor_model_domain
 |
 intervals
 {
-  mlog1("INIT2");
 	Interval intZero;
-	mlog1("INIT2e");
 	$$ = new Flowpipe(*$1, intZero);
 
 	delete $1;
@@ -3211,9 +3204,7 @@ IDENT BELONGSTO '[' NUM ',' NUM ']'
 
 intervals: intervals IDENT BELONGSTO '[' NUM ',' NUM ']'
 {
-	mlog1("intervals1");
 	int id = continuousProblem.getIDForStateVar(*$2);
-	mlog1(*$2);
 	
 	if(id < 0)
 	{
