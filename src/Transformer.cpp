@@ -3,8 +3,10 @@
 void Transformer::evaluateStepEnd(vector<MyComponent *> & comps, 
       MySettings & settings, bool fail) {
   mreset(old);
-  if(true || fail)
-    throw invalid_argument("evaluate called with fail"); //signaling need to refactor
+  if(true || fail) {
+    //signaling need to refactor
+    throw invalid_argument("evaluate called with fail"); 
+  }
   for(int i = 0; i < comps.size(); i++) {
     mlog1(comps.size());
     mlog1("here");
@@ -902,6 +904,11 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
   
   tend(tr_part2);
   tend(tr_part_all);
+  
+  
+  mdec();
+  mlog1("precond3 >");
+  mrestore(old);
 }
 
 
@@ -981,10 +988,10 @@ void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps
   //mlog1("null transforming");
   evaluateStepEnd(comps, settings, true);
 }
-void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
-      MySettings & settings) {
+void IdentityTransformer::transformFullSystem(MyComponent & all, 
+      vector<MyComponent *> & comps, MySettings & settings) {
   mreset(old);
-  mdisable();
+  //mdisable();
   mlog1("id transforming <");
   minc();
   //evaluateStepEnd(comps, settings, false);
@@ -999,6 +1006,8 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   TaylorModelVec tsp = all.timeStepPipe;
   //mlog("tsp", tsp);
   //mlog("upright", all.unpairedRight); 
+  
+  mlog("unpairedRight", all.unpairedRight);
   
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   tend(tr_pipe);
@@ -1041,6 +1050,63 @@ void IdentityTransformer::transform(MyComponent & all, vector<MyComponent *> & c
   mdec();
   mlog1("id transforming >");
   mrestore(old);
+  exit(0);
+  //evaluateStepEnd(comps, settings);
+}
+
+void IdentityTransformer::preconditionSingleComponent(MyComponent *comp,
+      MySettings & settings) {
+  if(comp->isPreconditioned)
+    return;
+  
+  for(int i = 0; i < comp->dependencies.size(); i++) {
+    MyComponent *pComp = comp->dependencies[i]->pComp;
+    preconditionSingleComponent(pComp, settings);
+  }
+  mlog1("single");
+  
+  for(int i = 0; i < comp->compVars.size(); i++) {
+    int var = comp->compVars[i];
+    mlog1(sbuilder() << "var: " << var
+        << ", isSolve: " << comp->isSolveVar(var));
+    mlist("sol", comp->solveIndexes);
+    mlist("cva", comp->compVars);
+    if(comp->isSolveVar(i)) {
+      //log("unmod", comp->unpairedRight.tms[
+    } else {
+       
+	  }
+  }
+  
+  
+  comp->isPreconditioned = true; //TODO make sure to reset it
+}
+
+void IdentityTransformer::transform(MyComponent & all, 
+      vector<MyComponent *> & comps, MySettings & settings) {
+  mreset(old);
+  //mdisable();
+  mlog1("id transforming by component <");
+  minc();
+  
+  for(int i = 0; i < comps.size(); i++) {
+    MyComponent c1 = *comps[i];
+    preconditionSingleComponent(comps[i], settings);
+    mlog("unpaired", c1.unpairedRight);
+  }
+  //evaluate all components at t=t_end (left*)
+  
+  //make new flowpipe in pipe pairs from unpaired right
+  
+  //precondition all the components
+  
+  //set the initial sets for new component
+  
+  
+  mdec();
+  mlog1("id transforming by component>");
+  mrestore(old);
+  exit(0);
   //evaluateStepEnd(comps, settings);
 }
 

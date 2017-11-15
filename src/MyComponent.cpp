@@ -3,15 +3,39 @@
 using namespace std;
 
 
+//TODO remove! (duplicate of Transformer function
+namespace MyComponentRemove{
+  TaylorModelVec getUnitTmv(int varCount) {
+    vector<TaylorModel> tms;
+    for(int i = 0; i < varCount; i++) {
+      vector<Interval> temp;
+      temp.push_back(Interval(0));
+      for(int j = 0; j < varCount; j++) {
+        if(i == j) {
+          temp.push_back(Interval(1));
+          continue;
+        }
+        temp.push_back(Interval(0));
+      }
+	    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
+    }
+    TaylorModelVec ret(tms);
+    
+	  //mlog("ret", ret);
+    return ret;
+  }
+}
 
 MyComponent::MyComponent(vector<int> vs, vector<int> tps):varIndexes(vs),tpIndexes(tps) {
   isSolved = false;
   isPrepared = false;
+  isPreconditioned = false;
   retainEmptyParams = false;
 }
 MyComponent::MyComponent() {
   isSolved = false;
   isPrepared = false;
+  isPreconditioned = false;
   retainEmptyParams = false;
 }
 
@@ -339,6 +363,7 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   if(isPrepared) {
     return;
   }
+  mlog1("preparing");
   mreset(old);
   mdisable();
   mlog1("preparing component <");
@@ -358,6 +383,9 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   prepareMappers();
   remapIVP(init, ode, domain);
   timeStepPipe = TaylorModelVec(this->initSet);
+  
+  //only create a part of right taylor model 
+  unpairedRight = MyComponentRemove::getUnitTmv(allTMParams.size());
   
   isPrepared = true;
   
@@ -613,7 +641,10 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
   mdisable();
   mlog1("creating <");
   minc();
+  
+  //number of variable is equal to number of ODEs
   int varSize = ode.size();
+  
   vector<MyComponent *> components;
   MyComponent *lookup[varSize];
   
@@ -671,28 +702,6 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
   return components;
 }
 
-//TODO remove! (duplicate of Transformer function
-namespace MyComponentRemove{
-  TaylorModelVec getUnitTmv(int varCount) {
-    vector<TaylorModel> tms;
-    for(int i = 0; i < varCount; i++) {
-      vector<Interval> temp;
-      temp.push_back(Interval(0));
-      for(int j = 0; j < varCount; j++) {
-        if(i == j) {
-          temp.push_back(Interval(1));
-          continue;
-        }
-        temp.push_back(Interval(0));
-      }
-	    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
-    }
-    TaylorModelVec ret(tms);
-    
-	  //mlog("ret", ret);
-    return ret;
-  }
-}
 
 
 MyComponent getSystemComponent(vector<MyComponent *> comps,
@@ -749,6 +758,11 @@ TaylorModelVec MyComponent::lastPipe() {
 bool MyComponent::isSolveVar(int var) {
   vector<int>::iterator it = find(solveIndexes.begin(), solveIndexes.end(), var);
   return it != solveIndexes.end();
+}
+
+bool MyComponent::belongsToComp(int param) {
+  vector<int>::iterator it = find(tpIndexes.begin(), tpIndexes.end(), param);
+  return it != tpIndexes.end();
 }
 
 void MyComponent::serializeFlows() {

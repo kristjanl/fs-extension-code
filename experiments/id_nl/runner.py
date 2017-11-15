@@ -23,17 +23,18 @@ flowstar = os.path.join("..", "..", "src", "flowstar")
 modelTypes = ["lin", "lin_dep", "pair_dep", "sq_deg", "sq_deg_long"]
 modelTypes = ["lin", "pair_dep"]
 dims = [2] + range(10, 51, 10)
+dims = [2]
 algos = ["flow", "comp", "nocomp"]
 algos = ["flow", "comp"]
 
 infoFields = [
     ("int progress", "Int Progress"), 
-    ("computation time", "Computation time"), 
-    ("int time", "Integration time"), 
-    ("remap 1", "Remap 1"), 
-    ("evaluate t", "Evaluate at t"),
-    ("precond time", "Precondition time"), 
-    ("remap 2", "Remap 2"),
+    ("computation time", "Comp t"), 
+    ("int time", "Int t"), 
+    ("remap 1", "Remap1"), 
+    ("evaluate t", "Eval@t"),
+    ("precond time", "Precond t"), 
+    ("remap 2", "Remap2"),
 ]
 
 models = ["%s_%s_id_%s.model"%(modelType, dim, algo) \

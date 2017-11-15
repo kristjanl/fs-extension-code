@@ -27,6 +27,7 @@ class MyComponent {
     vector<int> solveIndexes;
     bool isSolved;
     bool isPrepared;
+    bool isPreconditioned;
     static int nextFreeParam;
     
     //retains Taylor Model parameters that don't have initial conditions
@@ -35,7 +36,7 @@ class MyComponent {
     vector<int> varsToBeIntroduced;
     
     //parameters that are introduced in this component
-    vector<int> tpIndexes;
+    vector<int> tpIndexes; //TODO rename
     //parameters that are used in flowpipes (component's own + dependencies)
     //ordered by parameter order in the whole system
     vector<int> allTMParams;
@@ -48,6 +49,8 @@ class MyComponent {
     TaylorModelVec timeStepPipe;
     TaylorModelVec initSet;
     TaylorModelVec swInput;
+    
+    //the part of right taylor model that corresponds to this components params
     TaylorModelVec unpairedRight;
     
     
@@ -76,6 +79,7 @@ class MyComponent {
     void remapLastFlowpipe();
     
     bool isSolveVar(int var);
+    bool belongsToComp(int param);
     
     PrecondModel *lastPre();
     

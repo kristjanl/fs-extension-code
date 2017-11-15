@@ -64,10 +64,14 @@ class IdentityTransformer: public PreconditionedTransformer {
     IdentityTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void transformFullSystem(MyComponent & all, vector<MyComponent *> & comps, 
+        MySettings & settings);
     
     void getA(Matrix & result, const TaylorModelVec & x0, 
         const int dim);
     void getAInv(Matrix & result, const Matrix & A);
+    
+    void preconditionSingleComponent(MyComponent *comp, MySettings & settings);
 };
 
 class NullTransformer: public Transformer {

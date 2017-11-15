@@ -99,22 +99,23 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
     reason = intTime = compTime = swTime = swCount = '-'
   
   outFile.write("  <tr align=\"center\">\n")
-  outFile.write("    <td><a href='%s'>%s</a></td>\n"%(modelFile,modelName))
-  outFile.write("    <td>%s</td> \n"%dim)
-  outFile.write("    <td>%s</td>\n"%order)
-  outFile.write("    <td>%s</td>\n"%step)
-  outFile.write("    <td>%s</td>\n"%time)
+  outFile.write("    <td class='modelCell'><a href='%s'>%s</a></td>\n"
+      %(modelFile,modelName))
+  outFile.write("    <td class='dataCell'>%s</td> \n"%dim)
+  outFile.write("    <td class='dataCell'>%s</td>\n"%order)
+  outFile.write("    <td class='dataCell'>%s</td>\n"%step)
+  outFile.write("    <td class='dataCell'>%s</td>\n"%time)
   
   for (a,_) in infoFields:
     if os.path.isfile(infoFile):
       value = fs.getParam(infoFile, "%s:"%a)
       if value == None:
         value = '-'
-      outFile.write("    <td>%s</td>\n"%value)
+      outFile.write("    <td class='dataCell'>%s</td>\n"%value)
     else:
       outFile.write("    <td>--</td>\n")
     
-  outFile.write("    <td>%s</td>\n"%filterVarRange(varRange))
+  outFile.write("    <td class='dataCell'>%s</td>\n"%filterVarRange(varRange))
   outFile.write("    <td align=\"left\">\n");
   outFile.write("    <table><tr>\n")
   
@@ -168,22 +169,27 @@ def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
 
 def write_table_start(outFile, infoFields):
   outFile.write("<html>\n")
+  outFile.write("<head>\n")
+  outFile.write("  <link rel='stylesheet' type='text/css' href='../scripts/table.css'>")
+  outFile.write("</head>\n")
   outFile.write("<body>\n")
 
-  outFile.write("<table>\n")
+  outFile.write("<table class='headerTable'>\n")
   outFile.write("  <tr>\n")
-  outFile.write("    <th>Model</th>\n")
-  outFile.write("    <th>Dim</th> \n")
-  outFile.write("    <th>Order</th>\n")
-  outFile.write("    <th>step</th>\n")
-  outFile.write("    <th>Time (goal)</th>\n")
+  outFile.write("    <th class='modelCell'>Model</th>\n")
+  outFile.write("    <th class='dataCell'>Dim</th> \n")
+  outFile.write("    <th class='dataCell'>Order</th>\n")
+  outFile.write("    <th class='dataCell'>step</th>\n")
+  outFile.write("    <th class='dataCell'>Time (goal)</th>\n")
   
   for (_,b) in infoFields:
-    outFile.write("    <th>%s</th>\n" %b)
+    outFile.write("    <th class='dataCell'>%s</th>\n" %b)
   
-  outFile.write("    <th>Size of the variables range</th>\n")
-  outFile.write("    <th>Plots</th>\n")
+  outFile.write("    <th class='dataCell'>W(var range)</th>\n")
   outFile.write("  </tr>\n")
+  outFile.write("</table>\n")
+  
+  outFile.write("<table class='dataTable'>\n")
 
 
 def write_table_end(outFile):
@@ -298,9 +304,9 @@ def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
 def generateHtml(scriptsDir, modelDir, modelPairs, suffix):
   oldFields = [
       ("integration time", "Time (actual)"), 
-      ("computation time", "Computation time"), 
-      ("shrink wrapping time", "Shrink wrapping time"), 
-      ("shrink wraps", "Shrink wrapping count"),
+      ("computation time", "Comp time"), 
+      ("shrink wrapping time", "SW time"), 
+      ("shrink wraps", "SW count"),
       ("reason", "Stop reason"), 
   ]
   generateHtml(scriptsDir, modelDir, modelPairs, suffix, oldFields)

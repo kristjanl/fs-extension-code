@@ -915,6 +915,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, hfOde, domain);
   }
+  
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
   
   clock_t integrClock = clock();
@@ -922,7 +923,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";
-    
     try{
       tstart(sc_transfrom);
       settings->transformer->transform(all, comps, *settings);
@@ -953,6 +953,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     //break; //only the first step, REMOVE!
   }
   cerr << endl;
+  mlog1("here");
   
   //tprint("tr_part");
   tprint("sc_int");

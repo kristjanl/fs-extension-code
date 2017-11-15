@@ -12,7 +12,7 @@ LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME)
 
 ### overriding since not using local GMP
 CFLAGS = -I . -g -O3
-#CFLAGS += -Denablelog
+CFLAGS += -Denablelog
 #CFLAGS += -Dno_output
 CXXFLAGS = -I . -g -O3
 LINK_FLAGS = -g

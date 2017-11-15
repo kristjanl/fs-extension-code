@@ -1,6 +1,6 @@
 continuous reachability
 {
-  state var x1,x2
+  state var x1,x2,x3
 
   setting
   {
@@ -14,7 +14,7 @@ continuous reachability
     precision 53
     output test
     alg_small_comp flow impl
-    decomposition [[x1],[x2]]
+    decomposition [[x1],[x2],[x3]]
     print on
   }
 
@@ -22,11 +22,13 @@ continuous reachability
   {
     x1' = -x1
     x2' = -0.1*x1*x2
+    x3' = -x3
   }
 
   init
   {
     x1 in [-1,1]
     x2 in [-1,1]
+    x3 in [-1,1]
   }
 }
