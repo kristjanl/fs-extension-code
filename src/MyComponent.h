@@ -88,6 +88,11 @@ class MyComponent {
     void serializeFlows();
     void deserializeFlows();
     
+    TaylorModel remapSingleInitTM(int variable);
+    TaylorModel remapSingleRightTM(int variable);
+    void computeMappingPositions(int variable, int *depPos, int *dLinkPos, 
+        int *linkPos);
+    
   private:
     void remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
         vector<Interval> domain);

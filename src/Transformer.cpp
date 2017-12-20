@@ -499,6 +499,8 @@ void IdentityTransformer::getA(Matrix & result, const TaylorModelVec & x0,
   for(int i=0; i<dim; ++i) {
     result.set(1, i, i);
 	}
+	//if(dim == 2)
+  //	result.set(2, 0, 1);
 }
 void IdentityTransformer::getAInv(Matrix & result, const Matrix & A) {
   mlog1("getting A inverse");
@@ -886,8 +888,8 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
 
   //construct left matrix using A coefficients and constant part
 	Matrix leftLinCoefs(rangeDim, rangeDim+1);
-	for(int i=0; i<rangeDim; ++i) {
-		for(int j=0; j<rangeDim; ++j) {
+	for(int i=0; i<rangeDim; i++) {
+		for(int j=0; j<rangeDim; j++) {
 			leftLinCoefs.set( A.get(i,j) , i, j+1);
 		}
 	}
@@ -1058,28 +1060,123 @@ void IdentityTransformer::preconditionSingleComponent(MyComponent *comp,
       MySettings & settings) {
   if(comp->isPreconditioned)
     return;
-  
+  mlog1("single <");
+  minc();
   for(int i = 0; i < comp->dependencies.size(); i++) {
     MyComponent *pComp = comp->dependencies[i]->pComp;
     preconditionSingleComponent(pComp, settings);
   }
-  mlog1("single");
+  
+  
+  int varCount = comp->compVars.size();
+  int paramCount = comp->allTMParams.size() + 1; //+1 for time
+  
+  
+  mlist("varIndexes", comp->varIndexes);
+  mlist("linkVars", comp->linkVars);
+  mlist("compVars", comp->compVars);
+  mlist("solveIndexes", comp->solveIndexes);
+  mlist("allParams", comp->allTMParams);
+  
+  mlog1(varCount);
+  
+  TaylorModelVec leftStar;
+  TaylorModelVec right;
   
   for(int i = 0; i < comp->compVars.size(); i++) {
-    int var = comp->compVars[i];
-    mlog1(sbuilder() << "var: " << var
-        << ", isSolve: " << comp->isSolveVar(var));
-    mlist("sol", comp->solveIndexes);
-    mlist("cva", comp->compVars);
-    if(comp->isSolveVar(i)) {
-      //log("unmod", comp->unpairedRight.tms[
+    int variable = comp->compVars[i];
+    bool isSolve = find(comp->solveIndexes.begin(), comp->solveIndexes.end(),
+        i) != comp->solveIndexes.end();
+    mlog1(sbuilder() << "var: " << variable << ", solve: " << isSolve);
+    if(isSolve) {
+      leftStar.tms.push_back(comp->initSet.tms[i]);
+      right.tms.push_back(comp->unpairedRight.tms[i]);
     } else {
-       
+      mlog1("need to transform");
+      
+      leftStar.tms.push_back(comp->remapSingleInitTM(variable));
+      right.tms.push_back(comp->remapSingleRightTM(variable));
+    }
+  }
+  mlog("left*", leftStar);
+  mlog("right", right);
+  
+  
+  //might make sense to cut this out from big A
+  Matrix A(varCount, varCount), invA(varCount, varCount);
+  
+  
+  //center remainder around zero and push the shift to constant
+	leftStar.centerRemainder();
+  
+  vector<Interval> constantVec;
+	leftStar.constant(constantVec);
+	TaylorModelVec c0(constantVec, paramCount);
+
+  //remove constant part from old part
+	leftStar.rmConstant();
+	
+  mlog("l*", leftStar);
+  
+  //TODO previous variables are unnecessary
+  getA(A, leftStar, varCount);
+  getAInv(invA, A);
+  
+  mlog("A", A);
+  
+  TaylorModelVec leftToRight;
+  //leftStar.linearTrans(leftToRight2, invA);
+  leftToRight = leftStar; //TODO remove this (when not using id preconditioning)
+  
+  mlog("ltr", leftToRight);
+  
+  TaylorModelVec & prevRight = right;
+  mlog("prevRight", prevRight);
+  
+	vector<Interval> prevRightPolyRange;
+	prevRight.polyRangeNormal(prevRightPolyRange,
+	    settings.step_end_exp_table);
+	mlog("range", prevRightPolyRange);
+	
+	//current right is leftToRight o previousRight
+	TaylorModelVec currentRight;
+
+	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+	    prevRightPolyRange, settings.step_end_exp_table, paramCount, 
+	    settings.order, settings.cutoff);
+  mlog("currentRight", currentRight);
+  mlog1(paramCount);
+  
+  vector<Interval> currentRightRange;
+  currentRight.intEvalNormal(currentRightRange, settings.step_end_exp_table);
+  mlog("currentRightRange", currentRightRange);
+  
+  for(int i = 0; i < comp->solveIndexes.size(); i++) {
+    int varInComp = comp->solveIndexes[i];
+    int actualVar = comp->varIndexes[varInComp];
+    
+    //pick the ith row from A and make Taylor Model
+    RowVector rowVec(varCount + 1);
+    Matrix rowMatrix(1, varCount);
+	  for(int j=0; j < varCount; j++) {
+      rowVec.set(A.get(varInComp, j), j + 1);
+      rowMatrix.set(A.get(varInComp, j), 0, j);
 	  }
+	  mlog("rowVec", rowVec);
+	  mlog("rowMatrix", rowMatrix);
+	  TaylorModel newLeftRow(rowVec);
+	  logger.log("newLeftRow", newLeftRow);
+    
+    mlog1(sbuilder() << "varInComp: " << varInComp
+        << ", actualVar: " << actualVar);
   }
   
+  if(comp->compVars.size() > 1)
+    exit(0);
   
   comp->isPreconditioned = true; //TODO make sure to reset it
+  mdec();
+  mlog1("single >");
 }
 
 void IdentityTransformer::transform(MyComponent & all, 
@@ -1092,7 +1189,10 @@ void IdentityTransformer::transform(MyComponent & all,
   for(int i = 0; i < comps.size(); i++) {
     MyComponent c1 = *comps[i];
     preconditionSingleComponent(comps[i], settings);
-    mlog("unpaired", c1.unpairedRight);
+    mlog("unpaired r", c1.unpairedRight);
+      
+    if(c1.linkVars.size() > 10)
+      exit(0);
   }
   //evaluate all components at t=t_end (left*)
   

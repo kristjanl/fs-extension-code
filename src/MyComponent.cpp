@@ -24,6 +24,29 @@ namespace MyComponentRemove{
 	  //mlog("ret", ret);
     return ret;
   }
+  
+  //TODO make this smarter (to support any given initial TM)
+  TaylorModelVec getNVarMParam(int varCount, int paramCount) {
+    if(varCount == 0)
+      return TaylorModelVec();
+    int shift = paramCount - varCount;
+    vector<TaylorModel> tms;
+    Matrix coefs(varCount, paramCount + 1);
+    for(int i = 0; i < varCount; i++) {
+      for(int j = 0; j < paramCount; j++) {
+        if(i == j) {
+          coefs.set(1, i, j + 1 + shift);
+        }
+      }
+    }
+    TaylorModelVec ret(coefs);
+    return ret;
+  }
+  
+  //move this to Utils
+  int findPos(int value, vector<int> *v) {
+    return find(v->begin(), v->end(), value) - v->begin();
+  }
 }
 
 MyComponent::MyComponent(vector<int> vs, vector<int> tps):varIndexes(vs),tpIndexes(tps) {
@@ -92,7 +115,6 @@ void MyComponent::prepareMappers() {
   mdisable();
   mlog1("preparing mappers <");
   minc();
-
   vector< vector<int> > mappers;
 
   for(int i = 0; i < dependencies.size(); i++) {
@@ -138,7 +160,6 @@ void MyComponent::prepareMappers() {
 
 vector< vector<int> > MyComponent::previousMappers2() {
   vector<int> allParams;
-  
   //include current component parameters
   for(vector<int>::iterator it = tpIndexes.begin(); 
         it < tpIndexes.end(); it++) {
@@ -385,8 +406,11 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   timeStepPipe = TaylorModelVec(this->initSet);
   
   //only create a part of right taylor model 
-  unpairedRight = MyComponentRemove::getUnitTmv(allTMParams.size());
-  
+  //unpairedRight = MyComponentRemove::getUnitTmv(allTMParams.size());
+  unpairedRight = MyComponentRemove::getUnitTmv(tpIndexes.size());
+  unpairedRight = MyComponentRemove::getNVarMParam(tpIndexes.size(),
+      allTMParams.size());
+  //mforce3(aaaa, "in prepare2", unpairedRight);
   isPrepared = true;
   
   mdec();
@@ -809,11 +833,99 @@ void MyComponent::serializeFlows() {
 }
 
 
+TaylorModel MyComponent::remapSingleInitTM(int variable) {
+  mreset(old);
+  mdisable();
+  minc();
+    
+  mlog1("remapping single left");
+  mlog1(sbuilder() << "variable: " << variable);
+  
+  int depPos, dLinkPos, linkPos;
+  computeMappingPositions(variable, &depPos, &dLinkPos, &linkPos);
+  
+  MyComponent *pComp = dependencies[depPos]->pComp;
+  
+  mlog("pInit", pComp->initSet);
+  mlog1(pComp->initSet.getParamCount());
+  mlog1(initSet.getParamCount());
+  mlog("ma", compMappers[depPos]);
+  
+  //actual mapping of flowpipes
+  TaylorModel tm = pComp->initSet.tms.at(dLinkPos).transform(compMappers[depPos]);
+  
+  mlog("tr", tm);
+  mlog1(tm.getParamCount());
+  
+  mdec();
+  mrestore(old);
+  
+  return tm;
+}
 
+void MyComponent::computeMappingPositions(int variable, int *depPos, 
+    int *dLinkPos, int *linkPos) {
+  mlog1("computing positions");
+  mlog1(sbuilder() << "variable: " << variable);
+  
+  //dependency position
+  *depPos = MyComponentRemove::findPos(variable, &linkVars);
+  
+  if(*depPos >= linkVars.size()) {
+    throw invalid_argument(sbuilder() << "not wasn't linkVars, pos: " << *depPos); 
+  }
+  
+  MyComponent *pComp = dependencies[*depPos]->pComp;
+  mlog1(sbuilder() << "*depPos: " << *depPos);
+  
+  //position of linking variable in precomputed component
+  *dLinkPos = MyComponentRemove::findPos(variable, &(pComp->compVars));
+  //position of linking variable in current component
+  *linkPos = MyComponentRemove::findPos(variable, &compVars);
+  if(*dLinkPos >= pComp->compVars.size()) {
+    mlog1(sbuilder() << "*dLinkPos: " << *dLinkPos);
+    mlog("compVars", compVars);
+    throw std::invalid_argument("depend link wasn't in compVar");
+  }
+  if(*linkPos >= compVars.size()) {
+    throw std::invalid_argument("link wasn't in compVars");
+  }
+  mlog1(sbuilder() << "*dLinkPos: " << *dLinkPos);
+  mlog1(sbuilder() << "*linkPos: " << *linkPos);
+  
+  mlog("compVars", compVars);
+  mlog("dvars", pComp->varIndexes); 
+  
+}
 
-
-
-
+TaylorModel MyComponent::remapSingleRightTM(int variable) {
+  mreset(old);
+  mdisable();
+  minc();
+  
+  mlog1("remapping single right");
+  
+  int depPos, dLinkPos, linkPos;
+  computeMappingPositions(variable, &depPos, &dLinkPos, &linkPos);
+  MyComponent *pComp = dependencies[depPos]->pComp;
+  
+  mlog("pInit", pComp->initSet);
+  mlog1(pComp->initSet.getParamCount());
+  mlog1(initSet.getParamCount());
+  mlog("ma", compMappers[depPos]);
+  
+  //actual mapping of flowpipes
+  TaylorModel tm = pComp->unpairedRight.tms.at(dLinkPos)
+      .transform(compMappers[depPos]);
+  
+  mlog("tm", tm);
+  mlog1(tm.getParamCount());
+  
+  
+  mdec();
+  mrestore(old);
+  return tm;
+}
 
 
 

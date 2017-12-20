@@ -24,6 +24,7 @@
 #define mlog(name, o) logger.log(name, o)
 #define mlog1(o) logger.log(o)
 #define mforce(o) logger.force(o)
+#define mforce3(logVar, name, o) mreset(logVar); mlog(name, o); mrestore(logVar)
 #define mlist(name, o) logger.log(name, o) 
 
 #ifdef enablelog
@@ -46,10 +47,13 @@
   #define mlog(name, o)
   #undef mlog1
   #define mlog1(o)
+  #undef mforce
+  #define mforce(o)
+  #undef mforce3
+  #define mforce3(a,b,c)
   #undef mlist
   #define mlist(name, o)
 #endif
-
 
 
 using namespace std;
