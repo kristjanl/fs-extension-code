@@ -5,10 +5,12 @@ import os
 import re
 
 # directory of models
-modelDir = os.path.join("..", "models", "composition")
+#modelDir = os.path.join("..", "models", "composition")
+modelDir = os.path.join("..", "models", "compositional", "id_comp_precond")
 
 # directory of the outputs
-outDir = os.path.join("..", "models", "compositional", "id_nl")
+#outDir = os.path.join("..", "models", "compositional", "temp")
+outDir = os.path.join("..", "models", "compositional", "id_comp_precond")
 
 
 def change_init(m, f, changer, f_lower, f_upper):
@@ -24,7 +26,17 @@ def fixed_value(m, f, changer, value):
 def change_method_to_id(m, f, changer):
   #use previous level of tabbing
   f.write("%s%s\n" %(m.group(1), "identity precondition"))
+  
+def change_method(m, f, changer, value):
+  #use previous level of tabbing
+  #print "changing method"
+  f.write("%s%s\n" %(m.group(1), value))
+  
 def change_output(m, f, changer):
+  #use previous level of tabbing and file prefix
+  f.write("%s%s%s\n" %(m.group(1), m.group(2), changer.suffix))
+  
+def change_output2(m, f, changer):
   #use previous level of tabbing and file prefix
   f.write("%s%s\n" %(m.group(1), changer.suffix))
   
@@ -46,15 +58,22 @@ def change_modelname(name, suffix):
   m = re.search('(.*)_(.*)\\.', name)
   return "%s_%s.model" %(m.group(1), suffix)
   
+def change_modelname2(name, suffix):
+  #matches single identifier
+  m = re.search('(.*)_(.*)_(.*)\\.', name)
+  return "%s_%s.model" %(m.group(1), suffix)
+  
 def dummy(m, f, changer):
   print "dummy"
+  print m.group(0)
+  print changer
   raise Exception('Dummy function needs to be swapped out')
   
 
 class BaseChanger:
   #captures parameters for method, outputname, implementation, composition
-  methodPat = '(.*?)((?:no precondition|shrink wrapping))'
-  outputPat = '(.*?output .*_)(.*)'
+  methodPat = '(.*?)((?:no precondition|shrink wrapping|identity precondition))'
+  outputPat = '(.*?output .*_)(.*_)(.*)'
   implPat = '.*?alg_small_comp flow impl'
   decompPat = '(.*?)(decomposition .*|no decomposition)'
   stepPat = '(.*?fixed steps )(.*)'
@@ -66,9 +85,9 @@ class BaseChanger:
     outputPat:dummy, 
     implPat:dummy, 
     decompPat:dummy, 
-    stepPat:dummy, 
-    timePat:dummy, 
-    initPat:dummy,
+    stepPat:same_line, 
+    timePat:same_line, 
+    initPat:same_line,
   }
   def __init__(self, suffix):
     self.suffix = suffix
@@ -76,11 +95,21 @@ class BaseChanger:
   def changeLine(self, line, outFile):
     #print line
     for key, changerF in self.lookup.iteritems():
+      #print key
       m = re.search(key, line)
       if m != None:
         changerF(m, outFile, self)
         return
     outFile.write(line)
+
+class SameChanger(BaseChanger):
+  def __init__(self):
+    self.suffix = None
+    self.lookup[self.methodPat] = same_line
+    self.lookup[self.outputPat] = same_line
+    self.lookup[self.implPat] = same_line
+    self.lookup[self.decompPat] = same_line
+  
 
 class IdFlowChanger(BaseChanger):
   def __init__(self):
@@ -111,12 +140,17 @@ def foo():
   changer = IdSameImplCompChanger()
   #changer = IdSameImplNoCompChanger()
   
-  changer.lookup[changer.stepPat] = (lambda m, f, c: fixed_value(m, f, c, 1.5))
-  changer.lookup[changer.timePat] = (lambda m, f, c: fixed_value(m, f, c, 60))
-  changer.lookup[changer.initPat] = lambda m, f, c: change_init(m, f, c, 
-      lambda x, v: 0.9, #lower limit function
-      lambda x, v: 1) #upper limit function
-
+  #changer.lookup[changer.stepPat] = (lambda m, f, c: fixed_value(m, f, c, 1.5))
+  #changer.lookup[changer.timePat] = (lambda m, f, c: fixed_value(m, f, c, 60))
+  #changer.lookup[changer.initPat] = lambda m, f, c: change_init(m, f, c, 
+  #    lambda x, v: 0.9, #lower limit function
+  #    lambda x, v: 1) #upper limit function
+  
+  changer = SameChanger()
+  changer.suffix = "cid_comp"
+  changer.lookup[changer.outputPat] = change_output2
+  changer.lookup[changer.methodPat] = (lambda m, f, c: change_method(m, f, c, "compositional identity precondition"))
+  
   models = []
   dirpath = ""
   
@@ -125,18 +159,23 @@ def foo():
     for (i, file) in enumerate(filenames):
       rs = []
       rs.append(re.search('(?:_2_|_\d0_)', file))
+      #rs.append(re.search('(?:_2_)', file))
+      rs.append(re.search('_id', file))
       rs.append(re.search('_comp', file))
-      rs.append(re.search('pair_dep_\d', file))
+      rs.append(re.search('lin_dep_\d', file))
       
       if reduce(lambda l, r: l and r, map(lambda r: r != None, rs)):
         models.append(file)
-      
         
+  
   #modify the remaining models with changer object
   for model in models:
+    print model
+    
     inFile = os.path.join(dirpath, model)
     
-    outModel = change_modelname(model, changer.suffix)
+    #change_modelname changes last one part, change_modelname2 last 2
+    outModel = change_modelname2(model, changer.suffix)
     outName = os.path.join(outDir, outModel)
     outFile = open(outName, 'w')
     print outName

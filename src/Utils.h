@@ -123,6 +123,9 @@ extern TMVSerializer *pSerializer;
 
 void addTimeToInfo(string name, string clockName, vector<string> & infos);
 
+int findPos(int value, vector<int> *v);
+
+int isIn(int value, vector<int> *v);
 
 #endif /* UTILS_H_ */
 

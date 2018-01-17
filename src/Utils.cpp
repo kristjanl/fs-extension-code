@@ -73,7 +73,10 @@ TaylorModelVec PrecondModel::composed(MySettings *settings) {
   
   vector<Interval> rightRange;
 	right.polyRange(rightRange, settings->domain);
-	left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
+	
+	//left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
+	left.insert_ctrunc_normal(ret, right, rightRange, settings->step_exp_table,
+	     settings->domain.size(), settings->order, 0);
 	
 	//logger.log("cl", left.tms[0]);
 	
@@ -357,9 +360,11 @@ void printTMVFiles(string file1, string file2, string name,
   TaylorModelVec & second = v2[index2];
   
   logger.log("");
-  logger.log("f[0]", first.tms[0]);
+  //logger.log("f[0]", first.tms[0]);
+  logger.log("f", first);
   logger.log("");
-  logger.log("s[0]", second.tms[0]);
+  //logger.log("s[0]", second.tms[0]);
+  logger.log("s", second);
   logger.log("");
   
   TaylorModelVec dis = first.distance(second);
@@ -509,5 +514,15 @@ void printTimes(string prefix) {
 
 void addTimeToInfo(string name, string clockName, vector<string> & infos) {
   infos.push_back(sbuilder() << name << ": " << timeLookup[clockName]);
+}
+
+
+
+int findPos(int value, vector<int> *v) {
+  return find(v->begin(), v->end(), value) - v->begin();
+}
+
+int isIn(int value, vector<int> *v) {
+  return find(v->begin(), v->end(), value) != v->end();
 }
 

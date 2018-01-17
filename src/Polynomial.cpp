@@ -2601,3 +2601,40 @@ void Polynomial::filter(vector<int> powers) {
 	monomials = retMonos;
 }
 
+vector<int> HornerForm::getVars() const {
+  minc();
+  mreset(old);
+  mlog("hf", *this);
+  mlog1("aa");
+  //exit(0);
+  //mlog1(sbuilder() << "this: " << toString());
+  //mlog1(sbuilder() << constant.toString() << ", " << hornerForms.size());
+  
+  //return true if constant is non zero
+  vector<int> ret;
+  
+  
+  mrestore(old);
+  return ret;
+  /*
+  bool ret = !constant.subseteq(Interval());
+  
+  int varIndex = 0;
+  for(vector<HornerForm>::const_iterator it = hornerForms.begin(); 
+      it < hornerForms.end(); it++, varIndex++) {    
+    bool nonZero = it->getVars(vars);
+    
+    //update the variable count for all non zero sub polynomials
+    if(nonZero) {
+      //-1 because of time
+      vars[varIndex - 1]++;
+    }
+    //return true if any of the sub polynomials are non zero
+    ret |= nonZero;
+    //mlog1(sbuilder() << "b:" << nonZero);
+  }
+  
+  //mlog1(sbuilder() << "ret: " << ret);
+  mdec();
+  return ret;*/
+}

@@ -25,9 +25,13 @@ class MyComponent {
     vector<int> compVars;
     //indexes of variables that need to be solved (wrt component variable position)
     vector<int> solveIndexes;
+    
+    //variables introduced in component and dependencies (including implicit)
+    vector<int> allVars;
     bool isSolved;
     bool isPrepared;
     bool isPreconditioned;
+    bool firstPrecondition;
     static int nextFreeParam;
     
     //retains Taylor Model parameters that don't have initial conditions
@@ -42,6 +46,7 @@ class MyComponent {
     vector<int> allTMParams;
     vector<CompDependency *> dependencies;
     vector< vector<int> > compMappers;
+    vector< vector<int> > leftMappers;
     
     vector<MyComponent> previous;
     
@@ -73,7 +78,7 @@ class MyComponent {
        vector<Interval> domain);
     void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
        vector<Interval> domain);
-    void prepareVariables(TaylorModelVec tmv);
+    void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode);
     void prepareMappers();
     void remapFlowpipes();
     void remapLastFlowpipe();
@@ -84,6 +89,10 @@ class MyComponent {
     PrecondModel *lastPre();
     
     TaylorModelVec lastPipe();
+    
+    TaylorModel getRightModelForVar(vector<int> mapper, int var);
+    void getIthPipePair(vector<int> lMapper, vector<int> rMapper, 
+        TaylorModel & left, TaylorModel & right, int var, int i);
     
     void serializeFlows();
     void deserializeFlows();
@@ -104,7 +113,12 @@ class CompDependency {
     int linkVar;
     MyComponent *pComp;
     vector<int> mapper;
+    vector<int> rightMapper;
+    vector<int> leftMapper;
 };
+
+
+vector<int> concateMapper(vector<int> & smaller, vector<int> & bigger);
 
 vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, 
     const vector<HornerForm> & ode);

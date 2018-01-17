@@ -59,7 +59,7 @@ void mylogger2::log(string name, TaylorModelVec tmv) {
 	for (unsigned i=0; i<dim; i++) {
     vector<string> vNames;
     try{
-      int paramDim = tmv.tms.at(i).getParamCount();
+      int paramDim = tmv.tms.at(i).getIgnoringParamCount();
       vNames = getVNames(paramDim);
     } catch(ArgumentException& ignore) { }
     
@@ -72,7 +72,7 @@ void mylogger2::log(string name, TaylorModel tm) {
 	if(disabled > 0)
 		return;
   logger.log(sbuilder() << name << " = " << 
-      tm.toString(getVNames(tm.getParamCount()))
+      tm.toString(getVNames(tm.getIgnoringParamCount()))
   );
 }
 
@@ -116,6 +116,11 @@ void mylogger2::log(string name, vector<HornerForm> hfs) {
   }
 }
 
+void mylogger2::log(string name, HornerForm hf) {
+  if(disabled > 0)
+    return;
+  logger.log(sbuilder() << name << ": " << hf.toString());
+}
 
 void mylogger2::log(Monomial m) {
 	if(disabled > 0)

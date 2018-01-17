@@ -487,7 +487,7 @@ namespace smallComp {
     
     vector<int> & sIndexes = component.solveIndexes;
     
-    for (unsigned i=0; i<component.solveIndexes.size(); i++) {
+    for (unsigned i=0; i<sIndexes.size(); i++) {
       p.tms.at(sIndexes[i]) = component.initSet.tms.at(sIndexes[i]);
     }
     
@@ -544,6 +544,8 @@ namespace smallComp {
   }
   
   void singleStepIntegrate(MyComponent & component, MySettings & settings) {
+    mreset(old);
+    mdisable();
     TaylorModelVec nextInit = component.initSet;
     vector<TaylorModelVec> & pipes = component.pipes;
     
@@ -590,7 +592,7 @@ namespace smallComp {
       fprintf(stdout, 
           "Terminated -- The remainder estimation is not large enough.\n");
     }
-    //exit(0);
+    mrestore(old);
   }
   
   void singleStepPrepareIntegrate(MyComponent & component, MySettings & settings) {
@@ -616,7 +618,9 @@ namespace smallComp {
     
     
     //remaps previous components flowpipes
+    
     component.remapLastFlowpipe();
+    
     mlog1("remapping done");
     
     //component.log();
@@ -841,24 +845,121 @@ void SmallCompReachability::myRun() {
 }
 
 
+void createFullyCompositionalOutput(vector<MyComponent *> comps, 
+      MyComponent & all, Transformer *transformer, MySettings *settings) {
+  mreset(old);
+  mdisable();
+  mlog1("fully comp");
+  
+  mlog("allVars", all.allVars);
+  mlog("varIndexes", all.varIndexes);
+  mlog1(sbuilder() << all.dependencies.size());
+  
+  int pipes = all.dependencies[0]->pComp->pipePairs.size();
+  TaylorModel left, right;
+  
+  
+  for(int step = 0; step < pipes; step++) {
+    mlog1(sbuilder() << "step: " << step);
+    
+    TaylorModelVec left, right;
+    for(int var = 0; var < all.allVars.size(); var++) {
+      mlog1(sbuilder() << "var: " << var);
+      
+      
+      vector<int> lMapper;
+      vector<int> rMapper;
+      MyComponent *curComp = &all;
+      
+      
+      while(true) {
+        mlog1("in while");
+        int pos = findPos(var, &curComp->varIndexes);
+        mlog1(sbuilder() << "pos: " << pos);
+        
+        if(pos < curComp->varIndexes.size()) {
+          mlog1("can return straight");
+          
+          TaylorModel singleLeft = curComp->pipePairs[step]->left.tms[pos];
+          TaylorModel singleRight = curComp->pipePairs[step]->right.tms[pos];
+          
+          mlog("l", singleLeft);
+          mlog("r", singleRight);
+          
+          left.tms.push_back(singleLeft.transform(lMapper));
+          right.tms.push_back(singleRight.transform(rMapper));
+          break;
+        }
+        
+        
+        bool foundDep = false;
+        for(int j = 0; j < curComp->dependencies.size(); j++) {
+          CompDependency *dep = curComp->dependencies[j];
+          mlog("depAll", dep->pComp->allVars);
+          
+          //is variable in dependency implicit variables
+          bool in = isIn(var, &dep->pComp->allVars);
+          
+          //if variable is not in dependency skip dependency
+          if(in == false) {
+            continue;
+          }
+          foundDep = true;
+          curComp = dep->pComp;
+          
+          lMapper = concateMapper(dep->leftMapper, lMapper);
+          rMapper = concateMapper(dep->rightMapper, rMapper);
+          mlog("lm", lMapper);
+          mlog("rm", rMapper);
+        }
+        if(foundDep == false) {
+          stringstream ss;
+          ss << "should never get to this point, ";
+          ss << "either variable is in componenent or one of the dependencies";
+          throw std::runtime_error(ss.str());
+        }
+      }
+    }//end of var
+    
+    mlog("left", left);
+    mlog("right", right);
+    all.pipePairs.push_back(new PrecondModel(left, right));
+  }//end of step
+  mrestore(old);
+}
+
 //TODO move to OutputWriter
 void createOutput(vector<MyComponent *> comps, MyComponent & all, 
       Transformer *transformer, MySettings *settings) {
   tstart(sc_post_composing);
-  mlog1("here");
   if(transformer->isPreconditioned == false)
     return;
   
-  //add the last pipe
-  all.remapLastFlowpipe();
-  all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
+  mlog1("making system flowpipes");  
+  //if fully compositional  
+  tstart(tr_remap2);
+  if(true) {
+    for(int i = 0; i < comps.size(); i++) {
+      comps[i]->pipePairs.push_back(
+          new PrecondModel(comps[i]->timeStepPipe, comps[i]->unpairedRight));
+    }
+    createFullyCompositionalOutput(comps, all, transformer, settings);
+  } else {
+    //add the last pipe
+    all.remapLastFlowpipe();
+    all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
+  }
+  tend(tr_remap2);
   
+  mlog1("composing flowpipes");
   for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
     TaylorModelVec composed = all.pipePairs[i]->composed(settings);
     //mlog("com", com);
 	  all.output.push_back(composed);
   }
+  
+  cout << all.output.size();
   cout << endl;
   tend(sc_post_composing);
 }
@@ -915,9 +1016,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, hfOde, domain);
   }
+  settings->transformer->setIntegrationMapper(comps);
   
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
-  
   clock_t integrClock = clock();
   double t;
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
@@ -927,7 +1028,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       tstart(sc_transfrom);
       settings->transformer->transform(all, comps, *settings);
       tend(sc_transfrom);
-      
       tstart(sc_integrate);
       //solve components
       for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -958,7 +1058,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   //tprint("tr_part");
   tprint("sc_int");
   
-  settings->transformer->addInfo(writer.info);
   
   writer.info.push_back(sbuilder() << "int progress: " << t);
   clock_t end = clock();
@@ -972,7 +1071,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   #else
     cout << "creating my output" << endl;
     createOutput(comps, all, settings->transformer, settings);
+    settings->transformer->addInfo(writer.info);
     tstart(sc_post_add);
+    cout << "writing output" << endl;
     writer.addComponents(comps, domain, all, 
         settings->transformer->isPreconditioned);
     tend(sc_post_add);
@@ -984,6 +1085,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   #endif
   
   tprint("sc_post");
+  cout << "after" << endl;
+  //cout << "here2" << endl;
+  
   
   /*
   if(settings->transformer->isWrapper) {

@@ -58,7 +58,7 @@
 %token MIN MAX
 %token REMEST
 %token INTERVAL OCTAGON GRID
-%token QRPRECOND IDPRECOND SHRINRWRAPPING REM NOPRECOND
+%token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPRECOND
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -2616,6 +2616,14 @@ IDPRECOND
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new IdentityTransformer();
+  continuousProblem.settings->transformer = transformer;
+}|
+COMPIDPRECOND
+{
+	mforce("comp id precond");
+	continuousProblem.precondition = ID_PRE;
+	hybridProblem.global_setting.precondition = ID_PRE;
+  Transformer *transformer = new SingleComponentIdentityTransformer();
   continuousProblem.settings->transformer = transformer;
 }
 |

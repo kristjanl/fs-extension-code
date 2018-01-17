@@ -135,6 +135,7 @@ public:
   TaylorModel* ptransform(vector<int> indexes);
   TaylorModel prepareSecondary(int prefix) const;
   int getParamCount() const;
+  int getIgnoringParamCount() const;
   TaylorModel addNParams(int n) const;
   vector<int> getParams() const;
   void getLinearPart(Interval ret[], vector<int> variables) const;
@@ -309,6 +310,7 @@ public:
   TaylorModelVec distance(const TaylorModelVec & tmv) const;
   TaylorModelVec addNParams(int n) const;
   int getParamCount() const;
+  int getIgnoringParamCount() const;
   
   //partitions the TaylorModelVec into constant, linear, nonlinear and remainder parts
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 

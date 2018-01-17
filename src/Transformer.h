@@ -25,6 +25,7 @@ class Transformer {
     const bool isPreconditioned;
     const bool isWrapper;
     virtual void addInfo(vector<string> & info) = 0;
+    virtual void setIntegrationMapper(vector<MyComponent *> comps) = 0;
 };
 
 
@@ -34,6 +35,7 @@ class ShrinkWrapper: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info);
+    void setIntegrationMapper(vector<MyComponent *> comps);
   private:
     ShrinkWrappingCondition *swChecker;
 };
@@ -49,6 +51,7 @@ class PreconditionedTransformer: public Transformer {
     void precond3(TaylorModelVec & leftStar, MySettings & settings, 
         MyComponent & all);
     void addInfo(vector<string> & info);
+    void setIntegrationMapper(vector<MyComponent *> comps);
 };
 
 class QRTransformer: public Transformer {
@@ -57,6 +60,7 @@ class QRTransformer: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info); //remove after extending preconditioned
+    void setIntegrationMapper(vector<MyComponent *> comps); //remove after estending preconditioned
 };
 
 class IdentityTransformer: public PreconditionedTransformer {
@@ -64,14 +68,25 @@ class IdentityTransformer: public PreconditionedTransformer {
     IdentityTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
-    void transformFullSystem(MyComponent & all, vector<MyComponent *> & comps, 
-        MySettings & settings);
     
     void getA(Matrix & result, const TaylorModelVec & x0, 
         const int dim);
     void getAInv(Matrix & result, const Matrix & A);
     
+    void getA(Matrix & result, MyComponent *comp);
+    
+    void getScaling(Matrix & S, Matrix & SInv, vector<Interval> & rightRange);
+    
+    TaylorModelVec makeLeftFromA(Matrix & A, MyComponent *comp);
+};
+
+class SingleComponentIdentityTransformer: public IdentityTransformer {
+  public:
+    SingleComponentIdentityTransformer();
+    void transform(MyComponent & all, vector<MyComponent *> & comps, 
+        MySettings & settings);
     void preconditionSingleComponent(MyComponent *comp, MySettings & settings);
+    void initialPrecondition(MyComponent *comp, MySettings & settings);
 };
 
 class NullTransformer: public Transformer {
@@ -80,6 +95,7 @@ class NullTransformer: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info);
+    void setIntegrationMapper(vector<MyComponent *> comps);
 };
 
 

@@ -17,9 +17,10 @@ args = parser.parse_args()
 
 def runFlowstar(modelType, dim):
   print "starting pair runner (python)"
-  myModel = "%s_%s_id_nocomp.model"%(modelType, dim)
+  myModel = "%s_%s_id_comp.model"%(modelType, dim)
   flowModel = "%s_%s_id_flow.model"%(modelType, dim)
   for model in [flowModel, myModel]:
+    print model
     modelFile = os.path.join(modelDir, model)
     modelStream = open(modelFile)
     run = subprocess.Popen(flowstar, stdin=modelStream)

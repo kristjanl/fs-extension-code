@@ -255,9 +255,11 @@ void sw1() {
 	parse("my models {2 + 4*a + 0.5 * a^2 + [-0.2,0.2],1 + 3*b + a * b + [-0.1,0.1]}");
   component.pipes.push_back(parseResult.tmv);
 	
+  /*TODO add back
   double q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
   
   cout << q << endl;
+  */
 }
 
 void sw2() {
@@ -278,8 +280,10 @@ void sw2() {
 	component.pipes.push_back(parseResult.tmv);
 	
   double q;
+  /*TODO add back
   q = smallComp::shrinkWrap(component, domain, step_end_exp_table);
   cout << q << endl;
+  */
 }
 
 void swSet() {
@@ -295,12 +299,15 @@ void swSet() {
 	parse("my models {3 + a + [-1,1]}");
 	component.swInput = parseResult.tmv;
 	mlog("tmv1", component.initSet);
+  
+  /*TODO add back
 	smallComp::shrinkWrapSet(component, &component, 2.0, domain);
   TaylorModelVec expected = parseTMV("my models {3 + 2 * a}");
 	
 	mlog("tmv", expected);
 	mlog("set",  component.initSet);
 	mlog1(sbuilder() << "is close: " << expected.isClose(component.initSet, 0));
+  */
 }
 void comp() {
   vector<Interval> domain;
@@ -418,6 +425,7 @@ void applySw() {
 	
   MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
   
+  /*TODO add back
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);
       
@@ -431,6 +439,7 @@ void applySw() {
   TaylorModelVec e2 = parseTMV("my models {2+2*a}");
 	mlog1(sbuilder() << "is close: " << e1.isClose(c1.initSet, 0));
 	mlog1(sbuilder() << "is close: " << e2.isClose(c2.initSet, 0));
+  */
 }
 void sw3() {
   vector<Interval> domain;
@@ -494,6 +503,8 @@ void sw3() {
   mlog("c2", c2.initSet);
   mlog("c3", c3.initSet);
   */
+  
+  /*TODO add back
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
       comps, writer);
   
@@ -510,7 +521,113 @@ void sw3() {
 	mlog1(e1.isClose(c1.initSet, 1e-14));
 	mlog1(e2.isClose(c2.initSet, 1e-14));
 	mlog1(e3.isClose(c3.initSet, 1e-14));
-	
+	*/
+}
+
+void identityComponents() {
+  cout << "id2" << endl;
+  parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("x1");
+	parseSetting.addVar("x2");
+	parseSetting.addVar("x3");
+	parseSetting.addVar("x4");
+	parseSetting.addVar("x5");
+	parseSetting.addVar("x6");
+	parseSetting.addVar("x7");
+  TaylorModelVec init = parseTMV("my models {1*x1+2*x2+7*x7,3*x3+5*x5+6*x6,4*x4, 5*x5}");
+  vector<HornerForm> odes = parseHFFromPoly("my hfs {x1,x2,x1+x2+x3,x3+x4}");
+  vector<int> c1 = parseiVec("my iv <0>");
+  vector<int> c2 = parseiVec("my iv <1>");
+  vector<int> c3 = parseiVec("my iv <2>");
+  vector<int> c4 = parseiVec("my iv <3>");
+  
+  vector< vector<int> > components;
+  components.push_back(c1);
+  components.push_back(c2);
+  components.push_back(c3);
+  components.push_back(c4);
+  
+  vector<Interval> domain = parseIVec("my Iv <[0,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1],[-1,1]>");
+  
+  mlog("c1", c1);
+  mlog("odes", odes);
+  mlog("domain", domain);
+  
+  
+  vector<MyComponent *> comps = createComponents(components, odes);
+  
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    (*it)->retainEmptyParams = true;
+    (*it)->prepareComponent(init, odes, domain);
+  }
+  
+  mlog("2,0", comps[2]->leftMappers[0]);
+  mlog("2,1", comps[2]->leftMappers[1]);
+  mlog("3,0", comps[3]->leftMappers[0]);
+  vector<int> e20 = parseiVec("my iv <0,-2,-2>");
+  vector<int> e21 = parseiVec("my iv <-2,0,-2>");
+  vector<int> e30 = parseiVec("my iv <0,1,2,-2>");
+  
+  cout << (0 == comps[0]->leftMappers.size()) << endl;
+  cout << (0 == comps[1]->leftMappers.size()) << endl;
+  cout << (2 == comps[2]->leftMappers.size()) << endl;
+  cout << (1 == comps[3]->leftMappers.size()) << endl;
+  cout << (e20 == comps[2]->leftMappers[0]) << endl;
+  cout << (e21 == comps[2]->leftMappers[1]) << endl;
+  cout << (e30 == comps[3]->leftMappers[0]) << endl;
+  
+}
+
+
+void identityComponentsCascading() {
+  cout << "id cascading" << endl;
+  parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("x1");
+	parseSetting.addVar("x2");
+	parseSetting.addVar("x3");
+  TaylorModelVec init = parseTMV("my models {1*x1,2*x2,3*x3}");
+  vector<HornerForm> odes = parseHFFromPoly("my hfs {x1,x1+x2,x2+x3}");
+  vector<int> c1 = parseiVec("my iv <0>");
+  vector<int> c2 = parseiVec("my iv <1>");
+  vector<int> c3 = parseiVec("my iv <2>");
+  
+  vector< vector<int> > components;
+  components.push_back(c1);
+  components.push_back(c2);
+  components.push_back(c3);
+  
+  vector<Interval> domain = parseIVec("my Iv <[0,1],[-1,1],[-1,1],[-1,1]>");
+  
+  mlog("c1", c1);
+  mlog("odes", odes);
+  mlog("domain", domain);
+  
+  vector<MyComponent *> comps = createComponents(components, odes);
+  
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    (*it)->retainEmptyParams = true;
+    (*it)->prepareComponent(init, odes, domain);
+  }
+  
+  //comps[0]->log();
+  //comps[1]->log();
+  //comps[2]->log();
+  
+  mlog("1,0", comps[1]->leftMappers[0]);
+  mlog("2,0", comps[2]->leftMappers[0]);
+  
+  vector<int> e1 = parseiVec("my iv <0,-2>");
+  vector<int> e2 = parseiVec("my iv <0,1,-2>");
+  
+  cout << (0 == comps[0]->leftMappers.size()) << endl;
+  cout << (1 == comps[1]->leftMappers.size()) << endl;
+  cout << (1 == comps[2]->leftMappers.size()) << endl;
+  cout << (e1 == comps[1]->leftMappers[0]) << endl;
+  cout << (e2 == comps[2]->leftMappers[0]) << endl;
 }
 
 
@@ -531,5 +648,8 @@ int main() {
   comp();
   applySw();
   */
-  sw3();
+  //sw3();
+  
+  identityComponents();
+  //identityComponentsCascading();
 }

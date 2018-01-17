@@ -93,6 +93,7 @@ class mylogger2 {
 		void log(string, vector<int>);
 		void log(string, vector<string>);
 		void log(string, vector<HornerForm>);
+		void log(string, HornerForm);
 		void log(string, vector<RangeTree *>);
 		void log(string, RangeTree *);
     void log(string, Matrix m);

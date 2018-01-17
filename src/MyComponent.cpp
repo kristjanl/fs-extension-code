@@ -43,9 +43,13 @@ namespace MyComponentRemove{
     return ret;
   }
   
-  //move this to Utils
+  //duplicated in Utils
   int findPos(int value, vector<int> *v) {
     return find(v->begin(), v->end(), value) - v->begin();
+  }
+  //duplicated in Utils
+  int isIn(int value, vector<int> *v) {
+    return find(v->begin(), v->end(), value) != v->end();
   }
 }
 
@@ -54,12 +58,14 @@ MyComponent::MyComponent(vector<int> vs, vector<int> tps):varIndexes(vs),tpIndex
   isPrepared = false;
   isPreconditioned = false;
   retainEmptyParams = false;
+  firstPrecondition = true;
 }
 MyComponent::MyComponent() {
   isSolved = false;
   isPrepared = false;
   isPreconditioned = false;
   retainEmptyParams = false;
+  firstPrecondition = true;
 }
 
 void MyComponent::log() {
@@ -87,7 +93,8 @@ void MyComponent::log() {
   }
   mlog1(sbuilder() << "init set size: " << initSet.tms.size());
   mlog("to be solved variables", varIndexes);
-  mlog("all variables", compVars);
+  mlog("comp variables", compVars);
+  mlog("all variables", allVars);
   mlog("solve indexes", solveIndexes);
   mlog("new params", tpIndexes);
   mlog("all params", allTMParams);
@@ -116,6 +123,7 @@ void MyComponent::prepareMappers() {
   mlog1("preparing mappers <");
   minc();
   vector< vector<int> > mappers;
+  
 
   for(int i = 0; i < dependencies.size(); i++) {
     //mlog1(sbuilder() << "i: " << i);
@@ -144,16 +152,46 @@ void MyComponent::prepareMappers() {
       }
     }
     dependencies.at(i)->mapper = mapper;
+    dependencies.at(i)->rightMapper = mapper;
     //mlog("m", mapper);
     mappers.push_back(mapper);
   }
   compMappers = mappers;
-  //mlog("mapper0", mappers.at(0));
-  //mlog("mapper1", mappers.at(1));
-  //return *mappers;
-  //return mappers;
+  
+  //mapper for left TaylorModel
+  for(int i = 0; i < dependencies.size(); i++) {
+    MyComponent *pComp = dependencies.at(i)->pComp;
+    
+    //variables in previous component
+    vector<int> prevCompVars = pComp->allVars;
+    //mlog("pv", prevCompVars);
+    vector<int> mapper;
+    
+    //loop over all current component variables
+    for(int j = 0; j < allVars.size(); j++) {
+      int var = allVars.at(j);
+      
+      //find if the variable was in the previous component
+      vector<int>::iterator it = 
+          find(prevCompVars.begin(), prevCompVars.end(), var);
+      
+      if(it != prevCompVars.end()) {
+        //find position if it was
+        int pos = distance(prevCompVars.begin(), it);
+        //map old position to new
+        mapper.push_back(pos);
+      } else {
+        //add a padding flag to variable if it's new to component
+        mapper.push_back(PADDING_VARIABLE);
+      }
+    }
+    //mlog("mapper", mapper);
+    leftMappers.push_back(mapper);
+    dependencies.at(i)->leftMapper = mapper;
+  }
+  
   mdec();
-  mlog1("preparing mappers <");
+  mlog1("preparing mappers >");
   mrestore(old);
 }
 
@@ -278,6 +316,30 @@ CompDependency::CompDependency(int link, MyComponent *pComp)
 }
 
 
+vector<int> concateMapper(vector<int> & smaller, vector<int> & bigger) {
+  mlog1("concate");
+  mlog("smaller", smaller);
+  mlog("bigger", bigger);
+  
+  if(bigger.size() == 0)
+    return smaller;
+  
+  vector<int> ret;
+  //look into all the parameters in mapper
+  for(int i = 0; i < bigger.size(); i++) {
+    int param = bigger[i];
+    
+    //retain padding parameters
+    if(param == PADDING_VARIABLE) {
+      ret.push_back(PADDING_VARIABLE);
+      continue;
+    }
+    //else use the dependency parameter
+    ret.push_back(smaller[param]);
+  }
+  return ret;
+}
+
 void MyComponent::addDependency(int linkVar, MyComponent *pComp) {
   dependencies.push_back(new CompDependency(linkVar, pComp));
 }
@@ -361,8 +423,6 @@ void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode,
     mlog("c1", tmv.tms.at(varIndex));
     TaylorModel tm = tmv.tms.at(varIndex).transform(allTMParams);
     mlog("c2", tm);
-    mlog1(sbuilder() << "tm paramCount: " << tm.getParamCount());
-    
     (*compInit).tms.push_back(tm);
   }
   
@@ -384,9 +444,9 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   if(isPrepared) {
     return;
   }
-  mlog1("preparing");
   mreset(old);
   mdisable();
+  mlog1("start");
   mlog1("preparing component <");
   minc();
   mlog("vars", varIndexes);
@@ -394,13 +454,11 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   //prepare variables for all the dependencies
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
         it < dependencies.end(); it++) {
-    //mlog1(sbuilder() << "link: " << (*it)->linkVar);
+    mlog1(sbuilder() << "link: " << (*it)->linkVar);
     MyComponent *pComp = (*it)->pComp;
     pComp->prepareComponent(init, ode, domain);
   }
-
-  
-  prepareVariables(init);
+  prepareVariables(init, ode);
   prepareMappers();
   remapIVP(init, ode, domain);
   timeStepPipe = TaylorModelVec(this->initSet);
@@ -418,12 +476,38 @@ void MyComponent::prepareComponent(TaylorModelVec init,
   mrestore(old);
 }
   
-void MyComponent::prepareVariables(TaylorModelVec init) {
+void MyComponent::prepareVariables(TaylorModelVec init, 
+    const vector<HornerForm> & ode) {
   mreset(old);
   mdisable();
   mlog1("preparing variables <");
   minc();
-
+  
+  mlog("vars", compVars);
+  for(int i = 0; i < compVars.size(); i++) {
+    allVars.push_back(compVars[i]);
+  }
+  for(int i = 0; i < dependencies.size(); i++) {
+    MyComponent dep = *dependencies[i]->pComp;
+    allVars.insert(allVars.end(), dep.allVars.begin(), dep.allVars.end());
+    
+    /*version that doesn't sort
+    for(int j = 0; j < dep.allVars.size(); j++) {
+      bool isNew = find(allVars.begin(), allVars.end(), dep.allVars[j])
+          == allVars.end(); 
+      mlog1(sbuilder() << "v: " << dep.allVars[j] << ", isNew: " << isNew);
+      if(isNew) {
+        allVars.push_back(dep.allVars[j]);
+      }
+    }*/
+  }
+  
+  //need to sort to remove duplicates
+  sort(allVars.begin(), allVars.end());
+  allVars.erase( 
+      unique(allVars.begin(), allVars.end()), allVars.end() );
+  //*/
+  mlog("all", allVars);
   //add all linking variables
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
       it < dependencies.end(); it++) {
@@ -444,6 +528,8 @@ void MyComponent::prepareVariables(TaylorModelVec init) {
       solveIndexes.push_back(pos);
     }
   }
+  
+  
   
   //gather nonzero taylor model parameters from initial conditions
   for(vector<int>::iterator it = varIndexes.begin(); 
@@ -568,6 +654,7 @@ void MyComponent::remapLastFlowpipe() {
   mdisable();
   mlog1("remapping last <");
   minc();
+  
   int varSize = varIndexes.size() + dependencies.size();
 
   //pipes.push_back(getEmptyTMV(varSize));
@@ -590,6 +677,8 @@ void MyComponent::remapLastFlowpipe() {
     MyComponent *pComp = (*it)->pComp;
     mlog("dts", pComp->tpIndexes);
     mlog("mapper", (*it)->mapper);
+    mlog("rightMapper", (*it)->rightMapper);
+    mlog("leftMapper", (*it)->leftMapper);
     
     
     //mlog1("here");
@@ -628,7 +717,6 @@ void MyComponent::remapLastFlowpipe() {
     mlog("remapped", transformedLink);
   }
   
-  
   //mlog("init", initSet);
   mdec();
   mlog1("remapping last >");
@@ -637,7 +725,7 @@ void MyComponent::remapLastFlowpipe() {
 
 void MyComponent::prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
       vector<Interval> domain) {
-  prepareVariables(tmv);
+  prepareVariables(tmv, ode);
   
   //add flowpipes if the component is not initial one
   //variables in component + link vars
@@ -927,7 +1015,85 @@ TaylorModel MyComponent::remapSingleRightTM(int variable) {
   return tm;
 }
 
+void MyComponent::getIthPipePair(vector<int> lMapper, vector<int> rMapper, 
+        TaylorModel & left, TaylorModel & right, int var, int i) {
+  mforce("getting ith");
+  
+  int pos = MyComponentRemove::findPos(var, &varIndexes);
+  if(pos < varIndexes.size()) {
+    //TaylorModel left = pipePairs[i]->left.tms[pos];
+    
+    //native to this component
+    if(lMapper.size() == 0) {
+      //return tm;
+    }
+    
+    //TaylorModel mapped = tm.transform(mapper);
+    
+    //mlog("tm", tm);
+    //mlog("ma", mapped);
+    //mlog1(tm.getParamCount());
+    //mlog1(mapped.getParamCount());
+  }
+  
+  
+}
 
+
+
+TaylorModel MyComponent::getRightModelForVar(vector<int> mapper, int var) {
+  mreset(old);
+  mdisable();
+  mlog1(sbuilder() << "getting flowpipe for " << var);
+  mlog("mapper", mapper);
+  
+  int pos = MyComponentRemove::findPos(var, &varIndexes);
+  if(pos < varIndexes.size()) {
+    mlog1(mapper.size());
+    mlog1("can return straight");
+  
+    TaylorModel tm = unpairedRight.tms[pos];
+    
+    //native to this component
+    if(mapper.size() == 0) {
+      mrestore(old);
+      return tm;
+    }
+    
+    TaylorModel mapped = tm.transform(mapper);
+    
+    //mlog("tm", tm);
+    //mlog("ma", mapped);
+    //mlog1(tm.getParamCount());
+    //mlog1(mapped.getParamCount());
+    mrestore(old);
+    return mapped;
+  }
+  
+  for(int j = 0; j < dependencies.size(); j++) {
+    CompDependency *dep = dependencies[j];
+    mlog("depAll", dep->pComp->allVars);
+    
+    //is variable in dependency implicit variables
+    bool in = MyComponentRemove::isIn(var, &dep->pComp->allVars);
+    
+    //if variable is not in dependency skip dependency
+    if(in == false) {
+      continue;
+    }
+    mlog("mapper", mapper);
+    mlog("dmapper", dep->rightMapper);
+    
+    vector<int> concatenated = concateMapper(dep->rightMapper, mapper);
+    
+    mlog("con", concatenated);
+    mrestore(old);
+    return dep->pComp->getRightModelForVar(concatenated, var);
+  }
+  
+  
+  throw std::runtime_error("should never get to this point, either variable is in componenent or one of the dependencies");
+}
 
 
 

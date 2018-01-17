@@ -37,6 +37,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	
 	tend(fl_eval);
 	
+	pSerializer->add(range_of_x0, "leftStar");
+	
   tstart(fl_precond);
   tstart(fl_part_all);
   
@@ -175,7 +177,9 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tend(fl_precond);
   
   tstart(fl_int_all);
-  //pSerializer->add(x, "left_after_precond");
+  pSerializer->add(x, "left_after_precond");
+  pSerializer->add(result.tmv, "right_after_precond");
+  
 	
   tstart(fl_integrate);
   

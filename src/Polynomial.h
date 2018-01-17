@@ -75,6 +75,7 @@ public:
   HornerForm transform(map<int, int> lookup, int size) const;
   HornerForm transform(vector<int> indexes) const;
   bool getVars(int vars[]) const;
+  vector<int> getVars() const;
   bool isClose(const HornerForm & hf, double d) const;
 
 	friend class Polynomial;

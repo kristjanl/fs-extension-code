@@ -757,6 +757,7 @@ void TaylorModel::insert_no_remainder_no_cutoff(TaylorModel & result, const Tayl
 	}
 }
 
+//numVars is the number of parameters on the vars TMV
 void TaylorModel::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
 	if(vars.tms.size() == 0)
@@ -4251,11 +4252,24 @@ int TaylorModel::getParamCount() const {
   }
   return ret;
 }
+int TaylorModel::getIgnoringParamCount() const {
+  int ret = expansion.getVariableCount();
+  if(ret == -1) {
+    return 0;
+  }
+  return ret;
+}
 int TaylorModelVec::getParamCount() const {
   if(tms.size() == 0) {
     throw ArgumentException("no tms to get paramCount from");
   }
   return tms[0].getParamCount();
+}
+int TaylorModelVec::getIgnoringParamCount() const {
+  if(tms.size() == 0) {
+    throw ArgumentException("no tms to get paramCount from");
+  }
+  return tms[0].getIgnoringParamCount();
 }
 
 vector<int> TaylorModel::getParams() const {

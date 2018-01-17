@@ -70,6 +70,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "grid" {return GRID;}
 "QR precondition" {return QRPRECOND;}
 "identity precondition" {return IDPRECOND;}
+"compositional identity precondition" {return COMPIDPRECOND;}
 "shrink wrapping" {return SHRINRWRAPPING;}
 "no precondition" {return NOPRECOND;}
 "time" {return TIME;}
