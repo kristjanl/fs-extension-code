@@ -193,9 +193,6 @@ void Flowpipe::composition_normal(TaylorModelVec & result, const vector<Interval
 	//mlog("tmv", tmv);
 	//mlog("tmvPre", tmvPre);
 	
-	pSerializer->add(tmv, "comp_right");
-	pSerializer->add(tmvPre, "comp_left");
-
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_exp_table);
 	tmvPre.insert_ctrunc_normal(result, tmv, tmvPolyRange, step_exp_table, 
@@ -9337,6 +9334,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
 
 	results.clear();
+	//mforce3(tt1, "initial left", initialSet.tmvPre);
+	//mforce3(tt2, "initial right", initialSet.tmv);
 	results.push_back(initialSet);
 	Flowpipe newFlowpipe, currentFlowpipe = initialSet;
 
@@ -11031,9 +11030,38 @@ void ContinuousReachability::composition()
 			TaylorModelVec tmvTemp;
 
 			iter->composition_normal(tmvTemp, step_exp_table, cutoff_threshold);
+			
+			
+			//mforce3(old3, "composed", tmvTemp);
+			//exit(0);
+			
+			
+      pSerializer->add(iter->tmvPre, "comp_left");
+      pSerializer->add(iter->tmv, "comp_right");
+			pSerializer->add(tmvTemp, "composed");
+			
+			//mforce3(tt1, "comp_left", iter->tmvPre);
+			//mforce3(tt2, "comp_right", iter->tmv);
+			//mforce3(tt3, "comp_domain", iter->domain);
+			
+			/*
+			
+			vector<Interval> rightRange;
+	    //iter->tmv.polyRange(rightRange, iter->domain);
+    	iter->tmv.polyRangeNormal(rightRange, step_exp_table);
+	
+	    TaylorModelVec ret;
+	    iter->tmvPre.insert_ctrunc_normal(ret, iter->tmv, rightRange,
+	         step_exp_table, iter->domain.size(), 5, cutoff_threshold);
+			//pSerializer->add(ret, "composed");
+	    */
+			
+			
 
 			flowpipesCompo.push_back(tmvTemp);
 			pSerializer->add(tmvTemp, "comp_comp");
+			//mforce3(tt1, "pipe", tmvTemp.tms[0]);
+			//mforce3(tt2, "manu", ret.tms[0]);
 			domains.push_back(iter->domain);
 			//mlog("domain", iter->domain);
 		}

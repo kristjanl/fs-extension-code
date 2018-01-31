@@ -33,11 +33,13 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	
+	pSerializer->add(range_of_x0, "leftStar");
+	
 	
 	
 	tend(fl_eval);
 	
-	pSerializer->add(range_of_x0, "leftStar");
+	//pSerializer->add(range_of_x0, "leftStar");
 	
   tstart(fl_precond);
   tstart(fl_part_all);
@@ -177,6 +179,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tend(fl_precond);
   
   tstart(fl_int_all);
+  
+  
   pSerializer->add(x, "left_after_precond");
   pSerializer->add(result.tmv, "right_after_precond");
   
@@ -195,7 +199,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tend(fl_int_norem);
   
   tstart(fl_int_rest);
-  pSerializer->add(x, "no_rem");
+  //pSerializer->add(x, "no_rem");
 	
 
 	bool bfound = true;
@@ -293,11 +297,29 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tend(fl_int_rest);
 	
   tend(fl_int_all);
+  
 	
 	mdec();
 	mlog1("Picard1 >");
 	mrestore(old);
   tend(fl_integrate);
+  
+  
+  /*
+  //pSerializer->add(x, "comp_left");
+  //pSerializer->add(result.tmv, "comp_right");
+  
+  vector<Interval> rightRange;
+	result.tmv.polyRangeNormal(rightRange, step_end_exp_table);
+	TaylorModelVec composed;
+	x.insert_ctrunc_normal(composed, result.tmv, rightRange, step_end_exp_table,
+	    domain.size(), order, 0);
+  
+  
+  //pSerializer->add(x, "composed");
+  */
+  
+  
   
 	return 1;
 }

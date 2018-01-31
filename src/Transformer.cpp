@@ -470,31 +470,35 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
 
 
 
-Transformer::Transformer(bool isPreconditioned, bool isWrapper) : 
-      isPreconditioned(isPreconditioned), isWrapper(isWrapper) {
+Transformer::Transformer(bool isPreconditioned, bool isWrapper, string name) : 
+      isPreconditioned(isPreconditioned), isWrapper(isWrapper), name(name) {
 }
 
 ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) : 
-      Transformer(false, true) {
+      Transformer(false, true, "sw") {
   this->swChecker = swChecker;
 }
 
-PreconditionedTransformer::PreconditionedTransformer() : Transformer(true, false) {
+PreconditionedTransformer::PreconditionedTransformer(string name) : Transformer(true, false, name) {
 }
 
 QRTransformer::QRTransformer() : 
     //is preconditioned, not shrink wrapping
-    Transformer(true, false) {
+    Transformer(true, false, "qr") {
 }
 
-NullTransformer::NullTransformer() : Transformer(false, false) {
+NullTransformer::NullTransformer() : Transformer(false, false, "null") {
 }
 
-IdentityTransformer::IdentityTransformer() : PreconditionedTransformer() {
+IdentityTransformer::IdentityTransformer() : PreconditionedTransformer("f_id") {
   //isPreconditioned = true;
 }
 
-SingleComponentIdentityTransformer::SingleComponentIdentityTransformer() : IdentityTransformer() {
+IdentityTransformer::IdentityTransformer(string name) : PreconditionedTransformer(name) {
+  //isPreconditioned = true;
+}
+
+SingleComponentIdentityTransformer::SingleComponentIdentityTransformer() : IdentityTransformer("s_id") {
 }
 
 
@@ -819,6 +823,9 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
   int varCount = leftStar.tms.size();
   
   int rangeDim = varCount;
+  
+  
+  tstart(tr_comp_pre);
   	
 	//center remainder around zero and push the shift to constant
 	leftStar.centerRemainder();
@@ -917,9 +924,14 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
 	mlog("right", currentRight);
 	
 	
+	pSerializer->add(newLeft, "left_after_precond");
+	pSerializer->add(currentRight, "right_after_precond");
+	
+	
 	all.unpairedRight = currentRight;
   all.initSet = newLeft;
   
+  tend(tr_comp_pre);
   tend(tr_part2);
   tend(tr_part_all);
   
@@ -1027,6 +1039,8 @@ void IdentityTransformer::transform(MyComponent & all,
   
   mlog("unpairedRight", all.unpairedRight);
   
+  //mforce3(old2, "all.right1", all.unpairedRight);
+  
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   tend(tr_pipe);
   
@@ -1064,7 +1078,8 @@ void IdentityTransformer::transform(MyComponent & all,
     //mlog("ci", (*it)->initSet);
   }
   tend(tr_remap2);
-  
+  mlog("unpairedRight", all.unpairedRight);
+  //mforce3(old3, "all.right2", all.unpairedRight);
   mdec();
   mlog1("id transforming >");
   mrestore(old);
@@ -1128,6 +1143,9 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
     //add to be solved variable initial condition to right model
     comp->unpairedRight.tms.push_back(comp->initSet.tms[i]);
   }
+  
+  
+  pSerializer->add(comp->unpairedRight, "leftStar");
   
   mlog("unpaired_right", comp->unpairedRight);
   
@@ -1256,6 +1274,8 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
   tend(tr_eval);
   
+  pSerializer->add(leftStar, "leftStar");
+  
   tstart(tr_precond);
   
   mlog("leftStar", leftStar);
@@ -1273,7 +1293,8 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent
   }
   tend(tr_remap1);
   mlog("fullRight", fullRight);
-  mlog1(fullRight.tms[0].getParamCount());
+  
+  tstart(tr_comp_pre);
   
   //center remainder around zero and push the shift to constant
   leftStar.centerRemainder();
@@ -1368,6 +1389,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent
   comp->initSet = newLeft;
   
   
+  tend(tr_comp_pre);
   tend(tr_precond);
   
   mdec();

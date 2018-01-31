@@ -29,11 +29,12 @@ modelTypes = ["lin", "lin_dep", "pair_dep", "sq_deg_long"]
 #modelTypes = ["lin_dep"]
 
 dims = [2] + range(10, 51, 10)
-#dims = [40]
+#dims = [40, 50]
+#dims = [1]
 algos = ["id_flow", "id_comp", "cid_comp"]
-algos = ["id_comp", "cid_comp"]
+#algos = ["id_comp", "cid_comp"]
 
-algos = ["id_flow"]
+#algos = ["id_flow"]
 
 infoFields = [
     ("int progress", "Int Progress"), 

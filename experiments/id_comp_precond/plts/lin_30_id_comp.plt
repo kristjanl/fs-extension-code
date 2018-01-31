@@ -1,5 +1,5 @@
 set term png
-set output './images/lin_30_id_comp_id_flow_id_comp_21_t_49.0.png
+set output './images/lin_30_id_comp_id_comp_cid_comp_21_t_49.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x21"
 set xrange [0.0:55.0]
-set yrange [-0.0467235718726:1.09925547026]
+set yrange [-0.0467235721462:1.09925546976]
 plot '-' notitle with lines ls 1
 0 0.5
 0 1
@@ -360,11 +360,11 @@ plot '-' notitle with lines ls 1
 48 0.003291831188146
 
 
-49 0.002978571024913
-49 0.007446641070595
-50 0.007446641070595
-50 0.002978571024913
-49 0.002978571024913
+49 0.002978570776216
+49 0.007446646128892
+50 0.007446646128892
+50 0.002978570776216
+49 0.002978570776216
 
 
 e

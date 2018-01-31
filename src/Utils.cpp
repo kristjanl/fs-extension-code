@@ -70,13 +70,16 @@ PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) :
 
 TaylorModelVec PrecondModel::composed(MySettings *settings) {
   TaylorModelVec ret;
+	//mforce3(tt1, "comp_left", left);
+	//mforce3(tt2, "comp_right", right);
   
   vector<Interval> rightRange;
-	right.polyRange(rightRange, settings->domain);
+	//right.polyRange(rightRange, settings->domain);
+  right.polyRangeNormal(rightRange, settings->step_exp_table);
 	
 	//left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
 	left.insert_ctrunc_normal(ret, right, rightRange, settings->step_exp_table,
-	     settings->domain.size(), settings->order, 0);
+	     settings->domain.size(), settings->order, settings->cutoff);
 	
 	//logger.log("cl", left.tms[0]);
 	
@@ -326,7 +329,6 @@ void printTMVFiles(string file1, string file2, string name,
   cout << "inspeciting files '" << file1 << "' and '" << file2 << "'" << endl;
   vector<NamedTMV> p1 = pDeserializeNamedFlows(file1);
   vector<NamedTMV> p2 = pDeserializeNamedFlows(file2);
-
   vector<TaylorModelVec> v1;
   vector<TaylorModelVec> v2;  
   for(int i = 0; i < p1.size(); i++) {
@@ -360,11 +362,11 @@ void printTMVFiles(string file1, string file2, string name,
   TaylorModelVec & second = v2[index2];
   
   logger.log("");
-  //logger.log("f[0]", first.tms[0]);
-  logger.log("f", first);
+  logger.log("f[0]", first.tms[0]);
+  //logger.log("f", first);
   logger.log("");
-  //logger.log("s[0]", second.tms[0]);
-  logger.log("s", second);
+  logger.log("s[0]", second.tms[0]);
+  //logger.log("s", second);
   logger.log("");
   
   TaylorModelVec dis = first.distance(second);
@@ -487,7 +489,7 @@ vector<NamedTMV> pDeserializeNamedFlows(string filename) {
   mlog1(parseResult.names.size());
   
   for(int i = 0; i < parseResult.pipes.size(); i++) {
-    mlog(parseResult.names[i], parseResult.pipes[i]);
+    //mlog(parseResult.names[i], parseResult.pipes[i]);
     //pipeIt should be memory leak
     //TaylorModelVec *tmv = new TaylorModelVec(parseResult.pipes[i]);
     ret2.push_back(NamedTMV(parseResult.names[i], parseResult.pipes[i]));

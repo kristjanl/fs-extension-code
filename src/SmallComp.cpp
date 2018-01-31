@@ -517,7 +517,7 @@ namespace smallComp {
     
     mlog("before decr", p);
     
-    pSerializer->add(p, "no_rem");
+    //pSerializer->add(p, "no_rem");
     
     
     tstart(sc_int_rest);
@@ -938,25 +938,39 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   mlog1("making system flowpipes");  
   //if fully compositional  
   tstart(tr_remap2);
-  if(true) {
+  
+  if(dynamic_cast<SingleComponentIdentityTransformer*>(transformer)) {
+    //transformer preconditions single component at a time
+    //need to add last flowpipe for all components
     for(int i = 0; i < comps.size(); i++) {
       comps[i]->pipePairs.push_back(
           new PrecondModel(comps[i]->timeStepPipe, comps[i]->unpairedRight));
     }
     createFullyCompositionalOutput(comps, all, transformer, settings);
-  } else {
-    //add the last pipe
+  } else if(dynamic_cast<IdentityTransformer*>(transformer)) {
+    //tranformer maps everything to system, then precondtions
+    //need to remap last integration result, add last flowpipe for system component
     all.remapLastFlowpipe();
     all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
+    
+    //mforce3(old3, "all.right3", all.unpairedRight);
+  } else {
+    //old code might not be compatible, look into it when problems arise
+    throw std::runtime_error("don't know how to make output");
   }
   tend(tr_remap2);
   
   mlog1("composing flowpipes");
   for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
+    pSerializer->add(all.pipePairs[i]->left, "comp_left");
+    pSerializer->add(all.pipePairs[i]->right, "comp_right");
     TaylorModelVec composed = all.pipePairs[i]->composed(settings);
+    
+    pSerializer->add(composed, "composed");
     //mlog("com", com);
 	  all.output.push_back(composed);
+	  //pSerializer->add(composed, "composed");
   }
   
   cout << all.output.size();
@@ -974,8 +988,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   mlog1(sbuilder() << "# of components: " <<components.size());
   
   if(pSerializer == NULL) {
-    //pSerializer = new TMVSerializer("comp.txt", 8*11);
-    pSerializer = new TMVSerializer("comp.txt");
+    //transformer name appended with .txt
+    string outName = string(settings->transformer->name).append(".txt");
+    pSerializer = new TMVSerializer(outName);
   }
   
   vector<MyComponent *> comps = createComponents(components, hfOde);
@@ -1027,6 +1042,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     try{
       tstart(sc_transfrom);
       settings->transformer->transform(all, comps, *settings);
+      
       tend(sc_transfrom);
       tstart(sc_integrate);
       //solve components
@@ -1053,7 +1069,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     //break; //only the first step, REMOVE!
   }
   cerr << endl;
-  mlog1("here");
   
   //tprint("tr_part");
   tprint("sc_int");
@@ -1065,6 +1080,10 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   cout << "computation time: " << integrTime << endl;
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
   
+  //tprint("sc_transfrom");
+  //tprint("tr_eval");
+  //tprint("tr_remap");
+  //tprint("tr_comp_pre");
   
   #ifdef no_output
     cout << "not creating my output" << endl;

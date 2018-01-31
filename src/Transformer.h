@@ -17,13 +17,14 @@ using namespace std;
 
 class Transformer {
   public:
-    Transformer(bool isPreconditioned, bool isWrapper);
+    Transformer(bool isPreconditioned, bool isWrapper, string name);
     virtual void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings) = 0;
     void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings, 
         bool fail);
     const bool isPreconditioned;
     const bool isWrapper;
+    const string name;
     virtual void addInfo(vector<string> & info) = 0;
     virtual void setIntegrationMapper(vector<MyComponent *> comps) = 0;
 };
@@ -42,7 +43,7 @@ class ShrinkWrapper: public Transformer {
 
 class PreconditionedTransformer: public Transformer {
   public:
-    PreconditionedTransformer();
+    PreconditionedTransformer(string name);
     virtual void getA(Matrix & result, const TaylorModelVec & x0, 
         const int dim) = 0;
     virtual void getAInv(Matrix & result, const Matrix & A) = 0;
@@ -66,6 +67,7 @@ class QRTransformer: public Transformer {
 class IdentityTransformer: public PreconditionedTransformer {
   public:
     IdentityTransformer();
+    IdentityTransformer(string name);
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     
