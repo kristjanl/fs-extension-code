@@ -470,35 +470,35 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
 
 
 
-Transformer::Transformer(bool isPreconditioned, bool isWrapper, string name) : 
-      isPreconditioned(isPreconditioned), isWrapper(isWrapper), name(name) {
+Transformer::Transformer(bool isPreconditioned, bool isWrapper, int type, string name) : 
+      isPreconditioned(isPreconditioned), isWrapper(isWrapper), name(name), transformerType(type) {
 }
 
 ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) : 
-      Transformer(false, true, "sw") {
+      Transformer(false, true, TR_UNKNOWN, "sw") {
   this->swChecker = swChecker;
 }
 
-PreconditionedTransformer::PreconditionedTransformer(string name) : Transformer(true, false, name) {
+PreconditionedTransformer::PreconditionedTransformer(int type, string name) : 
+      Transformer(true, false, type, name) {
 }
 
-QRTransformer::QRTransformer() : 
-    //is preconditioned, not shrink wrapping
-    Transformer(true, false, "qr") {
+QRTransformer::QRTransformer() : PreconditionedTransformer(TR_ALL_COMP, "qr") {
 }
 
-NullTransformer::NullTransformer() : Transformer(false, false, "null") {
+NullTransformer::NullTransformer() : Transformer(false, false, TR_UNKNOWN, "null") {
 }
 
-IdentityTransformer::IdentityTransformer() : PreconditionedTransformer("f_id") {
+IdentityTransformer::IdentityTransformer() : PreconditionedTransformer(TR_ALL_COMP, "f_id") {
+  //isPreconditioned = true;
+}
+IdentityTransformer::IdentityTransformer(int type, string name) : 
+      PreconditionedTransformer(type, name) {
   //isPreconditioned = true;
 }
 
-IdentityTransformer::IdentityTransformer(string name) : PreconditionedTransformer(name) {
-  //isPreconditioned = true;
-}
-
-SingleComponentIdentityTransformer::SingleComponentIdentityTransformer() : IdentityTransformer("s_id") {
+SingleComponentIdentityTransformer::SingleComponentIdentityTransformer() : 
+      IdentityTransformer(TR_SINGLE_COMP, "s_id") {
 }
 
 
@@ -980,37 +980,310 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   mrestore(old);
 }
 
+void QRTransformer::getA(Matrix & result, const TaylorModelVec & x0, 
+      const int dim) {
+  throw std::runtime_error("don't call getA on QR");
+}
 
-void QRTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
-      MySettings & settings) {
+void QRTransformer::getAInv(Matrix & result, const Matrix & A) {
+  throw std::runtime_error("don't call getAInv on QR");
+}
+
+void QRTransformer::getMatrices(Matrix & a, Matrix & aInv, 
+      const TaylorModelVec & x0) {
   mreset(old);
   mdisable();
-  mlog1("qr transforming <");
-  minc();
-  evaluateStepEnd(comps, settings, true);
   
+  Interval intZero;
+	vector<vector<Interval> > intCoefficients;
+	
+	int rangeDim = x0.tms.size();
+	int domainDim = rangeDim + 1;
+	
+
+	vector<Interval> intVecTemp;
+	for(int i=0; i<domainDim; i++) {
+		intVecTemp.push_back(intZero);
+	}
+
+	for(int i=0; i<rangeDim; i++) {
+		intCoefficients.push_back(intVecTemp);
+	}
+
+  // vector<vector<Interval> > & result)
+  //tms[i] <-> result[i]
+	x0.linearCoefficients(intCoefficients);
+	Matrix m(rangeDim, rangeDim);
+
+	for(int i=0; i<rangeDim; i++) { 
+		for(int j=1; j < domainDim; j++) {
+			m.set(intCoefficients[i][j].midpoint(), i, j-1);
+		}
+	}
+	
+	
+	if(true) {
+	  Matrix q2(rangeDim, rangeDim),q2Inv(rangeDim, rangeDim);
+  	m.QRfactor(q2);
+  	
+    q2.inverse(q2Inv);
+    mforce3(old3, "q2", q2);
+    mforce3(old4, "q2Inv", q2Inv);
+	}
+	
+	
+	//approach where using rt (TODO guarantee that nothing above has depedency)
+	Matrix mt(rangeDim, rangeDim);
+	m.transpose(mt);
+	m = mt;
+	
+	Matrix q(rangeDim, rangeDim);
+	m.QRfactor(q);
+	Matrix qt(rangeDim, rangeDim);
+	q.transpose(qt);
+	Matrix r = qt * m;
+	Matrix rt(rangeDim, rangeDim);
+	r.transpose(rt);
+	
+	a = rt;
+  a.inverse(aInv);
+	/*
+	mlog("m", m);
+	mlog("q", q);
+	mlog("qt", qt);
+	mlog("r", r);
+	mlog("rt", rt);
+	mlog("m", rt*qt);
+	mlog("mt", mt);*/
+	
+	
+	
+  //mforce3(old1, "a", a);
+  //mforce3(old2, "aInv", aInv);
+	
+	/*
+	mlog1("linear coefficients <");
+	mlog(coefs);
+	mlog1("linear coefficients >");
+	//
+
+	coefs.sortColumns();
+	//mlog(matCocoefsefficients);
+	coefs.QRfactor(result);
+	//mlog(result);
+  */
+  mrestore(old);
+}
+
+
+void QRTransformer::precond(TaylorModelVec & leftStar, 
+    MySettings & settings, MyComponent & all) {
+  mreset(old);
+  mdisable();
+  mlog1("precond <");
+  minc();
+  
+  tstart(tr_part_all);
+  tstart(tr_part1);
+  
+  int paramCount = leftStar.tms[0].getParamCount();
+  int varCount = leftStar.tms.size();
+  
+  int rangeDim = varCount;
+  
+  
+  tstart(tr_comp_pre);
+  	
+	//center remainder around zero and push the shift to constant
+	leftStar.centerRemainder();
+  
+  vector<Interval> constantVec;
+	leftStar.constant(constantVec);
+	TaylorModelVec c0(constantVec, paramCount);
+
+  //remove constant part from old part
+	leftStar.rmConstant();
+	
+	mlog("left", leftStar);
+	
+	
+	
+	Matrix A(varCount,varCount), invA(varCount, varCount);
+  tend(tr_part1);
+  tstart(tr_part_matrix);
+  
+  getMatrices(A, invA, leftStar);
+  //getA(A, leftStar, varCount);
+  //getAInv(invA, A);
+  
+  
+  // if we want left model to be c0 + A id
+  // then we need to move A^-1 * <old left without constant part> to right model
+  TaylorModelVec leftToRight;
+  //leftStar.linearTrans(leftToRight, invA);
+  leftToRight = leftStar; //TODO remove this
+  
+  tend(tr_part_matrix);
+  
+  tstart(tr_part2);
+  
+  mlog("leftToRight", leftToRight);
+  
+  TaylorModelVec invApplied;
+  leftToRight.linearTrans(invApplied, invA);
+  
+  mlog("rApplied", invApplied);
+  leftToRight = invApplied;
+  
+  TaylorModelVec & prevRight = all.unpairedRight;
+  mlog("prevRight", prevRight);
+  
+	vector<Interval> prevRightPolyRange;
+	prevRight.polyRangeNormal(prevRightPolyRange,
+	    settings.step_end_exp_table);
+	mlog("range", prevRightPolyRange);
+	
+	
+	//current right is leftToRight o previousRight
+	TaylorModelVec currentRight;
+	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+	    prevRightPolyRange, settings.step_end_exp_table, paramCount, 
+	    settings.order, settings.cutoff);
+  mlog("currentRight", currentRight);
+  
+  vector<Interval> currentRightRange;
+  currentRight.intEvalNormal(currentRightRange, settings.step_end_exp_table);
+  mlog("currentRightRange", currentRightRange);
+  
+  //calculate scaling matrix from current right model
+  Matrix S(varCount, varCount);
+	Matrix SInv(varCount, varCount);
+	for(int i=0; i<varCount; i++) {
+		Interval intSup;
+		currentRightRange[i].mag(intSup);
+		if(intSup.subseteq(ZERO_INTERVAL)) {
+			S.set(0,i,i);
+			SInv.set(1,i,i);
+		} else {
+			double dSup = intSup.sup();
+			S.set(dSup, i, i);
+			SInv.set(1/dSup, i, i);
+			//assuming that this is overriden to be domain
+			currentRightRange[i] = UNIT_INTERVAL;
+		}
+	}
+  
+  
+  //apply scaling
+  A = A * S;
+	invA = SInv * invA; //not needed actually
+	
+  //apply scaling to right model
+	currentRight.linearTrans_assign(SInv);
+	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	
+	
+
+  //construct left matrix using A coefficients and constant part
+	Matrix leftLinCoefs(rangeDim, rangeDim+1);
+	for(int i=0; i<rangeDim; i++) {
+		for(int j=0; j<rangeDim; j++) {
+			leftLinCoefs.set( A.get(i,j) , i, j+1);
+		}
+	}
+	TaylorModelVec newLeft(leftLinCoefs);
+  newLeft.add_assign(c0);
+  
+  
+	mlog("newLeft", newLeft);
+	mlog("right", currentRight);
+	
+	
+	pSerializer->add(newLeft, "left_after_precond");
+	pSerializer->add(currentRight, "right_after_precond");
+	
+	
+	all.unpairedRight = currentRight;
+  all.initSet = newLeft;
+  
+  tend(tr_comp_pre);
+  tend(tr_part2);
+  tend(tr_part_all);
+  
+  mdec();
+  mlog1("precond >");
+  mrestore(old);
+}
+
+
+void QRTransformer::transform(MyComponent & all, 
+      vector<MyComponent *> & comps, MySettings & settings) {
+  
+  mreset(old);
+  mdisable();
+  mlog1("id transforming <");
+  minc();
+  //evaluateStepEnd(comps, settings, false);
+  
+  //TODO evaluate first, then remap maybe
+  tstart(tr_remap1);
   //remaps all the last pipes to system flowpipes at all component
   all.remapLastFlowpipe();
-  
-  TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
-  TaylorModelVec tmv;
-  last.evaluate_t(tmv, settings.step_end_exp_table);
+  tend(tr_remap1);
   
   
+  tstart(tr_pipe);
+  TaylorModelVec tsp = all.timeStepPipe;
+  mlog("tsp", tsp);
+  mlog("upright", all.unpairedRight); 
   
-  precond(tmv, settings, all);
-  mlog("tmv", tmv);
+  mlog("unpairedRight", all.unpairedRight);
+  
+  //mforce3(old2, "all.right1", all.unpairedRight);
+  
+  all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
+  tend(tr_pipe);
   
   
+  tstart(tr_eval);
+  TaylorModelVec leftStar;
+  tsp.evaluate_t(leftStar, settings.step_end_exp_table);
+  tend(tr_eval);
+  
+  //pSerializer->add(leftStar, "leftStar");
+  
+  
+  //pSerializer->serialize();
+  
+  mlog1(sbuilder() << "size: " << leftStar.tms.size());
+  //mlog("leftStar", leftStar);
+  
+  tstart(tr_precond);
+  precond(leftStar, settings, all);
+  tend(tr_precond);
+  //mlog("upright", all.unpairedRight);
+  
+  
+	mlog("left", all.initSet);
+  //mlog("right", all.unpairedRight);
+  
+  
+  //mlog("pair.left", all.lastPre()->left);
+  //mlog("pair.right", all.lastPre()->right);
+
+  tstart(tr_remap2);  
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     makeCompInitSets(all, *it);
+    //mlog("ci", (*it)->initSet);
   }
-  
-  
+  tend(tr_remap2);
+  mlog("unpairedRight", all.unpairedRight);
+  //mforce3(old3, "all.right2", all.unpairedRight);
   mdec();
-  mlog1("qr transforming >");
+  mlog1("id transforming >");
   mrestore(old);
+  //evaluateStepEnd(comps, settings);
 }
 
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
@@ -1448,7 +1721,18 @@ void PreconditionedTransformer::addInfo(vector<string> & info) {
 }
 
 void QRTransformer::addInfo(vector<string> & info) {
-  throw std::runtime_error("don't call add info on QR yet");
+  int old = logger.reset();
+  logger.disable();
+  mlog1("adding");
+  mlog1(sbuilder() << timeLookup["tr_precond"]);
+  
+  taddToInfo("remap 1", tr_remap1, info);
+  taddToInfo("evaluate t", tr_eval, info);
+  taddToInfo("precond time", tr_precond, info);
+  taddToInfo("remap 2", tr_remap2, info);
+  taddToInfo("int time", sc_integrate, info);
+  
+  logger.restore(old);
 }
 void NullTransformer::addInfo(vector<string> & info) {
   throw std::runtime_error("don't call add info on Null yet");
@@ -1470,10 +1754,18 @@ void ShrinkWrapper::setIntegrationMapper(vector<MyComponent *> comps) {
   throw std::runtime_error("don't call setIntegrationMapper on SW yet");
 }
 void QRTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
-  throw std::runtime_error("don't call setIntegrationMapper on QR yet");
+  for(int i = 0; i < comps.size(); i++) {
+    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
+      CompDependency dep = *comps[i]->dependencies[j];
+      //use the left model mapper during integration
+      dep.mapper = dep.leftMapper; 
+    }
+  }
 }
 void NullTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
   throw std::runtime_error("don't call setIntegrationMapper on Null yet");
 }
 
-
+int Transformer::getType() {
+  return transformerType;
+}

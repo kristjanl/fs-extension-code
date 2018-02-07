@@ -10,7 +10,7 @@ modelDir = os.path.join("..", "models", "compositional", "id_comp_precond")
 
 # directory of the outputs
 #outDir = os.path.join("..", "models", "compositional", "temp")
-outDir = os.path.join("..", "models", "compositional", "id_comp_precond")
+outDir = os.path.join("..", "models", "compositional", "qr")
 
 
 def change_init(m, f, changer, f_lower, f_upper):
@@ -147,9 +147,9 @@ def foo():
   #    lambda x, v: 1) #upper limit function
   
   changer = SameChanger()
-  changer.suffix = "cid_comp"
+  changer.suffix = "qr_flow"
   changer.lookup[changer.outputPat] = change_output2
-  changer.lookup[changer.methodPat] = (lambda m, f, c: change_method(m, f, c, "compositional identity precondition"))
+  changer.lookup[changer.methodPat] = (lambda m, f, c: change_method(m, f, c, "QR precondition"))
   
   models = []
   dirpath = ""
@@ -161,8 +161,9 @@ def foo():
       rs.append(re.search('(?:_2_|_\d0_)', file))
       #rs.append(re.search('(?:_2_)', file))
       rs.append(re.search('_id', file))
-      rs.append(re.search('_comp', file))
-      rs.append(re.search('lin_dep_\d', file))
+      rs.append(re.search('_flow', file))
+      #rs.append(re.search('_flow', file))
+      #rs.append(re.search('lin_dep_\d', file))
       
       if reduce(lambda l, r: l and r, map(lambda r: r != None, rs)):
         models.append(file)
@@ -171,6 +172,7 @@ def foo():
   #modify the remaining models with changer object
   for model in models:
     print model
+    #continue
     
     inFile = os.path.join(dirpath, model)
     
@@ -178,8 +180,7 @@ def foo():
     outModel = change_modelname2(model, changer.suffix)
     outName = os.path.join(outDir, outModel)
     outFile = open(outName, 'w')
-    print outName
-    
+
     with open(inFile) as f:
       for line in f:
         changer.changeLine(line, outFile)

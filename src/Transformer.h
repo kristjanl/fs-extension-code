@@ -13,11 +13,19 @@
 class MySettings;
 class OutputWriter;
 
+
+#define TR_UNKNOWN      0
+#define TR_ALL_COMP			1
+#define TR_SINGLE_COMP	2
+
+
 using namespace std;
 
 class Transformer {
+  private:
+    int transformerType;
   public:
-    Transformer(bool isPreconditioned, bool isWrapper, string name);
+    Transformer(bool isPreconditioned, bool isWrapper, int type, string name);
     virtual void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings) = 0;
     void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings, 
@@ -27,6 +35,7 @@ class Transformer {
     const string name;
     virtual void addInfo(vector<string> & info) = 0;
     virtual void setIntegrationMapper(vector<MyComponent *> comps) = 0;
+    int getType();
 };
 
 
@@ -43,7 +52,7 @@ class ShrinkWrapper: public Transformer {
 
 class PreconditionedTransformer: public Transformer {
   public:
-    PreconditionedTransformer(string name);
+    PreconditionedTransformer(int type, string name);
     virtual void getA(Matrix & result, const TaylorModelVec & x0, 
         const int dim) = 0;
     virtual void getAInv(Matrix & result, const Matrix & A) = 0;
@@ -55,11 +64,16 @@ class PreconditionedTransformer: public Transformer {
     void setIntegrationMapper(vector<MyComponent *> comps);
 };
 
-class QRTransformer: public Transformer {
+class QRTransformer: public PreconditionedTransformer {
   public:
     QRTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void getA(Matrix & result, const TaylorModelVec & x0, const int dim);
+    void getAInv(Matrix & result, const Matrix & A);
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+    void precond(TaylorModelVec & leftStar, MySettings & settings, 
+        MyComponent & all);
     void addInfo(vector<string> & info); //remove after extending preconditioned
     void setIntegrationMapper(vector<MyComponent *> comps); //remove after estending preconditioned
 };
@@ -67,7 +81,7 @@ class QRTransformer: public Transformer {
 class IdentityTransformer: public PreconditionedTransformer {
   public:
     IdentityTransformer();
-    IdentityTransformer(string name);
+    IdentityTransformer(int type, string name);
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     

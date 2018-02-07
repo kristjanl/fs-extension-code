@@ -939,7 +939,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   //if fully compositional  
   tstart(tr_remap2);
   
-  if(dynamic_cast<SingleComponentIdentityTransformer*>(transformer)) {
+  if(transformer->getType() == TR_SINGLE_COMP) {
     //transformer preconditions single component at a time
     //need to add last flowpipe for all components
     for(int i = 0; i < comps.size(); i++) {
@@ -947,7 +947,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
           new PrecondModel(comps[i]->timeStepPipe, comps[i]->unpairedRight));
     }
     createFullyCompositionalOutput(comps, all, transformer, settings);
-  } else if(dynamic_cast<IdentityTransformer*>(transformer)) {
+  } else if(transformer->getType() == TR_ALL_COMP) {
     //tranformer maps everything to system, then precondtions
     //need to remap last integration result, add last flowpipe for system component
     all.remapLastFlowpipe();
