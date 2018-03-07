@@ -1,0 +1,33 @@
+continuous reachability
+{
+ state var v,u
+	
+ setting
+ {
+  fixed steps 0.02
+  time 1000
+  remainder estimation 1e-2
+  QR precondition2
+  gnuplot octagon v, u
+  fixed orders 4
+  cutoff 1e-12
+  precision 53
+  output neuron_Inodim_qr2
+  alg_small_comp flow impl
+  no decomposition
+  print on
+ }
+	
+ poly ode 1
+ {
+    v' = 0.01*(0.7*(v + 60)*(v + 40) - u + 70)
+    u' = 0.03*((-2)*(v + 60) - u)
+ }
+ 
+ init
+ {
+   v in [-61,-59]
+   u in [-1,1]
+ }
+}
+

@@ -99,6 +99,8 @@ double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
 
 void printTMVFiles(string file1, string file2, string name, 
     int index1, int index2);
+    
+void toMathematica(string file);
 
 vector<Interval> getUnitBox(int n);
 

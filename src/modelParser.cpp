@@ -40,6 +40,11 @@ int main(int argc, const char *argv[])
     printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
     exit(0);
   }
+  if(argc == 2) {
+    //transform to mathematica
+    toMathematica(argv[1]);
+    exit(0); 
+  }
   mdisable();
   yyparse();
 	//simpleImplMain();

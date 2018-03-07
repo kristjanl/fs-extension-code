@@ -69,6 +69,9 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "octagon" {return OCTAGON;}
 "grid" {return GRID;}
 "QR precondition" {return QRPRECOND;}
+"QR precondition1" {return QRPRECOND1;}
+"QR precondition2" {return QRPRECOND2;}
+"QR precondition3" {return QRPRECOND3;}
 "identity precondition" {return IDPRECOND;}
 "compositional identity precondition" {return COMPIDPRECOND;}
 "shrink wrapping" {return SHRINRWRAPPING;}

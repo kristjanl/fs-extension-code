@@ -111,6 +111,11 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
       value = fs.getParam(infoFile, "%s:"%a)
       if value == None:
         value = '-'
+      #shorten reason
+      if "remainder estimation" in value:
+        value = "rem est"
+      if "max increase" in value:
+        value = "max increase"
       outFile.write("    <td class='dataCell'>%s</td>\n"%value)
     else:
       outFile.write("    <td>--</td>\n")

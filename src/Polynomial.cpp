@@ -2408,22 +2408,16 @@ void increaseExpansionOrder(HornerForm & resultHF, Polynomial & resultMF, Polyno
 
 string Polynomial::toString(const vector<string> & varNames) const {
   string strPoly;
-
-	if(monomials.size() == 0)
-	{
+	if(monomials.size() == 0) {
 		return "(0)";
 	}
 
 	list<Monomial>::const_iterator iter, iter_last;
 	iter_last = monomials.end();
 	--iter_last;
-
 	strPoly += '(';
-
-	for(iter = monomials.begin(); iter != iter_last; ++iter)
-	{
+	for(iter = monomials.begin(); iter != iter_last; ++iter) {
 		string strTemp = iter->toString(varNames);
-
 		strPoly += strTemp;
 		strPoly += ' ';
 		strPoly += '+';
@@ -2435,6 +2429,30 @@ string Polynomial::toString(const vector<string> & varNames) const {
 	strPoly += ')';
 
 	return strPoly;
+}
+
+string Polynomial::toMathematicaString() const {
+  string strPoly;
+	if(monomials.size() == 0) {
+		return "0";
+	}
+
+	list<Monomial>::const_iterator iter, iter_last;
+	iter_last = monomials.end();
+	--iter_last;
+	for(iter = monomials.begin(); iter != iter_last; ++iter) {
+		string strTemp = iter->toMathematicaString();
+		strPoly += strTemp;
+		strPoly += ' ';
+		strPoly += '+';
+		strPoly += ' ';
+	}
+
+	string strTemp2 = monomials.back().toMathematicaString();
+	strPoly += strTemp2;
+
+	return strPoly;
+  return "math poly";
 }
 
 HornerForm HornerForm::transform(map<int, int> lookup, int size) const{

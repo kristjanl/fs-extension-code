@@ -1,0 +1,40 @@
+continuous reachability
+{
+  state var x1,x2,x3,x4,x5,x6,x7
+
+  setting
+  {
+    fixed steps 2
+    time 100
+    remainder estimation 1e-3
+    QR precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output and_qr_flownodim_qrflow
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -0.0003*x1*x3 - 0.0003*x1*x7 + 0.0003*x4
+    x2' = -0.0003*x2*x3 - 0.0003*x2*x4 + 0.0003*x7
+    x3' = -0.0003*x1*x3 - 0.0003*x2*x3 + 0.0003*x4 + 0.0003*x7
+    x4' = 0.0003*x1*x3 - 0.0003*x2*x4 - 0.0003*x4
+    x5' = 0.0003*x1*x7 + 0.0003*x2*x4
+    x6' = 0.0003*x1*x7 + 0.0003*x2*x4
+    x7' = 0.0003*x2*x3 - 0.0003*x1*x7 - 0.0003*x7
+  }
+
+  init
+  {
+    x1 in [0.99,1.01]
+    x2 in [0.99,1.01]
+    x3 in [10,10]
+    x4 in [0,0]
+    x5 in [0,0]
+    x6 in [0,0]
+    x7 in [0,0]
+  }
+}

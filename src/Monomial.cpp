@@ -400,6 +400,26 @@ string Monomial::toString() const {
 	return toString(variables);
 }
 
+string Monomial::toMathematicaString() const {
+  stringstream ss;
+  ss.precision(10);
+  
+  //ss << coefficient.toString(); //TODO modify
+  //ss << coefficient.midpoint();
+  ss << coefficient.midToString();
+  
+	for(int i=0; i < degrees.size(); i++) {
+		if(degrees[i] == 0) {
+      continue;
+    }
+    ss << " * a" << i;
+    if(degrees[i] != 1) {
+      ss << "^" << degrees[i];
+    }
+	}
+	return ss.str();
+}
+
 Monomial Monomial::transform(map<int, int> lookup, int size) {
   //cout << "m transform" << endl;
   int i = 0;

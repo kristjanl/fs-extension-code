@@ -407,6 +407,61 @@ void printTMVFiles(string file1, string file2, string name,
 }
 
 
+void toMathematica(string file) {
+  mforce("here");
+  FILE *fp = fopen("mathematica.txt", "w");
+  
+  fprintf(fp, "{");
+  
+  vector<NamedTMV> named = pDeserializeNamedFlows(file);
+  
+  vector<string> allowed;
+  allowed.push_back("leftStar");
+  allowed.push_back("left_after_precond");
+  //allowed.push_back("comp_left");
+  //allowed.push_back("comp_right");
+  allowed.push_back("right_after_precond");
+  allowed.push_back("composed_after_precond");
+  allowed.push_back("composed_before_precond");
+  
+  
+  std::map<string,int> lookup;
+  
+  bool notFirst = false;
+  for(int i = 0; i < named.size(); i++) {
+    //mlog(named[i].name, named[i].tmv);
+    
+    //mlog1(named[i].name);
+    
+    if(find(allowed.begin(), allowed.end(), named[i].name) == allowed.end()) {
+      continue;
+    }
+    
+    lookup[named[i].name] = lookup[named[i].name] + 1;
+    if((lookup[named[i].name]-1)%4 != 0)
+      continue;
+    
+    
+    //mlog1(sbuilder() << "--" << named[i].name);
+    mlog(named[i].name, named[i].tmv);
+    
+    //mlog(named[i].name, named[i].tmv);
+    //mlog1(named[i].tmv.toMathematicaString());
+
+    if(notFirst)
+      fprintf(fp, ",");
+    notFirst = true;
+    
+    fprintf(fp, "{");
+    fprintf(fp, "\"%s\", ", named[i].name.c_str());
+    fprintf(fp, named[i].tmv.toMathematicaString().c_str());
+    fprintf(fp, "}");
+  }
+  
+  fprintf(fp, "}\n");
+  fclose(fp);
+}
+
 vector<Interval> getUnitBox(int n) {
   vector<Interval> ret;
   for(int i = 0; i < n; i++) {

@@ -59,6 +59,7 @@
 %token REMEST
 %token INTERVAL OCTAGON GRID
 %token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPRECOND
+%token QRPRECOND1 QRPRECOND2 QRPRECOND3
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -2602,11 +2603,43 @@ IDENT ':' NUM
 
 precondition: QRPRECOND
 {
-	mlog1("qr precond");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
-  Transformer *transformer = new QRTransformer();
+  //Transformer *transformer = new QRTransformer();
+  //continuousProblem.settings->transformer = transformer;
+}
+|
+QRPRECOND1
+{
+  mforce("making new");
+	mlog1("qr precond1");
+	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
+	continuousProblem.precondition = QR_PRE;
+	hybridProblem.global_setting.precondition = QR_PRE;
+  Transformer *transformer = new QRTransformer1();
+  continuousProblem.settings->transformer = transformer;
+}
+|
+QRPRECOND2
+{
+  mforce("making new");
+	mlog1("qr precond1");
+	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
+	continuousProblem.precondition = QR_PRE;
+	hybridProblem.global_setting.precondition = QR_PRE;
+  Transformer *transformer = new QRTransformer2();
+  continuousProblem.settings->transformer = transformer;
+}
+|
+QRPRECOND3
+{
+  mforce("making new");
+	mlog1("qr precond1");
+	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
+	continuousProblem.precondition = QR_PRE;
+	hybridProblem.global_setting.precondition = QR_PRE;
+  Transformer *transformer = new QRTransformer3();
   continuousProblem.settings->transformer = transformer;
 }
 |

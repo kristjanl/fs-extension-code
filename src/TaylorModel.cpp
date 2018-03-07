@@ -4086,6 +4086,31 @@ string TaylorModelVec::toString(const vector<string> & varNames) const {
   return sb;
 }
 
+string TaylorModel::toMathematicaString() const {
+  stringstream ss;
+  ss << "{" << expansion.toMathematicaString() << 
+      "," << remainder.toMathematicaString() << "}";
+  
+  string ret = ss.str();
+  
+  //replace scientific notation
+  boost::replace_all(ret, "e", " * 10^");
+  
+  
+  return ret;
+}
+string TaylorModelVec::toMathematicaString() const {
+  sbuilder sb;
+  sb << "{";
+  
+  for (int i=0; i < tms.size() - 1; i++) {
+		sb << tms[i].toMathematicaString() << ",";
+	}
+  sb << tms[tms.size()-1].toMathematicaString();
+  sb << "}";
+  return sb;
+}
+
 TaylorModel TaylorModel::transform(map<int, int> lookup, int size) {
   //mlog1("transform");
   list<Monomial> l = expansion.monomials;
@@ -4562,5 +4587,25 @@ void TaylorModel::centerRemainder() {
 void TaylorModelVec::centerRemainder() {
   for(int i = 0; i < tms.size(); i++) {
     tms[i].centerRemainder();
+  }
+}
+void TaylorModel::centerRemainder(int paramCount) {
+  mreset(old);
+  mdisable();
+  Interval mid;
+  mlog("th", *this);
+  remainder.remove_midpoint(mid);
+  TaylorModel centeredModel(mid, paramCount);
+  this->add_assign(centeredModel);
+  mlog1(mid.toString());
+  mlog("cm", centeredModel);
+  mlog("th", *this);
+  mlog1("centering");
+  mrestore(old);
+}
+
+void TaylorModelVec::preconditionCenterRemainder() {
+  for(int i = 0; i < tms.size(); i++) {
+    tms[i].centerRemainder(tms.size() + 1);
   }
 }

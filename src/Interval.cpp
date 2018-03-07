@@ -2010,6 +2010,27 @@ string Interval::toString(int prec) const {
   string ups = toStringHelper(up, prec);
   return "[" + los + "," + ups + "]";
 }
+string Interval::toMathematicaString() const {
+  string los = toStringHelper(lo, 20);
+  string ups = toStringHelper(up, 20);
+  return los + "," + ups;
+}
+string Interval::midToString() const {
+	mpfr_t tmp;
+	mpfr_inits2(intervalNumPrecision, tmp, (mpfr_ptr) 0);
+	mpfr_add(tmp, lo, up, MPFR_RNDU);
+	mpfr_div_d(tmp, tmp, 2.0, MPFR_RNDU);
+  
+	char strTemp[30];
+	mpfr_sprintf(strTemp, "%.10RDe", lo);
+  
+  //cout << strTemp << endl;
+  mpfr_clear(tmp);
+  
+	return string(strTemp);
+}
+
+
 void Interval::printFull() const {
   //mlog1("printing full");
   //mpfr_printf ("%.55Rg\n", lo);

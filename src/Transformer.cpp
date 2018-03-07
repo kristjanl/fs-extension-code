@@ -471,7 +471,7 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
 
 
 Transformer::Transformer(bool isPreconditioned, bool isWrapper, int type, string name) : 
-      isPreconditioned(isPreconditioned), isWrapper(isWrapper), name(name), transformerType(type) {
+      isPreconditioned(isPreconditioned), isWrapper(isWrapper), name(name), transformerType(type), count(0) {
 }
 
 ShrinkWrapper::ShrinkWrapper(ShrinkWrappingCondition *swChecker) : 
@@ -485,6 +485,10 @@ PreconditionedTransformer::PreconditionedTransformer(int type, string name) :
 
 QRTransformer::QRTransformer() : PreconditionedTransformer(TR_ALL_COMP, "qr") {
 }
+
+QRTransformer1::QRTransformer1() : QRTransformer() { }
+QRTransformer2::QRTransformer2() : QRTransformer() { }
+QRTransformer3::QRTransformer3() : QRTransformer() { }
 
 NullTransformer::NullTransformer() : Transformer(false, false, TR_UNKNOWN, "null") {
 }
@@ -924,8 +928,8 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
 	mlog("right", currentRight);
 	
 	
-	pSerializer->add(newLeft, "left_after_precond");
-	pSerializer->add(currentRight, "right_after_precond");
+	//pSerializer->add(newLeft, "left_after_precond");
+	//pSerializer->add(currentRight, "right_after_precond");
 	
 	
 	all.unpairedRight = currentRight;
@@ -967,7 +971,7 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     mlog("c2", tm);
     mlog1(sbuilder() << "tm paramCount1: " << 
         all.initSet.tms[0].getParamCount());
-    mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+    //mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
   }
@@ -989,7 +993,7 @@ void QRTransformer::getAInv(Matrix & result, const Matrix & A) {
   throw std::runtime_error("don't call getAInv on QR");
 }
 
-void QRTransformer::getMatrices(Matrix & a, Matrix & aInv, 
+void QRTransformer1::getMatrices(Matrix & a, Matrix & aInv, 
       const TaylorModelVec & x0) {
   mreset(old);
   mdisable();
@@ -1013,65 +1017,134 @@ void QRTransformer::getMatrices(Matrix & a, Matrix & aInv,
   // vector<vector<Interval> > & result)
   //tms[i] <-> result[i]
 	x0.linearCoefficients(intCoefficients);
-	Matrix m(rangeDim, rangeDim);
+	Matrix lin(rangeDim, rangeDim);
 
 	for(int i=0; i<rangeDim; i++) { 
 		for(int j=1; j < domainDim; j++) {
-			m.set(intCoefficients[i][j].midpoint(), i, j-1);
+			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
 		}
 	}
+  
+  //using row based QR
+  Matrix linT(rangeDim, rangeDim);
+  lin.transpose(linT);
+  Matrix QT(rangeDim, rangeDim);
+	//linT.sortColumns(); //should sort rows likely
+	linT.QRfactor(QT);
+  QT.transpose(a);
+  aInv = QT;
+  
 	
+	//mlog("lin", lin);
+	//mlog("linT", linT);
+	mlog("a", a);
+	mlog("aInv", aInv);
+  
+  mrestore(old);
+}
+
+void QRTransformer2::getMatrices(Matrix & a, Matrix & aInv, 
+      const TaylorModelVec & x0) {
+  mreset(old);
+  mdisable();
+  
+  Interval intZero;
+	vector<vector<Interval> > intCoefficients;
 	
-	if(true) {
-	  Matrix q2(rangeDim, rangeDim),q2Inv(rangeDim, rangeDim);
-  	m.QRfactor(q2);
-  	
-    q2.inverse(q2Inv);
-    mforce3(old3, "q2", q2);
-    mforce3(old4, "q2Inv", q2Inv);
+	int rangeDim = x0.tms.size();
+	int domainDim = rangeDim + 1;
+	
+
+	vector<Interval> intVecTemp;
+	for(int i=0; i<domainDim; i++) {
+		intVecTemp.push_back(intZero);
 	}
+
+	for(int i=0; i<rangeDim; i++) {
+		intCoefficients.push_back(intVecTemp);
+	}
+
+  // vector<vector<Interval> > & result)
+  //tms[i] <-> result[i]
+	x0.linearCoefficients(intCoefficients);
+	Matrix lin(rangeDim, rangeDim);
+
+	for(int i=0; i<rangeDim; i++) { 
+		for(int j=1; j < domainDim; j++) {
+			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
+		}
+	}
+  
+  
+	//using lin and lin^-1
+	a = lin;
+  lin.inverse(aInv);
+  
 	
+	//mlog("lin", lin);
+	mlog("a", a);
+	mlog("aInv", aInv);
 	
-	//approach where using rt (TODO guarantee that nothing above has depedency)
+  mrestore(old);
+}
+void QRTransformer3::getMatrices(Matrix & a, Matrix & aInv, 
+      const TaylorModelVec & x0) {
+  mreset(old);
+  mdisable();
+  
+  Interval intZero;
+	vector<vector<Interval> > intCoefficients;
+	
+	int rangeDim = x0.tms.size();
+	int domainDim = rangeDim + 1;
+	
+
+	vector<Interval> intVecTemp;
+	for(int i=0; i<domainDim; i++) {
+		intVecTemp.push_back(intZero);
+	}
+
+	for(int i=0; i<rangeDim; i++) {
+		intCoefficients.push_back(intVecTemp);
+	}
+
+  // vector<vector<Interval> > & result)
+  //tms[i] <-> result[i]
+	x0.linearCoefficients(intCoefficients);
+	Matrix lin(rangeDim, rangeDim);
+
+	for(int i=0; i<rangeDim; i++) { 
+		for(int j=1; j < domainDim; j++) {
+			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
+		}
+	}
+  
+  //using R^T and R
+	//approach where using rt (TODO guarantee that nothing above has dependency)
 	Matrix mt(rangeDim, rangeDim);
-	m.transpose(mt);
-	m = mt;
+	lin.transpose(mt);
+	lin = mt;
 	
 	Matrix q(rangeDim, rangeDim);
-	m.QRfactor(q);
+	lin.QRfactor(q);
 	Matrix qt(rangeDim, rangeDim);
 	q.transpose(qt);
-	Matrix r = qt * m;
+	Matrix r = qt * lin;
 	Matrix rt(rangeDim, rangeDim);
 	r.transpose(rt);
 	
 	a = rt;
   a.inverse(aInv);
-	/*
-	mlog("m", m);
-	mlog("q", q);
-	mlog("qt", qt);
-	mlog("r", r);
-	mlog("rt", rt);
-	mlog("m", rt*qt);
-	mlog("mt", mt);*/
+  
+	mlog("a", a);
+	mlog("aInv", aInv);
+	//mlog("q", q);
+	//mlog("qt", qt);
+	//mlog("r", r);
+	//mlog("rt", rt);
+	//mlog("m", rt*qt);
+	//mlog("mt", mt);
 	
-	
-	
-  //mforce3(old1, "a", a);
-  //mforce3(old2, "aInv", aInv);
-	
-	/*
-	mlog1("linear coefficients <");
-	mlog(coefs);
-	mlog1("linear coefficients >");
-	//
-
-	coefs.sortColumns();
-	//mlog(matCocoefsefficients);
-	coefs.QRfactor(result);
-	//mlog(result);
-  */
   mrestore(old);
 }
 
@@ -1082,7 +1155,6 @@ void QRTransformer::precond(TaylorModelVec & leftStar,
   mdisable();
   mlog1("precond <");
   minc();
-  
   tstart(tr_part_all);
   tstart(tr_part1);
   
@@ -1095,8 +1167,7 @@ void QRTransformer::precond(TaylorModelVec & leftStar,
   tstart(tr_comp_pre);
   	
 	//center remainder around zero and push the shift to constant
-	leftStar.centerRemainder();
-  
+	leftStar.preconditionCenterRemainder();
   vector<Interval> constantVec;
 	leftStar.constant(constantVec);
 	TaylorModelVec c0(constantVec, paramCount);
@@ -1199,8 +1270,8 @@ void QRTransformer::precond(TaylorModelVec & leftStar,
 	mlog("right", currentRight);
 	
 	
-	pSerializer->add(newLeft, "left_after_precond");
-	pSerializer->add(currentRight, "right_after_precond");
+	//pSerializer->add(newLeft, "left_after_precond");
+	//pSerializer->add(currentRight, "right_after_precond");
 	
 	
 	all.unpairedRight = currentRight;
@@ -1221,6 +1292,7 @@ void QRTransformer::transform(MyComponent & all,
   
   mreset(old);
   mdisable();
+  count++;
   mlog1("id transforming <");
   minc();
   //evaluateStepEnd(comps, settings, false);
@@ -1418,7 +1490,7 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
   }
   
   
-  pSerializer->add(comp->unpairedRight, "leftStar");
+  //pSerializer->add(comp->unpairedRight, "leftStar");
   
   mlog("unpaired_right", comp->unpairedRight);
   
@@ -1467,8 +1539,8 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
 	comp->unpairedRight.linearTrans_assign(SInv);
 	comp->unpairedRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
 	
-	pSerializer->add(left, "left_after_precond");
-	pSerializer->add(comp->unpairedRight, "right_after_precond");
+	//pSerializer->add(left, "left_after_precond");
+	//pSerializer->add(comp->unpairedRight, "right_after_precond");
 	
   comp->pipePairs.push_back(new PrecondModel(left, comp->unpairedRight));
   
@@ -1547,7 +1619,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
   tend(tr_eval);
   
-  pSerializer->add(leftStar, "leftStar");
+  //pSerializer->add(leftStar, "leftStar");
   
   tstart(tr_precond);
   
@@ -1655,8 +1727,8 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent
   mlog("currentRight", currentRight);
   
   
-	pSerializer->add(newLeft, "left_after_precond");
-	pSerializer->add(currentRight, "right_after_precond");
+	//pSerializer->add(newLeft, "left_after_precond");
+	//pSerializer->add(currentRight, "right_after_precond");
   
   comp->unpairedRight = currentRight;
   comp->initSet = newLeft;

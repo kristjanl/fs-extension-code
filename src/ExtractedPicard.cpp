@@ -33,7 +33,19 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	
-	pSerializer->add(range_of_x0, "leftStar");
+	//pSerializer->add(range_of_x0, "leftStar");
+	
+	//NOTE BEGIN REMOVE
+  TaylorModelVec composedBP;
+  vector<Interval> rightBPRange;
+  tmv.polyRangeNormal(rightBPRange, step_exp_table);
+	range_of_x0.insert_ctrunc_normal(composedBP, tmv, rightBPRange, step_exp_table,
+	     domain.size(), order, cutoff_threshold);
+  //pSerializer->add(composedBP, "composed_before_precond");
+  //END REMOVE
+	
+	
+	
 	
 	
 	
@@ -181,8 +193,18 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tstart(fl_int_all);
   
   
-  pSerializer->add(x, "left_after_precond");
-  pSerializer->add(result.tmv, "right_after_precond");
+  //pSerializer->add(x, "left_after_precond");
+  //pSerializer->add(result.tmv, "right_after_precond");
+  
+  //NOTE BEGIN REMOVE
+  TaylorModelVec composed;
+  vector<Interval> rightAPRange;
+  result.tmv.polyRangeNormal(rightAPRange, step_exp_table);
+	x.insert_ctrunc_normal(composed, result.tmv, rightAPRange, step_exp_table,
+	     domain.size(), order, cutoff_threshold);
+  pSerializer->add(composed, "composed_after_precond");
+  //END REMOVE
+  
   
 	
   tstart(fl_integrate);

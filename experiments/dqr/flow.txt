@@ -1,0 +1,7 @@
+vars{t, a1, a2}
+flowpipes{
+composed_after_precond:my models{
+<[0m.a8000000000000@1 , 0m.a8000000000000@1] + [0m.7fffffffffffdc@0 , 0m.7fffffffffffe0@0] * a1 , [0m-.7ffffffffffff0@-13 , 0m.7ffffffffffff0@-13]>
+,<[0m.00000000000000@0 , 0m.00000000000000@0] , [0m.00000000000000@0 , 0m.00000000000000@0]>
+}
+}

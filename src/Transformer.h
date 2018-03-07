@@ -36,6 +36,7 @@ class Transformer {
     virtual void addInfo(vector<string> & info) = 0;
     virtual void setIntegrationMapper(vector<MyComponent *> comps) = 0;
     int getType();
+    int count;
 };
 
 
@@ -71,11 +72,32 @@ class QRTransformer: public PreconditionedTransformer {
         MySettings & settings);
     void getA(Matrix & result, const TaylorModelVec & x0, const int dim);
     void getAInv(Matrix & result, const Matrix & A);
-    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+    virtual void getMatrices(Matrix & a, Matrix & aInv, 
+        const TaylorModelVec & x0) = 0;
     void precond(TaylorModelVec & leftStar, MySettings & settings, 
         MyComponent & all);
     void addInfo(vector<string> & info); //remove after extending preconditioned
-    void setIntegrationMapper(vector<MyComponent *> comps); //remove after estending preconditioned
+    void setIntegrationMapper(vector<MyComponent *> comps); //remove after extending preconditioned
+};
+
+//using row based QR
+class QRTransformer1: public QRTransformer {
+  public:
+    QRTransformer1();
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+};
+
+//using lin and lin^-1
+class QRTransformer2: public QRTransformer {
+  public:
+    QRTransformer2();
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+};
+//using R^T and R
+class QRTransformer3: public QRTransformer {
+  public:
+    QRTransformer3();
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
 };
 
 class IdentityTransformer: public PreconditionedTransformer {

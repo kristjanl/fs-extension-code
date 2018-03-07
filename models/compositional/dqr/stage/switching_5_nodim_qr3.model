@@ -1,0 +1,39 @@
+continuous reachability
+{
+ state var x1, x2, x3, x4, x5
+	
+ setting
+ {
+  fixed steps 0.01
+  time 0.1
+  remainder estimation 1e-5
+  QR precondition3
+  gnuplot octagon x1,x2
+  fixed orders 15
+  cutoff 1e-15
+  precision 512
+  output switching_5nodim_qr3
+  alg_small_comp flow impl
+  no decomposition
+  print on
+ }
+	
+ poly ode 1
+ {
+    x1' = -0.8047*x1 + 8.7420*x2 - 2.4591*x3 - 8.2714*x4 - 1.8640*x5 + [-0.0845,0.0845]
+    x2' = -8.6329*x1 - 0.5860*x2 - 2.1006*x3 + 3.6035*x4 - 1.8423*x5
+    x3' = 2.4511*x1 + 2.2394*x2 - 0.7538*x3 - 3.6934*x4 + 2.4585*x5
+    x4' = 8.3858*x1 - 3.1739*x2 + 3.7822*x3 - 0.6249*x4 + 1.8829*x5
+    x5' = 1.8302*x1 + 1.9869*x2 - 2.4539*x3 - 1.7726*x4 - 0.7911*x5 + [-0.7342,0.7342]
+ }
+ 
+ init
+ {
+   x1 in [3.1,3.1]
+   x2 in [4,4]
+   x3 in [0,0]
+   x4 in [0,0]
+   x5 in [0,0]
+ }
+}
+

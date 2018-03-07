@@ -10,6 +10,7 @@
 #define TAYLORMODEL_H_
 
 #include "Polynomial.h"
+#include <boost/algorithm/string/replace.hpp>
 
 class MyComponent;
 
@@ -130,6 +131,7 @@ public:
 	void getExpansion(Polynomial & P) const;
 
   string toString(const vector<string> & varNames) const;
+  string toMathematicaString() const;
   TaylorModel transform(map<int, int> lookup, int size);
   TaylorModel transform(vector<int> indexes);
   TaylorModel* ptransform(vector<int> indexes);
@@ -145,6 +147,7 @@ public:
   void getParts(TaylorModel & constant, TaylorModel & linear, 
       TaylorModel & nonLinear, TaylorModel & remainder) const;
   void centerRemainder();
+  void centerRemainder(int paramCount);
   
   //
   void removeHighTerms(int order);
@@ -302,6 +305,7 @@ public:
 	void polyRangeNormal(vector<Interval> & result, const vector<Interval> & step_exp_table) const;
 
   string toString(const vector<string> & varNames) const;
+  string toMathematicaString() const;
   TaylorModelVec prepareSecondary(int prefix) const;
   TaylorModelVec transform(vector<int> indexes);
   bool compare(const TaylorModelVec & tmv, const vector<Interval> & domain) const;
@@ -316,7 +320,7 @@ public:
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
       TaylorModelVec & nonLinear, TaylorModelVec & remainder) const;
   void centerRemainder();
-  
+  void preconditionCenterRemainder();
   //remove higher terms
   void removeHighTerms(int order);
   

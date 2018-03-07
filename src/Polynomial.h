@@ -172,6 +172,7 @@ public:
 
 	void toString(string & result, const vector<string> & varNames) const;	// transform a polynomial to a string
   string toString(const vector<string> & varNames) const;
+  string toMathematicaString() const;
   int equals(const Polynomial &) const;
   int getVariableCount() const;
   Polynomial addNVariables(int n) const;

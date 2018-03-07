@@ -12,6 +12,7 @@
 
 #include <stdexcept>
 #include "Interval.h"
+#include <sstream>
 
 class Monomial
 {
@@ -50,6 +51,7 @@ public:
 
 	void toString(string & result, const vector<string> & varNames) const;
   string toString(const vector<string> & varNames) const;
+  string toMathematicaString() const;
   string toString() const;
 
 	bool classInvariantOK() const;

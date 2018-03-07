@@ -11036,9 +11036,9 @@ void ContinuousReachability::composition()
 			//exit(0);
 			
 			
-      pSerializer->add(iter->tmvPre, "comp_left");
-      pSerializer->add(iter->tmv, "comp_right");
-			pSerializer->add(tmvTemp, "composed");
+      //pSerializer->add(iter->tmvPre, "comp_left");
+      //pSerializer->add(iter->tmv, "comp_right");
+			//pSerializer->add(tmvTemp, "composed");
 			
 			//mforce3(tt1, "comp_left", iter->tmvPre);
 			//mforce3(tt2, "comp_right", iter->tmv);
@@ -11059,7 +11059,7 @@ void ContinuousReachability::composition()
 			
 
 			flowpipesCompo.push_back(tmvTemp);
-			pSerializer->add(tmvTemp, "comp_comp");
+			//pSerializer->add(tmvTemp, "comp_comp");
 			//mforce3(tt1, "pipe", tmvTemp.tms[0]);
 			//mforce3(tt2, "manu", ret.tms[0]);
 			domains.push_back(iter->domain);
