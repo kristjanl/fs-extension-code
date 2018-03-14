@@ -1,5 +1,5 @@
 set term png
-set output './images/filtered_oscillator_16nodim_qr1_qrflow_qr1_11_t_3.95.png
+set output './images/filtered_oscillator_16nodim_qr1_11_t_100000000000000.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x11"
 set xrange [0.0:4.4]
-set yrange [-0.0682934638151:0.756379559197]
+set yrange [-0.068293465857:0.756379559197]
 plot '-' notitle with lines ls 1
 0 0
 0 0

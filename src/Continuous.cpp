@@ -9364,7 +9364,7 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 		}
 		else
 		{
-			fprintf(stdout, "Terminated -- The remainder estimation is not large enough.\n");
+			fprintf(stdout, "Terminated -- The remainder estimation is not large enough (time: %f).\n", t);
       settings->writer->info.push_back(sbuilder() << "reason: " << "The remainder estimation is not large enough.");
 			break;
 		}

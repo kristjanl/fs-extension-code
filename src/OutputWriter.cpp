@@ -258,7 +258,41 @@ void OutputWriter::writeCSV() {
   */
   int values = data2.size();
   int steps = data2.at(0).size();
+  int dim = (values - 2) / 4;
+  
+  //for(int i = 0; i < values; i++) {
+  //  mforce(sbuilder() << i << ": " << data2[i][0]);
+  //}
+  
+  int samplePoint = data2[0].size() / 8;
+  mforce(sbuilder() << "steps: " << data2[0].size());
+  mforce(sbuilder() << "sample point: " << (samplePoint));
+  double sampleWidth = 0;
+  for(int i = 0; i < dim; i++) {
+    int varWidthIndex = 2 + dim * 2 + i;
+    //mforce(sbuilder() << i << ": " << data2[varWidthIndex][0]);
+    sampleWidth += atof(data2[varWidthIndex][samplePoint].c_str());
+  }
+  mforce(sbuilder() << "sampleWidth: " << sampleWidth);
+  
   for(int step = 0; step < steps; step++) {
+    //mforce(sbuilder() << "time: " << data2[0][step]);
+    //mforce(sbuilder() << "size: " << data2.size());
+    
+    double stepWidth = 0;
+    for(int i = 0; i < dim; i++) {
+      int varWidthIndex = 2 + dim * 2 + i;
+      //mforce(sbuilder() << i << ": " << data2[varWidthIndex][step]);
+      double value = atof(data2[varWidthIndex][step].c_str());
+      stepWidth += value;
+    }
+    //mforce(sbuilder() << "stepWidth: " << stepWidth);
+    //mforce(sbuilder() << "ratio: "<< (stepWidth/sampleWidth));
+    if(stepWidth/sampleWidth > 10) {
+      //mforce(sbuilder() << "breaking at step #"<< step);
+      break;
+    }
+    
     for(int value = 0; value < values; value++) {
       if(data2.at(value).size() <= step) {
         *csvfile << ",";

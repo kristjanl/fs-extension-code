@@ -2608,6 +2608,8 @@ precondition: QRPRECOND
 	hybridProblem.global_setting.precondition = QR_PRE;
   //Transformer *transformer = new QRTransformer();
   //continuousProblem.settings->transformer = transformer;
+  Transformer *transformer = new QRTransformerPlain();
+  continuousProblem.settings->transformer = transformer;
 }
 |
 QRPRECOND1

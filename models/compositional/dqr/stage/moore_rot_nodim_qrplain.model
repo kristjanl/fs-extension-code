@@ -1,0 +1,32 @@
+continuous reachability
+{
+  state var x1,x2
+
+  setting
+  {
+    fixed steps 0.1
+    time 10.0
+    remainder estimation 1e-1
+    QR precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output moore_rotnodim_qrplain
+    alg_small_comp flow impl
+    no decomposition
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -x2
+    x2' = x1
+  }
+
+  init
+  {
+    x1 in [10 , 11]
+    x2 in [-1 , 1]
+  }
+}

@@ -5,7 +5,7 @@ continuous reachability
  {
   fixed steps 0.03
   time 15
-  remainder estimation 1e-5
+  remainder estimation 1e-3
   QR precondition3
   gnuplot octagon x,y
   fixed orders 3

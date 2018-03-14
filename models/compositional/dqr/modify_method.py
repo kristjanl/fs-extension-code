@@ -168,6 +168,19 @@ def foo():
   changer3.lookup[changer3.outputPat] = change_output2
   changer3.lookup[changer3.methodPat] = \
       (lambda m, f, c: change_method(m, f, c, "QR precondition3"))
+      
+  
+  changerId = SameChanger()
+  changerId.suffix = "nodim_id"
+  changerId.lookup[changerId.outputPat] = change_output2
+  changerId.lookup[changerId.methodPat] = \
+      (lambda m, f, c: change_method(m, f, c, "identity precondition"))
+  
+  changerPlain = SameChanger()
+  changerPlain.suffix = "nodim_qrplain"
+  changerPlain.lookup[changerPlain.outputPat] = change_output2
+  changerPlain.lookup[changerPlain.methodPat] = \
+      (lambda m, f, c: change_method(m, f, c, "QR precondition"))
   
   changerf = SameChanger()
   changerf.suffix = "nodim_qrflow"
@@ -178,7 +191,7 @@ def foo():
       (lambda m, f, c: change_method(m, f, c, "QR precondition"))
   
   
-  changers = [changerf, changer1, changer2, changer3]
+  changers = [changerf, changer1, changer2, changer3, changerId, changerPlain]
   
   models = []
   dirpath = ""

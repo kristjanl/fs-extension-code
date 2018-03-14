@@ -963,11 +963,11 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   mlog1("composing flowpipes");
   for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
-    pSerializer->add(all.pipePairs[i]->left, "comp_left");
-    pSerializer->add(all.pipePairs[i]->right, "comp_right");
+    //pSerializer->add(all.pipePairs[i]->left, "comp_left");
+    //pSerializer->add(all.pipePairs[i]->right, "comp_right");
     TaylorModelVec composed = all.pipePairs[i]->composed(settings);
     
-    pSerializer->add(composed, "composed");
+    //pSerializer->add(composed, "composed");
     //mlog("com", com);
 	  all.output.push_back(composed);
 	  //pSerializer->add(composed, "composed");
@@ -997,7 +997,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
-	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
+	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 
+	    2*order);
   //end of copy-paste
   
   //create output writer object

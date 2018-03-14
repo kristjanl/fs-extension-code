@@ -1,5 +1,5 @@
 set term png
-set output './images/testnodim_qr3_qrflow_qr3_2_t_1.9.png
+set output './images/testnodim_qr3_2_t_1.8.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:2.2]
-set yrange [-3.21120694785:3.21120694785]
+set xrange [0.0:2.09]
+set yrange [-2.90181269243:2.90181269243]
 plot '-' notitle with lines ls 1
 0 -0.4
 0 0.4
@@ -148,13 +148,6 @@ plot '-' notitle with lines ls 1
 1.9 2.674375174932493
 1.9 -2.674375174932493
 1.8 -2.674375174932493
-
-
-1.9 -2.95564267986154
-1.9 2.95564267986154
-2 2.95564267986154
-2 -2.95564267986154
-1.9 -2.95564267986154
 
 
 e

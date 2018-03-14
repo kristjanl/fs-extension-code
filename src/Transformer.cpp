@@ -486,6 +486,7 @@ PreconditionedTransformer::PreconditionedTransformer(int type, string name) :
 QRTransformer::QRTransformer() : PreconditionedTransformer(TR_ALL_COMP, "qr") {
 }
 
+QRTransformerPlain::QRTransformerPlain() : QRTransformer() { }
 QRTransformer1::QRTransformer1() : QRTransformer() { }
 QRTransformer2::QRTransformer2() : QRTransformer() { }
 QRTransformer3::QRTransformer3() : QRTransformer() { }
@@ -832,7 +833,7 @@ void PreconditionedTransformer::precond3(TaylorModelVec & leftStar,
   tstart(tr_comp_pre);
   	
 	//center remainder around zero and push the shift to constant
-	leftStar.centerRemainder();
+	leftStar.preconditionCenterRemainder();
   
   vector<Interval> constantVec;
 	leftStar.constant(constantVec);
@@ -991,6 +992,53 @@ void QRTransformer::getA(Matrix & result, const TaylorModelVec & x0,
 
 void QRTransformer::getAInv(Matrix & result, const Matrix & A) {
   throw std::runtime_error("don't call getAInv on QR");
+}
+
+void QRTransformerPlain::getMatrices(Matrix & a, Matrix & aInv, 
+      const TaylorModelVec & x0) {
+  mreset(old);
+  mdisable();
+  
+  Interval intZero;
+	vector<vector<Interval> > intCoefficients;
+	
+	int rangeDim = x0.tms.size();
+	int domainDim = rangeDim + 1;
+	
+
+	vector<Interval> intVecTemp;
+	for(int i=0; i<domainDim; i++) {
+		intVecTemp.push_back(intZero);
+	}
+
+	for(int i=0; i<rangeDim; i++) {
+		intCoefficients.push_back(intVecTemp);
+	}
+
+  // vector<vector<Interval> > & result)
+  //tms[i] <-> result[i]
+	x0.linearCoefficients(intCoefficients);
+	Matrix lin(rangeDim, rangeDim);
+
+	for(int i=0; i<rangeDim; i++) { 
+		for(int j=1; j < domainDim; j++) {
+			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
+		}
+	}
+  
+  //using row based QR
+  Matrix Q(rangeDim, rangeDim);
+	lin.sortColumns();
+	lin.QRfactor(Q);
+  a = Q;
+  Q.transpose(aInv);
+  
+	//mlog("lin", lin);
+	//mlog("linT", linT);
+	mlog("a", a);
+	mlog("aInv", aInv);
+  
+  mrestore(old);
 }
 
 void QRTransformer1::getMatrices(Matrix & a, Matrix & aInv, 

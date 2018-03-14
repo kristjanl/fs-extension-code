@@ -80,6 +80,14 @@ class QRTransformer: public PreconditionedTransformer {
     void setIntegrationMapper(vector<MyComponent *> comps); //remove after extending preconditioned
 };
 
+
+//using regular (column) based QR
+class QRTransformerPlain: public QRTransformer {
+  public:
+    QRTransformerPlain();
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+};
+
 //using row based QR
 class QRTransformer1: public QRTransformer {
   public:

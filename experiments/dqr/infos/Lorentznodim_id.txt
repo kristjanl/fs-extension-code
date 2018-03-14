@@ -1,0 +1,8 @@
+reason: max increase couldn't find a remainder Was thrown
+int progress: 1.722
+computation time: 13.93
+remap 1: 0.19
+evaluate t: 0.05
+precond time: 3.41
+remap 2: 0.03
+int time: 10.02

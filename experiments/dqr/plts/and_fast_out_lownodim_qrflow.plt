@@ -1,5 +1,5 @@
 set term png
-set output './images/and_fast_out_lownodim_qrflow_qrflow_qr1_6_t_9.9.png
+set output './images/and_fast_out_lownodim_qrflow_6_t_100000000000000.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x6"
 set xrange [0.0:11.0]
-set yrange [-0.202553572353:0.209859519274]
+set yrange [-0.023759398121:0.0302775231386]
 plot '-' notitle with lines ls 1
 0 0
 0 0

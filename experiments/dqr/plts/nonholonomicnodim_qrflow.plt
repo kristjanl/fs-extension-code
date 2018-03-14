@@ -1,5 +1,5 @@
 set term png
-set output './images/nonholonomicnodim_qrflow_qrflow_qrflow_2_t_7.49.png
+set output './images/nonholonomicnodim_qrflow_2_t_100000000000000.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

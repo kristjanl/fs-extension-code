@@ -6,7 +6,7 @@ continuous reachability
   {
     fixed steps 0.1
     time 10.0
-    remainder estimation 1e-3
+    remainder estimation 1e-1
     QR precondition
     gnuplot interval x1,x2
     fixed orders 2

@@ -1,5 +1,5 @@
 set term png
-set output './images/cruise_controlnodim_qr2_qrflow_qr2_2_t_100.0.png
+set output './images/cruise_controlnodim_qr2_2_t_100.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

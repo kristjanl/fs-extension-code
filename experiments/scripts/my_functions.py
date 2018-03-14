@@ -38,6 +38,13 @@ def get_range_at_time(time, csv):
 def get_range_bounds(time, csvs):
   all = map(lambda s: get_single_range_bounds(time, s), csvs)
   
+  #filter out empty data
+  all = filter(lambda x:x!=[], all)
+  
+  #for d in all:
+  #  print d[1][:9]
+  #  print d[1]
+  
   minBounds = all[0][0]
   maxBounds = all[0][1]
   for (singleMin, singleMax) in all[1:]:
@@ -47,21 +54,16 @@ def get_range_bounds(time, csvs):
     for (i, d) in enumerate(singleMax):
       if maxBounds[i] < d:
         maxBounds[i] = d
-  
-  for (singleMin, singleMax) in all[1:]:
-    for (i, d) in enumerate(singleMin):
-      if minBounds[i] < d:
-        minBounds[i] = d
-    for (i, d) in enumerate(singleMax):
-      if maxBounds[i] > d:
-        maxBounds[i] = d
   for (i, _) in enumerate(minBounds):
     if(i == 0):
       continue
     size = maxBounds[i] - minBounds[i]
     minBounds[i] = minBounds[i] - size/10
     maxBounds[i] = maxBounds[i] + size/10
+  
+  #print maxBounds[:6]
   return [minBounds,maxBounds]
+  
 def get_single_range_bounds(time, csv):
   
   if not os.path.isfile(csv):

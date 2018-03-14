@@ -30,10 +30,18 @@ modelTypes = ["cruise_control", "diabetic_1", "diabetic_2", "filtered_oscillator
 
 
 
-modelTypes = ["moore_rot", "and_fast_out_high", "and_fast_out_low", "and_lin", "and_nl", "test", "bouncing_ball", "Brusselator", "moore_rot", "buckling_column", "cruise_control", "diabetic_1", "diabetic_2", "filtered_oscillator_4", "filtered_oscillator_8", "filtered_oscillator_16", "jet_engine", "Lorentz", "Lotka_Volterra", "moore_rot_point", "neuron_I", "neuron_II", "nonholonomic", "Roessler", "rod_reactor", "switching_5", "two_tanks", "vanderpol", "vehicle_platoon_3"]
+modelTypes = ["moore_rot", "and_fast_out_high", "and_fast_out_low", "and_lin", "and_nl", "test", "bouncing_ball", "Brusselator", "moore_rot", "buckling_column", "cruise_control", "diabetic_1", "diabetic_2", "filtered_oscillator_4", "filtered_oscillator_8", "filtered_oscillator_16", "jet_engine", "Lorentz", "Lotka_Volterra", "moore_rot_point", "neuron_I", "neuron_II", "nonholonomic", "Roessler", "rod_reactor", "switching_5", "two_tanks", "vanderpol", "vehicle_platoon_3", "lin", "lin_dep", "pair_dep", "sq_deg_long"]
 
+modelTypes2 = ["Brusselator", "buckling_column", "jet_engine", "Lorentz", "Lotka_Volterra", "moore_rot_point", "switching_5", "two_tanks", "vanderpol", "vehicle_platoon_3"]
 
-algos = ["qrflow", "qr1", "qr2", "qr3"]
+modelTypes2 = ["Brusselator"]
+
+modelTypes2 = ["lin", "lin_dep", "pair_dep", "sq_deg_long"]
+
+#modelTypes = ["Lorentz"]
+
+algos = ["qrflow", "qrplain", "qr1", "qr2", "qr3", "id"]
+#algos = ["qrplain"]
 #algos = ["qr1", "qr2", "qr3"]
 dims = ["nodim"]
 
@@ -61,6 +69,7 @@ args = parser.parse_args()
 if args.action == 'run':
   flowstar_runner.runFlowstar(modelDir, flowstar, models)
 elif args.action == 'compare':
+  """
   comparer.compare2(modelDir, scriptsDir, modelTypes, dims, "qrflow", \
       "qrflow", infoFields)
   comparer.compare2(modelDir, scriptsDir, modelTypes, dims, "qrflow", \
@@ -69,6 +78,8 @@ elif args.action == 'compare':
       "qr2", infoFields)
   comparer.compare2(modelDir, scriptsDir, modelTypes, dims, "qrflow", \
       "qr3", infoFields)
+  """
+  comparer.compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields)
 
 
 

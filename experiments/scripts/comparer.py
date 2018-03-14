@@ -28,7 +28,31 @@ def compare2(modelDir, scriptsDir, modelTypes, dims, type1, type2, infoFields):
   
   tf.generateHtml(scriptsDir, modelDir, pairs, compareComb, infoFields)
   
+def compare3(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
+  compareComb = reduce(lambda p,n: p + "_" + n, algos, "")
+  nameF = lambda m, n, t: "%s_%s_%s.model"%(m, n, t)
+
+  groups = []
+  for m in modelTypes:
+    for i in dims:
+      groups.append(map(lambda s: nameF(m, i, s), algos))
   
+  tf.generateGroupHtml(scriptsDir, modelDir, groups, compareComb, infoFields)
+  
+
+#no names in html file
+def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
+  compareComb = reduce(lambda p,n: p + "_" + n, algos, "")
+  compareComb = ""
+  nameF = lambda m, n, t: "%s_%s_%s.model"%(m, n, t)
+
+  groups = []
+  for m in modelTypes:
+    for i in dims:
+      groups.append(map(lambda s: nameF(m, i, s), algos))
+  
+  tf.generateGroupHtml(scriptsDir, modelDir, groups, compareComb, infoFields)
+    
   
 
 

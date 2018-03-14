@@ -171,6 +171,35 @@ def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
     outFile.write('<tr style="border-bottom:3px solid black">' + \
         '<td colspan="100%"><hr /></td></tr>\n')
 
+def write_group_table_rows(modelDir, groups, outFile, nameSuffix, infoFields):
+  for models in groups:
+    modelFiles = map(lambda m: os.path.join(modelDir, m), models)
+    
+    csvs = map(lambda m: \
+        os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
+        
+    if plotToCommon:
+      commonTime = min( map(lambda s: fs.find_file_max_time(s), csvs) )
+    else:
+      commonTime = max( map(lambda s: fs.find_file_max_time(s), csvs) )
+    
+    nocsvs = filter(lambda s: not os.path.isfile(s), csvs)
+    
+    if len(nocsvs) != 0:
+      print "======== no csvs: %s" %nocsvs
+    
+    varRange2 = getVarRange2(modelFiles[0], csvs)
+    
+    for (i, model) in enumerate(models):
+      #print modelFiles[i]
+      #print models[i]
+      #print varRange2[i]
+      writeData(modelFiles[i], models[i], outFile, varRange2[i], commonTime, \
+          nameSuffix, infoFields)
+      
+    
+    outFile.write('<tr style="border-bottom:3px solid black">' + \
+        '<td colspan="100%"><hr /></td></tr>\n')
 
 def write_table_start(outFile, infoFields):
   outFile.write("<html>\n")
@@ -211,6 +240,12 @@ def write_table(tableName, modelDir, pairs, nameSuffix, infoFields):
   write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields)
   write_table_end(outFile)
 
+def write_group_table(tableName, modelDir, groups, nameSuffix, infoFields):
+  print "writing '%s'" %tableName
+  outFile = open(tableName, 'w')
+  write_table_start(outFile, infoFields)
+  write_group_table_rows(modelDir, groups, outFile, nameSuffix, infoFields)
+  write_table_end(outFile)
   
 #generate a plot for a single model
 def plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
@@ -255,6 +290,54 @@ def plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
         [csv] + ['var1=%s'%var1, 'var2=%s'%var2] + [tend] + xRange + yRange + imgSuffix
     p = subprocess.Popen(args)
     p.wait()  
+    
+
+#generate a plot for a single model
+def group_plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
+  if var2 != 0:
+    print "var2 is not time"
+    sys.exit()
+  csvs = map(lambda m: \
+      os.path.join("csvs", "%s.csv" %fs.getParam(m, "output") ), modelFiles)
+
+  if plotToCommon:
+    time = min( map(lambda s: fs.find_file_max_time(s), csvs) )
+  else:
+    time = max( map(lambda s: fs.find_file_max_time(s), csvs) )
+  #for csv in csvs:
+  #  print csv
+  #  print fs.find_file_max_time(csv)
+  
+  tend = "tend=%s" %time
+  
+  #signal for no data
+  #if time == 100000000000000:
+  #  return
+  
+  #print "time: %s" %time
+  
+  bounds = fs.get_range_bounds(time, csvs)
+  
+  #timeValues = map(lambda s: fs.get_range_up_to(time, s), csvs)
+  #bounds = fs.get_bounds(timeValues)
+  
+  xRange = ["xMin=%s"%bounds[0][2*var2],"xMax=%s"%bounds[1][2*var2+1]]
+  yRange = ["yMin=%s"%bounds[0][2*var1],"yMax=%s"%bounds[1][2*var1+1]]
+  #print xRange
+  #print yRange
+  
+  imgSuffix = ["suffix=%s_%s_t_%s"%(nameSuffix, var1,time)]
+  
+  #print xRange
+  #print yRange
+
+  for csv in csvs:
+    if not os.path.isfile(csv):
+      continue
+    args = [os.path.join(scriptsDir, 'gnuplot_var.py')] + \
+        [csv] + ['var1=%s'%var1, 'var2=%s'%var2] + [tend] + xRange + yRange + imgSuffix
+    p = subprocess.Popen(args)
+    p.wait()      
   
 #generate a plot for a single model
 def plot_variable_old(scriptsDir, modelFiles, var1, var2, nameSuffix):
@@ -306,6 +389,23 @@ def generate_comparision_plots(scriptsDir, modelDir, pairs, nameSuffix):
     for i in map(lambda x: x + 1, getSkippingIndexes(dim)):
       plot_variable(scriptsDir, modelFiles, i, 0, nameSuffix) #0 is the time
 
+
+# generate all the plots in the group
+def generate_group_comparision_plots(scriptsDir, modelDir, groups, nameSuffix):
+  for models in groups:
+    print models
+    modelFiles = map(lambda m: os.path.join(modelDir, m), models)
+    
+    #skip inflated model
+    if len(modelFiles) == 3:
+      modelFiles = modelFiles[:-1]
+    dim = getDimension(modelFiles[0])
+    
+    #print dim
+    
+    for i in map(lambda x: x + 1, getSkippingIndexes(dim)):
+      group_plot_variable(scriptsDir, modelFiles, i, 0, nameSuffix) #0 is the time
+
 def generateHtml(scriptsDir, modelDir, modelPairs, suffix):
   oldFields = [
       ("integration time", "Time (actual)"), 
@@ -322,6 +422,10 @@ def generateHtml(scriptsDir, modelDir, modelPairs, suffix, infoFields):
       suffix, infoFields)
 
 
+def generateGroupHtml(scriptsDir, modelDir, modelGroups, suffix, infoFields):
+  generate_group_comparision_plots(scriptsDir, modelDir, modelGroups, suffix)
+  write_group_table("experiments%s.html" %suffix, modelDir, modelGroups, \
+      suffix, infoFields)
 
 
 
