@@ -54,15 +54,17 @@ class ShrinkWrapper: public Transformer {
 class PreconditionedTransformer: public Transformer {
   public:
     PreconditionedTransformer(int type, string name);
-    virtual void getA(Matrix & result, const TaylorModelVec & x0, 
-        const int dim) = 0;
-    virtual void getAInv(Matrix & result, const Matrix & A) = 0;
-    void precond2(TaylorModelVec & badLeft, MySettings & settings, 
+    virtual void getMatrices(Matrix & a, Matrix & aInv, 
+        const TaylorModelVec & x0) = 0;
+    virtual TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, 
+        Matrix & invA) = 0;
+    void precondition(TaylorModelVec & leftStar, MySettings & settings, 
         MyComponent & all);
-    void precond3(TaylorModelVec & leftStar, MySettings & settings, 
-        MyComponent & all);
+    void transformFullSystem(MyComponent & all, vector<MyComponent *> & comps, 
+        MySettings & settings);
     void addInfo(vector<string> & info);
     void setIntegrationMapper(vector<MyComponent *> comps);
+    void getScaling(Matrix & S, Matrix & SInv, vector<Interval> & rightRange);
 };
 
 class QRTransformer: public PreconditionedTransformer {
@@ -70,14 +72,11 @@ class QRTransformer: public PreconditionedTransformer {
     QRTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
-    void getA(Matrix & result, const TaylorModelVec & x0, const int dim);
-    void getAInv(Matrix & result, const Matrix & A);
     virtual void getMatrices(Matrix & a, Matrix & aInv, 
         const TaylorModelVec & x0) = 0;
-    void precond(TaylorModelVec & leftStar, MySettings & settings, 
-        MyComponent & all);
     void addInfo(vector<string> & info); //remove after extending preconditioned
     void setIntegrationMapper(vector<MyComponent *> comps); //remove after extending preconditioned
+    TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, Matrix & invA);
 };
 
 
@@ -114,25 +113,25 @@ class IdentityTransformer: public PreconditionedTransformer {
     IdentityTransformer(int type, string name);
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
-    
-    void getA(Matrix & result, const TaylorModelVec & x0, 
-        const int dim);
-    void getAInv(Matrix & result, const Matrix & A);
-    
-    void getA(Matrix & result, MyComponent *comp);
-    
-    void getScaling(Matrix & S, Matrix & SInv, vector<Interval> & rightRange);
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+    TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, Matrix & invA);
     
     TaylorModelVec makeLeftFromA(Matrix & A, MyComponent *comp);
 };
 
-class SingleComponentIdentityTransformer: public IdentityTransformer {
+class SingleComponentIdentityTransformer: public PreconditionedTransformer {
   public:
     SingleComponentIdentityTransformer();
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void preconditionSingleComponent(MyComponent *comp, MySettings & settings);
     void initialPrecondition(MyComponent *comp, MySettings & settings);
+    TaylorModelVec makeLeftFromA(Matrix & A, MyComponent *comp);
+    
+    void getA(Matrix & result, MyComponent *comp);
+    void getAInv(Matrix & result, const Matrix & A);
+    void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
+    TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, Matrix & invA);
 };
 
 class NullTransformer: public Transformer {

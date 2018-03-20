@@ -1,0 +1,110 @@
+vars{t, a1, a2}
+flowpipes{
+leftStar:my models{
+<[0m.8d763ce4d47218@0 , 0m.8d763ce4d47238@0] * a1 , [0m-.3e2a281974bc1c@-5 , 0m.3e2a281974bc1c@-5]>
+}
+,
+leftStar:my models{
+<[0m.712b63ea438e7c@0 , 0m.712b63ea438e8c@0] * a1 , [0m-.31bcb31f8eaf1a@-5 , 0m.31bcb31f8eaf1a@-5]>
+}
+,
+leftStar:my models{
+<[0m.46bb1e726a390c@0 , 0m.46bb1e726a391c@0] * a2 + [0m.e2568fe7f85aa0@-1 , 0m.e2568fe7f85ab8@-1] * a1 , [0m-.15ceef1c3be67a@-4 , 0m.15ceef1c3be67a@-4]>
+}
+,
+leftStar:my models{
+<[0m.9c56efabc4b510@0 , 0m.9c56efabc4b530@0] * a1 , [0m-.44b3257a047a0c@-5 , 0m.44b3257a047a0c@-5]>
+}
+,
+leftStar:my models{
+<[0m.7d1259564f44e0@0 , 0m.7d1259564f44f0@0] * a1 , [0m-.36f7176cd9271c@-5 , 0m.36f7176cd9271c@-5]>
+}
+,
+leftStar:my models{
+<[0m.5dcdd4aa526ae4@0 , 0m.5dcdd4aa526af4@0] * a2 + [0m.fa2474de2e4b68@-1 , 0m.fa2474de2e4b88@-1] * a1 , [0m-.1887852d09e0e2@-4 , 0m.1887852d09e0e2@-4]>
+}
+,
+leftStar:my models{
+<[0m.acc833473489a0@0 , 0m.acc833473489c0@0] * a1 , [0m-.4bec162e9ff5ac@-5 , 0m.4bec162e9ff5ac@-5]>
+}
+,
+leftStar:my models{
+<[0m.8a39c29f906460@0 , 0m.8a39c29f906480@0] * a1 , [0m-.3cbe3e63c7bcaa@-5 , 0m.3cbe3e63c7bcaa@-5]>
+}
+,
+leftStar:my models{
+<[0m.78f2b155574a1c@0 , 0m.78f2b155574a2c@0] * a2 + [0m.1147340f06ef20@0 , 0m.1147340f06ef24@0] * a1 , [0m-.1b94ec60b49b0e@-4 , 0m.1b94ec60b49b0e@-4]>
+}
+,
+leftStar:my models{
+<[0m.bef4287cf411b8@0 , 0m.bef4287cf411d8@0] * a1 , [0m-.53e77b7b2d1db4@-5 , 0m.53e77b7b2d1db4@-5]>
+}
+,
+leftStar:my models{
+<[0m.98c353977a8048@0 , 0m.98c353977a8068@0] * a1 , [0m-.4320f5d445b370@-5 , 0m.4320f5d445b370@-5]>
+}
+,
+leftStar:my models{
+<[0m.98c3944dcf3070@0 , 0m.98c3944dcf3090@0] * a2 + [0m.131865bb0f9613@0 , 0m.131865bb0f9617@0] * a1 , [0m-.1f014772bf0110@-4 , 0m.1f014772bf0110@-4]>
+}
+,
+leftStar:my models{
+<[0m.d3095e5272d368@0 , 0m.d3095e5272d388@0] * a1 , [0m-.5cb9c8dcff3b64@-5 , 0m.5cb9c8dcff3b64@-5]>
+}
+,
+leftStar:my models{
+<[0m.a8d44b759a4ff0@0 , 0m.a8d44b759a5010@0] * a1 , [0m-.4a2f9a2295c8a4@-5 , 0m.4a2f9a2295c8a4@-5]>
+}
+,
+leftStar:my models{
+<[0m.bdef343eac7d98@0 , 0m.bdef343eac7db8@0] * a2 + [0m.151a8437c7e7e7@0 , 0m.151a8437c7e7eb@0] * a1 , [0m-.22d7eabbc8d046@-4 , 0m.22d7eabbc8d046@-4]>
+}
+,
+leftStar:my models{
+<[0m.e93b4957169390@0 , 0m.e93b49571693b0@0] * a1 , [0m-.66799870f526f8@-5 , 0m.66799870f526f8@-5]>
+}
+,
+leftStar:my models{
+<[0m.ba95d446419198@0 , 0m.ba95d4464191b8@0] * a1 , [0m-.51fc40329da128@-5 , 0m.51fc40329da128@-5]>
+}
+,
+leftStar:my models{
+<[0m.e93bcd1067aa80@0 , 0m.e93bcd1067aaa0@0] * a2 + [0m.1752b4c57499e2@0 , 0m.1752b4c57499e6@0] * a1 , [0m-.27257fc6ddf1b8@-4 , 0m.27257fc6ddf1b8@-4]>
+}
+,
+leftStar:my models{
+<[0m.101c2c77a53e97@1 , 0m.101c2c77a53e9b@1] * a1 , [0m-.713fe4dc5f1bac@-5 , 0m.713fe4dc5f1bac@-5]>
+}
+,
+leftStar:my models{
+<[0m.ce356c629ab4c0@0 , 0m.ce356c629ab4e0@0] * a1 , [0m-.5a9ae3bbd0d090@-5 , 0m.5a9ae3bbd0d090@-5]>
+}
+,
+leftStar:my models{
+<[0m.11b8a23b632415@1 , 0m.11b8a23b632419@1] * a2 + [0m.19c6a72dd33b6a@0 , 0m.19c6a72dd33b6e@0] * a1 , [0m-.2bf82d0177d45e@-4 , 0m.2bf82d0177d45e@-4]>
+}
+,
+leftStar:my models{
+<[0m.11cdeb1bf51680@1 , 0m.11cdeb1bf51684@1] * a1 , [0m-.7d28494d0c1138@-5 , 0m.7d28494d0c1138@-5]>
+}
+,
+leftStar:my models{
+<[0m.e3e55b005e95a0@0 , 0m.e3e55b005e95c0@0] * a1 , [0m-.64219a7c6ea538@-5 , 0m.64219a7c6ea538@-5]>
+}
+,
+leftStar:my models{
+<[0m.155d8e9b90feec@1 , 0m.155d8e9b90fef0@1] * a2 + [0m.1c7ca4560d53d0@0 , 0m.1c7ca4560d53d4@0] * a1 , [0m-.315fc1fe701abe@-4 , 0m.315fc1fe701abe@-4]>
+}
+,
+leftStar:my models{
+<[0m.13ad47d4364afe@1 , 0m.13ad47d4364b02@1] * a1 , [0m-.8a51483478dd50@-5 , 0m.8a51483478dd50@-5]>
+}
+,
+leftStar:my models{
+<[0m.fbdd3103d22620@0 , 0m.fbdd3103d22640@0] * a1 , [0m-.6ea8cccf419ed8@-5 , 0m.6ea8cccf419ed8@-5]>
+}
+,
+leftStar:my models{
+<[0m.199488c1add44d@1 , 0m.199488c1add451@1] * a2 + [0m.1f7b9e58f41cbe@0 , 0m.1f7b9e58f41cc2@0] * a1 , [0m-.376de8d1d00eec@-4 , 0m.376de8d1d00eec@-4]>
+}
+}
