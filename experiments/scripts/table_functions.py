@@ -397,8 +397,8 @@ def generate_group_comparision_plots(scriptsDir, modelDir, groups, nameSuffix):
     modelFiles = map(lambda m: os.path.join(modelDir, m), models)
     
     #skip inflated model
-    if len(modelFiles) == 3:
-      modelFiles = modelFiles[:-1]
+    #if len(modelFiles) == 3:
+    #  modelFiles = modelFiles[:-1]
     dim = getDimension(modelFiles[0])
     
     #print dim

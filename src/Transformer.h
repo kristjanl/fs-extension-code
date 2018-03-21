@@ -28,7 +28,7 @@ class Transformer {
     Transformer(bool isPreconditioned, bool isWrapper, int type, string name);
     virtual void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings) = 0;
-    void evaluateStepEnd(vector<MyComponent *> & comps, MySettings & settings, 
+    void makeNextInitSet(vector<MyComponent *> & comps, MySettings & settings, 
         bool fail);
     const bool isPreconditioned;
     const bool isWrapper;

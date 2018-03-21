@@ -174,28 +174,14 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
 
 void OutputWriter::addCompomentData(MyComponent & comp, 
     vector<Interval> & domain) {
-  /*
-  int index = 0;
-  for(vector<int>::iterator it = comp.varIndexes.begin(); 
-      it < comp.varIndexes.end(); it++, index++) {
-    int varIndex = *it;
-    int compIndex = comp.solveIndexes.at(index);
-    
-    for(int i = 0; i < comp.pipes.size(); i++) {
-      
-      Interval pipe = evalVarToInterval(comp.pipes.at(i), domain, compIndex);
-      data.at(varIndex+1).push_back(pipe);
-    }
-  }*/
-  
   
   int dim = domain.size() - 1;
-  
   int index = 0;
   for(vector<int>::iterator it = comp.varIndexes.begin(); 
       it < comp.varIndexes.end(); it++, index++) {
     int varIndex = *it;
     int compIndex = comp.solveIndexes.at(index);
+    mforce(sbuilder() << comp.pipes.size());
     
     for(int i = 0; i < comp.pipes.size(); i++) {
       TaylorModelVec tmv = comp.pipes.at(i);
@@ -228,34 +214,9 @@ void OutputWriter::writeCSV() {
   string csvfname = "csvs/" + name + ".csv";
   
   createDir("csvs");
-  
   mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
   csvfile->open(csvfname.c_str());
   
-  /*
-  int vars = data.size();
-  int steps = data.at(0).size();
-  for(int step = 0; step < steps; step++) {
-    bool doBreak = false;
-    for(int var = 0; var < vars; var++) {
-      if(data.at(var).size() <= step) {
-        doBreak = true;
-      }
-    }
-    if(doBreak)
-      break;
-      
-    for(int var = 0; var < vars; var++) {
-      Interval varInt = data.at(var).at(step);
-      //mlog1(
-      //    sbuilder() << varInt.getLower() << "," <<  varInt.getHigher());
-      *csvfile << varInt.getLower() << "," << varInt.getHigher() << ",";
-    }
-    *csvfile << endl;
-    //mlog1("");
-    
-  }
-  */
   int values = data2.size();
   int steps = data2.at(0).size();
   int dim = (values - 2) / 4;
@@ -265,6 +226,7 @@ void OutputWriter::writeCSV() {
   //}
   
   int samplePoint = data2[0].size() / 8;
+  
   mforce(sbuilder() << "steps: " << data2[0].size());
   mforce(sbuilder() << "sample point: " << (samplePoint));
   double sampleWidth = 0;
@@ -307,7 +269,6 @@ void OutputWriter::writeCSV() {
 }
 void OutputWriter::writeInfo() {
   string infoName = "infos/" + name + ".txt";
-  
   createDir("infos");
   mlog1(sbuilder() << "writingInfo (" << infoName << ")");
   ofstream infoFile;

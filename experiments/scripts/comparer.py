@@ -48,8 +48,11 @@ def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
 
   groups = []
   for m in modelTypes:
-    for i in dims:
-      groups.append(map(lambda s: nameF(m, i, s), algos))
+    if dims != None:
+      for i in dims:
+        groups.append(map(lambda s: nameF(m, i, s), algos))
+    else:
+      groups.append( map(lambda s: "%s_%s.model"%(m, s), algos) )
   
   tf.generateGroupHtml(scriptsDir, modelDir, groups, compareComb, infoFields)
     

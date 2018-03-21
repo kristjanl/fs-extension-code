@@ -619,7 +619,7 @@ namespace smallComp {
     
     //remaps previous components flowpipes
     
-    component.remapLastFlowpipe();
+    component.remapTimeStepPipe();
     
     mlog1("remapping done");
     
@@ -950,7 +950,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   } else if(transformer->getType() == TR_ALL_COMP) {
     //tranformer maps everything to system, then precondtions
     //need to remap last integration result, add last flowpipe for system component
-    all.remapLastFlowpipe();
+    all.remapTimeStepPipe();
     all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
     
     //mforce3(old3, "all.right3", all.unpairedRight);

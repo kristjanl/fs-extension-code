@@ -1,0 +1,33 @@
+continuous reachability
+{
+ state var u,v
+	
+ setting
+ {
+  fixed steps 0.1
+  time 6
+  remainder estimation 1e-5
+  shrink wrapping 10
+  gnuplot octagon u,v
+  fixed orders 10
+  cutoff 1e-20
+  precision 53
+  output quadric_sw_10
+  alg_small_comp
+  no decomposition
+  print on
+ }
+	
+ poly ode 1
+ {
+  u' = v
+  v' = u*u
+ }
+ 
+ init
+ {
+  u in [0.95, 1.05]
+  v in [-1.05,-0.95]
+ }
+}
+

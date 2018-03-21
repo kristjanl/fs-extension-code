@@ -649,10 +649,10 @@ void MyComponent::remapFlowpipes() {
   }
 }
 
-void MyComponent::remapLastFlowpipe() {
+void MyComponent::remapTimeStepPipe() {
   mreset(old);
   mdisable();
-  mlog1("remapping last <");
+  mlog1("remapping tsp <");
   minc();
   
   int varSize = varIndexes.size() + dependencies.size();
@@ -719,7 +719,7 @@ void MyComponent::remapLastFlowpipe() {
   
   //mlog("init", initSet);
   mdec();
-  mlog1("remapping last >");
+  mlog1("remapping tsp >");
   mrestore(old);
 }
 

@@ -81,7 +81,7 @@ class MyComponent {
     void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode);
     void prepareMappers();
     void remapFlowpipes();
-    void remapLastFlowpipe();
+    void remapTimeStepPipe();
     
     bool isSolveVar(int var);
     bool belongsToComp(int param);

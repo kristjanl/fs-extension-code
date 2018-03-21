@@ -1,29 +1,24 @@
 #include "Transformer.h"
 
-void Transformer::evaluateStepEnd(vector<MyComponent *> & comps, 
+void Transformer::makeNextInitSet(vector<MyComponent *> & comps, 
       MySettings & settings, bool fail) {
   mreset(old);
-  if(true || fail) {
+  if(fail) {
     //signaling need to refactor
     throw invalid_argument("evaluate called with fail"); 
   }
+  
   for(int i = 0; i < comps.size(); i++) {
-    mlog1(comps.size());
-    mlog1("here");
     MyComponent & comp = *(comps[i]);
-    mlog("pipe", comp.timeStepPipe);
-    continue;
-    int lastIndex = comp.pipes.size()-1;
-    
-    //set the next initSet
-    comp.pipes.at(lastIndex).evaluate_t(comp.initSet,
-        settings.step_end_exp_table);
-        
-    //mlog("last", (*it)->pipes.at(lastIndex));
-    //mlog("vars", (*it)->varIndexes);
-    //mlog("evaluated", (*it)->initSet);
+    //mforce(sbuilder() << comp.pipes.size());
+    TaylorModelVec tsp = comp.timeStepPipe;
+    //mlog("tsp", tsp);
+    tsp.evaluate_t(comp.initSet, settings.step_end_exp_table);
+    comp.pipes.push_back(tsp);
+    //mlog("evaluated", comp.initSet);
+    //mlog1(sbuilder());
   }
-  exit(0);
+  //mlog1(sbuilder() << "count: " << count);
   mrestore(old);
 }
 
@@ -93,7 +88,8 @@ void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor,
   
   
   //comp->initSet is the old set, newCompSet is the shrink wrapped one
-  if(true) { // TODO add compiler flag
+  if(false) { // TODO add compiler flag
+    //can't use comp->initSet anymore, need to compute it again from comp->timeStepPipe
     if(comp->initSet.compare(newCompSet, domain) == false) {
       throw std::runtime_error("something decreased after shrink wrapping");
     }
@@ -416,13 +412,12 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
   
   clock_t start = clock();
   
-  all.remapLastFlowpipe();
+  all.remapTimeStepPipe();
   
-  TaylorModelVec last = all.pipes.at(all.pipes.size() - 1);
   TaylorModelVec tmv;
-  last.evaluate_t(tmv, step_end_exp_table);
+  all.timeStepPipe.evaluate_t(tmv, step_end_exp_table);
   all.swInput = tmv;
-  
+    
   mlog("swInput", all.swInput);
   //introduces a parameter to swInput
   
@@ -523,14 +518,19 @@ TaylorModelVec IdentityTransformer::getLeftToRight(TaylorModelVec & leftStar,
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
-  mlog1("sw transforming");
-  exit(0);
-  evaluateStepEnd(comps, settings, true);
+  //mlog1("sw transforming");
+  tstart(sw_wrapping);
+  //makeNextInitSet(comps, settings, false);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
-    mforce("wrapping");
+    mlog1(sbuilder() << "wrapping");
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,
         settings);
+  } else {
+    //don't shrinkwrap but prepare initial set for next step
+    makeNextInitSet(comps, settings, false);
   }
+  count++;
+  tend(sw_wrapping);
 }
 
 TaylorModelVec getUnitTmv(int varCount) {
@@ -938,7 +938,7 @@ void QRTransformer::transform(MyComponent & all,
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
   //mlog1("null transforming");
-  evaluateStepEnd(comps, settings, true);
+  makeNextInitSet(comps, settings, true);
 }
 void IdentityTransformer::transform(MyComponent & all, 
       vector<MyComponent *> & comps, MySettings & settings) {
@@ -973,12 +973,12 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   count++;
   mlog1("id transforming <");
   minc();
-  //evaluateStepEnd(comps, settings, false);
+  //makeNextInitSet(comps, settings, false);
   
   //TODO evaluate first, then remap maybe
   tstart(tr_remap1);
   //remaps all the last pipes to system flowpipes at all component
-  all.remapLastFlowpipe();
+  all.remapTimeStepPipe();
   tend(tr_remap1);
   
   tstart(tr_pipe);
@@ -1032,7 +1032,7 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mdec();
   mlog1("id transforming >");
   mrestore(old);
-  //evaluateStepEnd(comps, settings);
+  //makeNextInitSet(comps, settings);
 }
 
 TaylorModelVec IdentityTransformer::makeLeftFromA(Matrix & A, MyComponent *comp) {
@@ -1377,7 +1377,7 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
   mdec();
   mlog1("id transforming by component>");
   mrestore(old);
-  //evaluateStepEnd(comps, settings);
+  //makeNextInitSet(comps, settings);
 }
 
 void PreconditionedTransformer::addInfo(vector<string> & info) {
@@ -1413,7 +1413,8 @@ void NullTransformer::addInfo(vector<string> & info) {
   throw std::runtime_error("don't call add info on Null yet");
 }
 void ShrinkWrapper::addInfo(vector<string> & info) {
-  throw std::runtime_error("don't call add info on SW yet");
+  taddToInfo("postprocess", sw_wrapping, info);
+  //throw std::runtime_error("don't call add info on SW yet");
 }
 
 void PreconditionedTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
@@ -1426,7 +1427,12 @@ void PreconditionedTransformer::setIntegrationMapper(vector<MyComponent *> comps
   }
 }
 void ShrinkWrapper::setIntegrationMapper(vector<MyComponent *> comps) {
-  throw std::runtime_error("don't call setIntegrationMapper on SW yet");
+  for(int i = 0; i < comps.size(); i++) {
+    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
+      CompDependency dep = *comps[i]->dependencies[j];
+      //dep.mapper is already set
+    }
+  }
 }
 void QRTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
   for(int i = 0; i < comps.size(); i++) {

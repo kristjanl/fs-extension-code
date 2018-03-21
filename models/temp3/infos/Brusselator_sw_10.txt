@@ -1,0 +1,4 @@
+reason: Map is not shrinkable (n = 2, t = 0.606219) Was thrown
+int progress: 1.47
+computation time: 9.01
+postprocess: 0
