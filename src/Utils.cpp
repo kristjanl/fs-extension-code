@@ -408,8 +408,10 @@ void printTMVFiles(string file1, string file2, string name,
 
 
 void toMathematica(string file) {
-  mforce("here");
-  FILE *fp = fopen("mathematica.txt", "w");
+  stringstream ss;
+  ss << "mathematica_" << file;
+  mforce(sbuilder() << "writing" << ss.str());
+  FILE *fp = fopen(ss.str().c_str(), "w");
   
   fprintf(fp, "{");
   
@@ -421,8 +423,8 @@ void toMathematica(string file) {
   //allowed.push_back("comp_left");
   //allowed.push_back("comp_right");
   allowed.push_back("right_after_precond");
-  allowed.push_back("composed_after_precond");
-  allowed.push_back("composed_before_precond");
+  //allowed.push_back("composed_after_precond");
+  //allowed.push_back("composed_before_precond");
   
   
   std::map<string,int> lookup;
@@ -438,8 +440,8 @@ void toMathematica(string file) {
     }
     
     lookup[named[i].name] = lookup[named[i].name] + 1;
-    if((lookup[named[i].name]-1)%4 != 0)
-      continue;
+    //if((lookup[named[i].name]-1)%4 != 0)
+    //  continue;
     
     
     //mlog1(sbuilder() << "--" << named[i].name);

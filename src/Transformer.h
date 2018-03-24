@@ -69,7 +69,7 @@ class PreconditionedTransformer: public Transformer {
 
 class QRTransformer: public PreconditionedTransformer {
   public:
-    QRTransformer();
+    QRTransformer(string name);
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     virtual void getMatrices(Matrix & a, Matrix & aInv, 

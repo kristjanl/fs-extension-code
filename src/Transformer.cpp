@@ -478,13 +478,14 @@ PreconditionedTransformer::PreconditionedTransformer(int type, string name) :
       Transformer(true, false, type, name) {
 }
 
-QRTransformer::QRTransformer() : PreconditionedTransformer(TR_ALL_COMP, "qr") {
+QRTransformer::QRTransformer(string name) : 
+      PreconditionedTransformer(TR_ALL_COMP, name) {
 }
 
-QRTransformerPlain::QRTransformerPlain() : QRTransformer() { }
-QRTransformer1::QRTransformer1() : QRTransformer() { }
-QRTransformer2::QRTransformer2() : QRTransformer() { }
-QRTransformer3::QRTransformer3() : QRTransformer() { }
+QRTransformerPlain::QRTransformerPlain() : QRTransformer("qrp") { }
+QRTransformer1::QRTransformer1() : QRTransformer("qr1") { }
+QRTransformer2::QRTransformer2() : QRTransformer("qr2") { }
+QRTransformer3::QRTransformer3() : QRTransformer("qr3") { }
 
 NullTransformer::NullTransformer() : Transformer(false, false, TR_UNKNOWN, "null") {
 }
@@ -658,8 +659,8 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	mlog("right", currentRight);
 	
 	
-	//pSerializer->add(newLeft, "left_after_precond");
-	//pSerializer->add(currentRight, "right_after_precond");
+	pSerializer->add(newLeft, "left_after_precond");
+	pSerializer->add(currentRight, "right_after_precond");
 	
 	
 	all.unpairedRight = currentRight;

@@ -25,6 +25,12 @@ void parseError(const char *str, int lnum)
 
 int main(int argc, const char *argv[])
 {
+  
+  //compare two logs
+  //first 2 arguments are input file names
+  //3rd argument is the name of the TM that will be compared
+  //(optional) 4th is the index of the TM in the first file (0 if not present)
+  //(optional) 5th is the index in the second file (same as 4th if no present)
   if(argc >= 4) {
     mforce("print");
     
@@ -40,6 +46,9 @@ int main(int argc, const char *argv[])
     printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
     exit(0);
   }
+  
+  //given a single argument will convert the TMs in that file into Mathematica's
+  //format
   if(argc == 2) {
     //transform to mathematica
     toMathematica(argv[1]);
