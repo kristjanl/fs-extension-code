@@ -58,8 +58,8 @@ class PreconditionedTransformer: public Transformer {
         const TaylorModelVec & x0) = 0;
     virtual TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, 
         Matrix & invA) = 0;
-    void precondition(TaylorModelVec & leftStar, MySettings & settings, 
-        MyComponent & all);
+    void precondition(TaylorModelVec & leftStar, TaylorModelVec & prevRight, 
+        MySettings & settings, MyComponent & all);
     void transformFullSystem(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info);

@@ -5,7 +5,7 @@ continuous reachability
  setting
  {
   fixed steps 0.02
-  time 5
+  time 10
   remainder estimation 1e-3
   QR precondition1
   gnuplot octagon x,y

@@ -557,7 +557,7 @@ TaylorModelVec getUnitTmv(int varCount) {
 
 
 void PreconditionedTransformer::precondition(TaylorModelVec & leftStar, 
-    MySettings & settings, MyComponent & all) {
+    TaylorModelVec & prevRight, MySettings & settings, MyComponent & all) {
   mreset(old);
   mdisable();
   mlog1("precondition <");
@@ -605,9 +605,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   
   tstart(tr_part2);
   
-  mlog("leftToRight", leftToRight); 
-    
-  TaylorModelVec & prevRight = all.unpairedRight;
+  mlog("leftToRight", leftToRight);
   
 	vector<Interval> prevRightPolyRange;
 	prevRight.polyRangeNormal(prevRightPolyRange,
@@ -970,10 +968,11 @@ void PreconditionedTransformer::getScaling(Matrix & S, Matrix & SInv,
 void PreconditionedTransformer::transformFullSystem(MyComponent & all, 
       vector<MyComponent *> & comps, MySettings & settings) {
   mreset(old);
-  mdisable();
+  //mdisable();
   count++;
   mlog1("id transforming <");
   minc();
+  mlog1(sbuilder() << "count: " << count);
   //makeNextInitSet(comps, settings, false);
   
   //TODO evaluate first, then remap maybe
@@ -1006,10 +1005,25 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   //pSerializer->serialize();
   
   mlog1(sbuilder() << "size: " << leftStar.tms.size());
-  //mlog("leftStar", leftStar);
+  mlog("left*", leftStar);
+  mlog("upr", all.unpairedRight);
   
   tstart(tr_precond);
-  precondition(leftStar, settings, all);
+  if(count == 1 && false) {
+    int n = leftStar.tms.size();
+    Matrix m(n, n + 1);//+1 for t
+    for(int i = 0; i < n; i++) {
+      m.set(1, i, i + 1);
+    }
+    TaylorModelVec tm(m);
+    mlog("tm", tm);
+    precondition(tm, leftStar, settings, all);
+    
+    mlog("init", all.initSet);
+    mlog("upr", all.unpairedRight);
+  } else  {
+    precondition(leftStar, all.unpairedRight, settings, all);
+  }
   tend(tr_precond);
   //mlog("upright", all.unpairedRight);
   

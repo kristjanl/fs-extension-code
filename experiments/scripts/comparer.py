@@ -41,7 +41,7 @@ def compare3(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
   
 
 #no names in html file
-def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
+def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields, suffix=""):
   compareComb = reduce(lambda p,n: p + "_" + n, algos, "")
   compareComb = ""
   nameF = lambda m, n, t: "%s_%s_%s.model"%(m, n, t)
@@ -54,7 +54,7 @@ def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields):
     else:
       groups.append( map(lambda s: "%s_%s.model"%(m, s), algos) )
   
-  tf.generateGroupHtml(scriptsDir, modelDir, groups, compareComb, infoFields)
+  tf.generateGroupHtml(scriptsDir, modelDir, groups, suffix, infoFields)
     
   
 

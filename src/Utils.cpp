@@ -440,9 +440,8 @@ void toMathematica(string file) {
     }
     
     lookup[named[i].name] = lookup[named[i].name] + 1;
-    //if((lookup[named[i].name]-1)%4 != 0)
-    //  continue;
-    
+    if((lookup[named[i].name]-1)%5 != 0) 
+      continue;
     
     //mlog1(sbuilder() << "--" << named[i].name);
     mlog(named[i].name, named[i].tmv);
