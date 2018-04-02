@@ -1,5 +1,5 @@
 set term png
-set output './images/testnodim_qrplain_2_t_1.8.png
+set output './images/testnodim_qrplain_none_2_t_1.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:2.09]
-set yrange [-2.90181269243:2.90181269243]
+set xrange [0.0:2.2]
+set yrange [-2.9018197207:2.9018197207]
 plot '-' notitle with lines ls 1
 0 -0.4
 0 0.4

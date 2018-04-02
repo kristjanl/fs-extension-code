@@ -1,5 +1,5 @@
 set term png
-set output './images/filtered_oscillator_16nodim_id_11_t_100000000000000.png
+set output './images/filtered_oscillator_16nodim_id_none_11_t_3.95.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

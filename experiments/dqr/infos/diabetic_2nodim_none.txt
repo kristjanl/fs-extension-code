@@ -1,0 +1,4 @@
+reason: max increase couldn't find a remainder Was thrown
+int progress: 2.8
+computation time: 0.16
+postprocess: 0

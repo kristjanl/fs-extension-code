@@ -1,0 +1,34 @@
+continuous reachability
+{
+  state var x1,x2,x3
+
+  setting
+  {
+    fixed steps 0.1
+    time 10
+    remainder estimation 1e-3
+    shrink wrapping 0
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output and_nlnodim_none
+    alg_small_comp flow impl
+    no decomposition
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -0.3*x1 + 0.1*x2 - 0.9*x1*x2
+    x2' = 0.3*x1 - 0.1*x2 - 0.9*x1*x2
+    x3' = 0.9*x1*x2
+  }
+
+  init
+  {
+    x1 in [0.99,1.01]
+    x2 in [0,0]
+    x3 in [0,0]
+  }
+}

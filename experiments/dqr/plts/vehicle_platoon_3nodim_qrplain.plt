@@ -1,5 +1,5 @@
 set term png
-set output './images/vehicle_platoon_3nodim_qrplain_6_t_11.98.png
+set output './images/vehicle_platoon_3nodim_qrplain_none_6_t_11.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x6"
 set xrange [0.0:13.2]
-set yrange [-2.04437222862:2.46005992914]
+set yrange [-0.314252691357:2.46005992914]
 plot '-' notitle with lines ls 1
 0 0.9
 0 1.1

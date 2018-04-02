@@ -968,7 +968,7 @@ void PreconditionedTransformer::getScaling(Matrix & S, Matrix & SInv,
 void PreconditionedTransformer::transformFullSystem(MyComponent & all, 
       vector<MyComponent *> & comps, MySettings & settings) {
   mreset(old);
-  //mdisable();
+  mdisable();
   count++;
   mlog1("id transforming <");
   minc();

@@ -1,7 +1,7 @@
 int progress: 0.1
-computation time: 2.07
+computation time: 1.87
 remap 1: 0
-evaluate t: 0
-precond time: 0.01
-remap 2: 0.01
-int time: 2.05
+evaluate t: 0.01
+precond time: 0
+remap 2: 0
+int time: 1.85

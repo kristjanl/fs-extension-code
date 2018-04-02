@@ -1,5 +1,5 @@
 set term png
-set output './images/and_fast_out_highnodim_id_small_6_t_100000000000000.png
+set output './images/and_fast_out_highnodim_id_none_6_t_29.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x6"
 set xrange [0.0:33.0]
-set yrange [-0.0708472242653:0.799626682768]
+set yrange [-0.0708472242653:0.797881578423]
 plot '-' notitle with lines ls 1
 0 0
 0 0

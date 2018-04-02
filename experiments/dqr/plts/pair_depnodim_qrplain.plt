@@ -1,5 +1,5 @@
 set term png
-set output './images/pair_depnodim_qrplain_2_t_58.5.png
+set output './images/pair_depnodim_qrplain_none_2_t_58.5.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:66.0]
-set yrange [-0.371688986346:1.08014634009]
+set yrange [-0.0336756794882:1.08014634009]
 plot '-' notitle with lines ls 1
 0 0.9
 0 1

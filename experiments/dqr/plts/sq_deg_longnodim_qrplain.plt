@@ -1,5 +1,5 @@
 set term png
-set output './images/sq_deg_longnodim_qrplain_2_t_99.0.png
+set output './images/sq_deg_longnodim_qrplain_none_2_t_99.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:110.0]
-set yrange [0.0414249477792:1.09099782128]
+set yrange [-0.119314780943:1.09099782128]
 plot '-' notitle with lines ls 1
 0 0.5
 0 1

@@ -1,0 +1,3 @@
+int progress: 60
+computation time: 0.95
+postprocess: 0

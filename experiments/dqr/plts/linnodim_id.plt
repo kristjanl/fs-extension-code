@@ -1,5 +1,5 @@
 set term png
-set output './images/linnodim_id_1_t_49.0.png
+set output './images/linnodim_id_none_1_t_49.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

@@ -189,9 +189,17 @@ def foo():
   changerf.lookup[changerf.outputPat] = change_output2
   changerf.lookup[changerf.methodPat] = \
       (lambda m, f, c: change_method(m, f, c, "QR precondition"))
+      
+  
+  changern = SameChanger()
+  changern.suffix = "nodim_none"
+  changern.lookup[changern.outputPat] = change_output2
+  changern.lookup[changern.methodPat] = \
+      (lambda m, f, c: change_method(m, f, c, "shrink wrapping 0"))
   
   
-  changers = [changerf, changer1, changer2, changer3, changerId, changerPlain]
+  changers = [changerf, changer1, changer2, changer3, changerId, changerPlain, \
+      changern]
   
   models = []
   dirpath = ""

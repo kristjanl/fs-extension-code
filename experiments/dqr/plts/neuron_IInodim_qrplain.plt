@@ -1,5 +1,5 @@
 set term png
-set output './images/neuron_IInodim_qrplain_2_t_8.76.png
+set output './images/neuron_IInodim_qrplain_none_2_t_8.78.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:9.658]
-set yrange [-4.52689119296:50.7359336458]
+set xrange [0.0:9.68]
+set yrange [-4.52689119296:50.7798368788]
 plot '-' notitle with lines ls 1
 0 -0.5
 0 0.5

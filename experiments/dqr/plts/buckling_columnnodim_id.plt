@@ -1,5 +1,5 @@
 set term png
-set output './images/buckling_columnnodim_id_2_t_9.99.png
+set output './images/buckling_columnnodim_id_none_2_t_9.99.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:11.0]
-set yrange [-1.78315693026:2.16625207686]
+set yrange [-1.41380261916:2.16625982186]
 plot '-' notitle with lines ls 1
 0 -0.5
 0 -0.4

@@ -158,8 +158,8 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
   
   for(int i = 0; i < comps.at(0)->pipes.size(); i++) {
     Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
-    data2.at(0).push_back(timeInt.getLower());
-    data2.at(1).push_back(timeInt.getHigher());
+    data2.at(0).push_back(timeInt.getLower(5));
+    data2.at(1).push_back(timeInt.getHigher(5));
   }
   
   mdec();

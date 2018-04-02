@@ -1,5 +1,5 @@
 set term png
-set output './images/switching_5nodim_id_small_2_t_100000000000000.png
+set output './images/switching_5nodim_id_none_2_t_0.09.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:0.11]
-set yrange [0.0647751793998:4.29490925919]
+set yrange [0.401550196033:4.29490925919]
 plot '-' notitle with lines ls 1
 0 4
 0 4

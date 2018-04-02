@@ -1,5 +1,5 @@
 set term png
-set output './images/Brusselatornodim_qrplain_2_t_14.97.png
+set output './images/Brusselatornodim_qrplain_none_2_t_14.97.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:16.5]
-set yrange [-0.187601052811:3.10210322362]
+set yrange [-0.187601052811:2.43467006272]
 plot '-' notitle with lines ls 1
 0 -0
 0 0.2

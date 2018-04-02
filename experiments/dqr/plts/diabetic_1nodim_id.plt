@@ -1,5 +1,5 @@
 set term png
-set output './images/diabetic_1nodim_id_2_t_100000000000000.png
+set output './images/diabetic_1nodim_id_none_2_t_359.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:396.0]
-set yrange [-0.389328933373:0.388613490307]
+set yrange [-2.40904915723:2.40937839361]
 plot '-' notitle with lines ls 1
 0 0
 0 0

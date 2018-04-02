@@ -1,5 +1,5 @@
 set term png
-set output './images/moore_rot_pointnodim_qrplain_2_t_100000000000000.png
+set output './images/moore_rot_pointnodim_qrplain_none_2_t_9.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:11.0]
-set yrange [-21.6721510517:21.0226446975]
+set yrange [-21.6721510517:15.6503329444]
 plot '-' notitle with lines ls 1
 0 0
 0 0

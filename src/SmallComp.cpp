@@ -986,6 +986,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   mlog1("sc reach <");
   minc();
   mlog1(sbuilder() << "# of components: " <<components.size());
+
   
   if(pSerializer == NULL) {
     //transformer name appended with .txt
@@ -1017,6 +1018,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   settings->step_exp_table = step_exp_table;
   settings->step_end_exp_table = step_end_exp_table;
   settings->domain = domain;
+
   
   vector<TaylorModelVec> pipes;
   

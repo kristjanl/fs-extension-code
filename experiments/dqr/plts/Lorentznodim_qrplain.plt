@@ -1,5 +1,5 @@
 set term png
-set output './images/Lorentznodim_qrplain_2_t_4.44.png
+set output './images/Lorentznodim_qrplain_none_2_t_4.44.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

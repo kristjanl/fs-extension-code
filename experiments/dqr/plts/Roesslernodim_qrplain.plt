@@ -1,5 +1,5 @@
 set term png
-set output './images/Roesslernodim_qrplain_2_t_100000000000000.png
+set output './images/Roesslernodim_qrplain_none_2_t_5.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:6.6]
-set yrange [-12.5876058175:8.51414989235]
+set yrange [-11.5568117569:8.38473806057]
 plot '-' notitle with lines ls 1
 0 -8.599999999999998
 0 -8.199999999999999

@@ -1,5 +1,5 @@
 set term png
-set output './images/Lotka_Volterranodim_id_small_2_t_9.98.png
+set output './images/Lotka_Volterranodim_id_none_2_t_6.22.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:11.0]
-set yrange [-1.47512125617:5.8446410902]
+set xrange [0.0:6.864]
+set yrange [-3.69998275697:5.42448935978]
 plot '-' notitle with lines ls 1
 0 1.8
 0 2.2

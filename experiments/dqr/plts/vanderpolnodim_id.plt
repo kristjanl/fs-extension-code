@@ -1,5 +1,5 @@
 set term png
-set output './images/vanderpolnodim_id_2_t_6.98.png
+set output './images/vanderpolnodim_id_none_2_t_6.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:7.7]
-set yrange [-3.48510454819:3.45543975054]
+set yrange [-3.2906436262:3.4554799545]
 plot '-' notitle with lines ls 1
 0 2.25
 0 2.35

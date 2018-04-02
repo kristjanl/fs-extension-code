@@ -1,5 +1,5 @@
 set term png
-set output './images/two_tanksnodim_id_2_t_100000000000000.png
+set output './images/two_tanksnodim_id_none_2_t_1.99.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:2.2]
-set yrange [-5.59296708697:1.56683005131]
+set yrange [-5.62247381695:1.56683005131]
 plot '-' notitle with lines ls 1
 0 1
 0 1

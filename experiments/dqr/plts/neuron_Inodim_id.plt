@@ -1,5 +1,5 @@
 set term png
-set output './images/neuron_Inodim_id_2_t_94.04.png
+set output './images/neuron_Inodim_id_none_2_t_94.04.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x2"
 set xrange [0.0:103.466]
-set yrange [-32.1480780922:3.38975774064]
+set yrange [-32.1480780922:8.31590234271]
 plot '-' notitle with lines ls 1
 0 -1
 0 1
