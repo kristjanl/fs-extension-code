@@ -57,7 +57,9 @@ def compare4(modelDir, scriptsDir, modelTypes, dims, algos, infoFields, suffix="
   tf.generateGroupHtml(scriptsDir, modelDir, groups, suffix, infoFields)
     
   
-
+def compare5(modelDir, scriptsDir, groups, infoFields, suffix=""):
+  print groups
+  tf.generateGroupHtml(scriptsDir, modelDir, groups, suffix, infoFields)
 
 
 
