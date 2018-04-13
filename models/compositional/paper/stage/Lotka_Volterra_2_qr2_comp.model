@@ -1,0 +1,37 @@
+continuous reachability
+{
+ state var x_0,y_0,x_1,y_1
+	
+ setting
+ {
+  fixed steps 0.02
+  time 10
+  remainder estimation 1e-3
+  QR precondition2
+  gnuplot octagon x_0,x_0
+  fixed orders 4
+  cutoff 1e-20
+  precision 53
+  output Lotka_Volterra_2_qr2_comp
+  alg_small_comp flow impl
+  decomposition [[x_0,y_0],[x_1,y_1]]
+  print on
+ }
+	
+ poly ode 1
+ {
+  x_0' = 1.5*x_0 - x_0*y_0
+  x_1' = 1.5*x_1 - x_1*y_1
+  y_0' = -3*y_0 + x_0*y_0
+  y_1' = -3*y_1 + x_1*y_1
+ }
+ 
+ init
+ {
+  x_0 in [4.8 , 5.2]
+  x_1 in [4.8 , 5.2]
+  y_0 in [1.8 , 2.2]
+  y_1 in [1.8 , 2.2]
+ }
+}
+

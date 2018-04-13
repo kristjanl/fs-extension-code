@@ -1132,7 +1132,8 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
   mlog("unpaired_right", comp->unpairedRight);
   
   //center remainder around zero and push the shift to constant
-  comp->unpairedRight.centerRemainder();
+  //comp->unpairedRight.centerRemainder();
+  comp->unpairedRight.preconditionCenterRemainder();
   
   int leftParams = comp->allVars.size() + 1; //+1 for time
   
@@ -1142,7 +1143,6 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
 
   //remove constant part from old part
 	comp->unpairedRight.rmConstant();
-  
   
   vector<Interval> currentRightRange;
   comp->unpairedRight.intEvalNormal(currentRightRange,
@@ -1197,8 +1197,8 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
 }
 
 
-void SingleComponentIdentityTransformer::preconditionSingleComponent(MyComponent *comp,
-      MySettings & settings) {
+void SingleComponentIdentityTransformer::preconditionSingleComponent(
+      MyComponent *comp, MySettings & settings) {
   if(comp->isPreconditioned)
     return;
   

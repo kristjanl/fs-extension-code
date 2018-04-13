@@ -1,0 +1,48 @@
+continuous reachability
+{
+  state var x1_0,x1_1,x1_2,x1_3,x1_4,x1_5,x1_6,x1_7,x1_8,x1_9
+
+  setting
+  {
+    fixed steps 1
+    time 50
+    remainder estimation 1e-3
+    QR precondition2
+    gnuplot interval x1_0,x1_0
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output lin_10_qr2_comp
+    alg_small_comp flow impl
+  decomposition [[x1_0],[x1_1],[x1_2],[x1_3],[x1_4],[x1_5],[x1_6],[x1_7],[x1_8],[x1_9]]
+    print on
+  }
+
+  poly ode 1
+  {
+    x1_0' = -0.1*x1_0
+    x1_1' = -0.1*x1_1
+    x1_2' = -0.1*x1_2
+    x1_3' = -0.1*x1_3
+    x1_4' = -0.1*x1_4
+    x1_5' = -0.1*x1_5
+    x1_6' = -0.1*x1_6
+    x1_7' = -0.1*x1_7
+    x1_8' = -0.1*x1_8
+    x1_9' = -0.1*x1_9
+  }
+
+  init
+  {
+    x1_0 in [0.5,1.0]
+    x1_1 in [0.5,1.0]
+    x1_2 in [0.5,1.0]
+    x1_3 in [0.5,1.0]
+    x1_4 in [0.5,1.0]
+    x1_5 in [0.5,1.0]
+    x1_6 in [0.5,1.0]
+    x1_7 in [0.5,1.0]
+    x1_8 in [0.5,1.0]
+    x1_9 in [0.5,1.0]
+  }
+}
