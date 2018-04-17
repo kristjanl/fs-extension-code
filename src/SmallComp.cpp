@@ -296,7 +296,9 @@ namespace smallComp {
     const Interval & cutoff_threshold = settings.cutoff;
 
 	  //number of taylor model parameters
-    int paramCount = comp.initSet.tms[0].getParamCount();
+    //int paramCount = comp.initSet.tms[0].getParamCount();
+    int paramCount = comp.allTMParams.size() + 1; //+1 for time
+    
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
     mlog1(sbuilder() << "varCount: " << varCount);
@@ -428,7 +430,8 @@ namespace smallComp {
     const Interval & cutoff_threshold = settings.cutoff;
     
 	  //number of taylor model parameters
-    int paramCount = comp.initSet.tms[0].getParamCount();
+    //int paramCount = comp.initSet.tms[0].getParamCount();
+    int paramCount = comp.allTMParams.size() + 1;
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
 	  
@@ -493,7 +496,8 @@ namespace smallComp {
     
     mlog("after init", p);
     
-    int paramCount = p.tms[0].getParamCount();
+    //int paramCount = p.tms[0].getParamCount();
+    int paramCount = component.allTMParams.size() + 1; //+1 for time
     int varCount = p.tms.size();
     
     //tend(sc_int_pre);
@@ -986,7 +990,9 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   mlog1("sc reach <");
   minc();
   mlog1(sbuilder() << "# of components: " <<components.size());
-
+  mreset(old);
+  mdisable();
+  minc();
   
   if(pSerializer == NULL) {
     //transformer name appended with .txt
@@ -1043,10 +1049,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";
     try{
+      mlog1(sbuilder() << "before transform");
       tstart(sc_transfrom);
       settings->transformer->transform(all, comps, *settings);
-      
       tend(sc_transfrom);
+      mlog1(sbuilder() << "after transform");  
       tstart(sc_integrate);
       //solve components
       for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -1056,6 +1063,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
         //mlog("last", (*it)->lastPipe());
       }
       tend(sc_integrate);
+      mlog1(sbuilder() << "after integration");
       //don't intdicate that components are solved anymore
       for(int i = 0; i < comps.size(); i++) {
         comps[i]->isSolved = false;
@@ -1119,7 +1127,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     writer.info.push_back(sbuilder() << "shrink wraps: 0");
   */
   
-  
+  mdec();
+  mrestore(old);
 
   mdec();
   mlog1("sc reach >");

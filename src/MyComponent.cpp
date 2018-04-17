@@ -89,7 +89,7 @@ void MyComponent::log() {
   
   for(int i = 0; i < initSet.tms.size(); i++) {
     mlog1(sbuilder() << "tm param size(" << i << "): "
-        << initSet.tms.at(i).getParamCount());
+        << initSet.tms.at(i).getIgnoringParamCount());
   }
   mlog1(sbuilder() << "init set size: " << initSet.tms.size());
   mlog("to be solved variables", varIndexes);
@@ -672,6 +672,7 @@ void MyComponent::remapTimeStepPipe() {
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 
       it < dependencies.end(); it++, depIndex++) {
     mlog1(sbuilder() << "depIndex: " << depIndex);
+    minc();
     int link = (*it)->linkVar;
     mlog1(sbuilder() << "link: " << link);
     MyComponent *pComp = (*it)->pComp;
@@ -702,6 +703,8 @@ void MyComponent::remapTimeStepPipe() {
       throw std::invalid_argument("link wasn't in compVars");
     }
     mlog1(sbuilder() << "dLinkPos: " << dLinkPos);
+    
+    mlog("mapper", compMappers.at(depIndex));
     //mlog1(sbuilder() << "linkPos: " << linkPos);
     
     
@@ -710,11 +713,14 @@ void MyComponent::remapTimeStepPipe() {
     
     mlog1(pComp->timeStepPipe.tms.size());
     
+    mlog("source", pComp->timeStepPipe.tms.at(dLinkPos));
+    
     TaylorModel transformedLink = pComp->timeStepPipe.tms
         .at(dLinkPos).transform(compMappers.at(depIndex));
     mlog1("between");
     timeStepPipe.tms.at(linkPos) = transformedLink;
-    mlog("remapped", transformedLink);
+    mlog("mapped", transformedLink);
+    mdec();
   }
   
   //mlog("init", initSet);

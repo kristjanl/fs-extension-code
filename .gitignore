@@ -50,3 +50,11 @@ makefile.local
 
 #dependency files
 src/*.d
+
+f_id.txt
+flow.txt
+s_id.txt
+qr2.txt
+qr1.txt
+qr3.txt
+

@@ -683,18 +683,27 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
 
   TaylorModelVec newCompSet;
   
+  all.log();
+  comp->log();
+  
   for(int i = 0; i < comp->compVars.size(); i++) {
     //variable in component
-    int varIndex = comp->compVars.at(i);
-    //index of that variable in call component
+    int var = comp->compVars.at(i);
+    //index of that variable in all component
     int indexInAll = 
-        find(all.compVars.begin(), all.compVars.end(), varIndex) - 
+        find(all.compVars.begin(), all.compVars.end(), var) - 
         all.compVars.begin();
-    mlog1(sbuilder() << "comp var: " << varIndex);
+
+    mlog1(sbuilder() << "var in comp: " << var);
     mlog1(sbuilder() << "index in all: " << indexInAll);
+    mlog("allVars", all.compVars);
+    minc();
+    
     //using compVars, cause of the assumption that initial conditions 
     mlog("tm params", comp->allTMParams);
     mlog("c1", all.initSet.tms.at(indexInAll));
+    
+    mlog("cTMps", comp->allTMParams);
     TaylorModel tm = all.initSet.tms.at(indexInAll).
         transform(comp->allTMParams);
     mlog("c2", tm);
@@ -703,6 +712,7 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     //mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
     
     newCompSet.tms.push_back(tm);
+    mdec();
   }
   mlog("init1", comp->initSet);
   comp->initSet = newCompSet;
@@ -970,6 +980,7 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mreset(old);
   mdisable();
   count++;
+  //mforce(sbuilder() << "count: " << count);
   mlog1("id transforming <");
   minc();
   mlog1(sbuilder() << "count: " << count);
@@ -983,7 +994,7 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   
   tstart(tr_pipe);
   TaylorModelVec tsp = all.timeStepPipe;
-  //mlog("tsp", tsp);
+  mlog("tsp", tsp);
   //mlog("upright", all.unpairedRight); 
   
   mlog("unpairedRight", all.unpairedRight);
@@ -999,9 +1010,12 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   tsp.evaluate_t(leftStar, settings.step_end_exp_table);
   tend(tr_eval);
   
+  mlog("leftStar", leftStar);
   pSerializer->add(leftStar, "leftStar");
   
   
+  //if(count == 2)
+  //  exit(0);
   //pSerializer->serialize();
   
   mlog1(sbuilder() << "size: " << leftStar.tms.size());
@@ -1009,21 +1023,7 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog("upr", all.unpairedRight);
   
   tstart(tr_precond);
-  if(count == 1 && false) {
-    int n = leftStar.tms.size();
-    Matrix m(n, n + 1);//+1 for t
-    for(int i = 0; i < n; i++) {
-      m.set(1, i, i + 1);
-    }
-    TaylorModelVec tm(m);
-    mlog("tm", tm);
-    precondition(tm, leftStar, settings, all);
-    
-    mlog("init", all.initSet);
-    mlog("upr", all.unpairedRight);
-  } else  {
-    precondition(leftStar, all.unpairedRight, settings, all);
-  }
+  precondition(leftStar, all.unpairedRight, settings, all);
   tend(tr_precond);
   //mlog("upright", all.unpairedRight);
   

@@ -133,7 +133,7 @@ def getParam(filename, param):
       #print line,
       m = re.search('%s (.*)' %param, line)
       if m != None:
-        return m.group(1)
+        return m.group(1).strip()
   
   
   

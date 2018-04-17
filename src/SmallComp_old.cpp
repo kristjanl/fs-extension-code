@@ -296,9 +296,7 @@ namespace smallComp {
     const Interval & cutoff_threshold = settings.cutoff;
 
 	  //number of taylor model parameters
-    //int paramCount = comp.initSet.tms[0].getParamCount();
-    int paramCount = comp.allTMParams.size() + 1; //+1 for time
-    
+    int paramCount = comp.initSet.tms[0].getParamCount();
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
     mlog1(sbuilder() << "varCount: " << varCount);
@@ -430,8 +428,7 @@ namespace smallComp {
     const Interval & cutoff_threshold = settings.cutoff;
     
 	  //number of taylor model parameters
-    //int paramCount = comp.initSet.tms[0].getParamCount();
-    int paramCount = comp.allTMParams.size() + 1;
+    int paramCount = comp.initSet.tms[0].getParamCount();
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
 	  
@@ -480,7 +477,7 @@ namespace smallComp {
   
     //tstart(sc_int_pre);
     mreset(old);
-    //mdisable();
+    mdisable();
     mlog("init", component.initSet);
     //tstart(sc_int_all);
     
@@ -496,8 +493,7 @@ namespace smallComp {
     
     mlog("after init", p);
     
-    //int paramCount = p.tms[0].getParamCount();
-    int paramCount = component.allTMParams.size() + 1; //+1 for time
+    int paramCount = p.tms[0].getParamCount();
     int varCount = p.tms.size();
     
     //tend(sc_int_pre);
