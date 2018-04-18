@@ -1,0 +1,6 @@
+reason: The remainder estimation is not large enough.
+int progress: 5.94
+evaluate t: 0.96
+precond time: 1.04
+int time: 1.9
+computation time: 4.13

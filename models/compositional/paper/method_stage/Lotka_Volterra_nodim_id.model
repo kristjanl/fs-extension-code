@@ -1,0 +1,33 @@
+continuous reachability
+{
+ state var x,y
+	
+ setting
+ {
+  fixed steps 0.02
+  time 10
+  remainder estimation 1e-3
+  identity precondition
+  gnuplot octagon x,y
+  fixed orders 4
+  cutoff 1e-20
+  precision 53
+  output Lotka_Volterranodim_id
+  alg_small_comp flow impl
+  no decomposition
+  print on
+ }
+	
+ poly ode 1
+ {
+  x' = 1.5*x - x*y
+  y' = -3*y + x*y
+ }
+ 
+ init
+ {
+  x in [4.8 , 5.2]
+  y in [1.8 , 2.2]
+ }
+}
+
