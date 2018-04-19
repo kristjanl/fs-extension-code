@@ -140,6 +140,12 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    </tr></table>\n")
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
+  
+  print "%s \t& %s & %s" %(outputName, time, varRange[0])
+  #print "%s \t& %s & %s & %s" %(outputName, \
+  #  fs.getParam(infoFile, "computation time:"), \
+  #  fs.getParam(infoFile, "int time:"), \
+  #  fs.getParam(infoFile, "precond time:"))
 
 def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:

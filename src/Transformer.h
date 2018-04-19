@@ -74,7 +74,6 @@ class QRTransformer: public PreconditionedTransformer {
         MySettings & settings);
     virtual void getMatrices(Matrix & a, Matrix & aInv, 
         const TaylorModelVec & x0) = 0;
-    void addInfo(vector<string> & info); //remove after extending preconditioned
     void setIntegrationMapper(vector<MyComponent *> comps); //remove after extending preconditioned
     TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, Matrix & invA);
 };

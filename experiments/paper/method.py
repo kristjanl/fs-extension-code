@@ -21,12 +21,14 @@ modelDir = os.path.join("..", "..", "models", "compositional", "paper", "method_
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
 
-modelTypes = ["Brusselator", "Lotka_Volterra", "sq_deg_long", "lin_dep"]
+modelTypes = ["Lotka_Volterra", "sq_deg_long", "lin_dep"]
 modelTypes += ["and_or_v2"]
 modelTypes += ["and_v3"]
 
+#modelTypes = ["Lotka_Volterra"]
+
 algos = ["qrflow", "qrplain", "qr1", "qr2", "qr3", "id"]
-#algos = ["qrplain"]
+#algos = ["qrflow", "qrplain", "id"]
 #algos = ["qr1", "qr2", "qr3"]
 dims = ["nodim"]
 
@@ -40,10 +42,10 @@ infoFields = [
     ("computation time", "Comp t"),  
     ("reason", "Stop Reason"), 
     ("int time", "Int t"), 
-    ("remap 1", "Remap1"), 
-    ("evaluate t", "Eval@t"),
+    ("picard poly", "p poly"),
+    ("picard decreasing", "p decr"),
+    ("picard refining", "p ref"),
     ("precond time", "Precond t"), 
-    ("remap 2", "Remap2"),
 ]
 
 parser = argparse.ArgumentParser()

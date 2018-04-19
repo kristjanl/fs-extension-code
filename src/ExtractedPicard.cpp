@@ -212,18 +212,19 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   
   
   
-  tstart(fl_int_norem);
+  tstart(fl_int_poly);
 	for(int i=1; i<=order; ++i)
 	{
 		x.Picard_no_remainder_assign(x0, ode_centered, rangeDim+1, i, cutoff_threshold);
 	}	
 	x.cutoff(cutoff_threshold);
-  tend(fl_int_norem);
+  tend(fl_int_poly);
   
-  tstart(fl_int_rest);
+  tstart(fl_int_rem);
+  
+	tstart(sc_int_rem_setup);
   //pSerializer->add(x, "no_rem");
 	
-
 	bool bfound = true;
 
 	for(int i=0; i<rangeDim; ++i)
@@ -276,6 +277,9 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			x.tms[i].remainder = tmvTemp.tms[i].remainder;
 	}
 
+	tend(sc_int_rem_setup);
+  
+	tstart(fl_int_refine);
 	bool bfinished = false;
 	for(int rSteps = 0; !bfinished && (rSteps <= MAX_REFINEMENT_STEPS); ++rSteps)
 	{
@@ -309,14 +313,14 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			x.tms[i].remainder = newRemainders[i];
 		}
 	}
-	
+	tend(fl_int_refine);
 	result.tmvPre = x;
 	result.domain = domain;
 	result.domain[0] = step_exp_table[1];
 
 	trees.clear();
 	
-  tend(fl_int_rest);
+  tend(fl_int_rem);
 	
   tend(fl_int_all);
   

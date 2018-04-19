@@ -44,10 +44,10 @@ infoFields = [
     ("computation time", "Comp t"),  
     ("reason", "Stop Reason"), 
     ("int time", "Int t"), 
-    ("remap 1", "Remap1"), 
-    ("evaluate t", "Eval@t"),
+    ("picard poly", "p poly"),
+    ("picard decreasing", "p decr"),
+    ("picard refining", "p ref"),
     ("precond time", "Precond t"), 
-    ("remap 2", "Remap2"),
 ]
 
 parser = argparse.ArgumentParser()

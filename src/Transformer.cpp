@@ -1397,7 +1397,7 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
 
 void PreconditionedTransformer::addInfo(vector<string> & info) {
   int old = logger.reset();
-  logger.disable();
+  //logger.disable();
   mlog1("adding");
   mlog1(sbuilder() << timeLookup["tr_precond"]);
   
@@ -1406,24 +1406,18 @@ void PreconditionedTransformer::addInfo(vector<string> & info) {
   taddToInfo("precond time", tr_precond, info);
   taddToInfo("remap 2", tr_remap2, info);
   taddToInfo("int time", sc_integrate, info);
+  
+  
+  taddToInfo("picard poly", sc_int_poly, info);
+  taddToInfo("picard remainder", sc_int_rem, info);
+  taddToInfo("picard decreasing", sc_int_find_dec, info);
+  taddToInfo("picard refining", sc_int_refine, info);
+  
+  mlog1(sbuilder() << info.size());
   
   logger.restore(old);
 }
 
-void QRTransformer::addInfo(vector<string> & info) {
-  int old = logger.reset();
-  logger.disable();
-  mlog1("adding");
-  mlog1(sbuilder() << timeLookup["tr_precond"]);
-  
-  taddToInfo("remap 1", tr_remap1, info);
-  taddToInfo("evaluate t", tr_eval, info);
-  taddToInfo("precond time", tr_precond, info);
-  taddToInfo("remap 2", tr_remap2, info);
-  taddToInfo("int time", sc_integrate, info);
-  
-  logger.restore(old);
-}
 void NullTransformer::addInfo(vector<string> & info) {
   throw std::runtime_error("don't call add info on Null yet");
 }

@@ -20,8 +20,8 @@ import comparer
 modelDir = os.path.join("..", "..", "models", "compositional", "paper", "stage")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
-
-modelTypes = ["and_fast_out_high_10_id", "Lotka_Volterra_10_qr2"]
+modelTypes = []
+#modelTypes = ["and_fast_out_high_10_id", "Lotka_Volterra_10_qr2"]
 #modelTypes = ["Lotka_Volterra_10_qr2"]
 #modelTypes = ["and_fast_out_high_10_id"]
 modelTypes += ["lin_10_id", "pair_dep_10_id", "sq_deg_long_10_id"]
@@ -38,7 +38,7 @@ groups = [["%s_%s.model"%(modelType, comp) for comp in comps] \
     
     
 #discard gr2 and flow combo
-#groups = [filter(lambda s: not "qr2" in s or not "flow" in s , g) for g in groups]    
+groups = [filter(lambda s: not "qr2" in s or not "flow" in s , g) for g in groups]    
     
     
 models = [m for g in groups for m in g]
@@ -48,10 +48,10 @@ infoFields = [
     ("computation time", "Comp t"),  
     ("reason", "Stop Reason"), 
     ("int time", "Int t"), 
-    ("remap 1", "Remap1"), 
-    ("evaluate t", "Eval@t"),
+    ("picard poly", "p poly"),
+    ("picard decreasing", "p decr"),
+    ("picard refining", "p ref"),
     ("precond time", "Precond t"), 
-    ("remap 2", "Remap2"),
 ]
 
 parser = argparse.ArgumentParser()
@@ -62,7 +62,7 @@ args = parser.parse_args()
 if args.action == 'run':
   flowstar_runner.runFlowstar(modelDir, flowstar, models)
 elif args.action == 'compare':
-  comparer.compare5(modelDir, scriptsDir, groups, infoFields)
+  comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_comps")
 
 
 

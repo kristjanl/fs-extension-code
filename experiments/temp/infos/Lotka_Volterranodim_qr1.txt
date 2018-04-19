@@ -1,0 +1,12 @@
+reason: max increase couldn't find a remainder Was thrown
+int progress: 3.24
+computation time: 1.77
+remap 1: 0.01
+evaluate t: 0.02
+precond time: 0.59
+remap 2: 0.05
+int time: 1.08
+picard poly: 0.23
+picard remainder: 0.85
+picard decreasing: 0.59
+picard refining: 0.25

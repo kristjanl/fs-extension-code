@@ -503,17 +503,14 @@ namespace smallComp {
     //tend(sc_int_pre);
     
     
-    //tstart(sc_int_norem);
+    tstart(sc_int_poly);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
       p.Picard_no_remainder_assign(&component, paramCount, i, settings.cutoff);
     }
-    
     mlog("after", p);
-    
     p.cutoff(settings.cutoff);
-    
-    //tend(sc_int_norem);
+    tend(sc_int_poly);
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
@@ -523,15 +520,18 @@ namespace smallComp {
     
     //pSerializer->add(p, "no_rem");
     
-    
-    tstart(sc_int_rest);
-    //tstart(sc_int_find_dec);
+    tstart(sc_int_rem);
+    tstart(sc_int_find_dec);
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings,
 	      cutoffInt);
-    //tend(sc_int_find_dec);
+    tend(sc_int_find_dec);
 	  
     mlog("dec", p);
+    tstart(sc_int_refine);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
+    tend(sc_int_refine);
+    tend(sc_int_rem);
+    
 	  
     mlog("ref", p);
     //tend(sc_int_all);
@@ -543,7 +543,6 @@ namespace smallComp {
     mlog("tsp", p);
         
     mrestore(old);
-    tend(sc_int_rest);
     
   }
   

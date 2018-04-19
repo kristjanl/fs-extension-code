@@ -5,3 +5,7 @@ evaluate t: 0
 precond time: 0
 remap 2: 0
 int time: 0.03
+picard poly: 0
+picard remainder: 0.03
+picard decreasing: 0.02
+picard refining: 0.01
