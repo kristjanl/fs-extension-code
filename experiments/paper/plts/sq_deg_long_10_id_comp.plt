@@ -1,12 +1,12 @@
 set term png
-set output './images/sq_deg_long_10_id_comp_dim_6_t_99.0.png
+set output './images/sq_deg_long_10_id_comp_comps_11_t_99.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
 set xtic auto
 set ytic auto
 set xlabel "t"
-set ylabel "x6"
+set ylabel "x11"
 set xrange [0.0:110.0]
 set yrange [0.0414249477792:1.09099782128]
 plot '-' notitle with lines ls 1

@@ -1,5 +1,5 @@
 set term png
-set output './images/lin_dep_20_id_nocomp_dim_11_t_0.9.png
+set output './images/lin_dep_20_id_nocomp_comps_11_t_0.9.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label

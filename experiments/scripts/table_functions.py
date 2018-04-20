@@ -37,7 +37,9 @@ def getVarRange2(modelFile, csvs):
       continue
     with open(csv) as f:
       for line in f:
-        data = line.split(',')
+        data = line.strip().split(',')
+        if data[-1] == '':
+          data = data[0:-1]
         #line with needed time
         if float(data[0]) == float(time):
           #get variable ranges
@@ -141,11 +143,18 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
   
-  print "%s \t& %s & %s" %(outputName, time, varRange[0])
-  #print "%s \t& %s & %s & %s" %(outputName, \
-  #  fs.getParam(infoFile, "computation time:"), \
-  #  fs.getParam(infoFile, "int time:"), \
-  #  fs.getParam(infoFile, "precond time:"))
+  #print "%s \t& %s & %s" %(outputName, time, varRange[0])
+  compMap = {"fcomp":"FC", "comp": "C", "nocomp": "NC"}
+  print "%s & %s & & %s & %s & %s & %s & %s & %s\\\\" %(\
+    outputName.split("_")[0],
+    dim, \
+#    compMap[outputName.split("_")[-1]], \
+    "a",\
+    fs.getParam(infoFile, "computation time:"), \
+    fs.getParam(infoFile, "picard poly:"), \
+    fs.getParam(infoFile, "picard decreasing:"), \
+    fs.getParam(infoFile, "picard refining:"),\
+    fs.getParam(infoFile, "precond time:"))
 
 def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:

@@ -20,25 +20,26 @@ import comparer
 modelDir = os.path.join("..", "..", "models", "compositional", "paper", "stage")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
-modelTypes = []
-#modelTypes = ["and_fast_out_high_10_id", "Lotka_Volterra_10_qr2"]
-#modelTypes = ["Lotka_Volterra_10_qr2"]
-#modelTypes = ["and_fast_out_high_10_id"]
-modelTypes += ["lin_10_id", "pair_dep_10_id", "sq_deg_long_10_id"]
-modelTypes += ["lin_10_qr2", "pair_dep_10_qr2", "sq_deg_long_10_qr2"]
+
+modelTypes = ["Lotka_Volterra_10_qr2"]
+modelTypes += ["sq_deg_long_10_id"]
 modelTypes += ["lin_dep_20_id"]
+modelTypes += ["and_v3"]
+modelTypes += ["and_or_v2"]
+
+#modelTypes = ["sq_deg_long_10_id"]
 
 #modelTypes = ["jet_engine_10_qr2"]
 #modelTypes = ["and_fast_out_high_10_id"]
 
-comps = ["comp", "nocomp", "flow"]
+comps = ["fcomp", "comp", "nocomp"]
 
 groups = [["%s_%s.model"%(modelType, comp) for comp in comps] \
     for modelType in modelTypes]
     
     
-#discard gr2 and flow combo
-groups = [filter(lambda s: not "qr2" in s or not "flow" in s , g) for g in groups]    
+#discard gr2 and fcomp combo
+groups = [filter(lambda s: not "qr2" in s or not "fcomp" in s , g) for g in groups]    
     
     
 models = [m for g in groups for m in g]

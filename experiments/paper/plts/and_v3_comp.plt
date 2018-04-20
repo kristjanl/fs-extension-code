@@ -1,5 +1,5 @@
 set term png
-set output './images/and_v3_comp_new_6_t_990.0.png
+set output './images/and_v3_comp_comps_6_t_990.0.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -8,7 +8,7 @@ set ytic auto
 set xlabel "t"
 set ylabel "x6"
 set xrange [0.0:1100.0]
-set yrange [-0.0910903176057:1.02612856318]
+set yrange [-0.0911526190703:1.02612856318]
 plot '-' notitle with lines ls 1
 0 0
 0 0

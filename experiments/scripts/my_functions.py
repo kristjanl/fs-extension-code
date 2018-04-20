@@ -47,7 +47,10 @@ def get_range_bounds(time, csvs):
   
   minBounds = all[0][0]
   maxBounds = all[0][1]
+  
   for (singleMin, singleMax) in all[1:]:
+    #print len(singleMin)
+    #print len(minBounds)
     for (i, d) in enumerate(singleMin):
       if minBounds[i] > d:
         minBounds[i] = d
