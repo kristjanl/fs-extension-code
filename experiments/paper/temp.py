@@ -21,18 +21,10 @@ modelDir = os.path.join("..", "..", "models", "compositional", "paper", "stage")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
 
-modelTypes = ["Lotka_Volterra_10_qr2"]
-modelTypes += ["sq_deg_long_10_id"]
-modelTypes += ["lin_dep_20_id"]
-modelTypes += ["and_v3"]
-modelTypes += ["and_or_v2"]
-
-#modelTypes = ["sq_deg_long_10_id"]
-
-#modelTypes = ["jet_engine_10_qr2"]
-#modelTypes = ["and_fast_out_high_10_id"]
+modelTypes = ["lin_dep_20_id"]
 
 comps = ["fcomp", "comp", "nocomp"]
+#comps = ["fcomp"]
 
 groups = [["%s_%s.model"%(modelType, comp) for comp in comps] \
     for modelType in modelTypes]
@@ -53,6 +45,8 @@ infoFields = [
     ("picard decreasing", "p decr"),
     ("picard refining", "p ref"),
     ("precond time", "Precond t"), 
+    ("remap 1", "RM 1"), 
+    ("remap 2", "RM 2"), 
 ]
 
 parser = argparse.ArgumentParser()

@@ -145,16 +145,21 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   
   #print "%s \t& %s & %s" %(outputName, time, varRange[0])
   compMap = {"fcomp":"FC", "comp": "C", "nocomp": "NC"}
-  print "%s & %s & & %s & %s & %s & %s & %s & %s\\\\" %(\
+#  print outputName.split("_")[-2]
+  print "%s & %s & & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\" %(\
     outputName.split("_")[0],
     dim, \
-#    compMap[outputName.split("_")[-1]], \
-    "a",\
+    outputName.split("_")[-2], \
+    compMap[outputName.split("_")[-1]], \
+#    "---",\
     fs.getParam(infoFile, "computation time:"), \
     fs.getParam(infoFile, "picard poly:"), \
     fs.getParam(infoFile, "picard decreasing:"), \
     fs.getParam(infoFile, "picard refining:"),\
-    fs.getParam(infoFile, "precond time:"))
+    fs.getParam(infoFile, "remap 1:"),\
+    fs.getParam(infoFile, "precond time:"),
+    fs.getParam(infoFile, "remap 2:"),
+    )
 
 def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:

@@ -940,7 +940,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   
   mlog1("making system flowpipes");  
   //if fully compositional  
-  tstart(tr_remap2);
+  tstart(tr_remap3);
   
   if(transformer->getType() == TR_SINGLE_COMP) {
     //transformer preconditions single component at a time
@@ -961,7 +961,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     //old code might not be compatible, look into it when problems arise
     throw std::runtime_error("don't know how to make output");
   }
-  tend(tr_remap2);
+  tend(tr_remap3);
   
   mlog1("composing flowpipes");
   for(int i = 0; i < all.pipePairs.size(); i++) {
@@ -1081,7 +1081,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   cerr << endl;
   
   //tprint("tr_part");
-  tprint("sc_int");
+  //tprint("sc_int");
   
   
   writer.info.push_back(sbuilder() << "int progress: " << t);
@@ -1112,9 +1112,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     writer.finish();
     tend(sc_post_write);
   #endif
-  
-  tprint("sc_post");
-  cout << "after" << endl;
+  //tprint("sc_post");
+  tprint("tr_");
   //cout << "here2" << endl;
   
   

@@ -571,6 +571,7 @@ void printTimes(string prefix) {
 }
 
 void addTimeToInfo(string name, string clockName, vector<string> & infos) {
+  
   infos.push_back(sbuilder() << name << ": " << timeLookup[clockName]);
 }
 

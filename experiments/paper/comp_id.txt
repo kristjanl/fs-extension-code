@@ -1,0 +1,722 @@
+vars{t, a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19, a20}
+flowpipes{
+leftStar:my models{
+<[0m.be16edef05ad90@0 , 0m.be16edef05adb8@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a1 , [0m-.1282f9ab036a03@-9 , 0m.129ed81551526f@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffd8f0873d258@0 , 0m.bffd8f0873d278@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a2 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a1 , [0m-.6fcc80b645d340@-9 , 0m.6f416f46057e28@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffffdeb23b728@0 , 0m.bffffdeb23b740@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a3 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a2 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a1 , [0m-.12952986688c7b@-8 , 0m.12a67e81044a4a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffeab26b8@0 , 0m.bffffffeab26c8@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a4 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a3 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a2 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a1 , [0m-.1e5636c4eb7eb0@-8 , 0m.1e44f7b0af09ac@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffff5010@0 , 0m.bfffffffff5018@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a5 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a4 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a3 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a2 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a1 , [0m-.242bec36d1457e@-8 , 0m.243476015797de@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a6 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a5 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a4 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a3 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a2 , [0m-.2564d974483d66@-8 , 0m.25633131dc7682@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a7 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a6 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a5 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a4 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a3 , [0m-.25663ff8f195c2@-8 , 0m.25663bc597ce16@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a8 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a7 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a6 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a5 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a4 , [0m-.256643a2c691d6@-8 , 0m.2566439820eda6@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a9 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a8 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a7 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a6 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a5 , [0m-.256643ac5aedfe@-8 , 0m.256643ac3ff170@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a10 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a9 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a8 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a7 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a6 , [0m-.256643ac73f88c@-8 , 0m.256643ac73b426@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a11 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a10 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a9 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a8 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a7 , [0m-.256643ac7439fc@-8 , 0m.256643ac74394e@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a12 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a11 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a10 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a9 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a8 , [0m-.256643ac743aa6@-8 , 0m.256643ac743aa6@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a13 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a12 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a11 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a10 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a9 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a14 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a13 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a12 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a11 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a10 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a15 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a14 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a13 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a12 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a11 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a16 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a15 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a14 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a13 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a12 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a17 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a16 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a15 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a14 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a13 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a18 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a17 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a16 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a15 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a14 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a19 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a18 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a17 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a16 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a15 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa577484@0 , 0m.3f5cf9fa57748c@0] * a20 + [0m.a235b32391b8d0@-2 , 0m.a235b32391b8f0@-2] * a19 + [0m.cfa0e796a7a1c8@-4 , 0m.cfa0e796a7a1e8@-4] * a18 + [0m.b12adaca1084f8@-6 , 0m.b12adaca108510@-6] * a17 + [0m.72884f6102ebf8@-8 , 0m.72884f6102ebfc@-8] * a16 , [0m-.256643ac743aa8@-8 , 0m.256643ac743aa8@-8]>
+}
+,
+leftStar:my models{
+<[0m.bc32b9a6138a58@0 , 0m.bc32b9a6138a80@0] + [0m.3ebb93375d72c0@0 , 0m.3ebb93375d72c8@0] * a1 , [0m-.1255572811336c@-9 , 0m.1270ecffbda4aa@-9]>
+}
+,
+leftStar:my models{
+<[0m.bff64cb8c20128@0 , 0m.bff64cb8c20158@0] + [0m.3f5c2bba7f264c@0 , 0m.3f5c2bba7f2654@0] * a2 + [0m.a098831bf5e6e0@-2 , 0m.a098831bf5e700@-2] * a1 , [0m-.6edfe42e38e238@-9 , 0m.6e567d2f5f2488@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfffef78f1d880@0 , 0m.bfffef78f1d8a8@0] + [0m.3f5cf94a90ed6a@0 , 0m.3f5cf94a90ed72@0] * a3 + [0m.a233a323f75ab8@-2 , 0m.a233a323f75ad8@-2] * a2 + [0m.cd90063f669f90@-4 , 0m.cd90063f669fb0@-4] * a1 , [0m-.127787e741891b@-8 , 0m.12889ad37f2e2c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffeadda9b8@0 , 0m.bfffffeadda9e8@0] + [0m.3f5cf9fa041062@0 , 0m.3f5cf9fa04106a@0] * a4 + [0m.a235b161957db8@-2 , 0m.a235b161957de0@-2] * a3 + [0m.cf9e43c0180680@-4 , 0m.cf9e43c01806a0@-4] * a2 + [0m.af6790f92aaaa8@-6 , 0m.af6790f92aaab8@-6] * a1 , [0m-.1e380359d0631b@-8 , 0m.1e271c059337ba@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffea60c0@0 , 0m.bfffffffea60e8@0] + [0m.3f5cf9fa7b4890@0 , 0m.3f5cf9fa7b4898@0] * a5 + [0m.a235b322bc3d98@-2 , 0m.a235b322bc3dc0@-2] * a4 + [0m.cfa0e556ac6e80@-4 , 0m.cfa0e556ac6e98@-4] * a3 + [0m.b1289a1a6dbc00@-6 , 0m.b1289a1a6dbc18@-6] * a2 + [0m.7164916ff23570@-8 , 0m.7164916ff2357c@-8] * a1 , [0m-.241cc3e40d4d6a@-8 , 0m.24250c577cb78e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffed40@0 , 0m.bfffffffffed70@0] + [0m.3f5cf9fa7c7954@0 , 0m.3f5cf9fa7c795c@0] * a6 + [0m.a235b323ed7148@-2 , 0m.a235b323ed7168@-2] * a5 + [0m.cfa0e795966040@-4 , 0m.cfa0e795966058@-4] * a4 + [0m.b12ad8de95d978@-6 , 0m.b12ad8de95d988@-6] * a3 + [0m.7286da9260cc54@-8 , 0m.7286da9260cc58@-8] * a2 , [0m-.25619ee26fb80c@-8 , 0m.25601044a3fb4a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffd8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b8a@0 , 0m.3f5cf9fa7c7b92@0] * a7 + [0m.a235b323f07d78@-2 , 0m.a235b323f07da0@-2] * a6 + [0m.cfa0e7971d08c0@-4 , 0m.cfa0e7971d08e0@-4] * a5 + [0m.b12adac9275a48@-6 , 0m.b12adac9275a58@-6] * a4 + [0m.72884e23499988@-8 , 0m.72884e23499994@-8] * a3 , [0m-.256642594b77fc@-8 , 0m.2566380a1f420a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a8 + [0m.a235b323f08320@-2 , 0m.a235b323f08348@-2] * a7 + [0m.cfa0e79720ef70@-4 , 0m.cfa0e79720ef88@-4] * a6 + [0m.b12adaca74b290@-6 , 0m.b12adaca74b2a0@-6] * a5 + [0m.72884f606c300c@-8 , 0m.72884f606c3014@-8] * a4 , [0m-.25664bc559163a@-8 , 0m.25664ba0248818@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a9 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a8 + [0m.cfa0e79720f6b0@-4 , 0m.cfa0e79720f6c8@-4] * a7 + [0m.b12adaca7806c0@-6 , 0m.b12adaca7806d0@-6] * a6 + [0m.72884f6143aef0@-8 , 0m.72884f6143aefc@-8] * a5 , [0m-.25664bd6082ff4@-8 , 0m.25664bd59f152c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a10 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a9 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a8 + [0m.b12adaca780cf0@-6 , 0m.b12adaca780d00@-6] * a7 + [0m.72884f6145d5d4@-8 , 0m.72884f6145d5e0@-8] * a6 , [0m-.25664bd62ba5ca@-8 , 0m.25664bd62a9b62@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a11 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a10 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a9 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a8 + [0m.72884f6145d9d0@-8 , 0m.72884f6145d9dc@-8] * a7 , [0m-.25664bd62c0a08@-8 , 0m.25664bd62c0766@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a12 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a11 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a10 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a9 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a8 , [0m-.256643db1675e2@-8 , 0m.256643c1bdbf5c@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a13 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a12 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a11 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a10 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a9 , [0m-.256643c6b43a20@-8 , 0m.256643c673fb7a@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a14 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a13 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a12 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a11 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a10 , [0m-.256643c68028fe@-8 , 0m.256643c67f8628@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a15 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a14 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a13 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a12 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a11 , [0m-.256643c67fa3fa@-8 , 0m.256643c67fa260@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a16 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a15 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a14 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a13 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a12 , [0m-.256643c67fa2a8@-8 , 0m.256643c67fa2a2@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a17 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a16 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a15 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a14 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a13 , [0m-.256643c67fa2a4@-8 , 0m.256643c67fa2a4@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a18 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a17 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a16 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a15 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a14 , [0m-.256643c67fa2a4@-8 , 0m.256643c67fa2a4@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a19 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a18 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a17 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a16 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a15 , [0m-.256643c67fa2a4@-8 , 0m.256643c67fa2a4@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9fa7c7b92@0 , 0m.3f5cf9fa7c7b9a@0] * a20 + [0m.a235b323f08338@-2 , 0m.a235b323f08360@-2] * a19 + [0m.cfa0e79720f6d0@-4 , 0m.cfa0e79720f6e8@-4] * a18 + [0m.b12adaca780d10@-6 , 0m.b12adaca780d20@-6] * a17 + [0m.72884f6145d9e4@-8 , 0m.72884f6145d9f0@-8] * a16 , [0m-.256643c67fa2a4@-8 , 0m.256643c67fa2a4@-8]>
+}
+,
+leftStar:my models{
+<[0m.ba5356bfdae7a0@0 , 0m.ba5356bfdae7c8@0] + [0m.3e1bc7954bea3e@0 , 0m.3e1bc7954bea46@0] * a1 , [0m-.1226a681f82ed3@-9 , 0m.1241f93c78a2d8@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfea51ac02bb68@0 , 0m.bfea51ac02bb98@0] + [0m.3f59c6747a6532@0 , 0m.3f59c6747a653a@0] * a2 + [0m.9eff6f918e7710@-2 , 0m.9eff6f918e7738@-2] * a1 , [0m-.6df429b64ecdec@-9 , 0m.6d6c651ba23fa8@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfffc8a2c0d190@0 , 0m.bfffc8a2c0d1b8@0] + [0m.3f5cf4862d35bc@0 , 0m.3f5cf4862d35c4@0] * a3 + [0m.a22d812909f258@-2 , 0m.a22d812909f280@-2] * a2 + [0m.cb846817d3b040@-4 , 0m.cb846817d3b058@-4] * a1 , [0m-.125a04486e89f0@-8 , 0m.126ad5c588ace9@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffff95dc4138@0 , 0m.bfffff95dc4168@0] + [0m.3f5cf9f397f79e@0 , 0m.3f5cf9f397f7a6@0] * a4 + [0m.a235a52d6303b8@-2 , 0m.a235a52d6303e0@-2] * a3 + [0m.cf966a2ce673f0@-4 , 0m.cf966a2ce67408@-4] * a2 + [0m.ada8c4b2bba398@-6 , 0m.ada8c4b2bba3a8@-6] * a1 , [0m-.1e19d20fcd5441@-8 , 0m.1e0940da999444@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffff5d25f0@0 , 0m.bfffffff5d2618@0] + [0m.3f5cf9fa9848d2@0 , 0m.3f5cf9fa9848da@0] * a5 + [0m.a235b3124b5a60@-2 , 0m.a235b3124b5a88@-2] * a4 + [0m.cfa0d5b7b35450@-4 , 0m.cfa0d5b7b35468@-4] * a3 + [0m.b121e75a3f4c30@-6 , 0m.b121e75a3f4c40@-6] * a2 + [0m.7043baa2170a20@-8 , 0m.7043baa2170a2c@-8] * a1 , [0m-.240d7df45efa18@-8 , 0m.241586ad8e120e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffff2ef8@0 , 0m.bfffffffff2f28@0] + [0m.3f5cf9faa1731c@0 , 0m.3f5cf9faa17324@0] * a6 + [0m.a235b32437af68@-2 , 0m.a235b32437af88@-2] * a5 + [0m.cfa0e7808affb0@-4 , 0m.cfa0e7808affc8@-4] * a4 + [0m.b12acb8a4cf960@-6 , 0m.b12acb8a4cf970@-6] * a3 + [0m.7282860bcbd430@-8 , 0m.7282860bcbd43c@-8] * a2 , [0m-.255e5655bb9686@-8 , 0m.255ce09096c960@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffef8@0 , 0m.bfffffffffff20@0] + [0m.3f5cf9faa1827c@0 , 0m.3f5cf9faa18284@0] * a7 + [0m.a235b3244f25e8@-2 , 0m.a235b3244f2608@-2] * a6 + [0m.cfa0e7977c1098@-4 , 0m.cfa0e7977c10c0@-4] * a5 + [0m.b12adab7325b38@-6 , 0m.b12adab7325b48@-6] * a4 + [0m.728845855db884@-8 , 0m.728845855db890@-8] * a3 , [0m-.256640802d681c@-8 , 0m.256634e184a94a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffd8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9faa182a0@0 , 0m.3f5cf9faa182a8@0] * a8 + [0m.a235b3244f4d48@-2 , 0m.a235b3244f4d70@-2] * a7 + [0m.cfa0e7979a18e8@-4 , 0m.cfa0e7979a1910@-4] * a6 + [0m.b12adacac5c948@-6 , 0m.b12adacac5c960@-6] * a5 + [0m.72884f54d06460@-8 , 0m.72884f54d06468@-8] * a4 , [0m-.25665461df3d52@-8 , 0m.256653b1e93e3e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faa182a0@0 , 0m.3f5cf9faa182a8@0] * a9 + [0m.a235b3244f4da8@-2 , 0m.a235b3244f4dc8@-2] * a8 + [0m.cfa0e7979a4b58@-4 , 0m.cfa0e7979a4b70@-4] * a7 + [0m.b12adacadf69b0@-6 , 0m.b12adacadf69c0@-6] * a6 + [0m.72884f61781ab8@-8 , 0m.72884f61781ac0@-8] * a5 , [0m-.25664c205b17aa@-8 , 0m.25664beb1ab3a0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faa182a4@0 , 0m.3f5cf9faa182ac@0] * a10 + [0m.a235b3244f4da8@-2 , 0m.a235b3244f4dc8@-2] * a9 + [0m.cfa0e7979a4bc0@-4 , 0m.cfa0e7979a4be0@-4] * a8 + [0m.b12adacadf94a8@-6 , 0m.b12adacadf94b8@-6] * a7 + [0m.72884f6188abc4@-8 , 0m.72884f6188abd0@-8] * a6 , [0m-.25664bf0facbc4@-8 , 0m.25664bf073d25e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faa182a4@0 , 0m.3f5cf9faa182ac@0] * a11 + [0m.a235b3244f4db0@-2 , 0m.a235b3244f4dd8@-2] * a10 + [0m.cfa0e7979a4bc0@-4 , 0m.cfa0e7979a4be0@-4] * a9 + [0m.b12adacadf9508@-6 , 0m.b12adacadf9520@-6] * a8 + [0m.72884f6188c790@-8 , 0m.72884f6188c79c@-8] * a7 , [0m-.25664bf06d1fce@-8 , 0m.25664bf06bc9b2@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a12 + [0m.a235b3244f4db0@-2 , 0m.a235b3244f4dd8@-2] * a11 + [0m.cfa0e7979a4bd8@-4 , 0m.cfa0e7979a4bf0@-4] * a10 + [0m.b12adacadf9508@-6 , 0m.b12adacadf9520@-6] * a9 + [0m.72884f6188c7d4@-8 , 0m.72884f6188c7d8@-8] * a8 , [0m-.25664bf01fd258@-8 , 0m.25664bd6c71876@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a13 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a12 + [0m.cfa0e7979a4bd8@-4 , 0m.cfa0e7979a4bf0@-4] * a11 + [0m.b12adacadf9518@-6 , 0m.b12adacadf9528@-6] * a10 + [0m.72884f6188c7d4@-8 , 0m.72884f6188c7d8@-8] * a9 , [0m-.25664bd68422f8@-8 , 0m.25664bd643e44c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a14 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a13 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a12 + [0m.b12adacadf9518@-6 , 0m.b12adacadf9528@-6] * a11 + [0m.72884f6188c7d8@-8 , 0m.72884f6188c7e4@-8] * a10 , [0m-.25664bd6428f66@-8 , 0m.25664bd641ec90@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a15 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a14 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a13 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a12 + [0m.72884f6188c7d8@-8 , 0m.72884f6188c7e4@-8] * a11 , [0m-.25664bd641e774@-8 , 0m.25664bd641e5d6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a16 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a15 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a14 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a13 + [0m.72884f6188c7c4@-8 , 0m.72884f6188c7d0@-8] * a12 , [0m-.25664bd641e5c4@-8 , 0m.25664bd641e5c0@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a17 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a16 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a15 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a14 + [0m.72884f6188c7c4@-8 , 0m.72884f6188c7d0@-8] * a13 , [0m-.256643db2c5080@-8 , 0m.256643c1d39a04@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a18 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a17 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a16 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a15 + [0m.72884f6188c7c4@-8 , 0m.72884f6188c7d0@-8] * a14 , [0m-.256643c6ca14bc@-8 , 0m.256643c689d616@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a19 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a18 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a17 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a16 + [0m.72884f6188c7c4@-8 , 0m.72884f6188c7d0@-8] * a15 , [0m-.256643c696039a@-8 , 0m.256643c69560c4@-8]>
+}
+,
+leftStar:my models{
+<[0m.c0000000000000@0 , 0m.c0000000000000@0] + [0m.3f5cf9faa1829c@0 , 0m.3f5cf9faa182a4@0] * a20 + [0m.a235b3244f4d98@-2 , 0m.a235b3244f4dc0@-2] * a19 + [0m.cfa0e7979a4bb8@-4 , 0m.cfa0e7979a4bd0@-4] * a18 + [0m.b12adacadf94f8@-6 , 0m.b12adacadf9508@-6] * a17 + [0m.72884f6188c7c4@-8 , 0m.72884f6188c7d0@-8] * a16 , [0m-.256643c6957e96@-8 , 0m.256643c6957cfa@-8]>
+}
+,
+leftStar:my models{
+<[0m.b878b8f6a046a8@0 , 0m.b878b8f6a046d0@0] + [0m.3d7d92fce45b6e@0 , 0m.3d7d92fce45b76@0] * a1 , [0m-.11f86ff1de93fd@-9 , 0m.121379ec0c1237@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfd9b61f360398@0 , 0m.bfd9b61f3603c8@0] + [0m.3f55d247177988@0 , 0m.3f55d247177990@0] * a2 + [0m.9d6a6e0b697f20@-2 , 0m.9d6a6e0b697f48@-2] * a1 , [0m-.6d09d15663bda8@-9 , 0m.6c83abc58b2a28@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfff7dbebe35c8@0 , 0m.bfff7dbebe35f0@0] + [0m.3f5ce7b529d36e@0 , 0m.3f5ce7b529d376@0] * a3 + [0m.a22361fc87a950@-2 , 0m.a22361fc87a978@-2] * a2 + [0m.c97dffb852a0a0@-4 , 0m.c97dffb852a0b8@-4] * a1 , [0m-.123c9e5f08a1f5@-8 , 0m.124d2fbb42c820@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffeb33762c8@0 , 0m.bffffeb33762f8@0] + [0m.3f5cf9d7a7122c@0 , 0m.3f5cf9d7a71234@0] * a4 + [0m.a235845dfe3140@-2 , 0m.a235845dfe3168@-2] * a3 + [0m.cf897578e7e580@-4 , 0m.cf897578e7e598@-4] * a2 + [0m.abee6a869a9e88@-6 , 0m.abee6a869a9e98@-6] * a1 , [0m-.1dfb93236c51c7@-8 , 0m.1deb56c051fd84@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffd576550@0 , 0m.bffffffd576578@0] + [0m.3f5cf9fa8d721c@0 , 0m.3f5cf9fa8d7224@0] * a5 + [0m.a235b2cac3f040@-2 , 0m.a235b2cac3f068@-2] * a4 + [0m.cfa0abb8797e60@-4 , 0m.cfa0abb8797e78@-4] * a3 + [0m.b116d93dfd74a0@-6 , 0m.b116d93dfd74b0@-6] * a2 + [0m.6f25c3927dd088@-8 , 0m.6f25c3927dd090@-8] * a1 , [0m-.23fe0288cbf6fe@-8 , 0m.2405cd36f7e592@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffb7660@0 , 0m.bffffffffb7690@0] + [0m.3f5cf9fac62eac@0 , 0m.3f5cf9fac62eb4@0] * a6 + [0m.a235b3241bf020@-2 , 0m.a235b3241bf048@-2] * a5 + [0m.cfa0e724fc6260@-4 , 0m.cfa0e724fc6278@-4] * a4 + [0m.b12aa7b4627250@-6 , 0m.b12aa7b4627260@-6] * a3 + [0m.727b607ad26544@-8 , 0m.727b607ad2654c@-8] * a2 , [0m-.255ad7461c111a@-8 , 0m.25597947f7bdfe@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffff930@0 , 0m.bffffffffff958@0] + [0m.3f5cf9fac6891e@0 , 0m.3f5cf9fac68926@0] * a7 + [0m.a235b324ad2f00@-2 , 0m.a235b324ad2f28@-2] * a6 + [0m.cfa0e797588c78@-4 , 0m.cfa0e797588c90@-4] * a5 + [0m.b12ada69126a50@-6 , 0m.b12ada69126a60@-6] * a4 + [0m.72882e5ac0ef68@-8 , 0m.72882e5ac0ef70@-8] * a3 , [0m-.2566278bc59b02@-8 , 0m.25661826ffc8d6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffc0@0 , 0m.bfffffffffffe0@0] + [0m.3f5cf9fac689b4@0 , 0m.3f5cf9fac689bc@0] * a8 + [0m.a235b324ae1690@-2 , 0m.a235b324ae16b8@-2] * a7 + [0m.cfa0e798127680@-4 , 0m.cfa0e798127698@-4] * a6 + [0m.b12adacaa77b08@-6 , 0m.b12adacaa77b18@-6] * a5 + [0m.72884f224f2324@-8 , 0m.72884f224f2330@-8] * a4 , [0m-.256655b16eeee4@-8 , 0m.2566531ad28e7e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689b0@0 , 0m.3f5cf9fac689b8@0] * a9 + [0m.a235b324ae1810@-2 , 0m.a235b324ae1838@-2] * a8 + [0m.cfa0e798139ee8@-4 , 0m.cfa0e798139f00@-4] * a7 + [0m.b12adacb461e98@-6 , 0m.b12adacb461ea8@-6] * a6 + [0m.72884f61648344@-8 , 0m.72884f61648350@-8] * a5 , [0m-.25664c2ac2c512@-8 , 0m.25664be923e3ac@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689b0@0 , 0m.3f5cf9fac689b8@0] * a10 + [0m.a235b324ae1800@-2 , 0m.a235b324ae1828@-2] * a9 + [0m.cfa0e79813a0d8@-4 , 0m.cfa0e79813a0f0@-4] * a8 + [0m.b12adacb471b80@-6 , 0m.b12adacb471b90@-6] * a7 + [0m.72884f61cb1138@-8 , 0m.72884f61cb1144@-8] * a6 , [0m-.25664bd7303d40@-8 , 0m.25664bd688f948@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689b0@0 , 0m.3f5cf9fac689b8@0] * a11 + [0m.a235b324ae1800@-2 , 0m.a235b324ae1828@-2] * a10 + [0m.cfa0e79813a0c0@-4 , 0m.cfa0e79813a0d8@-4] * a9 + [0m.b12adacb471d28@-6 , 0m.b12adacb471d38@-6] * a8 + [0m.72884f61cbb4b8@-8 , 0m.72884f61cbb4c4@-8] * a7 , [0m-.25664bd659ea54@-8 , 0m.25664bd658425c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689a8@0 , 0m.3f5cf9fac689b0@0] * a12 + [0m.a235b324ae1800@-2 , 0m.a235b324ae1828@-2] * a11 + [0m.cfa0e79813a0c0@-4 , 0m.cfa0e79813a0d8@-4] * a10 + [0m.b12adacb471d10@-6 , 0m.b12adacb471d20@-6] * a9 + [0m.72884f61cbb5c8@-8 , 0m.72884f61cbb5d0@-8] * a8 , [0m-.25664beff2076e@-8 , 0m.25664bd6994cbe@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689a8@0 , 0m.3f5cf9fac689b0@0] * a13 + [0m.a235b324ae17f0@-2 , 0m.a235b324ae1818@-2] * a12 + [0m.cfa0e79813a0c0@-4 , 0m.cfa0e79813a0d8@-4] * a11 + [0m.b12adacb471d10@-6 , 0m.b12adacb471d20@-6] * a10 + [0m.72884f61cbb5b8@-8 , 0m.72884f61cbb5c4@-8] * a9 , [0m-.25664bf0751afa@-8 , 0m.25664bf034dc4c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689a8@0 , 0m.3f5cf9fac689b0@0] * a14 + [0m.a235b324ae17f0@-2 , 0m.a235b324ae1818@-2] * a13 + [0m.cfa0e79813a0b0@-4 , 0m.cfa0e79813a0c8@-4] * a12 + [0m.b12adacb471d10@-6 , 0m.b12adacb471d20@-6] * a11 + [0m.72884f61cbb5b8@-8 , 0m.72884f61cbb5c4@-8] * a10 , [0m-.25664bf077126a@-8 , 0m.25664bf0766f92@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689a8@0 , 0m.3f5cf9fac689b0@0] * a15 + [0m.a235b324ae17f0@-2 , 0m.a235b324ae1818@-2] * a14 + [0m.cfa0e79813a0b0@-4 , 0m.cfa0e79813a0c8@-4] * a13 + [0m.b12adacb471d08@-6 , 0m.b12adacb471d18@-6] * a12 + [0m.72884f61cbb5b8@-8 , 0m.72884f61cbb5c4@-8] * a11 , [0m-.25664bf0771920@-8 , 0m.25664bf0771782@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fac689a8@0 , 0m.3f5cf9fac689b0@0] * a16 + [0m.a235b324ae17f0@-2 , 0m.a235b324ae1818@-2] * a15 + [0m.cfa0e79813a0b0@-4 , 0m.cfa0e79813a0c8@-4] * a14 + [0m.b12adacb471d08@-6 , 0m.b12adacb471d18@-6] * a13 + [0m.72884f61cbb5b4@-8 , 0m.72884f61cbb5bc@-8] * a12 , [0m-.25664bf0771936@-8 , 0m.25664bf0771932@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fac689a0@0 , 0m.3f5cf9fac689a8@0] * a17 + [0m.a235b324ae17f0@-2 , 0m.a235b324ae1818@-2] * a16 + [0m.cfa0e79813a0b0@-4 , 0m.cfa0e79813a0c8@-4] * a15 + [0m.b12adacb471d08@-6 , 0m.b12adacb471d18@-6] * a14 + [0m.72884f61cbb5b4@-8 , 0m.72884f61cbb5bc@-8] * a13 , [0m-.25664bf03fe634@-8 , 0m.25664bd6e72fb8@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fac689a0@0 , 0m.3f5cf9fac689a8@0] * a18 + [0m.a235b324ae17e0@-2 , 0m.a235b324ae1800@-2] * a17 + [0m.cfa0e79813a0b0@-4 , 0m.cfa0e79813a0c8@-4] * a16 + [0m.b12adacb471d08@-6 , 0m.b12adacb471d18@-6] * a15 + [0m.72884f61cbb5b4@-8 , 0m.72884f61cbb5bc@-8] * a14 , [0m-.25664bd6b8feb2@-8 , 0m.25664bd678c00e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fac689a0@0 , 0m.3f5cf9fac689a8@0] * a19 + [0m.a235b324ae17e0@-2 , 0m.a235b324ae1800@-2] * a18 + [0m.cfa0e79813a090@-4 , 0m.cfa0e79813a0b0@-4] * a17 + [0m.b12adacb471d08@-6 , 0m.b12adacb471d18@-6] * a16 + [0m.72884f61cbb5b4@-8 , 0m.72884f61cbb5bc@-8] * a15 , [0m-.25664bd681d7a6@-8 , 0m.25664bd68134d0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.c0000000000000@0] + [0m.3f5cf9fac689a0@0 , 0m.3f5cf9fac689a8@0] * a20 + [0m.a235b324ae17e0@-2 , 0m.a235b324ae1800@-2] * a19 + [0m.cfa0e79813a090@-4 , 0m.cfa0e79813a0b0@-4] * a18 + [0m.b12adacb471ce8@-6 , 0m.b12adacb471d00@-6] * a17 + [0m.72884f61cbb5b4@-8 , 0m.72884f61cbb5bc@-8] * a16 , [0m-.25664bd6814aa6@-8 , 0m.25664bd681490a@-8]>
+}
+,
+leftStar:my models{
+<[0m.b6a2d423eae9c8@0 , 0m.b6a2d423eae9f0@0] + [0m.3ce0f16153dc8a@0 , 0m.3ce0f16153dc92@0] * a1 , [0m-.11caad8a607cd0@-9 , 0m.11e574361bdd8b@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfc491f28369c0@0 , 0m.bfc491f28369f0@0] + [0m.3f505732172db8@0 , 0m.3f505732172dc0@0] * a2 + [0m.9bd9742b421950@-2 , 0m.9bd9742b421978@-2] * a1 , [0m-.6c215971732c98@-9 , 0m.6b9cce24d5a5b8@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfff037e142360@0 , 0m.bfff037e142388@0] + [0m.3f5ccefe27d736@0 , 0m.3f5ccefe27d73e@0] * a3 + [0m.a2155a18aff660@-2 , 0m.a2155a18aff680@-2] * a2 + [0m.c77cbfdb6c62b0@-4 , 0m.c77cbfdb6c62c8@-4] * a1 , [0m-.121f5ea524f70a@-8 , 0m.122fb060ab0b15@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffcda0111d8@0 , 0m.bffffcda011208@0] + [0m.3f5cf98cf7c2a2@0 , 0m.3f5cf98cf7c2aa@0] * a4 + [0m.a2354518da6450@-2 , 0m.a2354518da6478@-2] * a3 + [0m.cf777fda307050@-4 , 0m.cf777fda307070@-4] * a2 + [0m.aa387721c185a0@-6 , 0m.aa387721c185b8@-6] * a1 , [0m-.1ddd57384f52c3@-8 , 0m.1dcd6e2bcad712@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffff7f42368@0 , 0m.bffffff7f42390@0] + [0m.3f5cf9fa063504@0 , 0m.3f5cf9fa06350c@0] * a5 + [0m.a235b20b9280d0@-2 , 0m.a235b20b9280f8@-2] * a4 + [0m.cfa05abc21d0d0@-4 , 0m.cfa05abc21d0e8@-4] * a3 + [0m.b10786234d2f08@-6 , 0m.b10786234d2f20@-6] * a2 + [0m.6e0aa4ef08bdd8@-8 , 0m.6e0aa4ef08bde0@-8] * a1 , [0m-.23ee6295e3a0c2@-8 , 0m.23f5f0481bbada@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffeed960@0 , 0m.bfffffffeed990@0] + [0m.3f5cf9fae9e898@0 , 0m.3f5cf9fae9e8a0@0] * a6 + [0m.a235b322c1ba20@-2 , 0m.a235b322c1ba40@-2] * a5 + [0m.cfa0e630423770@-4 , 0m.cfa0e630423788@-4] * a4 + [0m.b12a6299add980@-6 , 0m.b12a6299add990@-6] * a3 + [0m.72717854e1bc34@-8 , 0m.72717854e1bc38@-8] * a2 , [0m-.255739e37201e8@-8 , 0m.2555f2eb269b84@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffe078@0 , 0m.bfffffffffe0a0@0] + [0m.3f5cf9faeb8de2@0 , 0m.3f5cf9faeb8dea@0] * a7 + [0m.a235b32508a488@-2 , 0m.a235b32508a4b0@-2] * a6 + [0m.cfa0e7959d6608@-4 , 0m.cfa0e7959d6628@-4] * a5 + [0m.b12ad9983fa398@-6 , 0m.b12ad9983fa3a8@-6] * a4 + [0m.728801ae568778@-8 , 0m.728801ae568780@-8] * a3 , [0m-.256605e3d11ccc@-8 , 0m.2565f3488914c8@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffff88@0 , 0m.bfffffffffffb8@0] + [0m.3f5cf9faeb90ca@0 , 0m.3f5cf9faeb90d2@0] * a8 + [0m.a235b3250cdb08@-2 , 0m.a235b3250cdb28@-2] * a7 + [0m.cfa0e7988787e0@-4 , 0m.cfa0e7988787f8@-4] * a6 + [0m.b12adac92d5850@-6 , 0m.b12adac92d5868@-6] * a5 + [0m.72884e9b4feda8@-8 , 0m.72884e9b4fedb4@-8] * a4 , [0m-.25665acc11e8ac@-8 , 0m.25665a8ed4b8e4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffd8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9faeb90c2@0 , 0m.3f5cf9faeb90ca@0] * a9 + [0m.a235b3250ce278@-2 , 0m.a235b3250ce2a0@-2] * a8 + [0m.cfa0e7988cec58@-4 , 0m.cfa0e7988cec78@-4] * a7 + [0m.b12adacbaa0330@-6 , 0m.b12adacbaa0340@-6] * a6 + [0m.72884f60700fc4@-8 , 0m.72884f60700fc8@-8] * a5 , [0m-.256654aeec15d8@-8 , 0m.25665410c92266@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9faeb90ba@0 , 0m.3f5cf9faeb90c2@0] * a10 + [0m.a235b3250ce260@-2 , 0m.a235b3250ce288@-2] * a9 + [0m.cfa0e7988cf5e0@-4 , 0m.cfa0e7988cf5f8@-4] * a8 + [0m.b12adacbae9d10@-6 , 0m.b12adacbae9d28@-6] * a7 + [0m.72884f620ba4fc@-8 , 0m.72884f620ba504@-8] * a6 , [0m-.25664c072f9136@-8 , 0m.25664c059000fc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9faeb90be@0 , 0m.3f5cf9faeb90c6@0] * a11 + [0m.a235b3250ce250@-2 , 0m.a235b3250ce278@-2] * a10 + [0m.cfa0e7988cf5c0@-4 , 0m.cfa0e7988cf5d8@-4] * a9 + [0m.b12adacbaea538@-6 , 0m.b12adacbaea548@-6] * a8 + [0m.72884f620e9e7c@-8 , 0m.72884f620e9e80@-8] * a7 , [0m-.25664bf0c7695a@-8 , 0m.25664bf0c34c0a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90b6@0 , 0m.3f5cf9faeb90be@0] * a12 + [0m.a235b3250ce258@-2 , 0m.a235b3250ce280@-2] * a11 + [0m.cfa0e7988cf5b0@-4 , 0m.cfa0e7988cf5c8@-4] * a10 + [0m.b12adacbaea528@-6 , 0m.b12adacbaea538@-6] * a9 + [0m.72884f620ea3bc@-8 , 0m.72884f620ea3c4@-8] * a8 , [0m-.25664bf04c0014@-8 , 0m.25664bd6f33f2a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90b2@0 , 0m.3f5cf9faeb90ba@0] * a13 + [0m.a235b3250ce248@-2 , 0m.a235b3250ce270@-2] * a12 + [0m.cfa0e7988cf5b8@-4 , 0m.cfa0e7988cf5d0@-4] * a11 + [0m.b12adacbaea510@-6 , 0m.b12adacbaea520@-6] * a10 + [0m.72884f620ea3ac@-8 , 0m.72884f620ea3b8@-8] * a9 , [0m-.25664bd6afd99a@-8 , 0m.25664bd66f9adc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90b2@0 , 0m.3f5cf9faeb90ba@0] * a14 + [0m.a235b3250ce238@-2 , 0m.a235b3250ce260@-2] * a13 + [0m.cfa0e7988cf5a0@-4 , 0m.cfa0e7988cf5b8@-4] * a12 + [0m.b12adacbaea518@-6 , 0m.b12adacbaea528@-6] * a11 + [0m.72884f620ea3a0@-8 , 0m.72884f620ea3ac@-8] * a10 , [0m-.25664bd66e44ca@-8 , 0m.25664bd66da1f4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90b2@0 , 0m.3f5cf9faeb90ba@0] * a15 + [0m.a235b3250ce238@-2 , 0m.a235b3250ce260@-2] * a14 + [0m.cfa0e7988cf590@-4 , 0m.cfa0e7988cf5a8@-4] * a13 + [0m.b12adacbaea508@-6 , 0m.b12adacbaea518@-6] * a12 + [0m.72884f620ea3a0@-8 , 0m.72884f620ea3ac@-8] * a11 , [0m-.25664bd66d9cd4@-8 , 0m.25664bd66d9b38@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90b2@0 , 0m.3f5cf9faeb90ba@0] * a16 + [0m.a235b3250ce238@-2 , 0m.a235b3250ce260@-2] * a15 + [0m.cfa0e7988cf590@-4 , 0m.cfa0e7988cf5a8@-4] * a14 + [0m.b12adacbaea4f8@-6 , 0m.b12adacbaea508@-6] * a13 + [0m.72884f620ea398@-8 , 0m.72884f620ea3a4@-8] * a12 , [0m-.25664bd66d9b24@-8 , 0m.25664bd66d9b20@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90ae@0 , 0m.3f5cf9faeb90b6@0] * a17 + [0m.a235b3250ce238@-2 , 0m.a235b3250ce260@-2] * a16 + [0m.cfa0e7988cf590@-4 , 0m.cfa0e7988cf5a8@-4] * a15 + [0m.b12adacbaea4f8@-6 , 0m.b12adacbaea508@-6] * a14 + [0m.72884f620ea38c@-8 , 0m.72884f620ea398@-8] * a13 , [0m-.25664bf007dc82@-8 , 0m.25664bd6af2604@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90ae@0 , 0m.3f5cf9faeb90b6@0] * a18 + [0m.a235b3250ce230@-2 , 0m.a235b3250ce258@-2] * a17 + [0m.cfa0e7988cf590@-4 , 0m.cfa0e7988cf5a8@-4] * a16 + [0m.b12adacbaea4f8@-6 , 0m.b12adacbaea508@-6] * a15 + [0m.72884f620ea38c@-8 , 0m.72884f620ea398@-8] * a14 , [0m-.25664bf08af5c0@-8 , 0m.25664bf04ab71c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90ae@0 , 0m.3f5cf9faeb90b6@0] * a19 + [0m.a235b3250ce230@-2 , 0m.a235b3250ce258@-2] * a18 + [0m.cfa0e7988cf588@-4 , 0m.cfa0e7988cf5a0@-4] * a17 + [0m.b12adacbaea4f8@-6 , 0m.b12adacbaea508@-6] * a16 + [0m.72884f620ea38c@-8 , 0m.72884f620ea398@-8] * a15 , [0m-.25664bf08ced3c@-8 , 0m.25664bf08c4a66@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff8@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9faeb90ae@0 , 0m.3f5cf9faeb90b6@0] * a20 + [0m.a235b3250ce230@-2 , 0m.a235b3250ce258@-2] * a19 + [0m.cfa0e7988cf588@-4 , 0m.cfa0e7988cf5a0@-4] * a18 + [0m.b12adacbaea4f0@-6 , 0m.b12adacbaea500@-6] * a17 + [0m.72884f620ea38c@-8 , 0m.72884f620ea398@-8] * a16 , [0m-.25664bf08cf410@-8 , 0m.25664bf08cf272@-8]>
+}
+,
+leftStar:my models{
+<[0m.b4d19c40353398@0 , 0m.b4d19c403533c0@0] + [0m.3c45dec0188e84@0 , 0m.3c45dec0188e8c@0] * a1 , [0m-.119d5facbc0012@-9 , 0m.11b7e08e699a39@-9]>
+}
+,
+leftStar:my models{
+<[0m.bfaafcaa75c688@0 , 0m.bfaafcaa75c6b8@0] + [0m.3f495d169650ba@0 , 0m.3f495d169650c2@0] * a2 + [0m.9a4c77ad3c7108@-2 , 0m.9a4c77ad3c7130@-2] * a1 , [0m-.6b3abe69de5d38@-9 , 0m.6ab7c895d70078@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffe4eeb169360@0 , 0m.bffe4eeb169388@0] + [0m.3f5ca6a5cf3eee@0 , 0m.3f5ca6a5cf3ef6@0] * a3 + [0m.a2037da951b7e8@-2 , 0m.a2037da951b810@-2] * a2 + [0m.c5809b5d781330@-4 , 0m.c5809b5d781348@-4] * a1 , [0m-.120244b92c7f3e@-8 , 0m.121257e92f8528@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffff985fae290@0 , 0m.bffff985fae2c0@0] + [0m.3f5cf8f0e921c8@0 , 0m.3f5cf8f0e921d0@0] * a4 + [0m.a234ddd0498318@-2 , 0m.a234ddd0498338@-2] * a3 + [0m.cf60a3226cff38@-4 , 0m.cf60a3226cff50@-4] * a2 + [0m.a886df4e02c780@-6 , 0m.a886df4e02c790@-6] * a1 , [0m-.1dbf1ebdbb8d41@-8 , 0m.1daf8761225f51@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffec24d840@0 , 0m.bfffffec24d868@0] + [0m.3f5cf9f8628402@0 , 0m.3f5cf9f862840a@0] * a5 + [0m.a235b07c10e510@-2 , 0m.a235b07c10e530@-2] * a4 + [0m.cf9fd68833b5f8@-4 , 0m.cf9fd68833b618@-4] * a3 + [0m.b0f40412273280@-6 , 0m.b0f40412273290@-6] * a2 + [0m.6cf257783fdb80@-8 , 0m.6cf257783fdb8c@-8] * a1 , [0m-.23de9e31966cac@-8 , 0m.23e5f08710754e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffcd3bf8@0 , 0m.bfffffffcd3c28@0] + [0m.3f5cf9fb0aacb4@0 , 0m.3f5cf9fb0aacbc@0] * a6 + [0m.a235b31e8f5128@-2 , 0m.a235b31e8f5150@-2] * a5 + [0m.cfa0e430e3f9c0@-4 , 0m.cfa0e430e3f9e8@-4] * a4 + [0m.b129f1cafbe348@-6 , 0m.b129f1cafbe360@-6] * a3 + [0m.7264dbd804a720@-8 , 0m.7264dbd804a72c@-8] * a2 , [0m-.25537e341c538e@-8 , 0m.25524d6e7f0cf8@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffff9078@0 , 0m.bfffffffff90a0@0] + [0m.3f5cf9fb108c10@0 , 0m.3f5cf9fb108c18@0] * a7 + [0m.a235b3255c8610@-2 , 0m.a235b3255c8638@-2] * a6 + [0m.cfa0e7903e2748@-4 , 0m.cfa0e7903e2760@-4] * a5 + [0m.b12ad7e3e73548@-6 , 0m.b12ad7e3e73560@-6] * a4 + [0m.7287b8c14854e8@-8 , 0m.7287b8c14854ec@-8] * a3 , [0m-.2565db5d0cdc40@-8 , 0m.2565c59a58a598@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffee8@0 , 0m.bfffffffffff18@0] + [0m.3f5cf9fb1097da@0 , 0m.3f5cf9fb1097e2@0] * a8 + [0m.a235b3256b8eb0@-2 , 0m.a235b3256b8ed8@-2] * a7 + [0m.cfa0e798f2e608@-4 , 0m.cfa0e798f2e620@-4] * a6 + [0m.b12adac497dc88@-6 , 0m.b12adac497dc98@-6] * a5 + [0m.72884d813af68c@-8 , 0m.72884d813af690@-8] * a4 , [0m-.256661ece36f68@-8 , 0m.2566613908d130@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffc8@0 , 0m.bfffffffffffe0@0] + [0m.3f5cf9fb1097da@0 , 0m.3f5cf9fb1097e2@0] * a9 + [0m.a235b3256bace0@-2 , 0m.a235b3256bad08@-2] * a8 + [0m.cfa0e799062448@-4 , 0m.cfa0e799062460@-4] * a7 + [0m.b12adacc05a0d0@-6 , 0m.b12adacc05a0e0@-6] * a6 + [0m.72884f5d79722c@-8 , 0m.72884f5d797234@-8] * a5 , [0m-.25665554162180@-8 , 0m.25665421235922@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097d2@0 , 0m.3f5cf9fb1097da@0] * a10 + [0m.a235b3256bace0@-2 , 0m.a235b3256bad08@-2] * a9 + [0m.cfa0e799064ae0@-4 , 0m.cfa0e799064af8@-4] * a8 + [0m.b12adacc160c50@-6 , 0m.b12adacc160c60@-6] * a7 + [0m.72884f6246deec@-8 , 0m.72884f6246def4@-8] * a6 , [0m-.25664c22d1a9e4@-8 , 0m.25664bec73c6f2@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097d2@0 , 0m.3f5cf9fb1097da@0] * a11 + [0m.a235b3256bacd0@-2 , 0m.a235b3256bacf8@-2] * a10 + [0m.cfa0e799064ae0@-4 , 0m.cfa0e799064af8@-4] * a9 + [0m.b12adacc162d48@-6 , 0m.b12adacc162d58@-6] * a8 + [0m.72884f62517c5c@-8 , 0m.72884f62517c64@-8] * a7 , [0m-.25664bf12311d2@-8 , 0m.25664bf09944cc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097ce@0 , 0m.3f5cf9fb1097d6@0] * a12 + [0m.a235b3256bacd0@-2 , 0m.a235b3256bacf8@-2] * a11 + [0m.cfa0e799064ad0@-4 , 0m.cfa0e799064ae8@-4] * a10 + [0m.b12adacc162d48@-6 , 0m.b12adacc162d58@-6] * a9 + [0m.72884f625191a8@-8 , 0m.72884f625191b0@-8] * a8 , [0m-.25664bf0a416aa@-8 , 0m.25664bf0a2b962@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097ce@0 , 0m.3f5cf9fb1097d6@0] * a13 + [0m.a235b3256bacc0@-2 , 0m.a235b3256bace8@-2] * a12 + [0m.cfa0e799064ad0@-4 , 0m.cfa0e799064ae8@-4] * a11 + [0m.b12adacc162d38@-6 , 0m.b12adacc162d48@-6] * a10 + [0m.72884f625191a8@-8 , 0m.72884f625191b0@-8] * a9 , [0m-.25664bf0a2d21c@-8 , 0m.25664bf0a2cea6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097ca@0 , 0m.3f5cf9fb1097d2@0] * a14 + [0m.a235b3256bacc0@-2 , 0m.a235b3256bace8@-2] * a13 + [0m.cfa0e799064ab8@-4 , 0m.cfa0e799064ad0@-4] * a12 + [0m.b12adacc162d38@-6 , 0m.b12adacc162d48@-6] * a11 + [0m.72884f6251919c@-8 , 0m.72884f625191a4@-8] * a10 , [0m-.25664bf0ad26c0@-8 , 0m.25664bf0ad26b6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097ca@0 , 0m.3f5cf9fb1097d2@0] * a15 + [0m.a235b3256bacb8@-2 , 0m.a235b3256bacd8@-2] * a14 + [0m.cfa0e799064ab8@-4 , 0m.cfa0e799064ad0@-4] * a13 + [0m.b12adacc162d28@-6 , 0m.b12adacc162d38@-6] * a12 + [0m.72884f6251919c@-8 , 0m.72884f625191a4@-8] * a11 , [0m-.25664bf0c1d01a@-8 , 0m.25664bf0c1d01a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb1097ca@0 , 0m.3f5cf9fb1097d2@0] * a16 + [0m.a235b3256bacb8@-2 , 0m.a235b3256bacd8@-2] * a15 + [0m.cfa0e799064aa0@-4 , 0m.cfa0e799064ac8@-4] * a14 + [0m.b12adacc162d28@-6 , 0m.b12adacc162d38@-6] * a13 + [0m.72884f62519194@-8 , 0m.72884f625191a0@-8] * a12 , [0m-.25664bf0cc3c56@-8 , 0m.25664bf0cc3c56@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fb1097c2@0 , 0m.3f5cf9fb1097ca@0] * a17 + [0m.a235b3256bacb8@-2 , 0m.a235b3256bacd8@-2] * a16 + [0m.cfa0e799064aa0@-4 , 0m.cfa0e799064ac8@-4] * a15 + [0m.b12adacc162d10@-6 , 0m.b12adacc162d28@-6] * a14 + [0m.72884f62519194@-8 , 0m.72884f625191a0@-8] * a13 , [0m-.25664bf0807480@-8 , 0m.25664bd727be02@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fb1097be@0 , 0m.3f5cf9fb1097c6@0] * a18 + [0m.a235b3256baca0@-2 , 0m.a235b3256bacc8@-2] * a17 + [0m.cfa0e799064aa0@-4 , 0m.cfa0e799064ac8@-4] * a16 + [0m.b12adacc162d10@-6 , 0m.b12adacc162d28@-6] * a15 + [0m.72884f62519188@-8 , 0m.72884f6251918c@-8] * a14 , [0m-.25664bd6d03a40@-8 , 0m.25664bd68ffb9e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fb1097be@0 , 0m.3f5cf9fb1097c6@0] * a19 + [0m.a235b3256bac98@-2 , 0m.a235b3256bacc0@-2] * a18 + [0m.cfa0e799064a90@-4 , 0m.cfa0e799064aa8@-4] * a17 + [0m.b12adacc162d10@-6 , 0m.b12adacc162d28@-6] * a16 + [0m.72884f62519188@-8 , 0m.72884f6251918c@-8] * a15 , [0m-.25664bd6843ad2@-8 , 0m.25664bd68397fc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff8@0] + [0m.3f5cf9fb1097be@0 , 0m.3f5cf9fb1097c6@0] * a20 + [0m.a235b3256bac98@-2 , 0m.a235b3256bacc0@-2] * a19 + [0m.cfa0e799064a88@-4 , 0m.cfa0e799064aa0@-4] * a18 + [0m.b12adacc162d08@-6 , 0m.b12adacc162d18@-6] * a17 + [0m.72884f62519188@-8 , 0m.72884f6251918c@-8] * a16 , [0m-.25664bd68377ec@-8 , 0m.25664bd683764e@-8]>
+}
+,
+leftStar:my models{
+<[0m.b30505629dd0c0@0 , 0m.b30505629dd0e8@0] + [0m.3bac5720e755ac@0 , 0m.3bac5720e755b4@0] * a1 , [0m-.1170853b3f8edf@-9 , 0m.118ac42bb257a9@-9]>
+}
+,
+leftStar:my models{
+<[0m.bf8d0d71330840@0 , 0m.bf8d0d71330870@0] + [0m.3f40ebb775e842@0 , 0m.3f40ebb775e84a@0] * a2 + [0m.98c36e67a27d00@-2 , 0m.98c36e67a27d28@-2] * a1 , [0m-.6a55fd744b4e24@-9 , 0m.69d496d598e064@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffd5567786d68@0 , 0m.bffd5567786d90@0] + [0m.3f5c6b0e34f1a8@0 , 0m.3f5c6b0e34f1b0@0] * a3 + [0m.a1ede08cd5f258@-2 , 0m.a1ede08cd5f278@-2] * a2 + [0m.c389853c44dd88@-4 , 0m.c389853c44dda0@-4] * a1 , [0m-.11e5509f1c8257@-8 , 0m.11f52622dc599d@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffff418bc61c0@0 , 0m.bffff418bc61f0@0] + [0m.3f5cf7d7d6a9ec@0 , 0m.3f5cf7d7d6a9f4@0] * a4 + [0m.a2344541f1b418@-2 , 0m.a2344541f1b440@-2] * a3 + [0m.cf44f8c038c0b8@-4 , 0m.cf44f8c038c0e0@-4] * a2 + [0m.a6d997f1bfdcd8@-6 , 0m.a6d997f1bfdcf0@-6] * a1 , [0m-.1da0e9e364c733@-8 , 0m.1d91a2e1872d7f@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffd5704af8@0 , 0m.bfffffd5704b20@0] + [0m.3f5cf9f4a01f48@0 , 0m.3f5cf9f4a01f50@0] * a5 + [0m.a235adac8574d0@-2 , 0m.a235adac8574f0@-2] * a4 + [0m.cf9f1342a27108@-4 , 0m.cf9f1342a27120@-4] * a3 + [0m.b0dc68bdfb4a58@-6 , 0m.b0dc68bdfb4a68@-6] * a2 + [0m.6bdcd40121870c@-8 , 0m.6bdcd401218718@-8] * a1 , [0m-.23ceb5d66cc020@-8 , 0m.23d5ce351d8bde@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffff811698@0 , 0m.bfffffff8116c8@0] + [0m.3f5cf9fb247b82@0 , 0m.3f5cf9fb247b8a@0] * a6 + [0m.a235b314ef96f0@-2 , 0m.a235b314ef9718@-2] * a5 + [0m.cfa0e097df88e0@-4 , 0m.cfa0e097df8900@-4] * a4 + [0m.b1294b2b5fc068@-6 , 0m.b1294b2b5fc078@-6] * a3 + [0m.7255990b9fdd54@-8 , 0m.7255990b9fdd60@-8] * a2 , [0m-.254fa400c1ef0c@-8 , 0m.254e889fdcf9a2@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffebb38@0 , 0m.bffffffffebb60@0] + [0m.3f5cf9fb35779c@0 , 0m.3f5cf9fb3577a4@0] * a7 + [0m.a235b3259e9780@-2 , 0m.a235b3259e97a8@-2] * a6 + [0m.cfa0e783ec94f8@-4 , 0m.cfa0e783ec9510@-4] * a5 + [0m.b12ad4d2020f48@-6 , 0m.b12ad4d2020f60@-6] * a4 + [0m.72874d09f05308@-8 , 0m.72874d09f05314@-8] * a3 , [0m-.2565a7676835ba@-8 , 0m.25658eef0409e4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffce0@0 , 0m.bffffffffffd10@0] + [0m.3f5cf9fb359ec4@0 , 0m.3f5cf9fb359ecc@0] * a8 + [0m.a235b325ca12b0@-2 , 0m.a235b325ca12d8@-2] * a7 + [0m.cfa0e799477738@-4 , 0m.cfa0e799477750@-4] * a6 + [0m.b12adaba14f328@-6 , 0m.b12adaba14f338@-6] * a5 + [0m.72884b852d4a90@-8 , 0m.72884b852d4a94@-8] * a4 , [0m-.25666069aa6172@-8 , 0m.25665f7ce9d36e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffb0@0 , 0m.bfffffffffffd0@0] + [0m.3f5cf9fb359ef0@0 , 0m.3f5cf9fb359ef8@0] * a9 + [0m.a235b325ca76f0@-2 , 0m.a235b325ca7718@-2] * a8 + [0m.cfa0e7997f1f20@-4 , 0m.cfa0e7997f1f38@-4] * a7 + [0m.b12adacc4dc9d0@-6 , 0m.b12adacc4dc9e0@-6] * a6 + [0m.72884f56addddc@-8 , 0m.72884f56addde8@-8] * a5 , [0m-.2566564cd7e238@-8 , 0m.2566541e4113b2@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb359ee4@0 , 0m.3f5cf9fb359eec@0] * a10 + [0m.a235b325ca7758@-2 , 0m.a235b325ca7780@-2] * a9 + [0m.cfa0e7997f9f70@-4 , 0m.cfa0e7997f9f88@-4] * a8 + [0m.b12adacc7d4778@-6 , 0m.b12adacc7d4788@-6] * a7 + [0m.72884f62758514@-8 , 0m.72884f62758520@-8] * a6 , [0m-.25664c5d0531f8@-8 , 0m.25664bed03b57c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb359ee0@0 , 0m.3f5cf9fb359ee8@0] * a11 + [0m.a235b325ca7738@-2 , 0m.a235b325ca7760@-2] * a10 + [0m.cfa0e7997f9ff8@-4 , 0m.cfa0e7997fa010@-4] * a9 + [0m.b12adacc7db4f8@-6 , 0m.b12adacc7db508@-6] * a8 + [0m.72884f62943890@-8 , 0m.72884f6294389c@-8] * a7 , [0m-.25664bf1d7d30a@-8 , 0m.25664bf0bbedb0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ed8@0 , 0m.3f5cf9fb359ee0@0] * a12 + [0m.a235b325ca7738@-2 , 0m.a235b325ca7758@-2] * a11 + [0m.cfa0e7997f9fd0@-4 , 0m.cfa0e7997f9fe8@-4] * a10 + [0m.b12adacc7db568@-6 , 0m.b12adacc7db578@-6] * a9 + [0m.72884f62947f58@-8 , 0m.72884f62947f64@-8] * a8 , [0m-.25664bf0d016ce@-8 , 0m.25664bf0cd473a@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ed8@0 , 0m.3f5cf9fb359ee0@0] * a13 + [0m.a235b325ca7720@-2 , 0m.a235b325ca7748@-2] * a12 + [0m.cfa0e7997f9fc0@-4 , 0m.cfa0e7997f9fe8@-4] * a11 + [0m.b12adacc7db548@-6 , 0m.b12adacc7db558@-6] * a10 + [0m.72884f62947fa0@-8 , 0m.72884f62947fac@-8] * a9 , [0m-.25664bf0c31cce@-8 , 0m.25664bf0c315ae@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ed8@0 , 0m.3f5cf9fb359ee0@0] * a14 + [0m.a235b325ca7720@-2 , 0m.a235b325ca7748@-2] * a13 + [0m.cfa0e7997f9fb0@-4 , 0m.cfa0e7997f9fc8@-4] * a12 + [0m.b12adacc7db540@-6 , 0m.b12adacc7db550@-6] * a11 + [0m.72884f62947f8c@-8 , 0m.72884f62947f98@-8] * a10 , [0m-.25664bf0b8bc38@-8 , 0m.25664bf0b8bc26@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ed8@0 , 0m.3f5cf9fb359ee0@0] * a15 + [0m.a235b325ca7720@-2 , 0m.a235b325ca7748@-2] * a14 + [0m.cfa0e7997f9fb0@-4 , 0m.cfa0e7997f9fc8@-4] * a13 + [0m.b12adacc7db528@-6 , 0m.b12adacc7db538@-6] * a12 + [0m.72884f62947f88@-8 , 0m.72884f62947f90@-8] * a11 , [0m-.256643dc08d304@-8 , 0m.256643dc08d304@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ed8@0 , 0m.3f5cf9fb359ee0@0] * a16 + [0m.a235b325ca7720@-2 , 0m.a235b325ca7748@-2] * a15 + [0m.cfa0e7997f9fb0@-4 , 0m.cfa0e7997f9fc8@-4] * a14 + [0m.b12adacc7db528@-6 , 0m.b12adacc7db538@-6] * a13 + [0m.72884f62947f7c@-8 , 0m.72884f62947f84@-8] * a12 , [0m-.256643c7237dea@-8 , 0m.256643c7237dea@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ecc@0 , 0m.3f5cf9fb359ed4@0] * a17 + [0m.a235b325ca7720@-2 , 0m.a235b325ca7748@-2] * a16 + [0m.cfa0e7997f9fb0@-4 , 0m.cfa0e7997f9fc8@-4] * a15 + [0m.b12adacc7db528@-6 , 0m.b12adacc7db538@-6] * a14 + [0m.72884f62947f7c@-8 , 0m.72884f62947f84@-8] * a13 , [0m-.25664bdb9d4bea@-8 , 0m.25664bdb9d4bea@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ecc@0 , 0m.3f5cf9fb359ed4@0] * a18 + [0m.a235b325ca7700@-2 , 0m.a235b325ca7728@-2] * a17 + [0m.cfa0e7997f9fb0@-4 , 0m.cfa0e7997f9fc8@-4] * a16 + [0m.b12adacc7db528@-6 , 0m.b12adacc7db538@-6] * a15 + [0m.72884f62947f7c@-8 , 0m.72884f62947f84@-8] * a14 , [0m-.25664bf0821534@-8 , 0m.25664bf0821534@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ecc@0 , 0m.3f5cf9fb359ed4@0] * a19 + [0m.a235b325ca7700@-2 , 0m.a235b325ca7728@-2] * a18 + [0m.cfa0e7997f9f88@-4 , 0m.cfa0e7997f9fa0@-4] * a17 + [0m.b12adacc7db528@-6 , 0m.b12adacc7db538@-6] * a16 + [0m.72884f62947f7c@-8 , 0m.72884f62947f84@-8] * a15 , [0m-.25664bf0b81c68@-8 , 0m.25664bf0b81c68@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb359ecc@0 , 0m.3f5cf9fb359ed4@0] * a20 + [0m.a235b325ca7700@-2 , 0m.a235b325ca7728@-2] * a19 + [0m.cfa0e7997f9f88@-4 , 0m.cfa0e7997f9fa0@-4] * a18 + [0m.b12adacc7db508@-6 , 0m.b12adacc7db518@-6] * a17 + [0m.72884f62947f7c@-8 , 0m.72884f62947f84@-8] * a16 , [0m-.25664bf0b8a83a@-8 , 0m.25664bf0b8a83a@-8]>
+}
+,
+leftStar:my models{
+<[0m.b13d03c099aaa8@0 , 0m.b13d03c099aad0@0] + [0m.3b14569591d542@0 , 0m.3b14569591d54a@0] * a1 , [0m-.11441b6f34f071@-9 , 0m.115e191a6e84f0@-9]>
+}
+,
+leftStar:my models{
+<[0m.bf6adb17b01e18@0 , 0m.bf6adb17b01e48@0] + [0m.3f370ab9c2172e@0 , 0m.3f370ab9c21736@0] * a2 + [0m.973e4e4aa16448@-2 , 0m.973e4e4aa16470@-2] * a1 , [0m-.69731161aaef68@-9 , 0m.68f336e5d2ddfc@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffc0caa8841d8@0 , 0m.bffc0caa884200@0] + [0m.3f5c18b6434bf6@0 , 0m.3f5c18b6434bfe@0] * a3 + [0m.a1d49655473bf8@-2 , 0m.a1d49655473c20@-2] * a2 + [0m.c1977096c4bb00@-4 , 0m.c1977096c4bb18@-4] * a1 , [0m-.11c8824085d564@-8 , 0m.11d81af4c96c52@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffebdad20698@0 , 0m.bfffebdad206c8@0] + [0m.3f5cf60d795f5e@0 , 0m.3f5cf60d795f66@0] * a4 + [0m.a233727549a700@-2 , 0m.a233727549a720@-2] * a3 + [0m.cf2499c06e55d8@-4 , 0m.cf2499c06e55f0@-4] * a2 + [0m.a530960fa089b8@-6 , 0m.a530960fa089c8@-6] * a1 , [0m-.1d82b9176485ed@-8 , 0m.1d73c0ee3ddf41@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffadb4f7f8@0 , 0m.bfffffadb4f820@0] + [0m.3f5cf9ed451570@0 , 0m.3f5cf9ed451578@0] * a5 + [0m.a235a9171bc028@-2 , 0m.a235a9171bc050@-2] * a4 + [0m.cf9e056fdcd6d8@-4 , 0m.cf9e056fdcd6f8@-4] * a3 + [0m.b0c0c986d00cc0@-6 , 0m.b0c0c986d00cd0@-6] * a2 + [0m.6aca136ef36b24@-8 , 0m.6aca136ef36b30@-8] * a1 , [0m-.23bea9cd1580f4@-8 , 0m.23c589c5f58720@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffee7a2c0@0 , 0m.bffffffee7a2f0@0] + [0m.3f5cf9fb3039ae@0 , 0m.3f5cf9fb3039b6@0] * a6 + [0m.a235b3021b02e0@-2 , 0m.a235b3021b0308@-2] * a5 + [0m.cfa0dab9e786e8@-4 , 0m.cfa0dab9e78700@-4] * a4 + [0m.b12864ee8ba5c0@-6 , 0m.b12864ee8ba5d0@-6] * a3 + [0m.7243bdc12bfdec@-8 , 0m.7243bdc12bfdf4@-8] * a2 , [0m-.254bab600e71ac@-8 , 0m.254aa49bfdd412@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffccc98@0 , 0m.bffffffffcccc0@0] + [0m.3f5cf9fb5a36a6@0 , 0m.3f5cf9fb5a36ae@0] * a7 + [0m.a235b325bca758@-2 , 0m.a235b325bca780@-2] * a6 + [0m.cfa0e76bd23d90@-4 , 0m.cfa0e76bd23da8@-4] * a5 + [0m.b12acfd0648b18@-6 , 0m.b12acfd0648b28@-6] * a4 + [0m.7286b832c6e224@-8 , 0m.7286b832c6e230@-8] * a3 , [0m-.256569f3ece164@-8 , 0m.25654f34f026d0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffff788@0 , 0m.bffffffffff7b8@0] + [0m.3f5cf9fb5aa536@0 , 0m.3f5cf9fb5aa53e@0] * a8 + [0m.a235b3262824b0@-2 , 0m.a235b3262824d8@-2] * a7 + [0m.cfa0e7996df1e8@-4 , 0m.cfa0e7996df200@-4] * a6 + [0m.b12adaa583dba8@-6 , 0m.b12adaa583dbb8@-6] * a5 + [0m.72884848a86ea4@-8 , 0m.72884848a86eac@-8] * a4 , [0m-.25665e59f595c4@-8 , 0m.25665d2ec7239c@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffff98@0 , 0m.bfffffffffffc0@0] + [0m.3f5cf9fb5aa606@0 , 0m.3f5cf9fb5aa60e@0] * a9 + [0m.a235b326293fc0@-2 , 0m.a235b326293fe8@-2] * a8 + [0m.cfa0e799f78810@-4 , 0m.cfa0e799f78828@-4] * a7 + [0m.b12adacc6e9f58@-6 , 0m.b12adacc6e9f68@-6] * a6 + [0m.72884f49622bbc@-8 , 0m.72884f49622bc8@-8] * a5 , [0m-.256663556ee37a@-8 , 0m.25665c36643214@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb5aa5f4@0 , 0m.3f5cf9fb5aa5fc@0] * a10 + [0m.a235b3262941d8@-2 , 0m.a235b326294200@-2] * a9 + [0m.cfa0e799f8f260@-4 , 0m.cfa0e799f8f278@-4] * a8 + [0m.b12adacce40618@-6 , 0m.b12adacce40628@-6] * a7 + [0m.72884f628abef8@-8 , 0m.72884f628abf00@-8] * a6 , [0m-.25664c850dea44@-8 , 0m.25664c02133df6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb5aa5f4@0 , 0m.3f5cf9fb5aa5fc@0] * a11 + [0m.a235b3262941a8@-2 , 0m.a235b3262941d0@-2] * a10 + [0m.cfa0e799f8f510@-4 , 0m.cfa0e799f8f528@-4] * a9 + [0m.b12adacce53b38@-6 , 0m.b12adacce53b48@-6] * a8 + [0m.72884f62d6a44c@-8 , 0m.72884f62d6a454@-8] * a7 , [0m-.25664bd86de5fa@-8 , 0m.25664bd721e956@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb5aa5e8@0 , 0m.3f5cf9fb5aa5f0@0] * a12 + [0m.a235b3262941a8@-2 , 0m.a235b3262941d0@-2] * a11 + [0m.cfa0e799f8f4d0@-4 , 0m.cfa0e799f8f4e8@-4] * a10 + [0m.b12adacce53d90@-6 , 0m.b12adacce53da0@-6] * a9 + [0m.72884f62d76c20@-8 , 0m.72884f62d76c2c@-8] * a8 , [0m-.25664bf04de568@-8 , 0m.25664bd6f1e572@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb5aa5e8@0 , 0m.3f5cf9fb5aa5f0@0] * a13 + [0m.a235b326294188@-2 , 0m.a235b3262941b0@-2] * a12 + [0m.cfa0e799f8f4d0@-4 , 0m.cfa0e799f8f4e8@-4] * a11 + [0m.b12adacce53d58@-6 , 0m.b12adacce53d68@-6] * a10 + [0m.72884f62d76da4@-8 , 0m.72884f62d76dac@-8] * a9 , [0m-.25664bf0cc9188@-8 , 0m.25664bf08c4a90@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb5aa5ec@0 , 0m.3f5cf9fb5aa5f4@0] * a14 + [0m.a235b326294188@-2 , 0m.a235b3262941b0@-2] * a13 + [0m.cfa0e799f8f4a8@-4 , 0m.cfa0e799f8f4c0@-4] * a12 + [0m.b12adacce53d58@-6 , 0m.b12adacce53d68@-6] * a11 + [0m.72884f62d76d7c@-8 , 0m.72884f62d76d84@-8] * a10 , [0m-.25664bf0ce7da4@-8 , 0m.25664bf0cddaba@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5e4@0 , 0m.3f5cf9fb5aa5ec@0] * a15 + [0m.a235b326294190@-2 , 0m.a235b3262941b8@-2] * a14 + [0m.cfa0e799f8f4a8@-4 , 0m.cfa0e799f8f4c0@-4] * a13 + [0m.b12adacce53d30@-6 , 0m.b12adacce53d40@-6] * a12 + [0m.72884f62d76d7c@-8 , 0m.72884f62d76d84@-8] * a11 , [0m-.256643dc1ead9c@-8 , 0m.256643dc1eabfc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5e0@0 , 0m.3f5cf9fb5aa5e8@0] * a16 + [0m.a235b326294178@-2 , 0m.a235b3262941a0@-2] * a15 + [0m.cfa0e799f8f4b0@-4 , 0m.cfa0e799f8f4c8@-4] * a14 + [0m.b12adacce53d30@-6 , 0m.b12adacce53d40@-6] * a13 + [0m.72884f62d76d68@-8 , 0m.72884f62d76d74@-8] * a12 , [0m-.256643c743a86a@-8 , 0m.256643c743a864@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5dc@0 , 0m.3f5cf9fb5aa5e4@0] * a17 + [0m.a235b326294178@-2 , 0m.a235b326294198@-2] * a16 + [0m.cfa0e799f8f490@-4 , 0m.cfa0e799f8f4a8@-4] * a15 + [0m.b12adacce53d30@-6 , 0m.b12adacce53d40@-6] * a14 + [0m.72884f62d76d68@-8 , 0m.72884f62d76d74@-8] * a13 , [0m-.256643c7181aa6@-8 , 0m.256643c7181aa6@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5e0@0 , 0m.3f5cf9fb5aa5e8@0] * a18 + [0m.a235b326294168@-2 , 0m.a235b326294190@-2] * a17 + [0m.cfa0e799f8f488@-4 , 0m.cfa0e799f8f4a8@-4] * a16 + [0m.b12adacce53d20@-6 , 0m.b12adacce53d30@-6] * a15 + [0m.72884f62d76d68@-8 , 0m.72884f62d76d74@-8] * a14 , [0m-.256643c717a1c0@-8 , 0m.256643c717a1c0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5dc@0 , 0m.3f5cf9fb5aa5e4@0] * a19 + [0m.a235b326294178@-2 , 0m.a235b326294198@-2] * a18 + [0m.cfa0e799f8f480@-4 , 0m.cfa0e799f8f498@-4] * a17 + [0m.b12adacce53d18@-6 , 0m.b12adacce53d28@-6] * a16 + [0m.72884f62d76d5c@-8 , 0m.72884f62d76d64@-8] * a15 , [0m-.256643c717a086@-8 , 0m.256643c717a086@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb5aa5dc@0 , 0m.3f5cf9fb5aa5e4@0] * a20 + [0m.a235b326294168@-2 , 0m.a235b326294190@-2] * a19 + [0m.cfa0e799f8f488@-4 , 0m.cfa0e799f8f4a8@-4] * a18 + [0m.b12adacce53d08@-6 , 0m.b12adacce53d18@-6] * a17 + [0m.72884f62d76d5c@-8 , 0m.72884f62d76d64@-8] * a16 , [0m-.256643c70d50c4@-8 , 0m.256643c70d50c4@-8]>
+}
+,
+leftStar:my models{
+<[0m.af798bada6a0e8@0 , 0m.af798bada6a110@0] + [0m.3a7dd939ecad42@0 , 0m.3a7dd939ecad4a@0] * a1 , [0m-.111825eea02ccd@-9 , 0m.1131de3e49cb9d@-9]>
+}
+,
+leftStar:my models{
+<[0m.bf447c16e10d18@0 , 0m.bf447c16e10d48@0] + [0m.3f2bc1a517bba2@0 , 0m.3f2bc1a517bbaa@0] * a2 + [0m.95bd0d60078d48@-2 , 0m.95bd0d60078d70@-2] * a1 , [0m-.6891f6b340a4a4@-9 , 0m.6813a5494cf1fc@-9]>
+}
+,
+leftStar:my models{
+<[0m.bffa6abf748cc8@0 , 0m.bffa6abf748cf0@0] + [0m.3f5bac3925328c@0 , 0m.3f5bac39253294@0] * a3 + [0m.a1b7b24955e210@-2 , 0m.a1b7b24955e238@-2] * a2 + [0m.bfaa50acb80a90@-4 , 0m.bfaa50acb80aa8@-4] * a1 , [0m-.11abd987212002@-8 , 0m.11bb3645bf109d@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffdffcd4d658@0 , 0m.bfffdffcd4d688@0] + [0m.3f5cf3554682b8@0 , 0m.3f5cf3554682c0@0] * a4 + [0m.a2325cba1b5370@-2 , 0m.a2325cba1b5390@-2] * a3 + [0m.ceff9ecf74cd58@-4 , 0m.ceff9ecf74cd70@-4] * a2 + [0m.a38bcec64ad728@-6 , 0m.a38bcec64ad740@-6] * a1 , [0m-.1d648c7a8e0fed@-8 , 0m.1d55e213413bf9@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffff6ceee558@0 , 0m.bfffff6ceee580@0] + [0m.3f5cf9e04b6f12@0 , 0m.3f5cf9e04b6f1a@0] * a5 + [0m.a235a220d6fc08@-2 , 0m.a235a220d6fc30@-2] * a4 + [0m.cf9ca1f0e54ca8@-4 , 0m.cf9ca1f0e54cc8@-4] * a3 + [0m.b0a13b7a5efc70@-6 , 0m.b0a13b7a5efc80@-6] * a2 + [0m.69ba0eb913effc@-8 , 0m.69ba0eb913f008@-8] * a1 , [0m-.23ae7ac2b97b30@-8 , 0m.23b52348a1ac26@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffdcc7910@0 , 0m.bffffffdcc7940@0] + [0m.3f5cf9fb226cc0@0 , 0m.3f5cf9fb226cc8@0] * a6 + [0m.a235b2e0e39670@-2 , 0m.a235b2e0e39698@-2] * a5 + [0m.cfa0d1d099a5e0@-4 , 0m.cfa0d1d099a5f8@-4] * a4 + [0m.b12735973063a0@-6 , 0m.b12735973063b8@-6] * a3 + [0m.722f5794ed3e60@-8 , 0m.722f5794ed3e6c@-8] * a2 , [0m-.2547944436db9e@-8 , 0m.2546a15909fde4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffff8c3d8@0 , 0m.bffffffff8c400@0] + [0m.3f5cf9fb7e983c@0 , 0m.3f5cf9fb7e9844@0] * a7 + [0m.a235b325995308@-2 , 0m.a235b325995330@-2] * a6 + [0m.cfa0e7414ddb38@-4 , 0m.cfa0e7414ddb50@-4] * a5 + [0m.b12ac835c733a8@-6 , 0m.b12ac835c733b8@-6] * a4 + [0m.7285f4195595c8@-8 , 0m.7285f4195595cc@-8] * a3 , [0m-.2565230c4ef386@-8 , 0m.256505f48067dc@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffeae0@0 , 0m.bfffffffffeb10@0] + [0m.3f5cf9fb7faa88@0 , 0m.3f5cf9fb7faa90@0] * a8 + [0m.a235b326854780@-2 , 0m.a235b3268547a8@-2] * a7 + [0m.cfa0e79940b920@-4 , 0m.cfa0e79940b938@-4] * a6 + [0m.b12ada813c51b0@-6 , 0m.b12ada813c51c0@-6] * a5 + [0m.7288435e3d8b70@-8 , 0m.7288435e3d8b78@-8] * a4 , [0m-.25665ba736fd32@-8 , 0m.25665a1e1ea2a4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffff68@0 , 0m.bfffffffffff90@0] + [0m.3f5cf9fb7fad24@0 , 0m.3f5cf9fb7fad2c@0] * a9 + [0m.a235b3268805a8@-2 , 0m.a235b3268805d0@-2] * a8 + [0m.cfa0e79a6ebee0@-4 , 0m.cfa0e79a6ebef8@-4] * a7 + [0m.b12adacc480900@-6 , 0m.b12adacc480910@-6] * a6 + [0m.72884f31ee1af8@-8 , 0m.72884f31ee1b04@-8] * a5 , [0m-.25665c10869cda@-8 , 0m.25665c5212b3be@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffd0@0 , 0m.bfffffffffffe0@0] + [0m.3f5cf9fb7fad04@0 , 0m.3f5cf9fb7fad0c@0] * a10 + [0m.a235b326880c60@-2 , 0m.a235b326880c88@-2] * a9 + [0m.cfa0e79a7241a0@-4 , 0m.cfa0e79a7241b8@-4] * a8 + [0m.b12adacd49bf70@-6 , 0m.b12adacd49bf80@-6] * a7 + [0m.72884f6271ccf8@-8 , 0m.72884f6271cd04@-8] * a6 , [0m-.25664cf130f0d2@-8 , 0m.25664c03487e86@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe0@0] + [0m.3f5cf9fb7fad00@0 , 0m.3f5cf9fb7fad08@0] * a11 + [0m.a235b326880c10@-2 , 0m.a235b326880c38@-2] * a10 + [0m.cfa0e79a724a38@-4 , 0m.cfa0e79a724a50@-4] * a9 + [0m.b12adacd4cbe58@-6 , 0m.b12adacd4cbe68@-6] * a8 + [0m.72884f6318671c@-8 , 0m.72884f63186724@-8] * a7 , [0m-.25664bf378cac4@-8 , 0m.25664bf1184582@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb7facf8@0 , 0m.3f5cf9fb7fad00@0] * a12 + [0m.a235b326880c00@-2 , 0m.a235b326880c28@-2] * a11 + [0m.cfa0e79a7249d0@-4 , 0m.cfa0e79a7249e8@-4] * a10 + [0m.b12adacd4cc5b8@-6 , 0m.b12adacd4cc5c8@-6] * a9 + [0m.72884f631a56e0@-8 , 0m.72884f631a56ec@-8] * a8 , [0m-.25664bf0a96b02@-8 , 0m.25664bd74aae22@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb7facf8@0 , 0m.3f5cf9fb7fad00@0] * a13 + [0m.a235b326880bf0@-2 , 0m.a235b326880c18@-2] * a12 + [0m.cfa0e79a7249c0@-4 , 0m.cfa0e79a7249d8@-4] * a11 + [0m.b12adacd4cc560@-6 , 0m.b12adacd4cc570@-6] * a10 + [0m.72884f631a5ba4@-8 , 0m.72884f631a5bac@-8] * a9 , [0m-.25664bd707540c@-8 , 0m.25664bd6c70622@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe0@0 , 0m.bfffffffffffe8@0] + [0m.3f5cf9fb7facfc@0 , 0m.3f5cf9fb7fad04@0] * a14 + [0m.a235b326880bf0@-2 , 0m.a235b326880c18@-2] * a13 + [0m.cfa0e79a7249a8@-4 , 0m.cfa0e79a7249c0@-4] * a12 + [0m.b12adacd4cc548@-6 , 0m.b12adacd4cc558@-6] * a11 + [0m.72884f631a5b70@-8 , 0m.72884f631a5b78@-8] * a10 , [0m-.25664bd6c5b014@-8 , 0m.25664bd6c50d16@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7facea@0 , 0m.3f5cf9fb7facf2@0] * a15 + [0m.a235b326880bf8@-2 , 0m.a235b326880c20@-2] * a14 + [0m.cfa0e79a7249a8@-4 , 0m.cfa0e79a7249c0@-4] * a13 + [0m.b12adacd4cc540@-6 , 0m.b12adacd4cc550@-6] * a12 + [0m.72884f631a5b5c@-8 , 0m.72884f631a5b64@-8] * a11 , [0m-.25664bf05f4958@-8 , 0m.25664bd706913e@-8]>
+}
+,
+leftStar:my models{
+<[0m.bfffffffffffe8@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7facea@0 , 0m.3f5cf9fb7facf2@0] * a16 + [0m.a235b326880bc8@-2 , 0m.a235b326880bf0@-2] * a15 + [0m.cfa0e79a7249b0@-4 , 0m.cfa0e79a7249c8@-4] * a14 + [0m.b12adacd4cc540@-6 , 0m.b12adacd4cc550@-6] * a13 + [0m.72884f631a5b54@-8 , 0m.72884f631a5b60@-8] * a12 , [0m-.25664bf0e260ce@-8 , 0m.25664bf0a22226@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7face6@0 , 0m.3f5cf9fb7facee@0] * a17 + [0m.a235b326880bc8@-2 , 0m.a235b326880bf0@-2] * a16 + [0m.cfa0e79a724978@-4 , 0m.cfa0e79a724990@-4] * a15 + [0m.b12adacd4cc548@-6 , 0m.b12adacd4cc558@-6] * a14 + [0m.72884f631a5b54@-8 , 0m.72884f631a5b60@-8] * a13 , [0m-.256643dc348188@-8 , 0m.256643dc33deb2@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7face6@0 , 0m.3f5cf9fb7facee@0] * a18 + [0m.a235b326880bb8@-2 , 0m.a235b326880be0@-2] * a17 + [0m.cfa0e79a724978@-4 , 0m.cfa0e79a724990@-4] * a16 + [0m.b12adacd4cc510@-6 , 0m.b12adacd4cc520@-6] * a15 + [0m.72884f631a5b5c@-8 , 0m.72884f631a5b64@-8] * a14 , [0m-.256643c74f3350@-8 , 0m.256643c74f31b4@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7face6@0 , 0m.3f5cf9fb7facee@0] * a19 + [0m.a235b326880bb8@-2 , 0m.a235b326880be0@-2] * a18 + [0m.cfa0e79a724960@-4 , 0m.cfa0e79a724978@-4] * a17 + [0m.b12adacd4cc510@-6 , 0m.b12adacd4cc520@-6] * a16 + [0m.72884f631a5b3c@-8 , 0m.72884f631a5b44@-8] * a15 , [0m-.256643c7192ac4@-8 , 0m.256643c7192ac0@-8]>
+}
+,
+leftStar:my models{
+<[0m.bffffffffffff0@0 , 0m.bffffffffffff0@0] + [0m.3f5cf9fb7face6@0 , 0m.3f5cf9fb7facee@0] * a20 + [0m.a235b326880bb8@-2 , 0m.a235b326880be0@-2] * a19 + [0m.cfa0e79a724960@-4 , 0m.cfa0e79a724978@-4] * a18 + [0m.b12adacd4cc500@-6 , 0m.b12adacd4cc510@-6] * a17 + [0m.72884f631a5b3c@-8 , 0m.72884f631a5b44@-8] * a16 , [0m-.256643c7189f0a@-8 , 0m.256643c7189f0a@-8]>
+}
+}

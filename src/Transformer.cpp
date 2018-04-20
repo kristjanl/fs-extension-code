@@ -1239,7 +1239,6 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   
   pSerializer->add(leftStar, "leftStar");
   
-  tstart(tr_precond);
   
   mlog("leftStar", leftStar);
   
@@ -1255,6 +1254,8 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
     fullRight.tms.push_back(comp->getRightModelForVar(vector<int>(), var));    
   }
   tend(tr_remap1);
+  
+  tstart(tr_precond);
   mlog("fullRight", fullRight);
   
   tstart(tr_comp_pre);
@@ -1398,8 +1399,6 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
 void PreconditionedTransformer::addInfo(vector<string> & info) {
   int old = logger.reset();
   //logger.disable();
-  mlog1("adding");
-  mlog1(sbuilder() << timeLookup["tr_precond"]);
   
   taddToInfo("remap 1", tr_remap1, info);
   taddToInfo("evaluate t", tr_eval, info);
