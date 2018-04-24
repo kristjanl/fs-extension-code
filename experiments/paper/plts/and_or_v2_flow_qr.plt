@@ -1,5 +1,5 @@
 set term png
-set output './images/and_or_v2_flow_qr_flow_21_t_39.95.png
+set output './images/and_or_v2_flow_qr_flow_21_t_26.1.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x21"
-set xrange [0.0:44.0]
-set yrange [-0.0692044926739:0.849214979975]
+set xrange [0.0:28.765]
+set yrange [-0.0508658092972:0.805912990787]
 plot '-' notitle with lines ls 1
 0 -0
 0 0.0001

@@ -227,15 +227,15 @@ void OutputWriter::writeCSV() {
   
   int samplePoint = data2[0].size() / 8;
   
-  mforce(sbuilder() << "steps: " << data2[0].size());
-  mforce(sbuilder() << "sample point: " << (samplePoint));
+  //mlog1(sbuilder() << "steps: " << data2[0].size());
+  //mlog1(sbuilder() << "sample point: " << (samplePoint));
   double sampleWidth = 0;
   for(int i = 0; i < dim; i++) {
     int varWidthIndex = 2 + dim * 2 + i;
     //mforce(sbuilder() << i << ": " << data2[varWidthIndex][0]);
     sampleWidth += atof(data2[varWidthIndex][samplePoint].c_str());
   }
-  mforce(sbuilder() << "sampleWidth: " << sampleWidth);
+  //mlog1(sbuilder() << "sampleWidth: " << sampleWidth);
   
   for(int step = 0; step < steps; step++) {
     //mforce(sbuilder() << "time: " << data2[0][step]);

@@ -1113,7 +1113,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     tend(sc_post_write);
   #endif
   //tprint("sc_post");
-  tprint("tr_");
+  //tprint("tr_");
   //cout << "here2" << endl;
   
   

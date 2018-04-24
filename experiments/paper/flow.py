@@ -27,9 +27,11 @@ modelTypes += ["and_v3"]
 
 #modelTypes = ["Lotka_Volterra"]
 
-algos = ["flow_id", "my_id", "flow_qr", "my_qr"]
+pres = ["id", "qr"]
 
-groups = [["%s_%s.model"%(t,a) for a in algos] for t in modelTypes]
+algos = ["flow", "my"]
+
+groups = [["%s_%s_%s.model"%(t,a,p) for a in algos] for t in modelTypes for p in pres]
     
 models = [m for g in groups for m in g]
 

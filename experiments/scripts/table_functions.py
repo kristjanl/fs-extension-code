@@ -143,8 +143,9 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
   
+  """
   #print "%s \t& %s & %s" %(outputName, time, varRange[0])
-  compMap = {"fcomp":"FC", "comp": "C", "nocomp": "NC"}
+  compMap = {"fcomp":"FC", "comp": "LC", "nocomp": "NC"}
 #  print outputName.split("_")[-2]
   print "%s & %s & & %s & %s & %s & %s & %s & %s & %s & %s & %s\\\\" %(\
     outputName.split("_")[0],
@@ -160,6 +161,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
     fs.getParam(infoFile, "precond time:"),
     fs.getParam(infoFile, "remap 2:"),
     )
+  """
 
 def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:

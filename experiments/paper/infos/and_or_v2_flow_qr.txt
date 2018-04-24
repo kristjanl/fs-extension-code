@@ -1,10 +1,10 @@
 reason: The remainder estimation is not large enough.
 int progress: 29
-evaluate t: 48.84
-precond time: 88.65
-int time: 469.17
-picard poly: 74.2
-picard remainder: 395.1
-picard decreasing: 255.01
-picard refining: 139.92
-computation time: 662.9
+evaluate t: 46.89
+precond time: 85.6
+int time: 460.52
+picard poly: 71.42
+picard remainder: 389.24
+picard decreasing: 246.71
+picard refining: 142.2
+computation time: 647.98

@@ -158,8 +158,8 @@ model: CONTINUOUS '{' continuous '}'
 	mlog1(sbuilder() << "print: " << continuousProblem.bPrint);
 	continuousProblem.run();
 	end = clock();
-	printf("%ld flowpipes computed4.\n", continuousProblem.numOfFlowpipes());
-	printf("time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+	//printf("%ld flowpipes computed4.\n", continuousProblem.numOfFlowpipes());
+	//printf("time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
 	
 	continuousProblem.bSafetyChecking = false;
 
@@ -168,9 +168,9 @@ model: CONTINUOUS '{' continuous '}'
   #ifdef no_output
     cout << "not creating flow output" << endl;
   #else
-  	printf("Preparing for plotting and dumping...\n");
+  	//printf("Preparing for plotting and dumping...\n");
   	continuousProblem.composition();
-  	printf("Done.\n");
+  	//printf("Done.\n");
   #endif
 	
   /* FLOWSTAR OUTPUT REMOVED
@@ -186,25 +186,25 @@ model: CONTINUOUS '{' continuous '}'
 		exit(1);
 	}
 	
-	printf("Dumping the Taylor model flowpipes...\n");
+	//printf("Dumping the Taylor model flowpipes...\n");
 	continuousProblem.dump(fpDumping);
-	printf("Done.\n");
+	//printf("Done.\n");
 	fclose(fpDumping);
 	*/
   logger.reset();
   
   //tprint("fl_part");
-  tprint("fl_int");
+  //tprint("fl_int");
   
   double integrTime = double(end - begin) / CLOCKS_PER_SEC;
-  mlog1(sbuilder() << "computation time: " << integrTime);
+  //mlog1(sbuilder() << "computation time: " << integrTime);
   writer.info.push_back(sbuilder() << "computation time: " << integrTime);
   
   #ifdef no_output
     ;
   #else
-    cout << "creating flow output" << endl;
-    logger.log(continuousProblem.flowpipesCompo.size());
+    //cout << "creating flow output" << endl;
+    //logger.log(continuousProblem.flowpipesCompo.size());
     writer.fromFlowstar(continuousProblem.flowpipesCompo,
         continuousProblem.domains);
     writer.writeCSV();

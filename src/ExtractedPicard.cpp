@@ -193,8 +193,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tstart(fl_int_all);
   
   
-  //pSerializer->add(x, "left_after_precond");
-  //pSerializer->add(result.tmv, "right_after_precond");
+  pSerializer->add(x, "left_after_precond");
+  pSerializer->add(result.tmv, "right_after_precond");
   
   //NOTE BEGIN REMOVE
   TaylorModelVec composed;
@@ -202,7 +202,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   result.tmv.polyRangeNormal(rightAPRange, step_exp_table);
 	x.insert_ctrunc_normal(composed, result.tmv, rightAPRange, step_exp_table,
 	     domain.size(), order, cutoff_threshold);
-  pSerializer->add(composed, "composed_after_precond");
+  //pSerializer->add(composed, "composed_after_precond");
   //END REMOVE
   
   

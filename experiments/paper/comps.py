@@ -33,6 +33,7 @@ modelTypes += ["and_or_v2"]
 #modelTypes = ["and_fast_out_high_10_id"]
 
 #modelTypes = ["lin_dep_20_id"]
+modelTypes = ["and_v3"]
 comps = ["fcomp", "comp", "nocomp"]
 #comps = ["fcomp"]
 

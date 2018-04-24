@@ -4,6 +4,6 @@ precond time: 0
 int time: 0.03
 picard poly: 0
 picard remainder: 0.03
-picard decreasing: 0
-picard refining: 0.03
+picard decreasing: 0.03
+picard refining: 0
 computation time: 0.03

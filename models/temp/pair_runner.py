@@ -7,25 +7,37 @@ import os
 import argparse
 
 
+# directory of scripts
+scriptsDir = os.path.join("..", "..", "experiments", "scripts")
+sys.path.append(scriptsDir)
+
+
+import flowstar_runner
+
+
 modelDir = os.path.join("..", "compositional", "id_comp_precond")
+modelDir = os.path.join(".")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
 parser = argparse.ArgumentParser()
-parser.add_argument('modelType')
-parser.add_argument('--dim', type=int, default=2)
-parser.add_argument('--only', choices=['first', 'second'])
+#parser.add_argument('modelType')
+#parser.add_argument('--dim', type=int, default=2)
+parser.add_argument('--only', choices=['flow', 'my'])
 args = parser.parse_args()
 
-def runFlowstar(modelType, dim):
+#def runFlowstar(modelType, dim):
+def runFlowstar():
   print "starting pair runner (python)"
-  allModel = "%s_%s_id_comp.model"%(modelType, dim)
-  singleModel = "%s_%s_cid_comp.model"%(modelType, dim)
-  flowModel = "%s_%s_id_flow.model"%(modelType, dim)
-  models = [flowModel, singleModel]
-  if args.only == "first":
+  flowModel = "Lotka_Volterra_flow_id.model"
+  myModel = "Lotka_Volterra_my_id.model"
+  models = [flowModel, myModel]
+  if args.only == "flow":
     models = models[:1]
-  if args.only == "second":
+  if args.only == "my":
     models = models[1:]
+    
+  flowstar_runner.runFlowstar(modelDir, flowstar, models)
+  sys.exit(0)
   for model in models:
     print model
     modelFile = os.path.join(modelDir, model)
@@ -33,4 +45,4 @@ def runFlowstar(modelType, dim):
     run = subprocess.Popen(flowstar, stdin=modelStream)
     run.wait()
 
-runFlowstar(args.modelType, args.dim)
+runFlowstar()

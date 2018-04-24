@@ -12,7 +12,7 @@ continuous reachability
   fixed orders 4
   cutoff 1e-20
   precision 53
-  output Lotka_Volterra_flow_qr
+  output Lotka_Volterra_flow_id
   print on
  }
 	

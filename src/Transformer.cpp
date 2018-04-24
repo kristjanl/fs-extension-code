@@ -1025,6 +1025,9 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   tstart(tr_precond);
   precondition(leftStar, all.unpairedRight, settings, all);
   tend(tr_precond);
+  
+  
+  //pSerializer->add(all.initSet, "left_after_precond");
   //mlog("upright", all.unpairedRight);
   
   
