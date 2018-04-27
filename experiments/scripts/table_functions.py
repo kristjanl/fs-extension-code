@@ -6,10 +6,12 @@ import subprocess
 
 import my_functions as fs
 
+plotAllVars = False
 plotToCommon = False
 #plotToCommon = True
+tableCSSFile='../scripts/table.css'
 
-def getDimension(modelFile):
+def getVars(modelFile):
   csv = os.path.join("csvs", "%s.csv" %fs.getParam(modelFile, "output"))
   store = False
   s = ""
@@ -21,7 +23,10 @@ def getDimension(modelFile):
         break
       if store:
         s = s + line
-  return len(s.split(','))
+  return s.split(',')
+
+def getDimension(modelFile):
+  return len(getVars(modelFile))
 
 def getVarRange2(modelFile, csvs):
   # find time that all integrations reached
@@ -61,6 +66,9 @@ def getVarRange2(modelFile, csvs):
   return ranges
 
 def getSkippingIndexes(dim):
+  if plotAllVars:
+    return range(0,dim)
+  
   #include first 3
   indexes = [0, 1]
   #remove if too big
@@ -88,6 +96,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
     step = fs.getParam(modelFile, "fixed steps")
     time = fs.getParam(modelFile, "time")
     dim = getDimension(modelFile)
+    varNames = getVars(modelFile)
   else:
     infoFile = order = time = step = dim = '-'
   
@@ -130,10 +139,12 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   for i in variables:
     imageName = "images/%s%s_%s_t_%s.png" %(outputName, nameSuffix, i, \
         commonTime)
+    varName = varNames[i - 1]
     outFile.write("      <td>\n")
     if os.path.isfile(imageName):
       outFile.write("        <div>\n")
-      outFile.write("          <div align='center'>x%s</div>\n"%i)
+      outFile.write("          <div align='center'>%s</div>\n"%varName)
+#      outFile.write("          <div align='center'>x%s</div>\n"%i)
       outFile.write("          " + 
           "<a href='%s'><img src='%s' style='width:200px;height:150px;'></a>\n"\
           %(imageName,imageName))
@@ -226,7 +237,7 @@ def write_group_table_rows(modelDir, groups, outFile, nameSuffix, infoFields):
 def write_table_start(outFile, infoFields):
   outFile.write("<html>\n")
   outFile.write("<head>\n")
-  outFile.write("  <link rel='stylesheet' type='text/css' href='../scripts/table.css'>")
+  outFile.write("  <link rel='stylesheet' type='text/css' href='%s'>"%tableCSSFile)
   outFile.write("</head>\n")
   outFile.write("<body>\n")
 
