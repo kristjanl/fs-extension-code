@@ -175,6 +175,7 @@ public:
 	vector<TaylorModel> tms;
 public:
 	TaylorModelVec();
+	TaylorModelVec(int n);
 	TaylorModelVec(const vector<TaylorModel> & tms_input);
 	TaylorModelVec(const vector<Interval> & constants, const int numVars);
 	TaylorModelVec(const Matrix & coefficients);

@@ -82,6 +82,7 @@ class MyComponent {
     void prepareMappers();
     void remapFlowpipes();
     void remapTimeStepPipe();
+    TaylorModelVec orderedTSPRemap();
     
     bool isSolveVar(int var);
     bool belongsToComp(int param);

@@ -119,15 +119,14 @@ or -2 to indicate placeholders
 */
 void MyComponent::prepareMappers() {
   mreset(old);
-  mdisable();
+  //mdisable();
   mlog1("preparing mappers <");
   minc();
   vector< vector<int> > mappers;
   
-
   for(int i = 0; i < dependencies.size(); i++) {
     //mlog1(sbuilder() << "i: " << i);
-    MyComponent *pComp = dependencies.at(i)->pComp;
+    MyComponent *pComp = dependencies[i]->pComp;
     //mlog1(sbuilder() << "link: " << dependencies.at(i)->linkVar);
     //previous component parameters
     vector<int> prevCompPm = pComp->allTMParams;
@@ -160,7 +159,7 @@ void MyComponent::prepareMappers() {
   
   //mapper for left TaylorModel
   for(int i = 0; i < dependencies.size(); i++) {
-    MyComponent *pComp = dependencies.at(i)->pComp;
+    MyComponent *pComp = dependencies[i]->pComp;
     
     //variables in previous component
     vector<int> prevCompVars = pComp->allVars;
@@ -649,6 +648,66 @@ void MyComponent::remapFlowpipes() {
   }
 }
 
+
+//can only be used in transform
+TaylorModelVec MyComponent::orderedTSPRemap() {
+  mreset(old);
+  mdisable();
+  mlog1("ordered tsp remapping <");
+  minc();
+  
+  int varSize = varIndexes.size() + dependencies.size();
+
+  //pipes.push_back(getEmptyTMV(varSize));
+  timeStepPipe = getEmptyTMV(varSize);
+  mlog1(dependencies.size());
+  
+  if(dependencies.size() == 0) {
+    throw std::invalid_argument("orderedTSPRemap can only be used with deps");
+  }
+  
+  TaylorModelVec ret(compVars.size());
+  TaylorModelVec ret2;
+  
+  map<int, CompDependency *>  lookup;
+  for(vector<CompDependency *>::iterator it = dependencies.begin(); 
+      it < dependencies.end(); it++) {
+    lookup[(*it)->linkVar] = (*it);
+  }
+  
+  mforce1("");
+  
+  for(int i = 0; i < allVars.size(); i++) {
+    int var = allVars[i];
+    mlog1(sbuilder() << "var: " << var);
+    CompDependency *dep = lookup[var];
+    MyComponent *pComp = dep->pComp;
+    mlog("vs", pComp->allVars);
+    
+    int dLinkPos = find(pComp->compVars.begin(), pComp->compVars.end(), var)
+        - pComp->compVars.begin();
+    TaylorModel & source = pComp->timeStepPipe.tms[dLinkPos];
+    mlog("source", source);
+    
+    mforce("vs", pComp->allVars);
+    
+    mforce("l", dep->leftMapper);
+    mforce("r", dep->rightMapper);
+    
+    TaylorModel mapped = source.transform(dep->rightMapper);
+    mlog("mapped", mapped);
+    ret2.tms.push_back(mapped);
+    //mlog1("between");
+  }
+  exit(0);
+  mdec();
+  mlog1("orderd tsp remapping >");
+  mrestore(old);
+  return ret2;
+}
+
+
+
 void MyComponent::remapTimeStepPipe() {
   mreset(old);
   mdisable();
@@ -845,7 +904,7 @@ void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init,
   mdisable();
   mlog1("preparing components <");
   minc();
-  mforce("shouldn't be used");
+  mforce1("shouldn't be used");
   exit(0);
   
   mlog("init", init);
@@ -1023,7 +1082,7 @@ TaylorModel MyComponent::remapSingleRightTM(int variable) {
 
 void MyComponent::getIthPipePair(vector<int> lMapper, vector<int> rMapper, 
         TaylorModel & left, TaylorModel & right, int var, int i) {
-  mforce("getting ith");
+  mforce1("getting ith");
   
   int pos = MyComponentRemove::findPos(var, &varIndexes);
   if(pos < varIndexes.size()) {

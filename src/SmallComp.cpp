@@ -28,8 +28,8 @@ namespace smallComp {
     }
     
     for(int i = 0; i < comp.size(); i++) {
-      //mforce(sbuilder() << "comp[" << i << "] = " << comp[i]);
-      //mforce(ode.at(comp[i]).toString());
+      //mforce1(sbuilder() << "comp[" << i << "] = " << comp[i]);
+      //mforce1(ode.at(comp[i]).toString());
       
       
       
@@ -567,13 +567,13 @@ namespace smallComp {
     
     if(settings.useFlow == false) {
       //mlog("initp", nextInit);
-      //mforce("plain");
+      //mforce1("plain");
       TaylorModelVec & pipe = component.timeStepPipe;
       smallComp::advance_step(component.solveIndexes, pipe, component.odes, 
           nextInit, component.dom, settings);
     } else {
       //mlog("initf", component.initSet);
-      //mforce("flow");
+      //mforce1("flow");
       smallComp::advanceFlow(component, settings);
     }
     //mlog("last2", component.lastPipe());
@@ -1039,9 +1039,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, hfOde, domain);
   }
+  exit(0);
   settings->transformer->setIntegrationMapper(comps);
   
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
+  //mforce("all", all.initSet);
   clock_t integrClock = clock();
   double t;
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {

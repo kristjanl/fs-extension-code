@@ -2614,7 +2614,7 @@ precondition: QRPRECOND
 |
 QRPRECOND1
 {
-  mforce("making new");
+  mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
@@ -2625,7 +2625,7 @@ QRPRECOND1
 |
 QRPRECOND2
 {
-  mforce("making new");
+  mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
@@ -2636,7 +2636,7 @@ QRPRECOND2
 |
 QRPRECOND3
 {
-  mforce("making new");
+  mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
@@ -2655,7 +2655,7 @@ IDPRECOND
 }|
 COMPIDPRECOND
 {
-	mforce("comp id precond");
+	mforce1("comp id precond");
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new SingleComponentIdentityTransformer();

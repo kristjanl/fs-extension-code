@@ -142,7 +142,7 @@ namespace utilsprivate {
 
 void serializeTMV(TaylorModelVec & tmv, string filename) {
   mreset(old);
-  mforce(sbuilder() << "serializing tmv to '" << filename << "'");
+  mforce1(sbuilder() << "serializing tmv to '" << filename << "'");
   mlog("tmv", tmv);
   FILE *fp = fopen(filename.c_str(), "w");
   vector<string> params = utilsprivate::createParams(tmv);
@@ -221,7 +221,7 @@ vector<TaylorModelVec *> pDeserializeFlows(string filename) {
 double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
   double sumOfMags = 0;
   if(f.size() != s.size()) {
-    mforce("different vInt sizes");
+    mforce1("different vInt sizes");
     exit(0);
     return 0;
   }
@@ -284,7 +284,7 @@ void compareFlows(vector<TaylorModelVec *> & first,
       << first.size() << ", " << second.size());
   
   if(first.size() != second.size()) {
-    mforce(sbuilder() << "compareFlows unequal size (" << 
+    mforce1(sbuilder() << "compareFlows unequal size (" << 
         first.size() << ", " << second.size() << ")");
   }
   
@@ -410,7 +410,7 @@ void printTMVFiles(string file1, string file2, string name,
 void toMathematica(string file) {
   stringstream ss;
   ss << "mathematica_" << file;
-  mforce(sbuilder() << "writing" << ss.str());
+  mforce1(sbuilder() << "writing" << ss.str());
   FILE *fp = fopen(ss.str().c_str(), "w");
   
   fprintf(fp, "{");
@@ -488,11 +488,11 @@ void TMVSerializer::add(const TaylorModelVec & tmv) {
   add(tmv, "NULL");
 }
 void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
-  //mforce("adding");
+  //mforce1("adding");
   if(active == false)
     return;
-  //mforce(sbuilder() << tmvs.size());
-  //mforce(sbuilder() << "adding '" << name << "'");
+  //mforce1(sbuilder() << tmvs.size());
+  //mforce1(sbuilder() << "adding '" << name << "'");
   
   TaylorModelVec temp(tmv);
   tmvs.push_back(temp);
@@ -505,7 +505,7 @@ void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
 void TMVSerializer::serialize() {
   mreset(old);
   mlog1("");
-  mforce(sbuilder() << "serializing tmvs to '" << filename << "'");
+  mforce1(sbuilder() << "serializing tmvs to '" << filename << "'");
   mlog1(sbuilder() << "size: " << tmvs.size());
   FILE *fp = fopen(filename.c_str(), "w");
   

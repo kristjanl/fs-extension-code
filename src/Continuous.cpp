@@ -6810,7 +6810,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-    //mforce("1");exit(0);
+    //mforce1("1");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7152,7 +7152,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 				parseODE();		// call the parser
-				//mforce("2");exit(0);
+				//mforce1("2");exit(0);
 
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7496,7 +7496,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.strODE = prefix + strOde_centered[i] + suffix;
 
 		parseODE();		// call the parser
-    //mforce("3");exit(0);
+    //mforce1("3");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -7869,7 +7869,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-    //mforce("4");exit(0);
+    //mforce1("4");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8247,7 +8247,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		mlog1(strOde_centered[i]);
 
 		parseODE();		// call the parser
-    //mforce("5");exit(0);
+    //mforce1("5");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8630,7 +8630,7 @@ int Flowpipe::advance_non_polynomial_taylor(Flowpipe & result, const vector<stri
 		parseSetting.order = orders[i] - 1;
 
 		parseODE();		// call the parser
-    //mforce("6");exit(0);
+    //mforce1("6");exit(0);
     
 		TaylorModel tmTemp(parseResult.expansion, intZero);
 		Adrdt.tms.push_back(tmTemp);
@@ -8961,7 +8961,7 @@ ContinuousSystem::ContinuousSystem(const vector<string> & strOde_input, const Fl
 		parseSetting.clear();
 		parseSetting.strODE = prefix + strOde[i] + suffix;
 		parseODE();
-    //mforce("7");exit(0);
+    //mforce1("7");exit(0);
     
 		strOde_centered.push_back(parseResult.strExpansion);
 	}
@@ -9327,7 +9327,7 @@ void ContinuousSystem::reach_linear(list<Flowpipe> & results, const double step,
 
 void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold) const
 {
-  mforce("Reach Pic 1 <");
+  mforce1("Reach Pic 1 <");
   minc();
 	vector<Interval> step_exp_table, step_end_exp_table;
 
@@ -13872,22 +13872,22 @@ void ContinuousReachability::run()
   
   
   if(algorithm == ALGORITHM_SIMPLE_IMPL) {
-    mforce("simple impl");
+    mforce1("simple impl");
     SimpleImplReachability si = createSimpleImpl();
     si.myRun();
     exit(2);
   } else if(algorithm == ALGORITHM_SIMPLE_COMP) {
-    mforce("simple comp");
+    mforce1("simple comp");
     SimpleCompReachability sc = createSimpleComp();
     sc.myRun();
     exit(2);
   } else if(algorithm == ALGORITHM_SMALL_COMP) {
-    mforce("small comp");
+    mforce1("small comp");
     SmallCompReachability sc = createSmallComp();
     sc.myRun();
     exit(2);
   } else {
-    //mforce("default");
+    //mforce1("default");
     contRun();
   }
   //exit(2);

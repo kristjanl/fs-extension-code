@@ -691,6 +691,54 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     int var = comp->compVars.at(i);
     //index of that variable in all component
     int indexInAll = 
+        find(all.allVars.begin(), all.allVars.end(), var) - 
+        all.allVars.begin();
+
+    mlog1(sbuilder() << "var in comp: " << var);
+    mlog1(sbuilder() << "index in all: " << indexInAll);
+    mlog("allVars", all.allVars);
+    minc();
+    
+    //using allVars, cause of the assumption that initial conditions 
+    mlog("tm params", comp->allTMParams);
+    mlog("c1", all.initSet.tms.at(indexInAll));
+    
+    mlog("cTMps", comp->allTMParams);
+    TaylorModel tm = all.initSet.tms.at(indexInAll).
+        transform(comp->allTMParams);
+    mlog("c2", tm);
+    mlog1(sbuilder() << "tm paramCount1: " << 
+        all.initSet.tms[0].getParamCount());
+    //mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+    
+    newCompSet.tms.push_back(tm);
+    mdec();
+  }
+  mlog("init1", comp->initSet);
+  comp->initSet = newCompSet;
+  mlog("init2", comp->initSet);
+  
+  mdec();
+  mlog1("makeCompInitSets >");
+  mrestore(old);
+}
+
+void makeCompInitSetsOld(MyComponent & all, MyComponent * comp) {
+  mreset(old);
+  mdisable();
+  mlog1("makeCompInitSets <");
+  minc();
+
+  TaylorModelVec newCompSet;
+  
+  all.log();
+  comp->log();
+  
+  for(int i = 0; i < comp->compVars.size(); i++) {
+    //variable in component
+    int var = comp->compVars.at(i);
+    //index of that variable in all component
+    int indexInAll = 
         find(all.compVars.begin(), all.compVars.end(), var) - 
         all.compVars.begin();
 
@@ -722,6 +770,7 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   mlog1("makeCompInitSets >");
   mrestore(old);
 }
+
 
 TaylorModelVec QRTransformer::getLeftToRight(TaylorModelVec & leftStar, 
       Matrix & invA) {
@@ -984,6 +1033,13 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog1("id transforming <");
   minc();
   mlog1(sbuilder() << "count: " << count);
+  
+  TaylorModelVec tsp = all.orderedTSPRemap();
+  mlog("compVars",   all.compVars);
+  mlog("allVars",   all.allVars);
+  //mlog("input   ", input);
+  
+  /*
   //makeNextInitSet(comps, settings, false);
   
   //TODO evaluate first, then remap maybe
@@ -992,17 +1048,17 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   all.remapTimeStepPipe();
   tend(tr_remap1);
   
-  tstart(tr_pipe);
   TaylorModelVec tsp = all.timeStepPipe;
-  mlog("tsp", tsp);
+  //mlog("ais", all.initSet);
+  //mlog("tsp", tsp);
   //mlog("upright", all.unpairedRight); 
   
-  mlog("unpairedRight", all.unpairedRight);
+  //mlog("unpairedRight", all.unpairedRight);
   
   //mforce3(old2, "all.right1", all.unpairedRight);
+  */
   
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
-  tend(tr_pipe);
   
   
   tstart(tr_eval);
@@ -1013,17 +1069,15 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog("leftStar", leftStar);
   pSerializer->add(leftStar, "leftStar");
   
-  
-  //if(count == 2)
-  //  exit(0);
-  //pSerializer->serialize();
-  
   mlog1(sbuilder() << "size: " << leftStar.tms.size());
   mlog("left*", leftStar);
   mlog("upr", all.unpairedRight);
   
+  if(count == 2)
+    exit(0);
+  
   tstart(tr_precond);
-  precondition(leftStar, all.unpairedRight, settings, all);
+  precondition(tsp, all.unpairedRight, settings, all);
   tend(tr_precond);
   
   
@@ -1031,12 +1085,13 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   //mlog("upright", all.unpairedRight);
   
   
-	//mlog("left", all.initSet);
-  //mlog("right", all.unpairedRight);
+	mlog("left", all.initSet);
+  mlog("right", all.unpairedRight);
   
   
   //mlog("pair.left", all.lastPre()->left);
   //mlog("pair.right", all.lastPre()->right);
+
 
   tstart(tr_remap2);  
   for(vector<MyComponent *>::iterator it = comps.begin(); 

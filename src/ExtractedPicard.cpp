@@ -33,8 +33,11 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
 	
+	mlog("left*", range_of_x0);
+	
 	//pSerializer->add(range_of_x0, "leftStar");
 	
+	/*
 	//NOTE BEGIN REMOVE
   TaylorModelVec composedBP;
   vector<Interval> rightBPRange;
@@ -43,7 +46,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	     domain.size(), order, cutoff_threshold);
   //pSerializer->add(composedBP, "composed_before_precond");
   //END REMOVE
-	
+	*/
 	
 	
 	
@@ -62,7 +65,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	vector<Interval> intVecCenter;
 	range_of_x0.constant(intVecCenter);
 	
-  mlog("iVC", intVecCenter);
+  //mlog("iVC", intVecCenter);
 	
 	// the center point of the remainder of x0
 	for(int i=0; i<rangeDim; ++i)
@@ -104,12 +107,12 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	}
   tend(fl_part_matrix);
   
+  mlog("right", tmv);
   tstart(fl_part2);
 
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_end_exp_table);
 	range_of_r0.insert_ctrunc_normal(result.tmv, tmv, tmvPolyRange, step_end_exp_table, domain.size(), order, cutoff_threshold);
-
 	vector<Interval> boundOfr0;
 
 	// contract the remainder part of the initial set
@@ -196,6 +199,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   pSerializer->add(x, "left_after_precond");
   pSerializer->add(result.tmv, "right_after_precond");
   
+  /*
   //NOTE BEGIN REMOVE
   TaylorModelVec composed;
   vector<Interval> rightAPRange;
@@ -204,7 +208,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	     domain.size(), order, cutoff_threshold);
   //pSerializer->add(composed, "composed_after_precond");
   //END REMOVE
-  
+  */
   
 	
   tstart(fl_integrate);
@@ -344,8 +348,6 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   
   //pSerializer->add(x, "composed");
   */
-  
-  
   
 	return 1;
 }

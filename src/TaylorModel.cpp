@@ -444,7 +444,7 @@ void TaylorModel::mul_insert_ctrunc_normal(TaylorModel & result, Interval & tm1,
 	tm1 = intZero;
 	intTrunc = intZero;
 
-  //mforce(tm.remainder.toString());
+  //mforce1(tm.remainder.toString());
 	if(!tm.remainder.subseteq(intZero) || true)
 	{
 	  //mlog1("evaling");
@@ -1607,6 +1607,12 @@ TaylorModelVec::TaylorModelVec()
 {
 }
 
+TaylorModelVec::TaylorModelVec(int n) {
+	for(int i = 0; i < n; i++) 	{
+		tms.push_back(TaylorModel());
+	}
+}
+
 TaylorModelVec::TaylorModelVec(const vector<TaylorModel> & tms_input):tms(tms_input)
 {
 }
@@ -2289,7 +2295,7 @@ void TaylorModelVec::Picard_no_remainder_assign(MyComponent *component, const in
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
 	TaylorModelVec tmvTemp;
-  mforce("Picard_ctrunc_normal");
+  mforce1("Picard_ctrunc_normal");
 
 	if(order <= 1)
 	{
@@ -2325,7 +2331,7 @@ void TaylorModelVec::Picard_ctrunc_normal_assign(const TaylorModelVec & x0, cons
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
-  //mforce("my version shouldn't call this1");
+  //mforce1("my version shouldn't call this1");
   //exit(0);
   mreset(old);
   mdisable();
@@ -2379,7 +2385,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
 {
-  //mforce("my version shouldn't call this2");
+  //mforce1("my version shouldn't call this2");
   mreset(old);
   mdisable();
   minc();
@@ -2549,7 +2555,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const
 {
-  //mforce("Picard_ctrunc_normal3");
+  //mforce1("Picard_ctrunc_normal3");
 	TaylorModelVec tmvTemp;
 
 	trees.clear();
@@ -2581,7 +2587,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 
 void TaylorModelVec::Picard_only_remainder(vector<Interval> & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<HornerForm> & ode, const Interval & timeStep) const
 {
-  //mforce("my version shoudln't call this (remainder)3");
+  //mforce1("my version shoudln't call this (remainder)3");
   //exit(0);
 	result.clear();
 
@@ -4558,7 +4564,7 @@ TaylorModel TaylorModel::distance(const TaylorModel & tmv) const {
 TaylorModelVec TaylorModelVec::distance(const TaylorModelVec & tmv) const {
   //mlog1("tmv dist");
   if(tms.size() != tmv.tms.size()) {
-    mforce("different tmv sizes");
+    mforce1("different tmv sizes");
     exit(0);
   }
   TaylorModelVec ret;
