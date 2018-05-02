@@ -282,8 +282,9 @@ namespace smallComp {
     pipes.push_back(temp);
   }
   
-  void findDecreasingRemainderFlow(TaylorModelVec & p, vector<Interval> & pPolyRange, 
-	    vector<RangeTree *> & trees, MyComponent & comp, MySettings & settings, 
+  void findDecreasingRemainderFlow(TaylorModelVec & p, 
+      vector<Interval> & pPolyRange, vector<RangeTree *> & trees, 
+      MyComponent & comp, MySettings & settings, 
       vector<Interval> & cutoffInt) {
 	  mreset(old);
     mdisable();
@@ -365,6 +366,7 @@ namespace smallComp {
 	  
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
+    //mforce1(sbuilder() << "initial ");
 		
 		int counter = 0;
 		//increase until you get subset remainders
@@ -373,6 +375,7 @@ namespace smallComp {
       if(counter++ == MAX_REFINEMENT_STEPS) {
         throw IntegrationException("max increase couldn't find a remainder");
       }
+      //mforce1(sbuilder() << "counter to find decreasing: " << counter);
 	    
 	    //set remainder to guess
 		  for(int i = 0; i < varCount; i++) {        
@@ -423,7 +426,7 @@ namespace smallComp {
 	  mreset(old);
     mdisable();
 	  mlog1("refineRemainderFlow <");
-	  minc();
+	  //minc();
 	  
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
@@ -444,6 +447,7 @@ namespace smallComp {
 	  while( stop == false ) {
   	  if(counter++ == MAX_REFINEMENT_STEPS - 1)
 	      throw IntegrationException(sbuilder() << "max refinement steps");
+	    //mforce1(sbuilder() << "counter: " << counter);
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       
 	    stop = true;
@@ -469,9 +473,9 @@ namespace smallComp {
           continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
+  	  //mforce("mr", p.getRemainders());
 	  }
-	  	  
-	  mdec();
+	  //mdec();
 	  mlog1("refineRemainderFlow >");
 	  mrestore(old);
 	}
@@ -518,7 +522,7 @@ namespace smallComp {
     
     mlog("before decr", p);
     
-    //pSerializer->add(p, "no_rem");
+    pSerializer->add(p, "no_rem");
     
     tstart(sc_int_rem);
     tstart(sc_int_find_dec);
@@ -1039,7 +1043,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, hfOde, domain);
   }
-  exit(0);
   settings->transformer->setIntegrationMapper(comps);
   
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);

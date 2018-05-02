@@ -324,11 +324,42 @@ void compareFlows(vector<TaylorModelVec *> & first,
 }
 
 
+void printNames(string file1, string file2, 
+    vector<NamedTMV> & p1, vector<NamedTMV> & p2) {
+  cout << "here" << endl;
+  
+  //dont want to import set
+  map<string, int> m1;
+  for(int i = 0; i < p1.size(); i++) {
+    m1[p1[i].name] = 0;
+  }
+  map<string, int> m2;
+  for(int i = 0; i < p2.size(); i++) {
+    m2[p2[i].name] = 0;
+  }
+  mforce1(sbuilder() << "tmvs in '" << file1 << "'");
+  for(map<string, int>::iterator it = m1.begin(); it != m1.end(); it++) {
+    mforce1(sbuilder() << "  " << it->first);
+  }
+  mforce1(sbuilder() << "tmvs in '" << file2 << "'");
+  for(map<string, int>::iterator it = m2.begin(); it != m2.end(); it++) {
+    mforce1(sbuilder() << "  " << it->first);
+  }
+  exit(0);
+}
+
+
 void printTMVFiles(string file1, string file2, string name, 
     int index1, int index2) {
   cout << "inspeciting files '" << file1 << "' and '" << file2 << "'" << endl;
   vector<NamedTMV> p1 = pDeserializeNamedFlows(file1);
   vector<NamedTMV> p2 = pDeserializeNamedFlows(file2);
+  
+  if(name == "") {
+    printNames(file1, file2, p1, p2);
+  }
+  
+  
   vector<TaylorModelVec> v1;
   vector<TaylorModelVec> v2;  
   for(int i = 0; i < p1.size(); i++) {
@@ -362,11 +393,11 @@ void printTMVFiles(string file1, string file2, string name,
   TaylorModelVec & second = v2[index2];
   
   logger.log("");
-  logger.log("f[0]", first.tms[0]);
-  //logger.log("f", first);
+  //logger.log("f[0]", first.tms[0]);
+  logger.log("f", first);
   logger.log("");
-  logger.log("s[0]", second.tms[0]);
-  //logger.log("s", second);
+  //logger.log("s[0]", second.tms[0]);
+  logger.log("s", second);
   logger.log("");
   
   TaylorModelVec dis = first.distance(second);
@@ -390,19 +421,6 @@ void printTMVFiles(string file1, string file2, string name,
     break;
   }
   
-  /*
-  cout << "----------------------";
-  for(int i = 1; i < 31; i++) {
-    cout << (i%10);
-  }
-  cout << endl;
-  */
-  /*
-  mlog("totalDistance", totalDistance);
-  
-  double sumOfMag = sumVImag(totalDistance);
-  mlog1(sbuilder() << "sumOfMag: " << sumOfMag);
-  */
   
 }
 

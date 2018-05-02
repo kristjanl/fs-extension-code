@@ -630,6 +630,8 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   
   getScaling(S, SInv, currentRightRange);
   
+	mlog("A", A);
+	mlog("S", S);
   
   //apply scaling
   A = A * S;
@@ -640,7 +642,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	currentRight.linearTrans_assign(SInv);
 	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
 	
-	
+	mlog("A", A);
 
   //construct left matrix using A coefficients and constant part
 	Matrix leftLinCoefs(rangeDim, rangeDim+1);
@@ -675,7 +677,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 }
 
 
-void makeCompInitSets(MyComponent & all, MyComponent * comp) {
+void makeCompInitSets(MyComponent & all, MyComponent * comp, bool first) {
   mreset(old);
   mdisable();
   mlog1("makeCompInitSets <");
@@ -683,12 +685,11 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
 
   TaylorModelVec newCompSet;
   
-  all.log();
-  comp->log();
-  
+  //all.log();
+  //comp->log();
   for(int i = 0; i < comp->compVars.size(); i++) {
     //variable in component
-    int var = comp->compVars.at(i);
+    int var = comp->compVars[i];
     //index of that variable in all component
     int indexInAll = 
         find(all.allVars.begin(), all.allVars.end(), var) - 
@@ -704,8 +705,20 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     mlog("c1", all.initSet.tms.at(indexInAll));
     
     mlog("cTMps", comp->allTMParams);
-    TaylorModel tm = all.initSet.tms.at(indexInAll).
-        transform(comp->allTMParams);
+    mlog1(sbuilder() << var);
+    mlog("ps", comp->allTMParams);
+    mlog("al", comp->allVars);
+    
+    
+    //need to transform based on variable substitution parameters after first
+    TaylorModel tm;
+    if(first) {
+      tm = all.initSet.tms.at(indexInAll).transform(comp->allTMParams);
+    } else {
+      tm = all.initSet.tms.at(indexInAll).transform(comp->allVars);
+    }
+        
+        
     mlog("c2", tm);
     mlog1(sbuilder() << "tm paramCount1: " << 
         all.initSet.tms[0].getParamCount());
@@ -714,9 +727,8 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
     newCompSet.tms.push_back(tm);
     mdec();
   }
-  mlog("init1", comp->initSet);
   comp->initSet = newCompSet;
-  mlog("init2", comp->initSet);
+  mlog("init", comp->initSet);
   
   mdec();
   mlog1("makeCompInitSets >");
@@ -1013,7 +1025,7 @@ void PreconditionedTransformer::getScaling(Matrix & S, Matrix & SInv,
 		Interval intSup;
 		rightRange[i].mag(intSup);
 		if(intSup.subseteq(ZERO_INTERVAL)) {
-			S.set(0,i,i);
+			S.set(0,i,i); //if right range is 0 then don't include parameter for it
 			SInv.set(1,i,i);
 		} else {
 			double dSup = intSup.sup();
@@ -1034,7 +1046,7 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   minc();
   mlog1(sbuilder() << "count: " << count);
   
-  TaylorModelVec tsp = all.orderedTSPRemap();
+  TaylorModelVec tsp = all.orderedTSPRemap(count == 1);
   mlog("compVars",   all.compVars);
   mlog("allVars",   all.allVars);
   //mlog("input   ", input);
@@ -1073,11 +1085,8 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog("left*", leftStar);
   mlog("upr", all.unpairedRight);
   
-  if(count == 2)
-    exit(0);
-  
   tstart(tr_precond);
-  precondition(tsp, all.unpairedRight, settings, all);
+  precondition(leftStar, all.unpairedRight, settings, all);
   tend(tr_precond);
   
   
@@ -1088,15 +1097,13 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
 	mlog("left", all.initSet);
   mlog("right", all.unpairedRight);
   
-  
   //mlog("pair.left", all.lastPre()->left);
   //mlog("pair.right", all.lastPre()->right);
-
 
   tstart(tr_remap2);  
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    makeCompInitSets(all, *it);
+    makeCompInitSets(all, *it, count == 1);
     //mlog("ci", (*it)->initSet);
   }
   tend(tr_remap2);
@@ -1162,7 +1169,7 @@ TaylorModelVec SingleComponentIdentityTransformer::makeLeftFromA(Matrix & A,
 void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
       MySettings & settings) {
   mreset(old);
-  mdisable();
+  //mdisable();
   mlog1("initial <");
   minc();
   

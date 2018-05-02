@@ -254,6 +254,7 @@ void Monomial::toString(string & result, const vector<string> & varNames) const
 	coefficient.toString(strInt);
 	strMono += strInt; */
   strMono += coefficient.toString();
+  //cout << degrees.size() << endl;
 
 	for(int i=0; i<degrees.size(); i++)
 	{

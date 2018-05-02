@@ -29,10 +29,11 @@ int main(int argc, const char *argv[])
   //compare two logs
   //first 2 arguments are input file names
   //3rd argument is the name of the TM that will be compared
+  //if no third argument then it will print the names of the first 2
   //(optional) 4th is the index of the TM in the first file (0 if not present)
   //(optional) 5th is the index in the second file (same as 4th if no present)
-  if(argc >= 4) {
-    mforce("print");
+  if(argc >= 3) {
+    mforce1("print");
     
     int index1 = 0;
     int index2 = 0;
@@ -43,7 +44,11 @@ int main(int argc, const char *argv[])
     if (argc >= 6) {
       index2 = atoi(argv[5]);
     }
-    printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
+    if (argc == 3) {//just print names
+      printTMVFiles(argv[1], argv[2], "", -1, -1);
+    } else {
+      printTMVFiles(argv[1], argv[2], argv[3], index1, index2);
+    }
     exit(0);
   }
   

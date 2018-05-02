@@ -74,15 +74,12 @@ class MyComponent {
     void log();
     
     void addVar(int var);
-    void prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
-       vector<Interval> domain);
     void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
        vector<Interval> domain);
     void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode);
     void prepareMappers();
-    void remapFlowpipes();
     void remapTimeStepPipe();
-    TaylorModelVec orderedTSPRemap();
+    TaylorModelVec orderedTSPRemap(bool first);
     
     bool isSolveVar(int var);
     bool belongsToComp(int param);

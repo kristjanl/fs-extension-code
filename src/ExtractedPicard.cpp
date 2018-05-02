@@ -35,7 +35,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	
 	mlog("left*", range_of_x0);
 	
-	//pSerializer->add(range_of_x0, "leftStar");
+	pSerializer->add(range_of_x0, "leftStar");
 	
 	/*
 	//NOTE BEGIN REMOVE
@@ -227,7 +227,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tstart(fl_int_rem);
   
 	tstart(sc_int_rem_setup);
-  //pSerializer->add(x, "no_rem");
+  pSerializer->add(x, "no_rem");
 	
 	bool bfound = true;
 
@@ -270,6 +270,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			break;
 		}
 	}
+	
+	//mforce1("initial");
 
 	if(!bfound)
 	{
@@ -287,8 +289,9 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	bool bfinished = false;
 	for(int rSteps = 0; !bfinished && (rSteps <= MAX_REFINEMENT_STEPS); ++rSteps)
 	{
+	  //mforce1(sbuilder() << "counter: " << (rSteps + 1)); 
 		bfinished = true;
-
+    
 		vector<Interval> newRemainders;
 		x.Picard_only_remainder(newRemainders, trees, x0, ode, step_exp_table[1]);
 
@@ -316,7 +319,11 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 			x.tms[i].remainder = newRemainders[i];
 		}
+  	//mforce("x", x);
+  	//mforce("fr", x.getRemainders());
 	}
+  //mforce("x", x);
+	//exit(0);
 	tend(fl_int_refine);
 	result.tmvPre = x;
 	result.domain = domain;

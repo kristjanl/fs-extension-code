@@ -84,9 +84,8 @@ void MyComponent::log() {
       mlog1(sbuilder() << odeIndex++ << ": " << (*it).toString());
     }
   }
-  mlog("compDomain", dom);  
+  mlog("compDomain", dom);
   mlog("compInit", initSet);
-  
   for(int i = 0; i < initSet.tms.size(); i++) {
     mlog1(sbuilder() << "tm param size(" << i << "): "
         << initSet.tms.at(i).getIgnoringParamCount());
@@ -119,22 +118,21 @@ or -2 to indicate placeholders
 */
 void MyComponent::prepareMappers() {
   mreset(old);
-  //mdisable();
+  mdisable();
   mlog1("preparing mappers <");
   minc();
   vector< vector<int> > mappers;
-  
   for(int i = 0; i < dependencies.size(); i++) {
     //mlog1(sbuilder() << "i: " << i);
     MyComponent *pComp = dependencies[i]->pComp;
     //mlog1(sbuilder() << "link: " << dependencies.at(i)->linkVar);
     //previous component parameters
     vector<int> prevCompPm = pComp->allTMParams;
-    //mlog("pm", prevCompPm);
+    mlog("pm", prevCompPm);
     vector<int> mapper;
     //iterate all the variables in all the components
     for(int j = 0; j < allTMParams.size(); j++) {
-      int var = allTMParams.at(j);
+      int var = allTMParams[j];
       
       //find if the variable was in the previous component
       vector<int>::iterator it = 
@@ -150,9 +148,8 @@ void MyComponent::prepareMappers() {
         mapper.push_back(PADDING_VARIABLE);
       }
     }
-    dependencies.at(i)->mapper = mapper;
-    dependencies.at(i)->rightMapper = mapper;
-    //mlog("m", mapper);
+    dependencies[i]->mapper = mapper;
+    dependencies[i]->rightMapper = mapper;
     mappers.push_back(mapper);
   }
   compMappers = mappers;
@@ -168,7 +165,7 @@ void MyComponent::prepareMappers() {
     
     //loop over all current component variables
     for(int j = 0; j < allVars.size(); j++) {
-      int var = allVars.at(j);
+      int var = allVars[j];
       
       //find if the variable was in the previous component
       vector<int>::iterator it = 
@@ -186,9 +183,14 @@ void MyComponent::prepareMappers() {
     }
     //mlog("mapper", mapper);
     leftMappers.push_back(mapper);
-    dependencies.at(i)->leftMapper = mapper;
+    dependencies[i]->leftMapper = mapper;
   }
   
+  for(int i = 0; i < dependencies.size(); i++) {
+    mlog1(sbuilder() << dependencies[i]->linkVar);
+    mlog("left", dependencies[i]->leftMapper);
+    mlog("right", dependencies[i]->rightMapper);
+  }
   mdec();
   mlog1("preparing mappers >");
   mrestore(old);
@@ -489,16 +491,6 @@ void MyComponent::prepareVariables(TaylorModelVec init,
   for(int i = 0; i < dependencies.size(); i++) {
     MyComponent dep = *dependencies[i]->pComp;
     allVars.insert(allVars.end(), dep.allVars.begin(), dep.allVars.end());
-    
-    /*version that doesn't sort
-    for(int j = 0; j < dep.allVars.size(); j++) {
-      bool isNew = find(allVars.begin(), allVars.end(), dep.allVars[j])
-          == allVars.end(); 
-      mlog1(sbuilder() << "v: " << dep.allVars[j] << ", isNew: " << isNew);
-      if(isNew) {
-        allVars.push_back(dep.allVars[j]);
-      }
-    }*/
   }
   
   //need to sort to remove duplicates
@@ -538,12 +530,13 @@ void MyComponent::prepareVariables(TaylorModelVec init,
     vector<int> tmParams = init.tms.at(*it).getParams();
     mlog("params", tmParams);
     
-    
+    //*don't retain anymore
     //retain the parameter if started with point initial conditions
     if(tmParams.size() == 0 && retainEmptyParams) {
       varsToBeIntroduced.push_back(*it);
       tmParams.push_back(*it);
     }
+    //*/
     tpIndexes.insert(tpIndexes.end(), tmParams.begin(), tmParams.end());
   }
   sort(tpIndexes.begin(), tpIndexes.end());
@@ -578,79 +571,15 @@ void MyComponent::prepareVariables(TaylorModelVec init,
       unique( allParams.begin(), allParams.end() ), allParams.end() );
   
   allTMParams = allParams;
-  //mlog("allParams (with dependencies)", allParams);
+  mlog("allParams (with dependencies)", allParams);
   
   mdec();
   mlog1("preparing variables >");
   mrestore(old);
 }  
 
-void MyComponent::remapFlowpipes() {
-  vector< vector<int> > mappers = previousMappers2();
-  mlog1(sbuilder() << "mappers size: " << mappers.size());
-  
-
-  //mapping of dependent component flowpipes to current component
-  int depIndex = 0;
-  for(vector<CompDependency *>::iterator it = dependencies.begin(); 
-      it < dependencies.end(); it++, depIndex++) {
-    mlog1(sbuilder() << "depIndex: " << depIndex);
-    int link = (*it)->linkVar;
-    mlog1(sbuilder() << "link: " << link);
-    MyComponent *pComp = (*it)->pComp;
-    mlog("dts", pComp->tpIndexes);
-    mlog("mapper", (*it)->mapper);
-    mlog1(pComp->pipes.size());
-    mlog1("here");
-    mlog("p", pComp->pipes.at(0));
-    
-    
-    mlog1("here");
-    mlog("dcv", pComp->compVars);
-    
-    
-    //position of linking variable in precomputed component
-    int dLinkPos = find(pComp->compVars.begin(), pComp->compVars.end(), link) - 
-        pComp->compVars.begin();
-    //position of linking variable in current component
-    int linkPos = find(compVars.begin(), compVars.end(), link) - 
-        compVars.begin();
-    if(dLinkPos >= pComp->compVars.size()) {
-      mlog1(sbuilder() << "dLinkPos: " << dLinkPos);
-      mlog("compVars", compVars);
-      throw std::invalid_argument("depend link wasn't in compVar");
-    }
-    if(linkPos >= compVars.size()) {
-      throw std::invalid_argument("link wasn't in compVars");
-    }
-    mlog1(sbuilder() << "dLinkPos: " << dLinkPos);
-    mlog1(sbuilder() << "linkPos: " << linkPos);
-    
-    
-    mlog("vars", varIndexes);
-    mlog("dvars", pComp->varIndexes); 
-      
-    //actual mapping of flowpipes
-    int pipeIndex = 0;
-    for(vector<TaylorModelVec>::iterator pipeIt = pComp->pipes.begin();
-        pipeIt < pComp->pipes.end(); pipeIt++, pipeIndex++) {
-      mlog1(sbuilder() << "pipeIndex: " << pipeIndex);
-      mlog("tm", (*pipeIt).tms.at(dLinkPos));
-      mlog("ma", mappers.at(depIndex));
-      
-      
-      TaylorModel transformedLink = 
-          (*pipeIt).tms.at(dLinkPos).transform(mappers.at(depIndex));
-      pipes.at(pipeIndex).tms.at(linkPos) = transformedLink;
-      //mlog("pipe", pipes.at(pipeIndex));
-    }
-    
-  }
-}
-
-
 //can only be used in transform
-TaylorModelVec MyComponent::orderedTSPRemap() {
+TaylorModelVec MyComponent::orderedTSPRemap(bool first) {
   mreset(old);
   mdisable();
   mlog1("ordered tsp remapping <");
@@ -675,8 +604,6 @@ TaylorModelVec MyComponent::orderedTSPRemap() {
     lookup[(*it)->linkVar] = (*it);
   }
   
-  mforce1("");
-  
   for(int i = 0; i < allVars.size(); i++) {
     int var = allVars[i];
     mlog1(sbuilder() << "var: " << var);
@@ -689,17 +616,23 @@ TaylorModelVec MyComponent::orderedTSPRemap() {
     TaylorModel & source = pComp->timeStepPipe.tms[dLinkPos];
     mlog("source", source);
     
-    mforce("vs", pComp->allVars);
+    mlog("vs", pComp->allVars);
     
-    mforce("l", dep->leftMapper);
-    mforce("r", dep->rightMapper);
+    mlog("l", dep->leftMapper);
+    mlog("r", dep->rightMapper);
     
-    TaylorModel mapped = source.transform(dep->rightMapper);
+    TaylorModel mapped;
+    
+    //first one uses TM parameters, other ones use parameters for variable subs
+    if(first) {
+      mapped = source.transform(dep->rightMapper);
+    } else {
+      mapped = source.transform(dep->leftMapper);
+    }
     mlog("mapped", mapped);
     ret2.tms.push_back(mapped);
     //mlog1("between");
   }
-  exit(0);
   mdec();
   mlog1("orderd tsp remapping >");
   mrestore(old);
@@ -786,30 +719,6 @@ void MyComponent::remapTimeStepPipe() {
   mdec();
   mlog1("remapping tsp >");
   mrestore(old);
-}
-
-void MyComponent::prepare(TaylorModelVec tmv, const vector<HornerForm> & ode, 
-      vector<Interval> domain) {
-  prepareVariables(tmv, ode);
-  
-  //add flowpipes if the component is not initial one
-  //variables in component + link vars
-  int varSize = varIndexes.size() + dependencies.size();
-  
-  if(dependencies.size() != 0)
-    for(int i = 0; i < dependencies.at(0)->pComp->pipes.size(); i++) {
-      addEmptyTM(pipes, varSize);
-    }
-  
-  remapFlowpipes();
-  mlog("all tm params", allTMParams);
-  
-  mlog("to solve variables", varIndexes);
-  mlog("component variables", compVars);
-  mlog("linking variables", linkVars);
-  mlog("solve indexes", solveIndexes);
-  mlog1(sbuilder() << "# of pipes: " << pipes.size());
-  remapIVP(tmv, ode, domain);
 }
 
 vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, 
