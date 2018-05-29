@@ -1,0 +1,9 @@
+int progress: 50
+evaluate t: 0
+precond time: 0.09
+int time: 1.15
+picard poly: 0.28
+picard remainder: 0.87
+picard decreasing: 0.64
+picard refining: 0.23
+computation time: 1.24

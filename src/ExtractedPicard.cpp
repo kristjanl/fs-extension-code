@@ -289,7 +289,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	bool bfinished = false;
 	for(int rSteps = 0; !bfinished && (rSteps <= MAX_REFINEMENT_STEPS); ++rSteps)
 	{
-	  //mforce1(sbuilder() << "counter: " << (rSteps + 1)); 
+	  mforce1(sbuilder() << "counter: " << (rSteps + 1)); 
 		bfinished = true;
     
 		vector<Interval> newRemainders;

@@ -447,7 +447,7 @@ namespace smallComp {
 	  while( stop == false ) {
   	  if(counter++ == MAX_REFINEMENT_STEPS - 1)
 	      throw IntegrationException(sbuilder() << "max refinement steps");
-	    //mforce1(sbuilder() << "counter: " << counter);
+	    mforce1(sbuilder() << "counter: " << counter);
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       
 	    stop = true;

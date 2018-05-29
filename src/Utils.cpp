@@ -117,8 +117,8 @@ namespace utilsprivate {
     
     int maxParams = 0;
     for(int i = 0; i < tmvs.size(); i++) {
-      if(maxParams < tmvs[i].getParamCount())
-        maxParams = tmvs[i].getParamCount();
+      if(maxParams < tmvs[i].getIgnoringParamCount())
+        maxParams = tmvs[i].getIgnoringParamCount();
     }
     
     //add other parameters
@@ -404,8 +404,11 @@ void printTMVFiles(string file1, string file2, string name,
   
   mlog("dis", dis);
   //mlog1(sbuilder() << "rem" << dis.tms[0].remainder.toString(50));
+
+  int dim = first.getIgnoringParamCount();
+  dim = dim == 0 ? 1 : dim; //check that there are parameters, if not use only t
   
-  vector<Interval> domain = getUnitBox(first.getParamCount());
+  vector<Interval> domain = getUnitBox(dim);
   domain[0] = Interval(0, 0.1);
   
   vector<Interval> totalDistance;

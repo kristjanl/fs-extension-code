@@ -30,7 +30,7 @@ continuous reachability
   {
     x1 in [0.10,0.12]
     x2 in [0.21,0.21]
-    x3 in [0.3,0.3]
+    x3 in [0.3,0.32]
     x4 in [0.4,0.42]
   }
 }
