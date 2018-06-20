@@ -34,8 +34,6 @@ class MyComponent {
     bool firstPrecondition;
     static int nextFreeParam;
     
-    //retains Taylor Model parameters that don't have initial conditions
-    bool retainEmptyParams;
     //vector of variables that will introduce parameter
     vector<int> varsToBeIntroduced;
     
@@ -45,8 +43,6 @@ class MyComponent {
     //ordered by parameter order in the whole system
     vector<int> allTMParams;
     vector<CompDependency *> dependencies;
-    vector< vector<int> > compMappers;
-    vector< vector<int> > leftMappers;
     
     vector<MyComponent> previous;
     
@@ -75,8 +71,9 @@ class MyComponent {
     
     void addVar(int var);
     void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
-       vector<Interval> domain);
-    void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode);
+        vector<Interval> domain, bool discardEmptyParams);
+    void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode, 
+        bool discardEmptyParams);
     void prepareMappers();
     void remapTimeStepPipe();
     TaylorModelVec orderedTSPRemap(bool first);
@@ -95,8 +92,6 @@ class MyComponent {
     void serializeFlows();
     void deserializeFlows();
     
-    TaylorModel remapSingleInitTM(int variable);
-    TaylorModel remapSingleRightTM(int variable);
     void computeMappingPositions(int variable, int *depPos, int *dLinkPos, 
         int *linkPos);
     
@@ -122,10 +117,11 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
     const vector<HornerForm> & ode);
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain);
+    const vector<HornerForm> & ode, vector<Interval> domain, 
+    bool discardEmptyParams);
 
 MyComponent getSystemComponent(vector<MyComponent *> comps, 
     TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain);
+    vector<Interval> domain, bool discardEmptyParams);
 
 #endif /* MYCOMPONENT_H_ */

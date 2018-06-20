@@ -120,6 +120,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "alg_small_comp" {return ALG_SMALL_COMP;}
 "decomposition" {return DECOMPOSITION;}
 "no decomposition" {return NODECOMPOSITION;}
+"remove point params" {return REMOVE_EMPTY_PARAMS;}
 "my model" {return MYMODEL;}
 "my models" {return MYMODELS;}
 "my mono" {return MYMONO;}

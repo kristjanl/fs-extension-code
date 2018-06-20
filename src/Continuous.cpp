@@ -9334,8 +9334,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 	construct_step_exp_table(step_exp_table, step_end_exp_table, step, 2*order);
 
 	results.clear();
-	//mforce3(tt1, "initial left", initialSet.tmvPre);
-	//mforce3(tt2, "initial right", initialSet.tmv);
+	//mforce("initial left", initialSet.tmvPre);
+	//mforce("initial right", initialSet.tmv);
 	results.push_back(initialSet);
 	Flowpipe newFlowpipe, currentFlowpipe = initialSet;
 
@@ -13901,8 +13901,7 @@ void ContinuousReachability::myRun() {
   mlog1("dummy run");
   exit(0);
 }
-MySettings::MySettings() {
-  useFlow = false;
+MySettings::MySettings() : useFlow(false), discardEmptyParams(false) {
 }
 MySettings::MySettings(OutputWriter *writer, int order, 
       double step, double time, vector<Interval> estimation, 
@@ -13911,6 +13910,7 @@ MySettings::MySettings(OutputWriter *writer, int order,
       vector<Interval> domain, Interval cutoff)
       : writer(writer), order(order), step(step), time(time), 
       estimation(estimation), step_exp_table(step_exp_table), 
-      step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff) {
+      step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
+      discardEmptyParams(false) {
 }
 

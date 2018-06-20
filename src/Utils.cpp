@@ -70,8 +70,8 @@ PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) :
 
 TaylorModelVec PrecondModel::composed(MySettings *settings) {
   TaylorModelVec ret;
-	//mforce3(tt1, "comp_left", left);
-	//mforce3(tt2, "comp_right", right);
+	//mforce("comp_left", left);
+	//mforce("comp_right", right);
   
   vector<Interval> rightRange;
 	//right.polyRange(rightRange, settings->domain);
@@ -86,6 +86,7 @@ TaylorModelVec PrecondModel::composed(MySettings *settings) {
 	//pSerializer->add(right, "comp_right");
 	//pSerializer->add(left, "comp_left");
 	//pSerializer->add(ret, "comp_comp");
+	//mforce("ret", ret);
 	return ret;
 }
 

@@ -130,6 +130,16 @@ Monomial & Monomial::operator += (const Monomial & monomial)
 Monomial & Monomial::operator *= (const Monomial & monomial)
 {
 	coefficient *= monomial.coefficient;
+	
+	#ifdef do_checks
+	  //cout << "doing check" << endl;
+	  if(degrees.size() != monomial.degrees.size()) {
+	    cout << "degrees1.size(): " << degrees.size() << endl;
+	    cout << "degrees2.size(): " << monomial.degrees.size() << endl;
+	    throw std::runtime_error("multiplying monomials with different var count");
+	    exit(0);
+	  }
+  #endif
 
 	for(int i=0; i<degrees.size(); ++i)
 	{

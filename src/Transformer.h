@@ -62,6 +62,7 @@ class PreconditionedTransformer: public Transformer {
         MySettings & settings, MyComponent & all);
     void transformFullSystem(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
+    void firstTransform(MyComponent & comp, MySettings & settings);
     void addInfo(vector<string> & info);
     void setIntegrationMapper(vector<MyComponent *> comps);
     void getScaling(Matrix & S, Matrix & SInv, vector<Interval> & rightRange);

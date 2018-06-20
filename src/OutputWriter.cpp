@@ -40,7 +40,9 @@ void OutputWriter::init() {
 }
 
 Interval evalVarToInterval(const TaylorModelVec & tmv, vector<Interval> & domain, int index) {
+  //mlog1("evaling");
   Interval temp;
+  //mlog("tm", tmv.tms[index]);
   tmv.tms[index].intEval(temp, domain);
   return temp;
 }
@@ -86,6 +88,8 @@ void OutputWriter::writeFlowpipe(const vector<int> comp, const Interval & timeIn
 
 void OutputWriter::addPreconditioned(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all) {
+  mlog1("adding preconditioned");
+  minc();
   if(all.output.size() == 0)
     return;
   int dim = all.output[0].tms.size();
@@ -104,7 +108,7 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
     data2.at(0).push_back(timeInt.getLower(5));
     data2.at(1).push_back(timeInt.getHigher(5));
   }
-  
+  cout << all.output.size() << endl;
   
   for(int i = 0; i < all.output.size(); i++) {
     TaylorModelVec tmv = all.output[i];
@@ -118,11 +122,14 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
           sbuilder() << tmv.tms[var].remainder.width());
     }
   }
+  mdec();
 }
 
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
+  mreset(old);
   mlog1("adding components");
+  minc();
   
   //for time
   data.push_back(vector<Interval>());
@@ -170,6 +177,8 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
       it < comps.end(); it++) {
     addCompomentData(**it, domain);
   }
+  mdec();
+  mrestore(old);
 }
 
 void OutputWriter::addCompomentData(MyComponent & comp, 

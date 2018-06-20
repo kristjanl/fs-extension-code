@@ -15,8 +15,10 @@ CFLAGS = -I . -g -O3
 #CFLAGS += -Dno_output
 CXXFLAGS = -I . -g -O3
 
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+CFLAGS += -Ddo_checks
+CXXFLAGS += -Ddo_checks
 LINK_FLAGS = -g
 
 

@@ -89,7 +89,8 @@ void shrinkWrapSet(MyComponent & all, MyComponent * comp, double factor,
   
   //comp->initSet is the old set, newCompSet is the shrink wrapped one
   if(false) { // TODO add compiler flag
-    //can't use comp->initSet anymore, need to compute it again from comp->timeStepPipe
+    //can't use comp->initSet anymore, 
+    //need to compute it again from comp->timeStepPipe
     if(comp->initSet.compare(newCompSet, domain) == false) {
       throw std::runtime_error("something decreased after shrink wrapping");
     }
@@ -424,14 +425,6 @@ double applyShrinkWrapping(MyComponent & all, vector<Interval> domain,
   
   introduceParam(all, comps, domain);
   mlog1(all.swInput.tms[0].getParamCount());
-  /*
-  mlog1(all.compMappers.size());
-  mlog("0", all.compMappers.at(0));
-  mlog("1", all.compMappers.at(1));
-  mlog("2", all.compMappers.at(2));
-  mlog("3", all.compMappers.at(3));
-  mlog("4", all.compMappers.at(4));
-  */
   mlog("swI aft", all.swInput);
   
   
@@ -524,6 +517,9 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
   //makeNextInitSet(comps, settings, false);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
     mlog1(sbuilder() << "wrapping");
+    
+    //this is used to the domain before parameter discarding, check if this is OK
+    throw std::runtime_error("check if sw transform is still OK (see above)");
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,
         settings);
   } else {
@@ -536,7 +532,6 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
 
 TaylorModelVec getUnitTmv(int varCount) {
   vector<TaylorModel> tms;
-  mlog1(varCount);
   for(int i = 0; i < varCount; i++) {
     vector<Interval> temp;
     temp.push_back(Interval(0));
@@ -550,8 +545,6 @@ TaylorModelVec getUnitTmv(int varCount) {
 	  tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
   }
   TaylorModelVec ret(tms);
-  
-	mlog("ret", ret);
   return ret;
 }
 
@@ -566,7 +559,9 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   tstart(tr_part_all);
   tstart(tr_part1);
   
-  int paramCount = leftStar.tms[0].getParamCount();
+  int leftParamCount = leftStar.tms[0].getParamCount();
+  int rightParamCount = all.allTMParams.size() + 1;
+  
   int varCount = leftStar.tms.size();
   
   int rangeDim = varCount;
@@ -579,13 +574,12 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   
   vector<Interval> constantVec;
 	leftStar.constant(constantVec);
-	TaylorModelVec c0(constantVec, paramCount);
+	TaylorModelVec c0(constantVec, leftParamCount);
 
   //remove constant part from old part
 	leftStar.rmConstant();
 	
 	mlog("left", leftStar);
-	
 	
 	
 	Matrix A(varCount,varCount), invA(varCount, varCount);
@@ -605,21 +599,22 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   
   tstart(tr_part2);
   
-  mlog("leftToRight", leftToRight);
+  //mlog("leftToRight", leftToRight);
+  //mlog("prevRight", prevRight);
   
 	vector<Interval> prevRightPolyRange;
 	prevRight.polyRangeNormal(prevRightPolyRange,
 	    settings.step_end_exp_table);
-	mlog("range", prevRightPolyRange);
+	//mlog("range", prevRightPolyRange);
 	
 	
 	//current right is leftToRight o previousRight
 	TaylorModelVec currentRight;
 	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
-	    prevRightPolyRange, settings.step_end_exp_table, paramCount, 
+	    prevRightPolyRange, settings.step_end_exp_table, rightParamCount, 
 	    settings.order, settings.cutoff);
-  mlog("currentRight", currentRight);
-  
+	//exit(0);
+  //mlog("currentRight", currentRight);
   vector<Interval> currentRightRange;
   currentRight.intEvalNormal(currentRightRange, settings.step_end_exp_table);
   mlog("currentRightRange", currentRightRange);
@@ -677,7 +672,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 }
 
 
-void makeCompInitSets(MyComponent & all, MyComponent * comp, bool first) {
+void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   mreset(old);
   mdisable();
   mlog1("makeCompInitSets <");
@@ -685,103 +680,46 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp, bool first) {
 
   TaylorModelVec newCompSet;
   
+  
+  mlog("all", all.allVars);
+  mlog("com", all.compVars);
+  
   //all.log();
   //comp->log();
   for(int i = 0; i < comp->compVars.size(); i++) {
+    //TODO don't need to add all compVars, just the ones that need to be solved
     //variable in component
     int var = comp->compVars[i];
     //index of that variable in all component
+    
     int indexInAll = 
         find(all.allVars.begin(), all.allVars.end(), var) - 
         all.allVars.begin();
 
     mlog1(sbuilder() << "var in comp: " << var);
     mlog1(sbuilder() << "index in all: " << indexInAll);
-    mlog("allVars", all.allVars);
     minc();
     
-    //using allVars, cause of the assumption that initial conditions 
-    mlog("tm params", comp->allTMParams);
-    mlog("c1", all.initSet.tms.at(indexInAll));
+    mlog("c1", all.initSet.tms[indexInAll]);
+    mlog("comp all vars", comp->allVars);
     
-    mlog("cTMps", comp->allTMParams);
-    mlog1(sbuilder() << var);
-    mlog("ps", comp->allTMParams);
-    mlog("al", comp->allVars);
-    
-    
-    //need to transform based on variable substitution parameters after first
-    TaylorModel tm;
-    if(first) {
-      tm = all.initSet.tms.at(indexInAll).transform(comp->allTMParams);
-    } else {
-      tm = all.initSet.tms.at(indexInAll).transform(comp->allVars);
-    }
-        
+    TaylorModel tm = all.initSet.tms.at(indexInAll).transform(comp->allVars);
         
     mlog("c2", tm);
-    mlog1(sbuilder() << "tm paramCount1: " << 
-        all.initSet.tms[0].getParamCount());
-    //mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
+    //mlog1(sbuilder() << "tm paramCount1: " << 
+    //    all.initSet.tms[0].getParamCount());
+    mlog1(sbuilder() << "tm paramCount2: " << tm.getIgnoringParamCount());
     
     newCompSet.tms.push_back(tm);
     mdec();
   }
   comp->initSet = newCompSet;
   mlog("init", comp->initSet);
-  
   mdec();
   mlog1("makeCompInitSets >");
   mrestore(old);
 }
 
-void makeCompInitSetsOld(MyComponent & all, MyComponent * comp) {
-  mreset(old);
-  mdisable();
-  mlog1("makeCompInitSets <");
-  minc();
-
-  TaylorModelVec newCompSet;
-  
-  all.log();
-  comp->log();
-  
-  for(int i = 0; i < comp->compVars.size(); i++) {
-    //variable in component
-    int var = comp->compVars.at(i);
-    //index of that variable in all component
-    int indexInAll = 
-        find(all.compVars.begin(), all.compVars.end(), var) - 
-        all.compVars.begin();
-
-    mlog1(sbuilder() << "var in comp: " << var);
-    mlog1(sbuilder() << "index in all: " << indexInAll);
-    mlog("allVars", all.compVars);
-    minc();
-    
-    //using compVars, cause of the assumption that initial conditions 
-    mlog("tm params", comp->allTMParams);
-    mlog("c1", all.initSet.tms.at(indexInAll));
-    
-    mlog("cTMps", comp->allTMParams);
-    TaylorModel tm = all.initSet.tms.at(indexInAll).
-        transform(comp->allTMParams);
-    mlog("c2", tm);
-    mlog1(sbuilder() << "tm paramCount1: " << 
-        all.initSet.tms[0].getParamCount());
-    //mlog1(sbuilder() << "tm paramCount2: " << tm.getParamCount());
-    
-    newCompSet.tms.push_back(tm);
-    mdec();
-  }
-  mlog("init1", comp->initSet);
-  comp->initSet = newCompSet;
-  mlog("init2", comp->initSet);
-  
-  mdec();
-  mlog1("makeCompInitSets >");
-  mrestore(old);
-}
 
 
 TaylorModelVec QRTransformer::getLeftToRight(TaylorModelVec & leftStar, 
@@ -1036,39 +974,73 @@ void PreconditionedTransformer::getScaling(Matrix & S, Matrix & SInv,
 	}
 }
 
+void PreconditionedTransformer::firstTransform(MyComponent & comp, 
+    MySettings & settings) {
+  mreset(old);
+  mdisable();
+  mlog1("first <");
+  minc();
+  
+  TaylorModelVec tmv(comp.initSet);
+  
+  mlog("tmv", tmv);
+  
+  int leftParams = tmv.tms.size() + 1;
+  
+  vector<Interval> cVec;
+  tmv.constant(cVec);
+	TaylorModelVec left(cVec, leftParams);
+
+  tmv.rmConstant();
+  
+  left.add_assign(getUnitTmv(tmv.tms.size()));
+  
+  
+  mlog("left", left);
+  mlog("right", tmv);
+  
+  comp.timeStepPipe = left;
+  comp.unpairedRight = tmv;
+  
+  /*
+  TaylorModelVec composed;
+  vector<Interval> range;
+  tmv.polyRangeNormal(range, settings.step_exp_table);
+  left.insert_ctrunc_normal(composed, tmv, range, settings.step_exp_table,
+	     comp.dom.size(), settings.order, settings.cutoff);
+  mlog("composed", composed);
+  */
+  
+  mdec();
+  mlog1("first >");
+  mrestore(old);
+}
+
 void PreconditionedTransformer::transformFullSystem(MyComponent & all, 
       vector<MyComponent *> & comps, MySettings & settings) {
   mreset(old);
   mdisable();
   count++;
-  //mforce(sbuilder() << "count: " << count);
   mlog1("id transforming <");
+  //mforce(sbuilder() << "count: " << count);
   minc();
   mlog1(sbuilder() << "count: " << count);
   
-  TaylorModelVec tsp = all.orderedTSPRemap(count == 1);
+  
+  TaylorModelVec tsp;
+  if(count == 1) {
+    firstTransform(all, settings);
+    tsp = all.timeStepPipe;
+  } else {
+    tsp = all.orderedTSPRemap(count == 1);
+  }
+  
+  
   mlog("compVars",   all.compVars);
   mlog("allVars",   all.allVars);
   //mlog("input   ", input);
   
-  /*
-  //makeNextInitSet(comps, settings, false);
   
-  //TODO evaluate first, then remap maybe
-  tstart(tr_remap1);
-  //remaps all the last pipes to system flowpipes at all component
-  all.remapTimeStepPipe();
-  tend(tr_remap1);
-  
-  TaylorModelVec tsp = all.timeStepPipe;
-  //mlog("ais", all.initSet);
-  //mlog("tsp", tsp);
-  //mlog("upright", all.unpairedRight); 
-  
-  //mlog("unpairedRight", all.unpairedRight);
-  
-  //mforce3(old2, "all.right1", all.unpairedRight);
-  */
   
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   
@@ -1085,29 +1057,33 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog("left*", leftStar);
   mlog("upr", all.unpairedRight);
   
+  /*
+	mforce1("");
+	mforce("leftStar", leftStar);
+	mforce("right", all.unpairedRight);
+	*/
+  
   tstart(tr_precond);
   precondition(leftStar, all.unpairedRight, settings, all);
   tend(tr_precond);
   
+	//mforce("left", all.initSet);
+  //mforce("right", all.unpairedRight);
+  /*
+  */
   
-  //pSerializer->add(all.initSet, "left_after_precond");
-  //mlog("upright", all.unpairedRight);
+  //exit(0);
+  //mforce("compIS", comps[0]->initSet);
   
-  
-	mlog("left", all.initSet);
-  mlog("right", all.unpairedRight);
-  
-  //mlog("pair.left", all.lastPre()->left);
-  //mlog("pair.right", all.lastPre()->right);
-
   tstart(tr_remap2);  
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    makeCompInitSets(all, *it, count == 1);
-    //mlog("ci", (*it)->initSet);
+    makeCompInitSets(all, *it);
+    //mforce("ci", (*it)->initSet);
+    //pSerializer->add((*it)->initSet, "c_init");
   }
   tend(tr_remap2);
-  mlog("unpairedRight", all.unpairedRight);
+  //mlog("unpairedRight", all.unpairedRight);
   //mforce3(old3, "all.right2", all.unpairedRight);
   mdec();
   mlog1("id transforming >");

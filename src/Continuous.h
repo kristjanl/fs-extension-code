@@ -369,6 +369,7 @@ class MySettings {
     vector<Interval> domain;
     Interval cutoff;
     bool useFlow;
+    bool discardEmptyParams;
     Transformer *transformer; // determines how are initials sets transformed for each timestep
     MySettings();
     MySettings(OutputWriter *writer, int order, double step, 

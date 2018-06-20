@@ -73,6 +73,7 @@
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
 %token DECOMPOSITION 
 %token NODECOMPOSITION
+%token REMOVE_EMPTY_PARAMS
 %token MYMODEL
 %token MYMODELS
 %token MYMONO
@@ -2086,7 +2087,7 @@ IDENT EQ NUM
 
 
 
-settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm decomposition
+settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params decomposition
 {
 	mlog1("settings1");
   mlog1(continuousProblem.algorithm);
@@ -2677,6 +2678,8 @@ SHRINRWRAPPING NUM
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
   continuousProblem.settings->transformer = transformer;
+  //old implemenation discard empty params in shrinkwrapping
+  continuousProblem.settings->discardEmptyParams = true;
 }
 |
 SHRINRWRAPPING REM
@@ -2687,6 +2690,8 @@ SHRINRWRAPPING REM
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
   continuousProblem.settings->transformer = transformer;
+  //old implemenation discard empty params in shrinkwrapping
+  continuousProblem.settings->discardEmptyParams = true;
 }
 ;
 
@@ -2738,6 +2743,12 @@ ALG_FLOW
 	continuousProblem.algorithm = ALGORITHM_DEFAULT;
 }
 ;
+
+point_params: REMOVE_EMPTY_PARAMS {
+  continuousProblem.settings->discardEmptyParams = true;
+} | {
+  //initialized to false in constructor
+};
 
 decomposition: DECOMPOSITION '[' components ']'
 {
