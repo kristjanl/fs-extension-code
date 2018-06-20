@@ -6,29 +6,37 @@ CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
 CFLAGS = -I . -I $(GMP_HOME) -g -O3
-CFLAGS += -Denablelog
-CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
 LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
 
 ### overriding since not using local GMP
-CFLAGS = -I . -g -O3
-#CFLAGS += -Dno_output
-CXXFLAGS = -I . -g -O3
-
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
+# -I . to pick up system header glpk.h
+CFLAGS = -I . -g 
 LINK_FLAGS = -g
 
+# Add optimisation
+CFLAGS += -O1 
+#CFLAGS += -O3 
 
+#CFLAGS += -Dno_output
 
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o
+CFLAGS += -Denablelog
+
+# Uncomment for "perf --call-graph fp" profiling
+# CFLAGS += -fno-omit-frame-pointer
+
+# Uncomment for gprof profiling
+CFLAGS += -pg
+LINK_FLAGS += -pg
+
+# PBJ: modelParser.o added.  Not clear why omitted.
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o modelParser.o
 
 TESTOBJS = Interval.o Monomial.o Polynomial.o Matrix.o MyLogger.o TaylorModel.o MyComponent.o Exceptions.o
 
-# All sources
+# All C++ sources
 SRCS= $(OBJS:.o=.cpp)
 
-# All dependency files
+# All C++ dependency files
 DFILES= $(SRCS:.cpp=.d)
 
 all: 
@@ -43,8 +51,7 @@ test:
 
 testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o 
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
-	
-.PHONE: outputToggle
+
 
 # recompile only those .o files that are concerned with making output
 outputToggle.txt: outputToggle.txt
@@ -100,8 +107,8 @@ lex.yy.c: modelLexer.l modelParser.tab.c
 	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	 rm -f $@.$$$$
 
- include $(DFILES)
- include modelParser.tab.d lex.yy.d
+include $(DFILES)
+include modelParser.tab.d lex.yy.d
 
 clean: 
 	rm -f flowstar *.o *.d *~ modelParser.tab.c modelParser.tab.h \
