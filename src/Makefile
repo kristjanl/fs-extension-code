@@ -17,8 +17,8 @@ CXXFLAGS = -I . -g -O3
 
 #CFLAGS += -Denablelog
 #CXXFLAGS += -Denablelog
-CFLAGS += -Ddo_checks
-CXXFLAGS += -Ddo_checks
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
 LINK_FLAGS = -g
 
 

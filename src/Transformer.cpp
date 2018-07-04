@@ -1145,7 +1145,7 @@ TaylorModelVec SingleComponentIdentityTransformer::makeLeftFromA(Matrix & A,
 void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
       MySettings & settings) {
   mreset(old);
-  //mdisable();
+  mdisable();
   mlog1("initial <");
   minc();
   
@@ -1222,8 +1222,8 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
 	
   comp->pipePairs.push_back(new PrecondModel(left, comp->unpairedRight));
   
-  mlog("left", left);
-  mlog("unpaired", comp->unpairedRight);
+  mforce("1l", left);
+  mforce("1r", comp->unpairedRight);
   //mlog("M", M);
   //mlog("allVars", comp->allVars);
   comp->isPreconditioned = true;
@@ -1238,21 +1238,89 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
 }
 
 
+void SingleComponentIdentityTransformer::firstTransform2(MyComponent & comp, 
+    MySettings & settings) {
+  mreset(old);
+  mdisable();
+  mlog1("first <");
+  minc();
+  
+  TaylorModelVec tmv;
+  
+  //pick only variables that need to be solved
+  for(int i = 0; i < comp.solveIndexes.size(); i++) {
+    //mforce1(sbuilder() << "local: " << comp.solveIndexes[i]);
+    tmv.tms.push_back(comp.initSet.tms[comp.solveIndexes[i]]);
+  }
+  
+  mlog("tmv", tmv);
+  
+  //comp.log();
+  
+  //number of parameters on the left TM
+  int leftParams = comp.allVars.size() + 1;
+  
+  vector<Interval> cVec;
+  tmv.constant(cVec);
+	TaylorModelVec left(cVec, leftParams);
+
+  tmv.rmConstant();
+  
+  
+  //construct left linear part
+  //l[xi] = aj (where j - i is the number of ancestor influencers)
+  //f_x(x,y), f_y(y,z) => l[x] = a3, l[y] = a2, l[z] = a1
+  Matrix A(comp.varIndexes.size(),comp.varIndexes.size());
+  getA(A, &comp);
+  TaylorModelVec leftLin = makeLeftFromA(A, &comp);
+  mlog("leftLin", leftLin);
+  
+  left.add_assign(leftLin);
+  
+  mlog("left", left);
+  mlog("right", tmv);
+  
+  comp.timeStepPipe = left;
+  comp.unpairedRight = tmv;
+  
+  /*
+  TaylorModelVec composed;
+  vector<Interval> range;
+  tmv.polyRangeNormal(range, settings.step_exp_table);
+  left.insert_ctrunc_normal(composed, tmv, range, settings.step_exp_table,
+	     comp.dom.size(), settings.order, settings.cutoff);
+  mlog("composed", composed);
+  */
+  
+  mdec();
+  mlog1("first >");
+  mrestore(old);
+}
+
+
 void SingleComponentIdentityTransformer::preconditionSingleComponent(
       MyComponent *comp, MySettings & settings) {
   if(comp->isPreconditioned)
     return;
-  
   comp->isPreconditioned = true;
   
   for(int i = 0; i < comp->dependencies.size(); i++) {
     MyComponent *pComp = comp->dependencies[i]->pComp;
     preconditionSingleComponent(pComp, settings);
   }
-  if(comp->firstPrecondition) {
+  
+  //mforce1(sbuilder() << count);
+  if(comp->firstPrecondition && false) {
     initialPrecondition(comp, settings);
     return;
+  } 
+  if(count == 1) {
+    firstTransform2(*comp, settings);  
+    //mforce1("");
+    //mforce("tsp", comp->timeStepPipe);
+    //mforce("cur", comp->unpairedRight);
   }
+  
   mreset(old);
   mdisable();
   mlog1("single <");
@@ -1281,7 +1349,6 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   pSerializer->add(leftStar, "leftStar");
   
   
-  mlog("leftStar", leftStar);
   
   TaylorModelVec fullRight;
   
@@ -1297,15 +1364,19 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   tend(tr_remap1);
   
   tstart(tr_precond);
+  
+  //mforce("leftStar", leftStar);
   mlog("fullRight", fullRight);
   
   tstart(tr_comp_pre);
   
-  //center remainder around zero and push the shift to constant
-  leftStar.centerRemainder();
   
   int leftParams = comp->allVars.size() + 1; //+1 for time
   int rightParams = comp->allTMParams.size() + 1; //+1 for time
+  
+  //center remainder around zero and push the shift to constant
+  leftStar.centerRemainder(leftParams);
+  
   
   vector<Interval> constantVec;
 	leftStar.constant(constantVec);
@@ -1338,7 +1409,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   TaylorModelVec & prevRight = fullRight;
   
   //if this is slow then it can computed in 1 component and reused in others
-	vector<Interval> prevRightPolyRange;
+  vector<Interval> prevRightPolyRange;
 	prevRight.polyRangeNormal(prevRightPolyRange,
 	    settings.step_end_exp_table);
 	mlog("range", prevRightPolyRange);
@@ -1410,6 +1481,7 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
   mlog1("id transforming by component <");
   minc();
   
+  count++;
   
   //reset indicator
   for(int i = 0; i < comps.size(); i++) {
@@ -1419,18 +1491,12 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
   //bool dontStop = comps[0]->firstPrecondition;
   
   for(int i = 0; i < comps.size(); i++) {
-    MyComponent c1 = *comps[i];
     preconditionSingleComponent(comps[i], settings);
-    mlog("unpaired r", comps[i]->unpairedRight);
+    
+    //mforce1("");
+    //mforce("cleft", comps[i]->initSet);
+    //mforce("cright", comps[i]->unpairedRight);
   }
-  
-  /*
-  if(dontStop == false) {
-    mforce("stopping");
-    exit(0);
-  }*/
-  
-  
   mdec();
   mlog1("id transforming by component>");
   mrestore(old);

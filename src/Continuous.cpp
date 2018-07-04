@@ -13689,7 +13689,10 @@ void ContinuousSystem::my_reach_picard(list<Flowpipe> & results, const double st
 
 
 SimpleCompReachability ContinuousReachability::createSimpleComp(){
-  mlog1("creating sc");
+  mreset(old);
+  mdisable();
+  mlog1("creating simplecomp");
+  exit(0);
   SimpleCompReachability problem;
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
@@ -13741,12 +13744,15 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
     mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
+  mrestore(old);
   return problem;
 }
 
 
 SmallCompReachability ContinuousReachability::createSmallComp(){
-  mlog1("creating sc");
+  mreset(old);
+  mdisable();
+  mlog1("creating smallcomp");
   SmallCompReachability problem = SmallCompReachability();
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
@@ -13805,6 +13811,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
     mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
+  mrestore(old);
   return problem;
 }
 
@@ -13868,8 +13875,6 @@ void ContinuousReachability::run()
 {
   mlog1("run <"); 
   minc();
-  
-  
   
   if(algorithm == ALGORITHM_SIMPLE_IMPL) {
     mforce1("simple impl");

@@ -32,6 +32,7 @@ class MyComponent {
     bool isPrepared;
     bool isPreconditioned;
     bool firstPrecondition;
+    bool usingPreconditioning;
     static int nextFreeParam;
     
     //vector of variables that will introduce parameter
@@ -80,6 +81,8 @@ class MyComponent {
     
     bool isSolveVar(int var);
     bool belongsToComp(int param);
+    
+    int getIntergrationParamCount();
     
     PrecondModel *lastPre();
     

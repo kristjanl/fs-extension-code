@@ -302,7 +302,7 @@ namespace smallComp {
     mlog1(sbuilder() << "varCount: " << varCount);
 
 	  //number of taylor model parameters
-    int paramCount = comp.initSet.getParamCount(); 
+    int paramCount = comp.getIntergrationParamCount(); 
     mlog1(sbuilder() << "paramCount: " << paramCount);
 	  
 	  //need to find remainders more efficiently
@@ -618,7 +618,8 @@ namespace smallComp {
     mrestore(old);
   }
   
-  void singleStepPrepareIntegrate(MyComponent & component, MySettings & settings) {
+  void singleStepPrepareIntegrate(MyComponent & component, 
+    MySettings & settings) {
     //if component has already been solved return
     if(component.isSolved) {
       //mlog1("solved already");
@@ -1057,6 +1058,11 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, hfOde, domain, 
         settings->discardEmptyParams);
+  }
+  //TODO refactor
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    (*it)->usingPreconditioning = settings->transformer->isPreconditioned;
   }
   settings->transformer->setIntegrationMapper(comps);
   

@@ -81,15 +81,18 @@ MyComponent::MyComponent(vector<int> vs, vector<int> tps):varIndexes(vs),tpIndex
   isPrepared = false;
   isPreconditioned = false;
   firstPrecondition = true;
+  usingPreconditioning = false;
 }
 MyComponent::MyComponent() {
   isSolved = false;
   isPrepared = false;
   isPreconditioned = false;
   firstPrecondition = true;
+  usingPreconditioning = false;
 }
 
 void MyComponent::log() {
+  mreset(old);
   mlog1("component <");
   minc();
   stringstream varSs;
@@ -120,7 +123,7 @@ void MyComponent::log() {
   mlog("all params", allTMParams);
   mdec();
   mlog1("component >");
-  
+  mrestore(old);
 }
 
 /*
@@ -847,6 +850,9 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
   ret.unpairedRight = MyComponentRemove::getNVarMParam(init.tms.size(), 
       ret.allTMParams);
   mrestore(old);
+  
+  ret.usingPreconditioning = comps[0]->usingPreconditioning;
+  
   return ret;
 }
 
@@ -1058,6 +1064,13 @@ TaylorModel MyComponent::getRightModelForVar(vector<int> mapper, int var) {
 
 
 
+int MyComponent::getIntergrationParamCount() {
+  if(usingPreconditioning) {
+    return allVars.size() + 1;
+  }
+  throw std::runtime_error("revisit and decide if should use allTMParams (+1)");
+  return allTMParams.size();
+}
 
 
 

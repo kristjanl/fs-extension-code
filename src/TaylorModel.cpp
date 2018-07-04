@@ -4612,6 +4612,11 @@ void TaylorModelVec::centerRemainder() {
     tms[i].centerRemainder();
   }
 }
+void TaylorModelVec::centerRemainder(int paramCount) {
+  for(int i = 0; i < tms.size(); i++) {
+    tms[i].centerRemainder(paramCount);
+  }
+}
 void TaylorModel::centerRemainder(int paramCount) {
   mreset(old);
   mdisable();
@@ -4627,6 +4632,7 @@ void TaylorModel::centerRemainder(int paramCount) {
   mrestore(old);
 }
 
+//TODO remove and use TaylorModelVec::centerRemainder(int n)
 void TaylorModelVec::preconditionCenterRemainder() {
   for(int i = 0; i < tms.size(); i++) {
     tms[i].centerRemainder(tms.size() + 1);
