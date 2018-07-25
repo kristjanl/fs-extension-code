@@ -9371,15 +9371,7 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 		}
 	}
   settings->writer->info.push_back(sbuilder() << "int progress: " << t);
-  
-  taddToInfo("evaluate t", fl_eval, settings->writer->info);
-  taddToInfo("precond time", fl_precond, settings->writer->info);
-  taddToInfo("int time", fl_integrate, settings->writer->info);
-  
-  taddToInfo("picard poly", fl_int_poly, settings->writer->info);
-  taddToInfo("picard remainder", fl_int_rem, settings->writer->info);
-  taddToInfo("picard decreasing", sc_int_rem_setup, settings->writer->info);
-  taddToInfo("picard refining", fl_int_refine, settings->writer->info);
+  addFlowInfo(settings->writer->info);
   
   cout << endl;
   mdec();

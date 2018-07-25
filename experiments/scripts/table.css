@@ -1,5 +1,5 @@
 .headerTable {
-  position: fixed;
+#  position: fixed;
   background-color: white;
   z-index: 1;
   padding-top:10px;

@@ -241,17 +241,17 @@ void HornerForm::insert_ctrunc(TaylorModel & result, const TaylorModelVec & vars
 	}
 }
 
-void HornerForm::insert_no_remainder(TaylorModel & result, const TaylorModelVec & vars, const int numVars, const int order, const Interval & cutoff_threshold) const
-{
+void HornerForm::insert_no_remainder(TaylorModel & result, 
+    const TaylorModelVec & vars, const int numVars, const int order, 
+    const Interval & cutoff_threshold) const {
 	Interval intZero;
 	result.clear();
-
+  minc();
 	if(!constant.subseteq(intZero))
 	{
 		TaylorModel tmConstant(constant, numVars);
 		result = tmConstant;
 	}
-
 	if(hornerForms.size() > 0)						// the first variable is t
 	{
 		TaylorModel tmTemp;
@@ -259,15 +259,25 @@ void HornerForm::insert_no_remainder(TaylorModel & result, const TaylorModelVec 
 
 		tmTemp.expansion.mul_assign(0,1);			// multiplied by t
 		tmTemp.nctrunc(order);
+    //mforce("temp0", tmTemp);
 		result.add_assign(tmTemp);
 
-		for(int i=1; i<hornerForms.size(); ++i)
-		{
-			hornerForms[i].insert_no_remainder(tmTemp, vars, numVars, order, cutoff_threshold);	// recursive call
+		for(int i=1; i<hornerForms.size(); i++) {
+      //mforce1(sbuilder() << "i: " << i);
+      //mforce("hf[i]", hornerForms[i]);
+			hornerForms[i].insert_no_remainder(tmTemp, vars, numVars, order,
+          cutoff_threshold);	// recursive call
+      //mforce("vars[i-1]", vars.tms[i-1]);
+      //mforce1(sbuilder() << "order: " << order);
+      //mforce1(sbuilder() << "vars: " << numVars);
+      //mforce1(sbuilder() << vars.tms[i-1].getParamCount());
+      //mforce1(sbuilder() << tmTemp.getParamCount());
 			tmTemp.mul_no_remainder_assign(vars.tms[i-1], order, cutoff_threshold);
+      //mforce("tempi", tmTemp);
 			result.add_assign(tmTemp);
 		}
 	}
+  mdec();
 }
 
 void HornerForm::insert_no_remainder_no_cutoff(TaylorModel & result, const TaylorModelVec & vars, const int numVars, const int order) const
@@ -388,25 +398,44 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec
 	}
 }
 
-void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
-{
+//substitutes vars in to HF (need to have var for each of the HFs (besides time)
+//numVars is the number of parameters in result and numVars
+void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
+    const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, 
+    const vector<Interval> & step_exp_table, const int numVars, const int order,
+    const Interval & cutoff_threshold) const {
   mreset(old);
   mdisable();
   mlog1("hf_i_c_n");
   minc();
-  mlog1(sbuilder() << "hf: " << this->toString() << ", order: " << order << " hfs: " << hornerForms.size());
+  mlog1(sbuilder() << "hf: " << this->toString() << ", order: " << order << 
+      " hfs: " << hornerForms.size());
 	Interval intZero;
 	result.clear();
+  
 
-	if(!constant.subseteq(intZero))
-	{
+	if(!constant.subseteq(intZero)) {
 		TaylorModel tmConstant(constant, numVars);
 		result = tmConstant;
 	}
 	RangeTree *pnode = new RangeTree;
 
-	if(hornerForms.size() > 0)						// the first variable is t
-	{
+	if(hornerForms.size() > 0) {
+    //mforce1(sbuilder() << "numVars: " << numVars);
+    //mforce1(sbuilder() << "hornerForms.size(): " << hornerForms.size());
+    //mforce1(sbuilder() << "vars.tms.size(): " << vars.tms.size());
+    
+    #ifdef do_checks
+    if(vars.tms.size() != hornerForms.size() - 1) {
+	    cout << "vars.tms.size(): " << vars.tms.size() << endl;
+	    cout << "hornerForms.size() - 1: " << hornerForms.size() - 1 << endl;
+	    throw std::runtime_error("variables in hf different than given");
+      mforce1("not equal");
+      exit(0);
+    }
+    #endif
+    
+    // the first variable is t
 		TaylorModel tmTemp;
 		RangeTree *child;
 		
@@ -414,7 +443,7 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 	  mlog1(sbuilder() << "i: " << 0);
 	  mlog1(sbuilder() << "hfi: " << hornerForms[0].toString());
     
-    //tmTmp is the tmv insterted in hornerforms
+    //tmTmp is the tmv inserted in hornerforms
 		hornerForms[0].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, step_exp_table, numVars, order, cutoff_threshold);
 
     //multiply the polynomial part by t (t's index is 0)
@@ -447,10 +476,14 @@ void HornerForm::insert_ctrunc_normal(TaylorModel & result, RangeTree * & tree, 
 			hornerForms[i].insert_ctrunc_normal(tmTemp, child, vars, varsPolyRange, 
 			    step_exp_table, numVars, order, cutoff_threshold);	// recursive call
 			mlog("hf_insert", tmTemp);
+      mlog("vars[i-1]", vars.tms[i-1]);
 
       //multiply inserted TM by the variable the hf corresponds too
 			Interval tm1, intTrunc2;
-			tmTemp.mul_insert_ctrunc_normal_assign(tm1, intTrunc2, vars.tms[i-1], varsPolyRange[i-1], step_exp_table, order, cutoff_threshold); 	// here coefficient_range = tm1
+      // here coefficient_range = tm1
+			tmTemp.mul_insert_ctrunc_normal_assign(tm1, intTrunc2, vars.tms[i-1], 
+          varsPolyRange[i-1], step_exp_table, order, cutoff_threshold);
+      
 			
 			mlog1(sbuilder() << "pushing[1]: " << tm1.toString());
 			mlog1(sbuilder() << "pushing[2]: " << varsPolyRange[i-1].toString());
@@ -1199,7 +1232,10 @@ Polynomial & Polynomial::operator *= (const Polynomial & polynomial)
 	for(iterB = polynomial.monomials.begin(); iterB != polynomial.monomials.end(); ++iterB)
 	{
 		Polynomial polyTemp = *this;
+    //mforce("polyTemp1", polyTemp);
+    //mforce("m", *iterB);
 		polyTemp.mul_assign(*iterB);
+    //mforce("polyTemp2", polyTemp);
 		result += polyTemp;
 	}
 

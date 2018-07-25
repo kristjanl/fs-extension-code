@@ -4,13 +4,31 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
 CXX = g++
 include makefile.local
-LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk
-CFLAGS = -I . -I $(GMP_HOME) -g -O3
-CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
-LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME)
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o 
+LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
+#CFLAGS = -I . -I $(GMP_HOME) -g -O3
+#CFLAGS += -Denablelog
+#CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
+#LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
 
-TESTOBJS = Interval.o Monomial.o Polynomial.o Matrix.o MyLogger.o TaylorModel.o MyComponent.o Exceptions.o
+#no profiling
+#CFLAGS = -I . -g -O3
+#CXXFLAGS = -I . -g -O3
+
+#profiling
+CFLAGS = -I . -g -O2 -pg
+CXXFLAGS = -I . -g -O2 -pg
+
+#CFLAGS += -Dno_output
+
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
+LINK_FLAGS = -g
+
+
+
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o
 
 # All sources
 SRCS= $(OBJS:.o=.cpp)
@@ -18,40 +36,52 @@ SRCS= $(OBJS:.o=.cpp)
 # All dependency files
 DFILES= $(SRCS:.cpp=.d)
 
-all: flowstar
+all: 
+	make outputToggle.txt
+	make flowstar
 
 .PHONY: test
 
-test:
-	echo $(OBJS)
-#	make testcompile
-#	./testcompile
+test: 
+	make testcompile
+	./testcompile
 
 testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o 
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	
+.PHONE: outputToggle
+
+# recompile only those .o files that are concerned with making output
+outputToggle.txt: outputToggle.txt
+	rm SmallComp.o
+	rm modelParser.tab.o
+	touch outputToggle.txt
 
 
 .PHONY: fast
 fast: 
-	+$(MAKE) -C ../src/
 	make fastcompile
 	./fastcompile
 
 fastcompile: $(OBJS) lex.yy.o ParsingUtils.o modelParser.tab.o unittestingfast.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
+  
+profiling: profiling.o
+	$(MAKE) -C ../src
+	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
-
+  
 flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
-	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS) -pg
+	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
 %.o: %.cc %.d
 	$(CXX) -c $(CFLAGS) -o $@ $<
 %.o: %.cpp %.h %.d
-	$(CXX) -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $<
 unittestingfast.o: unittestingfast.cpp unittesting.h
-	$(CXX) -c $(CFLAGS) -o $@ $< -pg
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 #%.o: %.cpp $(DEPDIR)/%.d
 #	$(CXX) -c $(DEPFLAGS) $(CFLAGS) -o $@ $<
@@ -79,8 +109,9 @@ lex.yy.c: modelLexer.l modelParser.tab.c
 	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	 rm -f $@.$$$$
 
-# include $(DFILES)
-# include modelParser.tab.d lex.yy.d
+ include $(DFILES)
+ include modelParser.tab.d lex.yy.d
 
 clean: 
-	rm -f flowstar *.o *~ modelParser.tab.c modelParser.tab.h modelParser.output lex.yy.c myapp
+	rm -f flowstar *.o *.d *~ modelParser.tab.c modelParser.tab.h \
+	modelParser.output lex.yy.c myapp fastcompile testcompile

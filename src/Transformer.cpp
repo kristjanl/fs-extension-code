@@ -551,6 +551,7 @@ TaylorModelVec getUnitTmv(int varCount) {
 
 void PreconditionedTransformer::precondition(TaylorModelVec & leftStar, 
     TaylorModelVec & prevRight, MySettings & settings, MyComponent & all) {
+  tstart1(pre_start);
   mreset(old);
   mdisable();
   mlog1("precondition <");
@@ -582,16 +583,21 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	mlog("left", leftStar);
 	
 	
+  tend1(pre_start);
+  
+  tstart1(pre_matrix);
 	Matrix A(varCount,varCount), invA(varCount, varCount);
   tend(tr_part1);
   tstart(tr_part_matrix);
   
   getMatrices(A, invA, leftStar);
-  
+  tend1(pre_matrix);
   
   // if we want left model to be c0 + A id
   // then we need to move A^-1 * <old left without constant part> to right model
+  tstart1(pre_ltr);
   TaylorModelVec leftToRight = getLeftToRight(leftStar, invA);
+  tend1(pre_ltr);
   //leftStar.linearTrans(leftToRight, invA);
   //leftToRight = leftStar; //TODO remove this
   
@@ -602,19 +608,26 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   //mlog("leftToRight", leftToRight);
   //mlog("prevRight", prevRight);
   
+  tstart1(pre_r_range);
 	vector<Interval> prevRightPolyRange;
 	prevRight.polyRangeNormal(prevRightPolyRange,
 	    settings.step_end_exp_table);
+  tend1(pre_r_range);
 	//mlog("range", prevRightPolyRange);
 	
 	
 	//current right is leftToRight o previousRight
+  tstart1(pre_insert);
 	TaylorModelVec currentRight;
 	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
 	    prevRightPolyRange, settings.step_end_exp_table, rightParamCount, 
 	    settings.order, settings.cutoff);
+      
+  tend1(pre_insert);
 	//exit(0);
   //mlog("currentRight", currentRight);
+  
+  tstart1(pre_scaling_m);
   vector<Interval> currentRightRange;
   currentRight.intEvalNormal(currentRightRange, settings.step_end_exp_table);
   mlog("currentRightRange", currentRightRange);
@@ -632,13 +645,17 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   A = A * S;
 	invA = SInv * invA; //not needed actually
 	
+  tend1(pre_scaling_m);
 
   //apply scaling to right model
+  tstart1(pre_lin_trans);
 	currentRight.linearTrans_assign(SInv);
 	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+  tend1(pre_lin_trans);
 	
 	mlog("A", A);
 
+  tstart1(pre_left);
   //construct left matrix using A coefficients and constant part
 	Matrix leftLinCoefs(rangeDim, rangeDim+1);
 	for(int i=0; i<rangeDim; i++) {
@@ -649,11 +666,12 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	TaylorModelVec newLeft(leftLinCoefs);
   newLeft.add_assign(c0);
   
+  tend1(pre_left);
   
 	mlog("newLeft", newLeft);
 	mlog("right", currentRight);
 	
-	
+	tstart1(pre_end);
 	pSerializer->add(newLeft, "left_after_precond");
 	pSerializer->add(currentRight, "right_after_precond");
 	
@@ -669,6 +687,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   mdec();
   mlog1("preconditition >");
   mrestore(old);
+	tend1(pre_end);
 }
 
 
@@ -1026,7 +1045,6 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   minc();
   mlog1(sbuilder() << "count: " << count);
   
-  
   TaylorModelVec tsp;
   if(count == 1) {
     firstTransform(all, settings);
@@ -1043,7 +1061,6 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   
   
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
-  
   
   tstart(tr_eval);
   TaylorModelVec leftStar;
@@ -1504,24 +1521,7 @@ void SingleComponentIdentityTransformer::transform(MyComponent & all,
 }
 
 void PreconditionedTransformer::addInfo(vector<string> & info) {
-  int old = logger.reset();
-  //logger.disable();
   
-  taddToInfo("remap 1", tr_remap1, info);
-  taddToInfo("evaluate t", tr_eval, info);
-  taddToInfo("precond time", tr_precond, info);
-  taddToInfo("remap 2", tr_remap2, info);
-  taddToInfo("int time", sc_integrate, info);
-  
-  
-  taddToInfo("picard poly", sc_int_poly, info);
-  taddToInfo("picard remainder", sc_int_rem, info);
-  taddToInfo("picard decreasing", sc_int_find_dec, info);
-  taddToInfo("picard refining", sc_int_refine, info);
-  
-  mlog1(sbuilder() << info.size());
-  
-  logger.restore(old);
 }
 
 void NullTransformer::addInfo(vector<string> & info) {

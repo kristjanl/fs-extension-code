@@ -93,6 +93,7 @@ MyComponent::MyComponent() {
 
 void MyComponent::log() {
   mreset(old);
+  //mdisable();
   mlog1("component <");
   minc();
   stringstream varSs;
@@ -105,7 +106,8 @@ void MyComponent::log() {
   {
     int odeIndex = 0;
     for(vector<HornerForm>::iterator it = odes.begin(); it < odes.end(); it++) {
-      mlog1(sbuilder() << odeIndex++ << ": " << (*it).toString());
+      mlog1(sbuilder() << odeIndex++ << ": " << it->toString());
+      //mforce1(sbuilder() << "size: " << it->hornerForms.size());
     }
   }
   mlog("compDomain", dom);
