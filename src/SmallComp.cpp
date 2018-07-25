@@ -28,8 +28,8 @@ namespace smallComp {
     }
     
     for(int i = 0; i < comp.size(); i++) {
-      //mforce(sbuilder() << "comp[" << i << "] = " << comp[i]);
-      //mforce(ode.at(comp[i]).toString());
+      //mforce1(sbuilder() << "comp[" << i << "] = " << comp[i]);
+      //mforce1(ode.at(comp[i]).toString());
       
       
       
@@ -282,8 +282,9 @@ namespace smallComp {
     pipes.push_back(temp);
   }
   
-  void findDecreasingRemainderFlow(TaylorModelVec & p, vector<Interval> & pPolyRange, 
-	    vector<RangeTree *> & trees, MyComponent & comp, MySettings & settings, 
+  void findDecreasingRemainderFlow(TaylorModelVec & p, 
+      vector<Interval> & pPolyRange, vector<RangeTree *> & trees, 
+      MyComponent & comp, MySettings & settings, 
       vector<Interval> & cutoffInt) {
 	  mreset(old);
     mdisable();
@@ -295,13 +296,14 @@ namespace smallComp {
     int order = settings.order;
     const Interval & cutoff_threshold = settings.cutoff;
 
-	  //number of taylor model parameters
-    //int paramCount = comp.initSet.tms[0].getParamCount();
-    int paramCount = comp.allTMParams.size() + 1; //+1 for time
-    
+   
     //number of system variables (in the component)
     int varCount = comp.initSet.tms.size();
     mlog1(sbuilder() << "varCount: " << varCount);
+
+	  //number of taylor model parameters
+    int paramCount = comp.initSet.getParamCount(); 
+    mlog1(sbuilder() << "paramCount: " << paramCount);
 	  
 	  //need to find remainders more efficiently
 	  p.polyRangeNormal(pPolyRange, step_exp_table);
@@ -365,6 +367,7 @@ namespace smallComp {
 	  
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
+    //mforce1(sbuilder() << "initial ");
 		
 		int counter = 0;
 		//increase until you get subset remainders
@@ -373,6 +376,7 @@ namespace smallComp {
       if(counter++ == MAX_REFINEMENT_STEPS) {
         throw IntegrationException("max increase couldn't find a remainder");
       }
+      //mforce1(sbuilder() << "counter to find decreasing: " << counter);
 	    
 	    //set remainder to guess
 		  for(int i = 0; i < varCount; i++) {        
@@ -423,7 +427,7 @@ namespace smallComp {
 	  mreset(old);
     mdisable();
 	  mlog1("refineRemainderFlow <");
-	  minc();
+	  //minc();
 	  
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
@@ -444,6 +448,7 @@ namespace smallComp {
 	  while( stop == false ) {
   	  if(counter++ == MAX_REFINEMENT_STEPS - 1)
 	      throw IntegrationException(sbuilder() << "max refinement steps");
+	    //mforce1(sbuilder() << "counter: " << counter);
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       
 	    stop = true;
@@ -469,9 +474,9 @@ namespace smallComp {
           continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
+  	  //mforce("mr", p.getRemainders());
 	  }
-	  	  
-	  mdec();
+	  //mdec();
 	  mlog1("refineRemainderFlow >");
 	  mrestore(old);
 	}
@@ -481,6 +486,11 @@ namespace smallComp {
     //tstart(sc_int_pre);
     mreset(old);
     mdisable();
+    mlog1("advance flow <");
+    minc();
+    
+    mlog("var", component.varIndexes);
+    mlog("links", component.linkVars);
     mlog("init", component.initSet);
     //tstart(sc_int_all);
     
@@ -491,14 +501,15 @@ namespace smallComp {
     vector<int> & sIndexes = component.solveIndexes;
     
     for (unsigned i=0; i<sIndexes.size(); i++) {
-      p.tms.at(sIndexes[i]) = component.initSet.tms.at(sIndexes[i]);
+      p.tms[sIndexes[i]] = component.initSet.tms[sIndexes[i]];
     }
     
     mlog("after init", p);
     
-    //int paramCount = p.tms[0].getParamCount();
-    int paramCount = component.allTMParams.size() + 1; //+1 for time
-    int varCount = p.tms.size();
+    //pSerializer->add(p, "int_start");
+    
+    int varCount = component.allVars.size();
+    //int varCount = p.tms.size();
     
     //tend(sc_int_pre);
     
@@ -506,9 +517,12 @@ namespace smallComp {
     tstart(sc_int_poly);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
-      p.Picard_no_remainder_assign(&component, paramCount, i, settings.cutoff);
+      p.Picard_no_remainder_assign(&component, varCount + 1, i, settings.cutoff);
     }
-    mlog("after", p);
+    mlog("poly", p);
+    
+    //pSerializer->add(p, "int_poly");
+    
     p.cutoff(settings.cutoff);
     tend(sc_int_poly);
     
@@ -525,6 +539,9 @@ namespace smallComp {
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings,
 	      cutoffInt);
     tend(sc_int_find_dec);
+    
+    
+    //pSerializer->add(p, "int_dec");
 	  
     mlog("dec", p);
     tstart(sc_int_refine);
@@ -536,14 +553,17 @@ namespace smallComp {
     mlog("ref", p);
     //tend(sc_int_all);
     
+    pSerializer->add(p, "int_end");
+    
     
     mlog1(component.pipes.size());
     
     mlog("comp.tsp", component.timeStepPipe);
     mlog("tsp", p);
         
-    mrestore(old);
-    
+    mdec();
+    mlog1("advance flow >");
+    mrestore(old);    
   }
   
   void singleStepIntegrate(MyComponent & component, MySettings & settings) {
@@ -567,13 +587,13 @@ namespace smallComp {
     
     if(settings.useFlow == false) {
       //mlog("initp", nextInit);
-      //mforce("plain");
+      //mforce1("plain");
       TaylorModelVec & pipe = component.timeStepPipe;
       smallComp::advance_step(component.solveIndexes, pipe, component.odes, 
           nextInit, component.dom, settings);
     } else {
       //mlog("initf", component.initSet);
-      //mforce("flow");
+      //mforce1("flow");
       smallComp::advanceFlow(component, settings);
     }
     //mlog("last2", component.lastPipe());
@@ -623,12 +643,15 @@ namespace smallComp {
     //remaps previous components flowpipes
     
     component.remapTimeStepPipe();
+  
+    //pSerializer->add(component.timeStepPipe, "tsp");
     
     mlog1("remapping done");
     
     //component.log();
     
     singleStepIntegrate(component, settings);
+    
     mlog1("single done");
     component.isSolved = true;
     
@@ -971,7 +994,6 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     TaylorModelVec composed = all.pipePairs[i]->composed(settings);
     
     //pSerializer->add(composed, "composed");
-    //mlog("com", com);
 	  all.output.push_back(composed);
 	  //pSerializer->add(composed, "composed");
   }
@@ -995,7 +1017,10 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   
   if(pSerializer == NULL) {
     //transformer name appended with .txt
-    string outName = string(settings->transformer->name).append(".txt");
+    string outName = string(settings->transformer->name);
+    if (settings->discardEmptyParams)
+      outName.append("_dis");
+    outName.append(".txt");
     pSerializer = new TMVSerializer(outName);
   }
   
@@ -1027,23 +1052,25 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   
   vector<TaylorModelVec> pipes;
   
-  if(precondition == SHRINK_WRAPPING || 
-      settings->transformer->isPreconditioned) {
-    for(int i = 0; i < comps.size(); i++) {
-      comps.at(i)->retainEmptyParams = true;
-    }
-  }
-  
   //mlog1("before preparing");
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    (*it)->prepareComponent(currentTMV, hfOde, domain);
+    (*it)->prepareComponent(currentTMV, hfOde, domain, 
+        settings->discardEmptyParams);
   }
   settings->transformer->setIntegrationMapper(comps);
   
-  MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain);
+  MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain, 
+      settings->discardEmptyParams);
+  
+  //mforce("ai", all.initSet);
+  //mforce("ci", comps[0]->initSet);
+  settings->domain = all.dom;
+  
+  //mforce("all", all.initSet);
   clock_t integrClock = clock();
   double t;
+  
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";
@@ -1058,6 +1085,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
       for(vector<MyComponent *>::iterator it = comps.begin(); 
           it < comps.end(); it++) {
         //mlog("init", (*it)->initSet);
+        //mforce("c", (*it)->compVars);
         smallComp::singleStepPrepareIntegrate(**it, *settings);
         //mlog("last", (*it)->lastPipe());
       }
@@ -1103,7 +1131,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     settings->transformer->addInfo(writer.info);
     tstart(sc_post_add);
     cout << "writing output" << endl;
-    writer.addComponents(comps, domain, all, 
+    //need to use all.dom, since some parameters maybe be discarded
+    writer.addComponents(comps, all.dom, all, 
         settings->transformer->isPreconditioned);
     tend(sc_post_add);
     tstart(sc_post_write);

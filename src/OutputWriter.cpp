@@ -40,7 +40,9 @@ void OutputWriter::init() {
 }
 
 Interval evalVarToInterval(const TaylorModelVec & tmv, vector<Interval> & domain, int index) {
+  //mlog1("evaling");
   Interval temp;
+  //mlog("tm", tmv.tms[index]);
   tmv.tms[index].intEval(temp, domain);
   return temp;
 }
@@ -86,6 +88,8 @@ void OutputWriter::writeFlowpipe(const vector<int> comp, const Interval & timeIn
 
 void OutputWriter::addPreconditioned(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all) {
+  mlog1("adding preconditioned");
+  minc();
   if(all.output.size() == 0)
     return;
   int dim = all.output[0].tms.size();
@@ -104,7 +108,7 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
     data2.at(0).push_back(timeInt.getLower(5));
     data2.at(1).push_back(timeInt.getHigher(5));
   }
-  
+  cout << all.output.size() << endl;
   
   for(int i = 0; i < all.output.size(); i++) {
     TaylorModelVec tmv = all.output[i];
@@ -118,11 +122,14 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
           sbuilder() << tmv.tms[var].remainder.width());
     }
   }
+  mdec();
 }
 
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
+  mreset(old);
   mlog1("adding components");
+  minc();
   
   //for time
   data.push_back(vector<Interval>());
@@ -170,6 +177,8 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
       it < comps.end(); it++) {
     addCompomentData(**it, domain);
   }
+  mdec();
+  mrestore(old);
 }
 
 void OutputWriter::addCompomentData(MyComponent & comp, 
@@ -181,7 +190,7 @@ void OutputWriter::addCompomentData(MyComponent & comp,
       it < comp.varIndexes.end(); it++, index++) {
     int varIndex = *it;
     int compIndex = comp.solveIndexes.at(index);
-    mforce(sbuilder() << comp.pipes.size());
+    mforce1(sbuilder() << comp.pipes.size());
     
     for(int i = 0; i < comp.pipes.size(); i++) {
       TaylorModelVec tmv = comp.pipes.at(i);
@@ -201,7 +210,7 @@ void OutputWriter::addCompomentData(MyComponent & comp,
 void createDir(string pathname) {
   struct stat info;
   if( stat( pathname.c_str(), &info ) != 0 ) {
-    mforce(sbuilder() << "creating directory '" << pathname << "'");
+    mforce1(sbuilder() << "creating directory '" << pathname << "'");
     string cmd = sbuilder() << "mkdir " << pathname;
     system(cmd.c_str());
   } else if( info.st_mode & S_IFDIR ) {
@@ -222,7 +231,7 @@ void OutputWriter::writeCSV() {
   int dim = (values - 2) / 4;
   
   //for(int i = 0; i < values; i++) {
-  //  mforce(sbuilder() << i << ": " << data2[i][0]);
+  //  mforce1(sbuilder() << i << ": " << data2[i][0]);
   //}
   
   int samplePoint = data2[0].size() / 8;
@@ -232,26 +241,26 @@ void OutputWriter::writeCSV() {
   double sampleWidth = 0;
   for(int i = 0; i < dim; i++) {
     int varWidthIndex = 2 + dim * 2 + i;
-    //mforce(sbuilder() << i << ": " << data2[varWidthIndex][0]);
+    //mforce1(sbuilder() << i << ": " << data2[varWidthIndex][0]);
     sampleWidth += atof(data2[varWidthIndex][samplePoint].c_str());
   }
   //mlog1(sbuilder() << "sampleWidth: " << sampleWidth);
   
   for(int step = 0; step < steps; step++) {
-    //mforce(sbuilder() << "time: " << data2[0][step]);
-    //mforce(sbuilder() << "size: " << data2.size());
+    //mforce1(sbuilder() << "time: " << data2[0][step]);
+    //mforce1(sbuilder() << "size: " << data2.size());
     
     double stepWidth = 0;
     for(int i = 0; i < dim; i++) {
       int varWidthIndex = 2 + dim * 2 + i;
-      //mforce(sbuilder() << i << ": " << data2[varWidthIndex][step]);
+      //mforce1(sbuilder() << i << ": " << data2[varWidthIndex][step]);
       double value = atof(data2[varWidthIndex][step].c_str());
       stepWidth += value;
     }
-    //mforce(sbuilder() << "stepWidth: " << stepWidth);
-    //mforce(sbuilder() << "ratio: "<< (stepWidth/sampleWidth));
+    //mforce1(sbuilder() << "stepWidth: " << stepWidth);
+    //mforce1(sbuilder() << "ratio: "<< (stepWidth/sampleWidth));
     if(stepWidth/sampleWidth > 10) {
-      //mforce(sbuilder() << "breaking at step #"<< step);
+      //mforce1(sbuilder() << "breaking at step #"<< step);
       break;
     }
     
@@ -293,7 +302,7 @@ void OutputWriter::finish() {
 
 void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo, 
       list<vector<Interval> > & domains) {
-  mforce("from flowstar");
+  mforce1("from flowstar");
   list<TaylorModelVec>::const_iterator fIt = flowpipesCompo.begin();
   list< vector<Interval> >::const_iterator dIt = domains.begin();
   if(fIt == flowpipesCompo.end())

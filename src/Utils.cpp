@@ -70,8 +70,8 @@ PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) :
 
 TaylorModelVec PrecondModel::composed(MySettings *settings) {
   TaylorModelVec ret;
-	//mforce3(tt1, "comp_left", left);
-	//mforce3(tt2, "comp_right", right);
+	//mforce("comp_left", left);
+	//mforce("comp_right", right);
   
   vector<Interval> rightRange;
 	//right.polyRange(rightRange, settings->domain);
@@ -86,6 +86,7 @@ TaylorModelVec PrecondModel::composed(MySettings *settings) {
 	//pSerializer->add(right, "comp_right");
 	//pSerializer->add(left, "comp_left");
 	//pSerializer->add(ret, "comp_comp");
+	//mforce("ret", ret);
 	return ret;
 }
 
@@ -117,8 +118,8 @@ namespace utilsprivate {
     
     int maxParams = 0;
     for(int i = 0; i < tmvs.size(); i++) {
-      if(maxParams < tmvs[i].getParamCount())
-        maxParams = tmvs[i].getParamCount();
+      if(maxParams < tmvs[i].getIgnoringParamCount())
+        maxParams = tmvs[i].getIgnoringParamCount();
     }
     
     //add other parameters
@@ -142,7 +143,7 @@ namespace utilsprivate {
 
 void serializeTMV(TaylorModelVec & tmv, string filename) {
   mreset(old);
-  mforce(sbuilder() << "serializing tmv to '" << filename << "'");
+  mforce1(sbuilder() << "serializing tmv to '" << filename << "'");
   mlog("tmv", tmv);
   FILE *fp = fopen(filename.c_str(), "w");
   vector<string> params = utilsprivate::createParams(tmv);
@@ -221,7 +222,7 @@ vector<TaylorModelVec *> pDeserializeFlows(string filename) {
 double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s) {
   double sumOfMags = 0;
   if(f.size() != s.size()) {
-    mforce("different vInt sizes");
+    mforce1("different vInt sizes");
     exit(0);
     return 0;
   }
@@ -284,7 +285,7 @@ void compareFlows(vector<TaylorModelVec *> & first,
       << first.size() << ", " << second.size());
   
   if(first.size() != second.size()) {
-    mforce(sbuilder() << "compareFlows unequal size (" << 
+    mforce1(sbuilder() << "compareFlows unequal size (" << 
         first.size() << ", " << second.size() << ")");
   }
   
@@ -324,11 +325,42 @@ void compareFlows(vector<TaylorModelVec *> & first,
 }
 
 
+void printNames(string file1, string file2, 
+    vector<NamedTMV> & p1, vector<NamedTMV> & p2) {
+  cout << "here" << endl;
+  
+  //dont want to import set
+  map<string, int> m1;
+  for(int i = 0; i < p1.size(); i++) {
+    m1[p1[i].name] = 0;
+  }
+  map<string, int> m2;
+  for(int i = 0; i < p2.size(); i++) {
+    m2[p2[i].name] = 0;
+  }
+  mforce1(sbuilder() << "tmvs in '" << file1 << "'");
+  for(map<string, int>::iterator it = m1.begin(); it != m1.end(); it++) {
+    mforce1(sbuilder() << "  " << it->first);
+  }
+  mforce1(sbuilder() << "tmvs in '" << file2 << "'");
+  for(map<string, int>::iterator it = m2.begin(); it != m2.end(); it++) {
+    mforce1(sbuilder() << "  " << it->first);
+  }
+  exit(0);
+}
+
+
 void printTMVFiles(string file1, string file2, string name, 
     int index1, int index2) {
   cout << "inspeciting files '" << file1 << "' and '" << file2 << "'" << endl;
   vector<NamedTMV> p1 = pDeserializeNamedFlows(file1);
   vector<NamedTMV> p2 = pDeserializeNamedFlows(file2);
+  
+  if(name == "") {
+    printNames(file1, file2, p1, p2);
+  }
+  
+  
   vector<TaylorModelVec> v1;
   vector<TaylorModelVec> v2;  
   for(int i = 0; i < p1.size(); i++) {
@@ -362,19 +394,22 @@ void printTMVFiles(string file1, string file2, string name,
   TaylorModelVec & second = v2[index2];
   
   logger.log("");
-  logger.log("f[0]", first.tms[0]);
-  //logger.log("f", first);
+  //logger.log("f[0]", first.tms[0]);
+  logger.log("f", first);
   logger.log("");
-  logger.log("s[0]", second.tms[0]);
-  //logger.log("s", second);
+  //logger.log("s[0]", second.tms[0]);
+  logger.log("s", second);
   logger.log("");
   
   TaylorModelVec dis = first.distance(second);
   
   mlog("dis", dis);
   //mlog1(sbuilder() << "rem" << dis.tms[0].remainder.toString(50));
+
+  int dim = first.getIgnoringParamCount();
+  dim = dim == 0 ? 1 : dim; //check that there are parameters, if not use only t
   
-  vector<Interval> domain = getUnitBox(first.getParamCount());
+  vector<Interval> domain = getUnitBox(dim);
   domain[0] = Interval(0, 0.1);
   
   vector<Interval> totalDistance;
@@ -390,19 +425,6 @@ void printTMVFiles(string file1, string file2, string name,
     break;
   }
   
-  /*
-  cout << "----------------------";
-  for(int i = 1; i < 31; i++) {
-    cout << (i%10);
-  }
-  cout << endl;
-  */
-  /*
-  mlog("totalDistance", totalDistance);
-  
-  double sumOfMag = sumVImag(totalDistance);
-  mlog1(sbuilder() << "sumOfMag: " << sumOfMag);
-  */
   
 }
 
@@ -410,7 +432,7 @@ void printTMVFiles(string file1, string file2, string name,
 void toMathematica(string file) {
   stringstream ss;
   ss << "mathematica_" << file;
-  mforce(sbuilder() << "writing" << ss.str());
+  mforce1(sbuilder() << "writing" << ss.str());
   FILE *fp = fopen(ss.str().c_str(), "w");
   
   fprintf(fp, "{");
@@ -488,11 +510,11 @@ void TMVSerializer::add(const TaylorModelVec & tmv) {
   add(tmv, "NULL");
 }
 void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
-  //mforce("adding");
+  //mforce1("adding");
   if(active == false)
     return;
-  //mforce(sbuilder() << tmvs.size());
-  //mforce(sbuilder() << "adding '" << name << "'");
+  //mforce1(sbuilder() << tmvs.size());
+  //mforce1(sbuilder() << "adding '" << name << "'");
   
   TaylorModelVec temp(tmv);
   tmvs.push_back(temp);
@@ -505,7 +527,7 @@ void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
 void TMVSerializer::serialize() {
   mreset(old);
   mlog1("");
-  mforce(sbuilder() << "serializing tmvs to '" << filename << "'");
+  mforce1(sbuilder() << "serializing tmvs to '" << filename << "'");
   mlog1(sbuilder() << "size: " << tmvs.size());
   FILE *fp = fopen(filename.c_str(), "w");
   

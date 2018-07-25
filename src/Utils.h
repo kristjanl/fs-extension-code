@@ -45,26 +45,6 @@ class ShrinkWrappingCondition {
     int count;
 };
 
-/*
-class MySettings {
-  public:
-    OutputWriter *writer;
-    const int order;
-    const double step; 
-    const double time;
-    const vector<Interval> & estimation;
-    const vector<Interval> step_exp_table;
-    const vector<Interval> step_end_exp_table;
-    const vector<Interval> domain;
-    const Interval & cutoff;
-    MySettings(OutputWriter *writer, const int order, const double step, 
-        const double time, const vector<Interval> & estimation, 
-        const vector<Interval> step_exp_table, 
-        const vector<Interval> & step_end_exp_table, 
-        const vector<Interval> & domain, const Interval & cutoff);
-  
-};*/
-
 class MySettings;
 
 class PrecondModel {

@@ -1,0 +1,11 @@
+int progress: 5
+computation time: 7.14
+remap 1: 0
+evaluate t: 0.01
+precond time: 1.03
+remap 2: 0.07
+int time: 5.97
+picard poly: 0.43
+picard remainder: 5.24
+picard decreasing: 2.88
+picard refining: 2.33

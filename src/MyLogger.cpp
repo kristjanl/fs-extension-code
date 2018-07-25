@@ -65,7 +65,7 @@ void mylogger2::log(string name, TaylorModelVec tmv) {
     
     //logger.log(paramDim);
     logger.log(sbuilder() << name << "[" << i << "] = " << 
-        tmv.tms.at(i).toString(vNames));
+        tmv.tms[i].toString(vNames));
 	}
 }
 void mylogger2::log(string name, TaylorModel tm) {

@@ -19,7 +19,11 @@ CFLAGS += -O1
 
 #CFLAGS += -Dno_output
 
-CFLAGS += -Denablelog
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+CFLAGS += -Ddo_checks
+CXXFLAGS += -Ddo_checks
+LINK_FLAGS = -g
 
 # Uncomment for "perf --call-graph fp" profiling
 # CFLAGS += -fno-omit-frame-pointer
