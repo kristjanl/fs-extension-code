@@ -13,12 +13,18 @@
 
 //start the clock with variable name <name>Start
 #define tstart(name) clock_t name##Start = clock();
-
-//start the clock with variable name <name>End, subtract <name>Start from it
-// and store it in timeLookup with key "<name>"
+//start the clock with variable <name>End, subtract <name>
+// Start from it and store it in timeLookup with key <name>
 #define tend(name) clock_t name##End = clock(); \
   double name##Dur = double(name##End - name##Start) / CLOCKS_PER_SEC; \
   timeLookup[#name] += name##Dur;
+  
+
+#define tstart1(name) clock_t name##Start = clock();
+#define tend1(name) clock_t name##End = clock(); \
+  double name##Dur = double(name##End - name##Start) / CLOCKS_PER_SEC; \
+  timeLookup[#name] += name##Dur;  
+  
 #define treset(name) timeLookup[#name] = 0;
 
 #define tprint(prefix) printTimes(prefix);
@@ -108,6 +114,10 @@ void addTimeToInfo(string name, string clockName, vector<string> & infos);
 int findPos(int value, vector<int> *v);
 
 int isIn(int value, vector<int> *v);
+
+
+void addMyInfo(vector<string> & info);
+void addFlowInfo(vector<string> & info);
 
 #endif /* UTILS_H_ */
 

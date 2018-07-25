@@ -22,7 +22,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	int rangeDim = ode.size();
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
-	
+  
 	tstart(fl_eval);
   //mlog("step", step_end_exp_table);
   //mlog("est", estimation);
@@ -31,8 +31,11 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	// evaluate the the initial set x0
 	TaylorModelVec range_of_x0; //construct a empty taylormodel vec
   //mlog1(sbuilder() << "rox0: " << range_of_x0.toString(getVNames(3)));
+  
+  
+  
 	tmvPre.evaluate_t(range_of_x0, step_end_exp_table);
-	
+  
 	mlog("left*", range_of_x0);
 	
 	pSerializer->add(range_of_x0, "leftStar");
@@ -60,6 +63,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tstart(fl_part_all);
   
   tstart(fl_part1);
+  tstart1(fl_pre_start);
+  
 	//pSerializer->add(range_of_x0, "leftStar"); //0, 4
   // the center point of x0's polynomial part
 	vector<Interval> intVecCenter;
@@ -79,13 +84,18 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	// introduce a new variable r0 such that x0 = c0 + A*r0, then r0 is origin-centered
 	range_of_x0.rmConstant();
+  tend1(fl_pre_start);
+  
+  tstart1(fl_pre_matrix);
 
 	// compute the preconditioning matrix
 	Matrix A(rangeDim,rangeDim), invA(rangeDim,rangeDim);
 	TaylorModelVec range_of_r0;
+  tend1(fl_pre_matrix);
 
   tend(fl_part1);
   tstart(fl_part_matrix);
+  tstart1(fl_pre_ltr);
   //serializeTMV(range_of_x0, "flow.txt");
 	switch(precondition)
 	{
@@ -105,14 +115,23 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 		break;
 	}
 	}
+  tend1(fl_pre_ltr);
   tend(fl_part_matrix);
   
   mlog("right", tmv);
   tstart(fl_part2);
-
+  
+  tstart1(fl_pre_r_range);
 	vector<Interval> tmvPolyRange;
 	tmv.polyRangeNormal(tmvPolyRange, step_end_exp_table);
-	range_of_r0.insert_ctrunc_normal(result.tmv, tmv, tmvPolyRange, step_end_exp_table, domain.size(), order, cutoff_threshold);
+  tend1(fl_pre_r_range);
+  
+  tstart1(fl_pre_insert);
+	range_of_r0.insert_ctrunc_normal(result.tmv, tmv, tmvPolyRange,
+      step_end_exp_table, domain.size(), order, cutoff_threshold);
+  tend1(fl_pre_insert);
+  
+  tstart1(fl_pre_scaling);
 	vector<Interval> boundOfr0;
 
 	// contract the remainder part of the initial set
@@ -163,12 +182,15 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 		break;
 	}
 	}
+  tend1(fl_pre_scaling);
 
+  tstart1(fl_pre_lin_trans);
 	result.tmv.linearTrans_assign(invS);
 	result.tmv.cutoff_normal(step_end_exp_table, cutoff_threshold);
-	
+  tend1(fl_pre_lin_trans);
 
 
+  tstart1(fl_pre_left);
 	TaylorModelVec x, x0;
 
 	Matrix matCoefficients_Ar0(rangeDim, rangeDim+1);
@@ -185,10 +207,13 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	TaylorModelVec c0_plus_Ar0;
 	Ar0.add(c0_plus_Ar0, c0);
+  tend1(fl_pre_left);
 
+  tstart1(fl_pre_end);
 	x0 = c0_plus_Ar0;
 	x = x0;
 	
+  tend1(fl_pre_end);
   tend(fl_part2);
   tend(fl_part_all);
   tend(fl_precond);
@@ -241,7 +266,10 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	vector<Interval> xPolyRange;
 	x.polyRangeNormal(xPolyRange, step_exp_table);
-	x.Picard_ctrunc_normal(tmvTemp, trees, x0, xPolyRange, ode, step_exp_table, rangeDim+1, order, cutoff_threshold);
+  tstart1(fl_ref_first_picard);
+	x.Picard_ctrunc_normal(tmvTemp, trees, x0, xPolyRange, ode,
+      step_exp_table, rangeDim+1, order, cutoff_threshold);
+  tend1(fl_ref_first_picard);
 
 	// compute the interval evaluation of the polynomial difference, this part is not able to be reduced by Picard iteration
 	vector<Interval> intDifferences;

@@ -244,7 +244,12 @@ void TaylorModel::mul_ctrunc_normal(TaylorModel & result, const TaylorModel & tm
 
 void TaylorModel::mul_no_remainder(TaylorModel & result, const TaylorModel & tm, const int order, const Interval & cutoff_threshold) const
 {
+  //mforce("res1", *this);
+  //mforce("tm", tm);
+  //mforce1(sbuilder() << this->getParamCount());
+  //mforce1(sbuilder() << tm.getParamCount());
 	result.expansion = expansion * tm.expansion;
+  //mforce("res2", *this);
 	result.expansion.nctrunc(order);
 
 	result.expansion.cutoff(cutoff_threshold);
@@ -2289,7 +2294,8 @@ void TaylorModelVec::Picard_no_remainder_assign(const TaylorModelVec & x0, const
 }
 
 
-void TaylorModelVec::Picard_no_remainder_assign(MyComponent *component, const int numVars, const int order, const Interval & cutoff_threshold) {
+void TaylorModelVec::Picard_no_remainder_assign(MyComponent *component, 
+    const int numVars, const int order, const Interval & cutoff_threshold) {
 	TaylorModelVec result;
 	Picard_no_remainder(result, component, numVars, order, cutoff_threshold);
 	*this = result;
@@ -2478,7 +2484,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
   mreset(old);
   mdisable();
   minc();
-  //mlog1("Picard_ctrunc_normal2 (i vec)");
+  mlog1("Picard_ctrunc_normal (2, i vec)");
   //mlog("x0", comp2->initSet);
   //mlog("ode", comp2->odes);
   //mlog("this", *this);
@@ -2489,33 +2495,33 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
 	TaylorModelVec inserted;
 
 	trees.clear();
-	for(int i=0; i<comp2->odes.size(); ++i)
-	{
+	for(int i=0; i<comp2->odes.size(); ++i) {
 		trees.push_back(NULL);
 	}
 
-	if(order <= 1)
-	{
+	if(order <= 1) {
 		//for(int i=0; i<ode.size(); ++i) {
 	  for(int j = 0; j < comp2->solveIndexes.size(); j++) {
 	    int var = comp2->solveIndexes[j];
 	    //mlog1(sbuilder() << "var: " << var);
 			TaylorModel tmTemp;
 			//mlog1(comp2->odes[var].toString());
-			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, 0, cutoff_threshold);
+			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, 
+          polyRange, step_exp_table, numVars, 0, cutoff_threshold);
 			inserted.tms.push_back(tmTemp);
 			//mlog(sbuilder() << "tm[" << var << "]", tmTemp);
 		}
-	}
-	else
-	{
+	} else {
 		//for(int i=0; i<ode.size(); ++i) {
 	  for(int j = 0; j < comp2->solveIndexes.size(); j++) {
 	    int var = comp2->solveIndexes[j];
-	    //mlog1(sbuilder() << "var: " << var);
+	    mlog1(sbuilder() << "var: " << var);
+			mlog1(comp2->odes[var].toString());
+      mlog1(sbuilder() << numVars);
 		  //order - 1, since the integration makes the degree 1 higher
 			TaylorModel tmTemp;
-			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
+			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, 
+          polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
 			inserted.tms.push_back(tmTemp);
 		}
 	}
@@ -2528,7 +2534,6 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
 		integrated.tms.push_back(tmTemp);
 	}
 	//mlog("integrated(TM)", integrated);
-	
 	TaylorModelVec added;
 	for(int i = 0; i < comp2->solveIndexes.size(); i++) {
 	  //i is index in integrated, var is index in original
@@ -4612,6 +4617,11 @@ void TaylorModelVec::centerRemainder() {
     tms[i].centerRemainder();
   }
 }
+void TaylorModelVec::centerRemainder(int paramCount) {
+  for(int i = 0; i < tms.size(); i++) {
+    tms[i].centerRemainder(paramCount);
+  }
+}
 void TaylorModel::centerRemainder(int paramCount) {
   mreset(old);
   mdisable();
@@ -4627,6 +4637,7 @@ void TaylorModel::centerRemainder(int paramCount) {
   mrestore(old);
 }
 
+//TODO remove and use TaylorModelVec::centerRemainder(int n)
 void TaylorModelVec::preconditionCenterRemainder() {
   for(int i = 0; i < tms.size(); i++) {
     tms[i].centerRemainder(tms.size() + 1);

@@ -607,3 +607,61 @@ int isIn(int value, vector<int> *v) {
   return find(v->begin(), v->end(), value) != v->end();
 }
 
+
+void addMyInfo(vector<string> & info) {
+  taddToInfo("remap 1", tr_remap1, info);
+  taddToInfo("eval t", tr_eval, info);
+  taddToInfo("precond time", tr_precond, info);
+  taddToInfo("remap 2", tr_remap2, info);
+  taddToInfo("int time", sc_integrate, info);
+  
+  
+  taddToInfo("picard poly", sc_int_poly, info);
+  taddToInfo("picard remainder", sc_int_rem, info);
+  taddToInfo("picard decreasing", sc_int_find_dec, info);
+  taddToInfo("picard refining", sc_int_refine, info);
+  
+  mlog1(sbuilder() << info.size());
+  
+  //cout << timeLookup["tr_eval"] << endl;
+  taddToInfo("pstart", pre_start, info);
+  taddToInfo("pm", pre_matrix, info);
+  taddToInfo("pltr", pre_ltr, info);
+  taddToInfo("prrange", pre_r_range, info);
+  taddToInfo("pinsert", pre_insert, info);
+  taddToInfo("pscaling", pre_scaling_m, info);
+  taddToInfo("plintra", pre_lin_trans, info);
+  taddToInfo("pleft", pre_left, info);
+  taddToInfo("pend", pre_end, info);
+  
+  taddToInfo("refstart", ref_start, info);
+  taddToInfo("reffirst", ref_first_picard, info);
+  taddToInfo("refrem", ref_rem, info);
+  taddToInfo("refsub", ref_subset, info);
+}
+
+void addFlowInfo(vector<string> & info) {
+  taddToInfo("eval t", fl_eval, info);
+  taddToInfo("precond time", fl_precond, info);
+  taddToInfo("int time", fl_integrate, info);
+  
+  taddToInfo("picard poly", fl_int_poly, info);
+  taddToInfo("picard remainder", fl_int_rem, info);
+  taddToInfo("picard decreasing", sc_int_rem_setup, info);
+  taddToInfo("picard refining", fl_int_refine, info);
+  
+  taddToInfo("reffirst", fl_ref_first_picard, info);
+  
+  
+  
+  taddToInfo("pstart", fl_pre_start, info);
+  taddToInfo("pm", fl_pre_matrix, info);
+  taddToInfo("pltr", fl_pre_ltr, info);
+  taddToInfo("prrange", fl_pre_r_range, info);
+  taddToInfo("pinsert", fl_pre_insert, info);
+  taddToInfo("pscaling", fl_pre_scaling_m, info);
+  taddToInfo("plintra", fl_pre_lin_trans, info);
+  taddToInfo("pleft", fl_pre_left, info);
+  taddToInfo("pend", fl_pre_end, info);
+  
+}

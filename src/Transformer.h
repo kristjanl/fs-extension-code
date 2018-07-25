@@ -128,6 +128,7 @@ class SingleComponentIdentityTransformer: public PreconditionedTransformer {
     void initialPrecondition(MyComponent *comp, MySettings & settings);
     TaylorModelVec makeLeftFromA(Matrix & A, MyComponent *comp);
     
+    void firstTransform2(MyComponent & comp, MySettings & settings);
     void getA(Matrix & result, MyComponent *comp);
     void getAInv(Matrix & result, const Matrix & A);
     void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);

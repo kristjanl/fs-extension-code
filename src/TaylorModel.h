@@ -321,6 +321,7 @@ public:
   void getParts(TaylorModelVec & constant, TaylorModelVec & linear, 
       TaylorModelVec & nonLinear, TaylorModelVec & remainder) const;
   void centerRemainder();
+  void centerRemainder(int paramCount);
   void preconditionCenterRemainder();
   //remove higher terms
   void removeHighTerms(int order);

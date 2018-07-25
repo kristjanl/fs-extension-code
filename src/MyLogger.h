@@ -89,6 +89,8 @@ class mylogger2 {
 		
 		void log(string, TaylorModelVec);
 		void log(string, TaylorModel);
+		void log(string, Polynomial);
+		void log(string, Monomial);
 		void log(string, vector<Interval>);
 		void log(string, vector<int>);
 		void log(string, vector<string>);

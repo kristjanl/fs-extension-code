@@ -5,22 +5,25 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
-CFLAGS = -I . -I $(GMP_HOME) -g -O3
-LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
-
-### overriding since not using local GMP
-# -I . to pick up system header glpk.h
-CFLAGS = -I . -g 
-LINK_FLAGS = -g
-
-# Add optimisation
-CFLAGS += -O1 
-#CFLAGS += -O3 
 
 #CFLAGS += -Dno_output
-
+#CFLAGS = -I . -I $(GMP_HOME) -g -O3
 #CFLAGS += -Denablelog
-#CXXFLAGS += -Denablelog
+#CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
+#LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
+
+#no profiling
+#CFLAGS = -I . -g -O3
+#CXXFLAGS = -I . -g -O3
+
+#profiling
+CFLAGS = -I . -g -O2
+CXXFLAGS = -I . -g -O2
+
+CFLAGS += -pg
+CFLAGS += -pg
+CFLAGS += -Denablelog
+CXXFLAGS += -Denablelog
 CFLAGS += -Ddo_checks
 CXXFLAGS += -Ddo_checks
 LINK_FLAGS = -g
@@ -35,9 +38,7 @@ LINK_FLAGS += -pg
 # PBJ: modelParser.o added.  Not clear why omitted.
 OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o modelParser.o
 
-TESTOBJS = Interval.o Monomial.o Polynomial.o Matrix.o MyLogger.o TaylorModel.o MyComponent.o Exceptions.o
-
-# All C++ sources
+# All sources
 SRCS= $(OBJS:.o=.cpp)
 
 # All C++ dependency files
@@ -47,7 +48,7 @@ all:
 	make outputToggle.txt
 	make flowstar
 
-.PHONY: test
+.PHONY: test profiling
 
 test: 
 	make testcompile
@@ -68,13 +69,18 @@ outputToggle.txt: outputToggle.txt
 fast: 
 	make fastcompile
 	./fastcompile
+  
 
 fastcompile: $(OBJS) lex.yy.o ParsingUtils.o modelParser.tab.o unittestingfast.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
+  
+profiling: $(OBJS) lex.yy.o ParsingUtils.o modelParser.tab.o profiling.o
+	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
+	./profiling
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
-
+  
 flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 

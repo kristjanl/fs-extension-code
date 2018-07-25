@@ -291,6 +291,7 @@ namespace smallComp {
 	  mlog1("findDecreasingRemainderFlow <");
 	  minc();
 	  mlog("init", comp.initSet);
+    tstart1(ref_start);
     
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
@@ -302,7 +303,7 @@ namespace smallComp {
     mlog1(sbuilder() << "varCount: " << varCount);
 
 	  //number of taylor model parameters
-    int paramCount = comp.initSet.getParamCount(); 
+    int paramCount = comp.getIntergrationParamCount(); 
     mlog1(sbuilder() << "paramCount: " << paramCount);
 	  
 	  //need to find remainders more efficiently
@@ -326,9 +327,13 @@ namespace smallComp {
 	  //TODO make this one compositional!!!
 	  
     //tstart(sc_int_noncomp);
+    tend1(ref_start);
+    tstart1(ref_first_picard);
 	  TaylorModelVec compTemp;
     p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
       step_exp_table, paramCount, order, cutoff_threshold);
+    tend1(ref_first_picard);
+    tstart1(ref_rem);
     
     mlog("comTemp", compTemp);
     mlog("tmv", compTemp);
@@ -350,7 +355,8 @@ namespace smallComp {
 		  
       compTemp.tms[i].remainder += intTemp;
 	  }
-	  
+    tend1(ref_rem);
+	  tstart1(ref_subset);
     //tend(sc_int_noncomp);
 	  
 	  bool notSubset = false;
@@ -415,6 +421,7 @@ namespace smallComp {
   	    p.tms[i].remainder = newRemainders[i];
   	  }
 	  }
+	  tend1(ref_subset);
 	  mdec();
 	  mlog1("findDecreasingRemainderFlow >");
 	  mrestore(old);
@@ -618,7 +625,8 @@ namespace smallComp {
     mrestore(old);
   }
   
-  void singleStepPrepareIntegrate(MyComponent & component, MySettings & settings) {
+  void singleStepPrepareIntegrate(MyComponent & component, 
+    MySettings & settings) {
     //if component has already been solved return
     if(component.isSolved) {
       //mlog1("solved already");
@@ -1058,11 +1066,15 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     (*it)->prepareComponent(currentTMV, hfOde, domain, 
         settings->discardEmptyParams);
   }
+  //TODO refactor
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    (*it)->usingPreconditioning = settings->transformer->isPreconditioned;
+  }
   settings->transformer->setIntegrationMapper(comps);
   
   MyComponent all = getSystemComponent(comps, currentTMV, hfOde, domain, 
       settings->discardEmptyParams);
-  
   //mforce("ai", all.initSet);
   //mforce("ci", comps[0]->initSet);
   settings->domain = all.dom;
@@ -1128,7 +1140,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   #else
     cout << "creating my output" << endl;
     createOutput(comps, all, settings->transformer, settings);
-    settings->transformer->addInfo(writer.info);
+    //settings->transformer->addInfo(writer.info);
+    addMyInfo(writer.info);
     tstart(sc_post_add);
     cout << "writing output" << endl;
     //need to use all.dom, since some parameters maybe be discarded

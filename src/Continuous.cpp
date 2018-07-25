@@ -9371,15 +9371,7 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 		}
 	}
   settings->writer->info.push_back(sbuilder() << "int progress: " << t);
-  
-  taddToInfo("evaluate t", fl_eval, settings->writer->info);
-  taddToInfo("precond time", fl_precond, settings->writer->info);
-  taddToInfo("int time", fl_integrate, settings->writer->info);
-  
-  taddToInfo("picard poly", fl_int_poly, settings->writer->info);
-  taddToInfo("picard remainder", fl_int_rem, settings->writer->info);
-  taddToInfo("picard decreasing", sc_int_rem_setup, settings->writer->info);
-  taddToInfo("picard refining", fl_int_refine, settings->writer->info);
+  addFlowInfo(settings->writer->info);
   
   cout << endl;
   mdec();
@@ -13689,7 +13681,10 @@ void ContinuousSystem::my_reach_picard(list<Flowpipe> & results, const double st
 
 
 SimpleCompReachability ContinuousReachability::createSimpleComp(){
-  mlog1("creating sc");
+  mreset(old);
+  mdisable();
+  mlog1("creating simplecomp");
+  exit(0);
   SimpleCompReachability problem;
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
@@ -13741,12 +13736,15 @@ SimpleCompReachability ContinuousReachability::createSimpleComp(){
     mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
+  mrestore(old);
   return problem;
 }
 
 
 SmallCompReachability ContinuousReachability::createSmallComp(){
-  mlog1("creating sc");
+  mreset(old);
+  mdisable();
+  mlog1("creating smallcomp");
   SmallCompReachability problem = SmallCompReachability();
 	
   for(int i = 0; i < stateVarNames.size(); i++) {
@@ -13805,6 +13803,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
     mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
     exit(0);
   }
+  mrestore(old);
   return problem;
 }
 
@@ -13868,8 +13867,6 @@ void ContinuousReachability::run()
 {
   mlog1("run <"); 
   minc();
-  
-  
   
   if(algorithm == ALGORITHM_SIMPLE_IMPL) {
     mforce1("simple impl");

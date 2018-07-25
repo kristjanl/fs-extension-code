@@ -18,13 +18,21 @@ void mylogger2::log(string name, vector<Interval> v) {
 }
 
 void mylogger2::log(string name, vector<string> v) {
-	if(disabled > 0)
+  if(disabled > 0)
 		return;
-	for (unsigned i=0; i<v.size(); i++) {
-		logger.log(sbuilder() << name <<"[" << i << "] = " << v[i]);
-	}
-  if(v.size() == 0)
-    logger.log(sbuilder() << name << " is empty");
+  if(v.size() == 0) {
+    logger.log(sbuilder() << name <<" = [ ]");
+    return;
+  }
+  string s;
+  
+  vector<string>::iterator it = v.begin();
+  s.append(sbuilder() << (*it));
+  
+  for(it++; it < v.end(); it++) {
+    s.append(sbuilder() << ", " << (*it));
+  }
+  logger.log(sbuilder() << name <<" = [" << s << "]");
 }
 
 
@@ -208,4 +216,18 @@ vector<string> getVNames(int n) {
     vars.push_back(name);
 	}
   return vars;
+}
+
+void mylogger2::log(string name, Polynomial poly) {
+	if(disabled > 0)
+		return;
+  logger.log(sbuilder() << name << " = " << 
+      poly.toString(getVNames(poly.getVariableCount()))
+  );
+}
+void mylogger2::log(string name, Monomial m) {
+	if(disabled > 0)
+		return;
+  logger.log(sbuilder() << name << " = " << 
+      m.toString(getVNames(m.getVariableCount())));
 }
