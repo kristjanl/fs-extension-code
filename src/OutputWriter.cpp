@@ -156,7 +156,6 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
       it < comps.end(); it++) {
     dim += (*it)->varIndexes.size();
   }
-  mlog1(sbuilder() << "dim: " << dim);
   //2 for time + (per dim) 2 for interval + remainder + range
   int csvSize = 2 + 4*dim;
   for(int i = 0; i < csvSize; i++) {
@@ -170,7 +169,6 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
   }
   
   mdec();
-  
   
   
   for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -190,7 +188,6 @@ void OutputWriter::addCompomentData(MyComponent & comp,
       it < comp.varIndexes.end(); it++, index++) {
     int varIndex = *it;
     int compIndex = comp.solveIndexes.at(index);
-    mforce1(sbuilder() << comp.pipes.size());
     
     for(int i = 0; i < comp.pipes.size(); i++) {
       TaylorModelVec tmv = comp.pipes.at(i);

@@ -75,7 +75,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "identity precondition" {return IDPRECOND;}
 "compositional identity precondition" {return COMPIDPRECOND;}
 "shrink wrapping" {return SHRINRWRAPPING;}
-"no precondition" {return NOPRECOND;}
+"no processing" {return NOPROCESS;}
 "time" {return TIME;}
 "modes" {return MODES;}
 "jumps" {return JUMPS;}
@@ -119,7 +119,8 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "alg_simple_comp" {return ALG_SIMPLE_COMP;}
 "alg_small_comp" {return ALG_SMALL_COMP;}
 "decomposition" {return DECOMPOSITION;}
-"no decomposition" {return NODECOMPOSITION;}
+"no decomposition" {return NO_DECOMPOSITION;}
+"full decomposition" {return FULL_DECOMPOSITION;}
 "remove point params" {return REMOVE_EMPTY_PARAMS;}
 "my model" {return MYMODEL;}
 "my models" {return MYMODELS;}

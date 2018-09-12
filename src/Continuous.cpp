@@ -11873,6 +11873,7 @@ bool ContinuousReachability::declareStateVar(const string & vName)
 	{
 		stateVarTab[vName] = stateVarNames.size();
 		stateVarNames.push_back(vName);
+		settings->varNames.push_back(vName);
 		return true;
 	}
 	else
@@ -13792,7 +13793,7 @@ SmallCompReachability ContinuousReachability::createSmallComp(){
 	}
   
   
-  SmallCompSystem* pSystem = new SmallCompSystem(system, components);
+  SmallCompSystem* pSystem = new SmallCompSystem(system);
   pSystem->settings = settings;
   
   problem.pSystem = pSystem;
@@ -13898,7 +13899,8 @@ void ContinuousReachability::myRun() {
   mlog1("dummy run");
   exit(0);
 }
-MySettings::MySettings() : useFlow(false), discardEmptyParams(false) {
+MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
+      autoComponents(false) {
 }
 MySettings::MySettings(OutputWriter *writer, int order, 
       double step, double time, vector<Interval> estimation, 
@@ -13908,6 +13910,6 @@ MySettings::MySettings(OutputWriter *writer, int order,
       : writer(writer), order(order), step(step), time(time), 
       estimation(estimation), step_exp_table(step_exp_table), 
       step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
-      discardEmptyParams(false) {
+      discardEmptyParams(false), autoComponents(false) {
 }
 

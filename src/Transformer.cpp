@@ -1,21 +1,18 @@
 #include "Transformer.h"
 
 void Transformer::makeNextInitSet(vector<MyComponent *> & comps, 
-      MySettings & settings, bool fail) {
+      MySettings & settings) {
   mreset(old);
-  if(fail) {
-    //signaling need to refactor
-    throw invalid_argument("evaluate called with fail"); 
-  }
+  mdisable();
   
   for(int i = 0; i < comps.size(); i++) {
     MyComponent & comp = *(comps[i]);
     //mforce(sbuilder() << comp.pipes.size());
     TaylorModelVec tsp = comp.timeStepPipe;
-    //mlog("tsp", tsp);
+    mlog("tsp", tsp);
     tsp.evaluate_t(comp.initSet, settings.step_end_exp_table);
     comp.pipes.push_back(tsp);
-    //mlog("evaluated", comp.initSet);
+    mlog("evaluated", comp.initSet);
     //mlog1(sbuilder());
   }
   //mlog1(sbuilder() << "count: " << count);
@@ -512,6 +509,11 @@ TaylorModelVec IdentityTransformer::getLeftToRight(TaylorModelVec & leftStar,
 
 void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
+  mreset(old);
+  mdisable();
+  mlog1("sw cont <");
+  minc();
+  
   //mlog1("sw transforming");
   tstart(sw_wrapping);
   //makeNextInitSet(comps, settings, false);
@@ -519,15 +521,19 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
     mlog1(sbuilder() << "wrapping");
     
     //this is used to the domain before parameter discarding, check if this is OK
-    throw std::runtime_error("check if sw transform is still OK (see above)");
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,
         settings);
+//    throw std::runtime_error("check if sw transform is still OK (see above)");
+    
   } else {
     //don't shrinkwrap but prepare initial set for next step
-    makeNextInitSet(comps, settings, false);
+    makeNextInitSet(comps, settings);
   }
   count++;
   tend(sw_wrapping);
+  mdec();
+  mlog1("sw cont >");
+  mrestore(old);
 }
 
 TaylorModelVec getUnitTmv(int varCount) {
@@ -965,7 +971,7 @@ void QRTransformer::transform(MyComponent & all,
 void NullTransformer::transform(MyComponent & all, vector<MyComponent *> & comps, 
       MySettings & settings) {
   //mlog1("null transforming");
-  makeNextInitSet(comps, settings, true);
+  makeNextInitSet(comps, settings);
 }
 void IdentityTransformer::transform(MyComponent & all, 
       vector<MyComponent *> & comps, MySettings & settings) {
@@ -1050,7 +1056,9 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
     firstTransform(all, settings);
     tsp = all.timeStepPipe;
   } else {
+    tstart(tr_remap1);  
     tsp = all.orderedTSPRemap(count == 1);
+    tend(tr_remap1);  
   }
   
   
@@ -1545,7 +1553,7 @@ void ShrinkWrapper::setIntegrationMapper(vector<MyComponent *> comps) {
   for(int i = 0; i < comps.size(); i++) {
     for(int j = 0; j < comps[i]->dependencies.size(); j++) {
       CompDependency dep = *comps[i]->dependencies[j];
-      //dep.mapper is already set
+      dep.mapper = dep.rightMapper;
     }
   }
 }
@@ -1559,7 +1567,13 @@ void QRTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
   }
 }
 void NullTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
-  throw std::runtime_error("don't call setIntegrationMapper on Null yet");
+  for(int i = 0; i < comps.size(); i++) {
+    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
+      CompDependency dep = *comps[i]->dependencies[j];
+      dep.mapper = dep.rightMapper;
+    }
+  }
+  //throw std::runtime_error("don't call setIntegrationMapper on Null yet");
 }
 
 int Transformer::getType() {

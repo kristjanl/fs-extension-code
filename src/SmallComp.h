@@ -29,10 +29,9 @@ class SmallCompSystem: public ContinuousSystem  {
   public:
     MySettings *settings;
     SmallCompSystem(const TaylorModelVec & ode_input, const Flowpipe & initialSet_input);
-    SmallCompSystem(const ContinuousSystem & system, vector< vector<int> > components);
+    SmallCompSystem(const ContinuousSystem & system);
     void my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const;
     void my_reach_picard_old(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const;
-    vector< vector<int> > components;
   private:
     void integrateComponent(const vector<int> comp, vector<TaylorModelVec> & pipes, 
     const OutputWriter writer, const vector<HornerForm> & ode, 

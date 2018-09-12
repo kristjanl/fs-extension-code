@@ -119,5 +119,7 @@ int isIn(int value, vector<int> *v);
 void addMyInfo(vector<string> & info);
 void addFlowInfo(vector<string> & info);
 
+void printComponents(MySettings *settings);
+
 #endif /* UTILS_H_ */
 

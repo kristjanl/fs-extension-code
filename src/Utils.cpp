@@ -67,7 +67,6 @@ PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) :
       left(left), right(right) {
 }
 
-
 TaylorModelVec PrecondModel::composed(MySettings *settings) {
   TaylorModelVec ret;
 	//mforce("comp_left", left);
@@ -597,7 +596,21 @@ void addTimeToInfo(string name, string clockName, vector<string> & infos) {
   infos.push_back(sbuilder() << name << ": " << timeLookup[clockName]);
 }
 
-
+void printComponents(MySettings *settings) {
+  //printing out
+  mreset(old);
+  string s;
+  for(int i = 0; i < settings->intComponents.size(); i++) {
+    vector<int> comp = settings->intComponents[i];
+    s.append(sbuilder() << "[" << settings->varNames[comp[0]]);
+    for(int j = 1; j < comp.size(); j++) {
+      s.append(sbuilder() << "," << settings->varNames[comp[j]]);
+    }
+    s.append(sbuilder() << "]");
+  }
+  mlog1(sbuilder() << "components: " << s);
+  mrestore(old);
+}
 
 int findPos(int value, vector<int> *v) {
   return find(v->begin(), v->end(), value) - v->begin();

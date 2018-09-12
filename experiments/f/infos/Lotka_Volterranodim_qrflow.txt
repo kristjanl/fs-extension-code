@@ -1,0 +1,20 @@
+reason: The remainder estimation is not large enough.
+int progress: 5.94
+eval t: 0.08
+precond time: 1.12
+int time: 1.71
+picard poly: 0.44
+picard remainder: 1.26
+picard decreasing: 0.82
+picard refining: 0.44
+reffirst: 0.75
+pstart: 0
+pm: 0
+pltr: 0
+prrange: 0.03
+pinsert: 1.01
+pscaling: 0
+plintra: 0.04
+pleft: 0.01
+pend: 0
+computation time: 2.92

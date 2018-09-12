@@ -8,6 +8,7 @@
 #include <sstream>      // std::stringstream
 #include <vector>
 #include <stdexcept>
+#include <set>
 
 #include "Interval.h"
 #include "Polynomial.h"
@@ -99,6 +100,7 @@ class mylogger2 {
 		void log(string, vector<RangeTree *>);
 		void log(string, RangeTree *);
     void log(string, Matrix m);
+    void log(string, set<int> myset);
 		
 		void log(Polynomial *);
     void log(Monomial m);

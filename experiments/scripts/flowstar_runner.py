@@ -8,8 +8,8 @@ import os
 def runFlowstar(modelDir, flowstar, models):
   srcDir = os.path.dirname(flowstar)
   
-  #run = subprocess.Popen(["make", "-C", srcDir])
-  #run.wait()
+  run = subprocess.Popen(["make", "-C", srcDir])
+  run.wait()
   
   for model in models:
     print "======%s======" %model

@@ -11,15 +11,14 @@ LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serial
 #LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
 
 #no profiling
-#CFLAGS = -I . -g -O3
-#CXXFLAGS = -I . -g -O3
+CFLAGS = -I . -g -O3
+CXXFLAGS = -I . -g -O3
 
 #profiling
-CFLAGS = -I . -g -O2
-CXXFLAGS = -I . -g -O2
+#CFLAGS = -I . -g -O2
+#CXXFLAGS = -I . -g -O2
 
-CFLAGS += -pg
-CFLAGS += -pg
+#CFLAGS += -pg
 CFLAGS += -Denablelog
 CXXFLAGS += -Denablelog
 CFLAGS += -Ddo_checks
@@ -34,7 +33,8 @@ OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Ge
 SRCS= $(OBJS:.o=.cpp)
 
 # All dependency files
-DFILES= $(SRCS:.cpp=.d)
+#DFILES= $(SRCS:.cpp=.d)
+DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS))
 
 all: 
 	make outputToggle.txt
@@ -96,22 +96,22 @@ modelParser.tab.c: modelParser.y
 lex.yy.c: modelLexer.l modelParser.tab.c
 	flex modelLexer.l
 
-%.d: %.cpp
+$(DEPDIR)/%.d: %.cpp
 	@echo Making dependency file $@
 	@set -e; rm -f $@; \
 	 $(CXX) -MM $(CPPFLAGS) $< > $@.$$$$; \
 	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	 rm -f $@.$$$$
 
-%.d: %.c
+$(DEPDIR)/%.d: %.c
 	@echo Making dependency file $@
 	@set -e; rm -f $@; \
 	 $(CXX) -MM $(CPPFLAGS) $< > $@.$$$$; \
 	 sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	 rm -f $@.$$$$
 
- include $(DFILES)
- include modelParser.tab.d lex.yy.d
+include $(DFILES)
+include $(DEPDIR)/modelParser.tab.d $(DEPDIR)/lex.yy.d
 
 clean: 
 	rm -f flowstar *.o *.d *~ modelParser.tab.c modelParser.tab.h \

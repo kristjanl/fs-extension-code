@@ -38,7 +38,7 @@ modelTypes = ["Brusselator"]
 
 
 algos = ["plain", "sw_10", "sw_rem"]
-algos = ["plain", "sw_10", "sw_rem"]
+algos = ["plain", "sw_10", "sw_rem", "QR", "id"]
 #algos = ["qrplain"]
 #algos = ["qr1", "qr2", "qr3"]
 

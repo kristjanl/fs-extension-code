@@ -58,7 +58,7 @@
 %token MIN MAX
 %token REMEST
 %token INTERVAL OCTAGON GRID
-%token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPRECOND
+%token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPROCESS
 %token QRPRECOND1 QRPRECOND2 QRPRECOND3
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
@@ -72,7 +72,8 @@
 %token METHOD
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
 %token DECOMPOSITION 
-%token NODECOMPOSITION
+%token NO_DECOMPOSITION
+%token FULL_DECOMPOSITION
 %token REMOVE_EMPTY_PARAMS
 %token MYMODEL
 %token MYMODELS
@@ -2663,9 +2664,9 @@ COMPIDPRECOND
   continuousProblem.settings->transformer = transformer;
 }
 |
-NOPRECOND
+NOPROCESS
 {
-	mlog1("no precond");
+	mlog1("no processing");
   Transformer *transformer = new NullTransformer();
   continuousProblem.settings->transformer = transformer;
 }
@@ -2753,16 +2754,16 @@ point_params: REMOVE_EMPTY_PARAMS {
 decomposition: DECOMPOSITION '[' components ']'
 {
 	mlog1("DECOMPOSITION");
-}
-| NODECOMPOSITION
-{
+} | FULL_DECOMPOSITION {
+  continuousProblem.settings->autoComponents = true;
+} | NO_DECOMPOSITION {
   logger.force("none");
   int varNumber = continuousProblem.stateVarNames.size();
   vector<int> vs;
   for(int i = 0; i < varNumber; i++) {
     vs.push_back(i);
   }
-  continuousProblem.components.push_back(vs);
+  continuousProblem.settings->intComponents.push_back(vs);
 }
 | {
   if(continuousProblem.algorithm == ALGORITHM_SMALL_COMP) {
@@ -2779,11 +2780,9 @@ component: '[' compVarIds ']'
 {
   for(vector<int>::iterator varIt = $2->begin(); varIt < $2->end(); varIt++) {
     int varId = *varIt;
-    
+    vector< vector<int> > & v = continuousProblem.settings->intComponents;
     //check if variable is in any of the other components
-    for(vector< vector<int> >::iterator it = continuousProblem.components.begin(); 
-        it < continuousProblem.components.end(); it++) {
-        
+    for(vector< vector<int> >::iterator it = v.begin(); it < v.end(); it++) {
       //check if variable is in the component
       if(it->end() != find(it->begin(), it->end(), varId)) {
         char errMsg[MSG_SIZE];
@@ -2797,7 +2796,7 @@ component: '[' compVarIds ']'
   }
 
   //add this component to all components
-  continuousProblem.components.push_back(*($2));
+  continuousProblem.settings->intComponents.push_back(*($2));
   delete $2;
 }
 

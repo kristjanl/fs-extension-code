@@ -1,0 +1,24 @@
+int progress: 1000
+computation time: 28.18
+remap 1: 0.13
+eval t: 0.04
+precond time: 7.34
+remap 2: 0
+int time: 20.53
+picard poly: 6.83
+picard remainder: 13.67
+picard decreasing: 13.47
+picard refining: 0.2
+pstart: 0
+pm: 0
+pltr: 0
+prrange: 0
+pinsert: 7.22
+pscaling: 0.01
+plintra: 0.08
+pleft: 0.01
+pend: 0.01
+refstart: 0.04
+reffirst: 13.31
+refrem: 0.12
+refsub: 0

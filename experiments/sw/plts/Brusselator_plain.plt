@@ -1,5 +1,5 @@
 set term png
-set output './images/Brusselator_plain_2_t_2.1.png
+set output './images/Brusselator_plain_2_t_9.48.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
@@ -7,8 +7,8 @@ set xtic auto
 set ytic auto
 set xlabel "t"
 set ylabel "x2"
-set xrange [0.0:2.34]
-set yrange [-0.0968571406583:2.45114466149]
+set xrange [0.0:10.461]
+set yrange [-0.187589362388:2.46857796127]
 plot '-' notitle with lines ls 1
 0 -0
 0 0.2

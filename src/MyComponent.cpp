@@ -1,5 +1,10 @@
 #include "MyComponent.h"
 
+//todo ask if this is ok (due to invalid use of forward declaration from
+//MySettings class (in Cont.h)
+//https://stackoverflow.com/questions/6988924/invalid-use-of-incomplete-type-forward-declaration
+#include "Continuous.h"
+
 using namespace std;
 
 
@@ -751,12 +756,118 @@ void MyComponent::remapTimeStepPipe() {
   mrestore(old);
 }
 
-vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, 
+#include <set>
+
+void makeCompIndexes(MySettings *settings, const vector<HornerForm> & ode) {
+  mreset(old);
+  mdisable();
+  mlog1("making indexes <");
+  minc();
+  
+  //number of variables
+  int varSize = ode.size();
+  mlog1(sbuilder() << "varSize: " << varSize);
+  
+  int vars[varSize];
+  
+  //array of influencers for each variable
+  set<int> sets[varSize];
+  
+  for(int var = 0; var < varSize; var++) {
+     mlog1(sbuilder() << "var: " << var);
+     //clear
+     memset(vars, 0, varSize*sizeof(int) );
+     
+     //array of whether a variable is present in the derivative or not
+     //(signalled by >0 int)
+     ode[var].getVars(vars);
+     
+     //add variable itself to its influencers
+     sets[var].insert(var);
+     for(int var2 = 0; var2 < varSize; var2++) {
+        //add variable to influencers if it was present in the derivative
+        if(vars[var2] != 0) {
+          sets[var].insert(var2);
+        }
+     }
+     mlog("set", sets[var]);
+  }
+  
+  bool repeat = true;
+  while(repeat) {
+    //reset repeating
+    repeat = false;
+    for(int var = 0; var < varSize; var++) {
+      //currrent influencer of variable
+      set<int> & infls = sets[var];
+      int oldSize = infls.size();
+  
+      //could optimize by only inserting the ones that changed, but likely this
+      //shouldn't matter much
+      //loop over all influencers
+      for(set<int>::iterator it = infls.begin(); it != infls.end(); it++) {
+        //add the influencers of the influencer
+        infls.insert(sets[*it].begin(), sets[*it].end());
+      }
+      int newSize = infls.size();
+      
+      //if new influencer is found, then need to repeat
+      if(oldSize != newSize) {
+        repeat = true;
+      }
+    }
+  }
+  
+  for(int var = 0; var < varSize; var++) {
+    mlog(sbuilder() << "s" << var, sets[var]);
+  }
+  
+  //variable already in some component
+  set<int> seenVars;
+  for(int var = 0; var < varSize; var++) {
+    //skip variable if it is already in component
+    if(seenVars.count(var) != 0)
+      continue;
+    set<int> & infls = sets[var];
+    
+    //variable in the same component as var
+    vector<int> comp;
+    for(set<int>::iterator it = infls.begin(); it != infls.end(); it++) {
+      int infl = *it;
+      //add variable to this component if var is influencer of infl
+      //(var itself is always influencer of itself, so this is also added)
+      if(sets[infl].count(var) != 0) {
+        comp.push_back(infl);
+        seenVars.insert(infl);
+      }
+    }
+    //mlog("comp", comp);
+    
+    //add this component to settings
+    settings->intComponents.push_back(comp);
+  }
+  
+  mdec();
+  mlog1("making indexes >");
+  mrestore(old);
+}
+
+vector<MyComponent *> createComponents(MySettings *settings, 
     const vector<HornerForm> & ode) {
   mreset(old);
   mdisable();
   mlog1("creating <");
   minc();
+  
+  if(settings->autoComponents) {
+    //settings->intComponents.clear(); //comment in if forcing auto comp
+    makeCompIndexes(settings, ode);
+  }
+  mlog1(sbuilder() << "ci size: " << settings->intComponents.size());
+  
+  vector< vector<int> > compIndexes = settings->intComponents;
+  //mlog("ci", compIndexes[0]);
+  mlog1(sbuilder() << "ac:" << settings->autoComponents);
   
   //number of variable is equal to number of ODEs
   int varSize = ode.size();
@@ -792,7 +903,7 @@ vector<MyComponent *> createComponents(vector< vector<int> > compIndexes,
       mlog1(ode.at(*it).toString());
       
       //populate vars with variables that exist in the ode
-      bool b = ode.at(*it).getVars(vars);
+      ode.at(*it).getVars(vars);
     }
     
     //nullify variables that are going to be solved in component
@@ -1070,8 +1181,7 @@ int MyComponent::getIntergrationParamCount() {
   if(usingPreconditioning) {
     return allVars.size() + 1;
   }
-  throw std::runtime_error("revisit and decide if should use allTMParams (+1)");
-  return allTMParams.size();
+  return allTMParams.size() + 1;
 }
 
 

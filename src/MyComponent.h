@@ -12,6 +12,8 @@
 class CompDependency;
 class PrecondModel;
 
+class MySettings;
+
 class MyComponent {
   public:
     MyComponent();
@@ -116,8 +118,9 @@ class CompDependency {
 
 vector<int> concateMapper(vector<int> & smaller, vector<int> & bigger);
 
-vector<MyComponent *> createComponents(vector< vector<int> > compIndexes, 
+vector<MyComponent *> createComponents(MySettings *settings, 
     const vector<HornerForm> & ode);
+void makeCompIndexes(MySettings *settings, const vector<HornerForm> & ode);
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
     const vector<HornerForm> & ode, vector<Interval> domain, 

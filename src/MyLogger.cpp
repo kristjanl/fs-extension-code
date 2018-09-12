@@ -150,6 +150,25 @@ void mylogger2::log(string name, Matrix m) {
   
 }
 
+void mylogger2::log(string name, set<int> myset) {
+  if(disabled > 0)
+		return;
+  if(myset.size() == 0) {
+    logger.log(sbuilder() << name <<" = { }");
+    return;
+  }
+  
+  string s;
+  set<int>::iterator it = myset.begin();
+  s.append(sbuilder() << (*it));
+  
+  for(it++; it != myset.end(); it++) {
+    s.append(sbuilder() << ", " << (*it));
+  }
+    
+  logger.log(sbuilder() << name <<" = {" << s << "}");
+}
+
 void mylogger2::log(string s) {
 	if(disabled > 0)
 		return;

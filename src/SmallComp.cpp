@@ -305,7 +305,6 @@ namespace smallComp {
 	  //number of taylor model parameters
     int paramCount = comp.getIntergrationParamCount(); 
     mlog1(sbuilder() << "paramCount: " << paramCount);
-	  
 	  //need to find remainders more efficiently
 	  p.polyRangeNormal(pPolyRange, step_exp_table);
 	  
@@ -579,19 +578,6 @@ namespace smallComp {
     TaylorModelVec nextInit = component.initSet;
     vector<TaylorModelVec> & pipes = component.pipes;
     
-    
-    double t=THRESHOLD_HIGH;
-    //mlog1(sbuilder() << "t: " << t);
-    //mlog("init", nextInit);
-    Interval stepTime = Interval(t, t + settings.step);
-    //mlog1(sbuilder() << "counter: " << counter);
-    //add empty Taylor model in first component
-    //mlog("nextInit", nextInit);
-
-    //mlog("start", pipe);
-    //mlog("nextInit", nextInit);
-    
-    
     if(settings.useFlow == false) {
       //mlog("initp", nextInit);
       //mforce1("plain");
@@ -603,21 +589,7 @@ namespace smallComp {
       //mforce1("flow");
       smallComp::advanceFlow(component, settings);
     }
-    //mlog("last2", component.lastPipe());
-    
-    //mlog("step pipe", pipe);
-    
-    //mlog("end", pipe);
-    //evaluate TM at the end of the timestep
-    //pipe.evaluate_t(nextInit, settings.step_end_exp_table);
-    //mlog("next", nextInit);
-    
-    //output the flowpipe for plotting
-    //settings.writer.writeFlowpipe(component.varIndexes, stepTime, pipe, component.dom);
-    
-    //advance the time
-    t += settings.step;
-    
+        
     if(false) {
       fprintf(stdout, 
           "Terminated -- The remainder estimation is not large enough.\n");
@@ -721,8 +693,8 @@ SmallCompSystem::SmallCompSystem(const TaylorModelVec & ode_input, const Flowpip
       : ContinuousSystem(ode_input, initialSet_input) {
   mlog1("simple comp system cons (ode, pipe)");
 }
-SmallCompSystem::SmallCompSystem(const ContinuousSystem & system, vector< vector<int> > components)
-      : ContinuousSystem(system), components(components) {
+SmallCompSystem::SmallCompSystem(const ContinuousSystem & system)
+      : ContinuousSystem(system) {
   mlog1("simple comp system cons (sys)");
 }
 
@@ -1018,7 +990,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     const Interval & cutoff_threshold, OutputWriter & writer) const {
   mlog1("sc reach <");
   minc();
-  mlog1(sbuilder() << "# of components: " <<components.size());
   mreset(old);
   mdisable();
   minc();
@@ -1032,7 +1003,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     pSerializer = new TMVSerializer(outName);
   }
   
-  vector<MyComponent *> comps = createComponents(components, hfOde);
+  vector<MyComponent *> comps = createComponents(settings, hfOde);
+  printComponents(settings);
   
   //copy-paste from flowstar 
 	vector<Interval> step_exp_table, step_end_exp_table;
@@ -1082,7 +1054,6 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   //mforce("all", all.initSet);
   clock_t integrClock = clock();
   double t;
-  
   for(t = 0; (t + THRESHOLD_HIGH) < time; t+= step) {
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";

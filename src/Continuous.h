@@ -249,7 +249,6 @@ public:
 
 	int integrationScheme;
   int algorithm;
-  vector< vector<int> > components;
 
 	Interval cutoff_threshold;
 
@@ -360,6 +359,8 @@ void int_exp_int_mat(Interval_matrix & result_ts, Interval_matrix & result_rem, 
 class MySettings {
   public:
     OutputWriter *writer;
+    vector< vector<int> > intComponents;
+    bool autoComponents;
     int order;
     double step; 
     double time;
@@ -370,6 +371,7 @@ class MySettings {
     Interval cutoff;
     bool useFlow;
     bool discardEmptyParams;
+    vector<string> varNames;
     Transformer *transformer; // determines how are initials sets transformed for each timestep
     MySettings();
     MySettings(OutputWriter *writer, int order, double step, 

@@ -1,0 +1,25 @@
+reason: Map is not shrinkable (n = 2, t = 0.549637) Was thrown
+int progress: 5.38
+computation time: 2.95
+remap 1: 0
+eval t: 0
+precond time: 0
+remap 2: 0
+int time: 2.89
+picard poly: 0.96
+picard remainder: 1.87
+picard decreasing: 1.5
+picard refining: 0.37
+pstart: 0
+pm: 0
+pltr: 0
+prrange: 0
+pinsert: 0
+pscaling: 0
+plintra: 0
+pleft: 0
+pend: 0
+refstart: 0.05
+reffirst: 1.38
+refrem: 0.04
+refsub: 0.01
