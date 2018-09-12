@@ -1,13 +1,13 @@
 int progress: 1
-computation time: 0.04
+computation time: 0.06
 remap 1: 0
 eval t: 0
 precond time: 0
 remap 2: 0
-int time: 0.04
-picard poly: 0
-picard remainder: 0.04
-picard decreasing: 0.03
+int time: 0.06
+picard poly: 0.02
+picard remainder: 0.02
+picard decreasing: 0.01
 picard refining: 0.01
 pstart: 0
 pm: 0
@@ -19,6 +19,6 @@ plintra: 0
 pleft: 0
 pend: 0
 refstart: 0
-reffirst: 0.03
+reffirst: 0.01
 refrem: 0
 refsub: 0

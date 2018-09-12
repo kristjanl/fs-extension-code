@@ -5,6 +5,8 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
+
+#CFLAGS += -Dno_output
 #CFLAGS = -I . -I $(GMP_HOME) -g -O3
 #CFLAGS += -Denablelog
 #CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
@@ -25,9 +27,15 @@ CFLAGS += -Ddo_checks
 CXXFLAGS += -Ddo_checks
 LINK_FLAGS = -g
 
+# Uncomment for "perf --call-graph fp" profiling
+# CFLAGS += -fno-omit-frame-pointer
 
+# Uncomment for gprof profiling
+CFLAGS += -pg
+LINK_FLAGS += -pg
 
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o
+# PBJ: modelParser.o added.  Not clear why omitted.
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o modelParser.o
 
 # All sources
 SRCS= $(OBJS:.o=.cpp)
@@ -48,8 +56,7 @@ test:
 
 testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o 
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
-	
-.PHONE: outputToggle
+
 
 # recompile only those .o files that are concerned with making output
 outputToggle.txt: outputToggle.txt
