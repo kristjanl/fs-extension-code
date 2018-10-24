@@ -7,25 +7,10 @@
 ---*/
 
 #include "modelParser.h"
+#include "CompSolver.h"
 
-/*
-int lineNum = 1;
+int main(int argc, const char *argv[]) {
 
-ContinuousReachability continuousProblem;
-HybridReachability hybridProblem;
-ReachabilitySetting mode_local_setting;
-
-extern int yyparse();
-
-void parseError(const char *str, int lnum)
-{
-	cerr << "Error @line " << lineNum << ":" << string(str) << endl;
-	exit(1);
-}*/
-
-int main(int argc, const char *argv[])
-{
-  
   //compare two logs
   //first 2 arguments are input file names
   //3rd argument is the name of the TM that will be compared
@@ -61,6 +46,19 @@ int main(int argc, const char *argv[])
   }
   mdisable();
   yyparse();
+  if(argc == 1 && usePlainFlowstar == false) {
+    cout << "upf:" << usePlainFlowstar << endl;
+    cout << "need to solve\n";
+
+
+    //mforce("tmvOde", continuousProblem.system.initialSet.tmvPre);
+    //mforce("tmvode", continuousProblem.pSystem->tmvOde);
+    //mforce("ode", continuousProblem.system);
+
+    Solver solver;
+    solver.solveIVP(settings2, IVP(continuousProblem.system));
+  }
+
 	//simpleImplMain();
   //compMain();
 	

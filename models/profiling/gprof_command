@@ -1,0 +1,1 @@
+gprof ../../src/flowstar gmon.out -b -q | grep -i ^\[ | cut -c -180

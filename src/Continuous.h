@@ -23,7 +23,7 @@ class Flowpipe					// A flowpipe is represented by a composition of two Taylor m
 public:
 	TaylorModelVec tmvPre;		// preconditioning Taylor model
 	TaylorModelVec tmv;
-private:
+public:
 	vector<Interval> domain;	// domain of TMV_right, the first variable is t
 public:
 	Flowpipe();
@@ -121,7 +121,7 @@ class MySettings;
 
 class ContinuousSystem
 {
-private:
+public:
 	TaylorModelVec tmvOde;
 	TaylorModelVec tmvOde_centered;
 	vector<HornerForm> hfOde;		// a Horner form of the ode
@@ -379,6 +379,7 @@ class MySettings {
         vector<Interval> step_exp_table, 
         vector<Interval> step_end_exp_table, 
         vector<Interval> domain, const Interval cutoff);
+    void log();
   
 };
 

@@ -605,7 +605,16 @@ int Monomial::equals(const Monomial & m2) const {
   return 0;
 }
 
-int Monomial::getVariableCount() const {
+int Monomial::
+
+
+
+
+
+
+
+
+getVariableCount() const {
   return degrees.size();
 }
 

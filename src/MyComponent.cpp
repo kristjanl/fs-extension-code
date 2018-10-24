@@ -4,6 +4,7 @@
 //MySettings class (in Cont.h)
 //https://stackoverflow.com/questions/6988924/invalid-use-of-incomplete-type-forward-declaration
 #include "Continuous.h"
+#include "Utils2.h"
 
 using namespace std;
 
@@ -464,6 +465,7 @@ void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode,
 
 //prepares all the dependent components
 //prepares variables, mappers and intial set
+//TODO could refactor to use IVP
 void MyComponent::prepareComponent(TaylorModelVec init, 
     const vector<HornerForm> & ode, vector<Interval> domain, 
     bool discardEmptyParams) {
@@ -758,6 +760,7 @@ void MyComponent::remapTimeStepPipe() {
 
 #include <set>
 
+//TODO remove after refactoring is complete
 void makeCompIndexes(MySettings *settings, const vector<HornerForm> & ode) {
   mreset(old);
   mdisable();
@@ -929,6 +932,177 @@ vector<MyComponent *> createComponents(MySettings *settings,
   return components;
 }
 
+void makeCompIndexes(MySettings2 *settings, const vector<HornerForm> & ode) {
+  mreset(old);
+  mdisable();
+  mlog1("making indexes <");
+  minc();
+  
+  //number of variables
+  int varSize = ode.size();
+  mlog1(sbuilder() << "varSize: " << varSize);
+  
+  int vars[varSize];
+  
+  //array of influencers for each variable
+  set<int> sets[varSize];
+  
+  for(int var = 0; var < varSize; var++) {
+     mlog1(sbuilder() << "var: " << var);
+     //clear
+     memset(vars, 0, varSize*sizeof(int) );
+     
+     //array of whether a variable is present in the derivative or not
+     //(signalled by >0 int)
+     ode[var].getVars(vars);
+     
+     //add variable itself to its influencers
+     sets[var].insert(var);
+     for(int var2 = 0; var2 < varSize; var2++) {
+        //add variable to influencers if it was present in the derivative
+        if(vars[var2] != 0) {
+          sets[var].insert(var2);
+        }
+     }
+     mlog("set", sets[var]);
+  }
+  
+  bool repeat = true;
+  while(repeat) {
+    //reset repeating
+    repeat = false;
+    for(int var = 0; var < varSize; var++) {
+      //currrent influencer of variable
+      set<int> & infls = sets[var];
+      int oldSize = infls.size();
+  
+      //could optimize by only inserting the ones that changed, but likely this
+      //shouldn't matter much
+      //loop over all influencers
+      for(set<int>::iterator it = infls.begin(); it != infls.end(); it++) {
+        //add the influencers of the influencer
+        infls.insert(sets[*it].begin(), sets[*it].end());
+      }
+      int newSize = infls.size();
+      
+      //if new influencer is found, then need to repeat
+      if(oldSize != newSize) {
+        repeat = true;
+      }
+    }
+  }
+  
+  for(int var = 0; var < varSize; var++) {
+    mlog(sbuilder() << "s" << var, sets[var]);
+  }
+  
+  //variable already in some component
+  set<int> seenVars;
+  for(int var = 0; var < varSize; var++) {
+    //skip variable if it is already in component
+    if(seenVars.count(var) != 0)
+      continue;
+    set<int> & infls = sets[var];
+    
+    //variable in the same component as var
+    vector<int> comp;
+    for(set<int>::iterator it = infls.begin(); it != infls.end(); it++) {
+      int infl = *it;
+      //add variable to this component if var is influencer of infl
+      //(var itself is always influencer of itself, so this is also added)
+      if(sets[infl].count(var) != 0) {
+        comp.push_back(infl);
+        seenVars.insert(infl);
+      }
+    }
+    //mlog("comp", comp);
+    
+    //add this component to settings
+    settings->intComponents.push_back(comp);
+  }
+  
+  mdec();
+  mlog1("making indexes >");
+  mrestore(old);
+}
+
+vector<MyComponent *> createComponents(MySettings2 *settings, 
+    const vector<HornerForm> & ode) {
+  mreset(old);
+  mdisable();
+  mlog1("creating <");
+  minc();
+  
+  if(settings->autoComponents) {
+    //settings->intComponents.clear(); //comment in if forcing auto comp
+    makeCompIndexes(settings, ode);
+  }
+  mlog1(sbuilder() << "ci size: " << settings->intComponents.size());
+  
+  vector< vector<int> > compIndexes = settings->intComponents;
+  //mlog("ci", compIndexes[0]);
+  mlog1(sbuilder() << "ac:" << settings->autoComponents);
+  
+  //number of variable is equal to number of ODEs
+  int varSize = ode.size();
+  
+  vector<MyComponent *> components;
+  MyComponent *lookup[varSize];
+  
+  //add variables to components
+  //create a lookup from variables to components
+  for(vector< vector <int> >::iterator cit = compIndexes.begin(); 
+      cit < compIndexes.end(); cit++) {
+    mlog("componenet vars", *cit);
+    MyComponent *c = new MyComponent();
+    for(vector<int>::iterator it = cit->begin(); it < cit->end(); it++) {
+      c->addVar(*it);
+      lookup[*it] = c;
+    }
+    components.push_back(c);
+    
+  }
+  
+  int vars[varSize];
+  for(vector<MyComponent *>::iterator cit = components.begin(); 
+      cit < components.end(); cit++) {
+    
+    //initial vars with 0s
+    memset(vars, 0, varSize*sizeof(int) );
+    
+    //find all the variables that the component depends on
+    for(vector<int>::iterator it = (*cit)->varIndexes.begin(); 
+        it < (*cit)->varIndexes.end(); it++) {
+      mlog1(sbuilder() << "var: " << *it);
+      mlog1(ode.at(*it).toString());
+      
+      //populate vars with variables that exist in the ode
+      ode.at(*it).getVars(vars);
+    }
+    
+    //nullify variables that are going to be solved in component
+    for(vector<int>::iterator it = (*cit)->varIndexes.begin(); 
+        it < (*cit)->varIndexes.end(); it++) {
+      vars[*it] = 0;
+    }
+    
+    //add component dependency for variables that are not in the current
+    //component, but who still exist in the ode.
+    for(int i = 0; i < varSize; i++) {
+      if(vars[i] > 0) {
+        mlog1(sbuilder() << "i: " << i);
+        (*cit)->addDependency(i, lookup[i]);
+      }
+    }
+    vector<int> v(vars, vars + sizeof vars / sizeof vars[0]);
+    mlog("v", v);
+  }
+  mdec();
+  mlog1("creating >");
+  mrestore(old);
+  return components;
+}
+
 
 
 MyComponent getSystemComponent(vector<MyComponent *> comps,
@@ -965,6 +1139,44 @@ MyComponent getSystemComponent(vector<MyComponent *> comps,
   mrestore(old);
   
   ret.usingPreconditioning = comps[0]->usingPreconditioning;
+  
+  return ret;
+}
+
+MyComponent* pGetSystemComponent(vector<MyComponent *> comps,
+    TaylorModelVec init, const vector<HornerForm> & ode,
+    vector<Interval> domain, bool discardEmptyParams) {
+  mreset(old);
+  mdisable();
+  MyComponent *ret = new MyComponent;
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    for(vector<int>::iterator i2 = (*it)->varIndexes.begin();
+        i2 < (*it)->varIndexes.end(); i2++) {
+      ret->addDependency(*i2, *it);
+    }
+  }
+  ret->prepareComponent(init, ode, domain, discardEmptyParams);
+  
+  //mlog("av", ret.allVars);
+  //mlog("cv", ret.compVars);
+  
+  TaylorModelVec temp;  
+  //need to reorder initset wrt allVars
+  for(int i = 0; i < ret->allVars.size(); i++) {
+    int var = ret->allVars[i];
+    int place = MyComponentRemove::findPos(var, &ret->compVars);
+    mlog1(sbuilder() << "place: " << place);
+    temp.tms.push_back(ret->initSet.tms[place]);
+  }
+  ret->initSet = temp;
+  
+  //ret->unpairedRight = MyComponentRemove::getUnitTmv(init.tms.size());
+  ret->unpairedRight = MyComponentRemove::getNVarMParam(init.tms.size(), 
+      ret->allTMParams);
+  mrestore(old);
+  
+  ret->usingPreconditioning = comps[0]->usingPreconditioning;
   
   return ret;
 }

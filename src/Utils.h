@@ -11,6 +11,8 @@
 #include "OutputWriter.h"
 #include "Continuous.h"
 
+class MySettings2;
+
 //start the clock with variable name <name>Start
 #define tstart(name) clock_t name##Start = clock();
 //start the clock with variable <name>End, subtract <name>
@@ -120,6 +122,7 @@ void addMyInfo(vector<string> & info);
 void addFlowInfo(vector<string> & info);
 
 void printComponents(MySettings *settings);
+void printComponents(MySettings2 *settings);
 
 #endif /* UTILS_H_ */
 

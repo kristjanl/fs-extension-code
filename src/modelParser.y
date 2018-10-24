@@ -10,6 +10,7 @@
 
 	#include "modelParser.h"
 	#include "MyLogger.h"
+	#include "Utils2.h"
 
 	extern int yyerror(const char *);
 	extern int yyerror(string);
@@ -17,6 +18,10 @@
 	extern int yyparse();
 	extern void parseMpfr(string *str, mpfr_t num);
 	bool err;
+	bool usePlainFlowstar = false;
+	bool useOldImpl = false;
+	//could get rid of this if determining the use of flowstar before preconditioning method
+	bool plainFlowPrecondMethod = false;
 %}
 
 %union
@@ -71,9 +76,12 @@
 %token LINEARODE PAR
 %token METHOD
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
-%token DECOMPOSITION 
-%token NO_DECOMPOSITION
-%token FULL_DECOMPOSITION
+%token DECOMPOSITION NO_DECOMPOSITION FULL_DECOMPOSITION
+
+%token USE_PLAIN_FLOWSTAR USE_OLD_IMPL
+%token LEFT_MODEL_COMP FULLY_COMP
+%token AUTO_COMPONENTS COMPONENTS NO_COMPONENTS
+
 %token REMOVE_EMPTY_PARAMS
 %token MYMODEL
 %token MYMODELS
@@ -138,84 +146,90 @@
 
 model: CONTINUOUS '{' continuous '}'
 {
-	int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-	if(mkres < 0 && errno != EEXIST)
-	{
-		printf("Can not create the directory for output files.\n");
-		exit(1);
-	}
+  OutputWriter *writer = new OutputWriter(continuousProblem.outputFileName);
+  continuousProblem.settings->writer = writer;
+  settings2->writer = writer;
 
-	mkres = mkdir(imageDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-	if(mkres < 0 && errno != EEXIST)
-	{
-		printf("Can not create the directory for images.\n");
-		exit(1);
-	}
-  
-  OutputWriter writer(continuousProblem.outputFileName);
-  continuousProblem.settings->writer = &writer;
-  
-	clock_t begin, end;
-	begin = clock();
-	mlog1(sbuilder() << "print: " << continuousProblem.bPrint);
-	continuousProblem.run();
-	end = clock();
-	//printf("%ld flowpipes computed4.\n", continuousProblem.numOfFlowpipes());
-	//printf("time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+
+
+	if(usePlainFlowstar || useOldImpl) {
+		int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		if(mkres < 0 && errno != EEXIST)
+		{
+			printf("Can not create the directory for output files.\n");
+			exit(1);
+		}
+
+		mkres = mkdir(imageDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+		if(mkres < 0 && errno != EEXIST)
+		{
+			printf("Can not create the directory for images.\n");
+			exit(1);
+		}
 	
-	continuousProblem.bSafetyChecking = false;
+		
+		clock_t begin, end;
+		begin = clock();
+		mlog1(sbuilder() << "print: " << continuousProblem.bPrint);
+		continuousProblem.run();
+		end = clock();
+		//printf("%ld flowpipes computed4.\n", continuousProblem.numOfFlowpipes());
+		//printf("time cost: %lf\n", (double)(end - begin) / CLOCKS_PER_SEC);
+		
+		continuousProblem.bSafetyChecking = false;
 
 
-  
-  #ifdef no_output
-    cout << "not creating flow output" << endl;
-  #else
-  	//printf("Preparing for plotting and dumping...\n");
-  	continuousProblem.composition();
-  	//printf("Done.\n");
-  #endif
-	
-  /* FLOWSTAR OUTPUT REMOVED
-	continuousProblem.plot_2D();
+		
+		#ifdef no_output
+			cout << "not creating flow output" << endl;
+		#else
+			//printf("Preparing for plotting and dumping...\n");
+			continuousProblem.composition();
+			//printf("Done.\n");
+		#endif
+			
+		/* FLOWSTAR OUTPUT REMOVED
+		continuousProblem.plot_2D();
 
-	char filename[NAME_SIZE+10];
-	sprintf(filename, "%s%s.flow", outputDir, continuousProblem.outputFileName);
-	FILE *fpDumping = fopen(filename, "w");
+		char filename[NAME_SIZE+10];
+		sprintf(filename, "%s%s.flow", outputDir, continuousProblem.outputFileName);
+		FILE *fpDumping = fopen(filename, "w");
 
-	if(fpDumping == NULL)
-	{
-		printf("Can not create the dumping file.\n");
-		exit(1);
+		if(fpDumping == NULL)
+		{
+			printf("Can not create the dumping file.\n");
+			exit(1);
+		}
+		
+		//printf("Dumping the Taylor model flowpipes...\n");
+		continuousProblem.dump(fpDumping);
+		//printf("Done.\n");
+		fclose(fpDumping);
+		*/
+		logger.reset();
+		
+		//tprint("fl_part");
+		//tprint("fl_int");
+		
+		double integrTime = double(end - begin) / CLOCKS_PER_SEC;
+		//mlog1(sbuilder() << "computation time: " << integrTime);
+		writer->info.push_back(sbuilder() << "computation time: " << integrTime);
+		
+		#ifdef no_output
+			;
+		#else
+			//cout << "creating flow output" << endl;
+			//logger.log(continuousProblem.flowpipesCompo.size());
+			writer->fromFlowstar(continuousProblem.flowpipesCompo,
+				continuousProblem.domains);
+			writer->writeCSV();
+			writer->writeInfo();
+		#endif
+		
+		
+		if(pSerializer != NULL)
+			pSerializer->serialize();
 	}
-	
-	//printf("Dumping the Taylor model flowpipes...\n");
-	continuousProblem.dump(fpDumping);
-	//printf("Done.\n");
-	fclose(fpDumping);
-	*/
-  logger.reset();
-  
-  //tprint("fl_part");
-  //tprint("fl_int");
-  
-  double integrTime = double(end - begin) / CLOCKS_PER_SEC;
-  //mlog1(sbuilder() << "computation time: " << integrTime);
-  writer.info.push_back(sbuilder() << "computation time: " << integrTime);
-  
-  #ifdef no_output
-    ;
-  #else
-    //cout << "creating flow output" << endl;
-    //logger.log(continuousProblem.flowpipesCompo.size());
-    writer.fromFlowstar(continuousProblem.flowpipesCompo,
-        continuousProblem.domains);
-    writer.writeCSV();
-    writer.writeInfo();
-  #endif
-  
-  
-  if(pSerializer != NULL)
-    pSerializer->serialize();
 }
 |
 CONTINUOUS '{' continuous '}' unsafe_continuous
@@ -1999,6 +2013,8 @@ stateIdDeclList: stateIdDeclList ',' IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
+  continuousProblem.settings->varNames.push_back(*$3);
+  settings2->varNames.push_back(*$3);
 
 	//mlog1(sbuilder() << "*$3: " << *$3);
   logger.dec();
@@ -2019,6 +2035,8 @@ IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
+  continuousProblem.settings->varNames.push_back(*$1);
+  settings2->varNames.push_back(*$1);
 	
 	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	hybridProblem.declareStateVar(*$1);
@@ -2087,9 +2105,13 @@ IDENT EQ NUM
 ;
 
 
-
-settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params decomposition
+//TODO remove algorithm decomposition
+settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM 
+CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker compositionality
 {
+  settings2->step = $2;
+  settings2->time = $4;
+  //continuousProblem.settings->log();
 	mlog1("settings1");
   mlog1(continuousProblem.algorithm);
 	if($2 <= 0)
@@ -2099,7 +2121,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 	}
 
 	int order = (int)$9;
-
+  settings2->order = order;
 	if(order <= 0)
 	{
 		parseError("Orders should be larger than zero.", lineNum);
@@ -2131,6 +2153,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 	Interval cutoff_threshold(-$11,$11);
 	continuousProblem.cutoff_threshold = cutoff_threshold;
 	hybridProblem.global_setting.cutoff_threshold = cutoff_threshold;
+  settings2->cutoff = new Interval(cutoff_threshold);
 
 	intervalNumPrecision = (int)$13;
 
@@ -2138,6 +2161,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 	strcpy(hybridProblem.outputFileName, (*$15).c_str());
 	mlog1(sbuilder() << "cutoff_thrs: " << $11 << ", intnumprec: " << $13 << ", outFname: " << *$15);
 	
+	//settings2->log();
 
 	delete $15;
 }
@@ -2490,6 +2514,7 @@ remainder_estimation: REMEST NUM
 		//mlog1(sbuilder() << "i: " << i << " - " << $2);
 		continuousProblem.estimation.push_back(I);
 		hybridProblem.global_setting.estimation.push_back(I);
+    settings2->estimation.push_back(I);
 	}
 }
 |
@@ -2603,8 +2628,8 @@ IDENT ':' NUM
 }
 ;
 
-precondition: QRPRECOND
-{
+precondition: QRPRECOND {
+	plainFlowPrecondMethod = true;
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
@@ -2612,10 +2637,8 @@ precondition: QRPRECOND
   //continuousProblem.settings->transformer = transformer;
   Transformer *transformer = new QRTransformerPlain();
   continuousProblem.settings->transformer = transformer;
-}
-|
-QRPRECOND1
-{
+	settings2->transformer = transformer;
+} | QRPRECOND1 {
   mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
@@ -2623,10 +2646,8 @@ QRPRECOND1
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer1();
   continuousProblem.settings->transformer = transformer;
-}
-|
-QRPRECOND2
-{
+	settings2->transformer = transformer;
+} | QRPRECOND2 {
   mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
@@ -2634,10 +2655,8 @@ QRPRECOND2
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer2();
   continuousProblem.settings->transformer = transformer;
-}
-|
-QRPRECOND3
-{
+	settings2->transformer = transformer;
+} | QRPRECOND3 {
   mforce1("making new");
 	mlog1("qr precond1");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
@@ -2645,54 +2664,61 @@ QRPRECOND3
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer3();
   continuousProblem.settings->transformer = transformer;
-}
-|
-IDPRECOND
-{
+	settings2->transformer = transformer;
+} | FULLY_COMP IDPRECOND {
+  Transformer *transformer = new SingleComponentIdentityTransformer();
+  continuousProblem.settings->transformer = transformer;
+	settings2->transformer = transformer;
+	//cout << "fully id\n";
+} | LEFT_MODEL_COMP IDPRECOND {
+  Transformer *transformer = new IdentityTransformer();
+  continuousProblem.settings->transformer = transformer;
+	settings2->transformer = transformer;
+	//cout << "left id\n";
+} | IDPRECOND {
+	plainFlowPrecondMethod = true;
 	mlog1("id precond");
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new IdentityTransformer();
   continuousProblem.settings->transformer = transformer;
-}|
-COMPIDPRECOND
-{
+	settings2->transformer = transformer;
+} | COMPIDPRECOND {
+	cout << "shouldn't call anymore\n";
+	exit(0);
 	mforce1("comp id precond");
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new SingleComponentIdentityTransformer();
   continuousProblem.settings->transformer = transformer;
-}
-|
-NOPROCESS
-{
+} | NOPROCESS {
 	mlog1("no processing");
   Transformer *transformer = new NullTransformer();
   continuousProblem.settings->transformer = transformer;
-}
-|
-SHRINRWRAPPING NUM
-{
+	settings2->transformer = transformer;
+} | SHRINRWRAPPING NUM {
 	mlog1("shrink num");
 	continuousProblem.precondition = SHRINK_WRAPPING;
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
   continuousProblem.settings->transformer = transformer;
+	settings2->transformer = transformer;
   //old implemenation discard empty params in shrinkwrapping
   continuousProblem.settings->discardEmptyParams = true;
-}
-|
-SHRINRWRAPPING REM
-{
+} | SHRINRWRAPPING REM {
 	mlog1("shrink rem");
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
 	continuousProblem.precondition = SHRINK_WRAPPING;
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
   continuousProblem.settings->transformer = transformer;
+	settings2->transformer = transformer;
   //old implemenation discard empty params in shrinkwrapping
   continuousProblem.settings->discardEmptyParams = true;
+} | {
+	cout << "bad processing\n";
+	exit(0);
 }
 ;
 
@@ -2747,15 +2773,69 @@ ALG_FLOW
 
 point_params: REMOVE_EMPTY_PARAMS {
   continuousProblem.settings->discardEmptyParams = true;
+  settings2->discardEmptyParams = true;
 } | {
   //initialized to false in constructor
 };
 
+implPicker: USE_PLAIN_FLOWSTAR {
+	if (plainFlowPrecondMethod == false) {
+		parseError("Flowstar only supports (non compositional) identity and QR precondition.", lineNum);
+	}
+	cout << "using f* impl\n";
+	usePlainFlowstar = true;
+} | USE_OLD_IMPL {
+	useOldImpl = true;
+  //TODO remove
+} | {
+	cout << "using my impl\n";
+};
+
+
+compositionality: comps {}
+
+/* TODO REMOVE
+compType: LEFT_MODEL_COMP {
+	cout << "here1\n";
+} | FULLY_COMP {
+	cout << "here2\n";
+} | {
+	cout << "here3\n";
+};*/
+
+comps: AUTO_COMPONENTS {
+	if(usePlainFlowstar) {
+		parseError("Flowstar doesn't have components", lineNum);
+	}
+  continuousProblem.settings->autoComponents = true;
+	settings2->autoComponents = true;
+} | NO_COMPONENTS {
+	if(usePlainFlowstar) {
+		parseError("Flowstar doesn't have components", lineNum);
+	}
+	int varNumber = continuousProblem.stateVarNames.size();
+  vector<int> vs;
+  for(int i = 0; i < varNumber; i++) {
+    vs.push_back(i);
+  }
+  continuousProblem.settings->intComponents.push_back(vs);
+  settings2->intComponents.push_back(vs);
+} | '[' components ']'{
+	if(usePlainFlowstar) {
+		parseError("Flowstar doesn't have components", lineNum);
+	}
+} | {
+	if(usePlainFlowstar == false)
+		parseError("No decompostion specified for compositional algorithm.", lineNum);
+}
+
+/*TODO remove
 decomposition: DECOMPOSITION '[' components ']'
 {
 	mlog1("DECOMPOSITION");
 } | FULL_DECOMPOSITION {
   continuousProblem.settings->autoComponents = true;
+  settings2->autoComponents = true;
 } | NO_DECOMPOSITION {
   logger.force("none");
   int varNumber = continuousProblem.stateVarNames.size();
@@ -2764,13 +2844,14 @@ decomposition: DECOMPOSITION '[' components ']'
     vs.push_back(i);
   }
   continuousProblem.settings->intComponents.push_back(vs);
-}
-| {
+  settings2->intComponents.push_back(vs);
+} | {
   if(continuousProblem.algorithm == ALGORITHM_SMALL_COMP) {
     parseError("No decompostion given for composition algorithm.", lineNum);
     exit(1);
   }
 }
+*/
 
 components: components ',' component { }
 |
@@ -2780,7 +2861,7 @@ component: '[' compVarIds ']'
 {
   for(vector<int>::iterator varIt = $2->begin(); varIt < $2->end(); varIt++) {
     int varId = *varIt;
-    vector< vector<int> > & v = continuousProblem.settings->intComponents;
+    vector< vector<int> > & v = settings2->intComponents;
     //check if variable is in any of the other components
     for(vector< vector<int> >::iterator it = v.begin(); it < v.end(); it++) {
       //check if variable is in the component
@@ -2794,9 +2875,9 @@ component: '[' compVarIds ']'
       }
     }
   }
-
   //add this component to all components
   continuousProblem.settings->intComponents.push_back(*($2));
+	settings2->intComponents.push_back(*($2));
   delete $2;
 }
 

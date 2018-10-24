@@ -17,17 +17,14 @@ import comparer
 
 
 # directory of models
-modelDir = os.path.join("..", "..", "models", "point_int")
-flowstar = os.path.join("..", "..", "src", "flowstar2")
+modelDir = os.path.join("..", "..", "models", "temp")
+flowstar = os.path.join("..", "..", "src", "flowstar")
 
-modelTypes = ["temp", "and_v3", "and_or"]
-#modelTypes = ["and_or"]
-#modelTypes = ["and_v3"]
-modelTypes = ["temp"]
+modelTypes = ["fbase", "mbase"]#, "obase"]
 
 param = ["pret", "pdis", "flow"]
 
-groups = [["%s_%s.model"%(t,p) for p in param] for t in modelTypes]
+groups = [["%s.model"%(m) for m in modelTypes]]
     
 models = [m for g in groups for m in g]
 
@@ -57,9 +54,12 @@ infoFields = [
     ("plintra", "plintra"), 
     ("pleft", "pleft"), 
     ("pend", "pend"), 
-
-
-    
+]
+infoFields = [
+    ("int progress", "Int Progress"), 
+    ("computation time", "Comp t"),  
+    ("reason", "Stop Reason"), 
+    ("int time", "Int t"), 
 ]
 
 parser = argparse.ArgumentParser()
@@ -68,6 +68,7 @@ parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
 if args.action == 'run':
+  print models
   flowstar_runner.runFlowstar(modelDir, flowstar, models)
 elif args.action == 'compare':
   comparer.compare5(modelDir, scriptsDir, groups, infoFields)

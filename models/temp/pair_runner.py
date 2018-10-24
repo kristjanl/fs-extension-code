@@ -16,8 +16,8 @@ import flowstar_runner
 
 
 modelDir = os.path.join("..", "compositional", "id_comp_precond")
-modelDir = os.path.join(".")
 modelDir = os.path.join("..", "testing")
+modelDir = os.path.join(".")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
 parser = argparse.ArgumentParser()
@@ -29,8 +29,8 @@ args = parser.parse_args()
 #def runFlowstar(modelType, dim):
 def runFlowstar():
   print "starting pair runner (python)"
-  flowModel = "1_fl.model"
-  myModel = "1_my.model"
+  flowModel = "fbase.model"
+  myModel = "mbase.model"
   models = [flowModel, myModel]
   if args.only == "flow":
     models = models[:1]

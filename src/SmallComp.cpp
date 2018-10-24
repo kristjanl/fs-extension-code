@@ -698,127 +698,6 @@ SmallCompSystem::SmallCompSystem(const ContinuousSystem & system)
   mlog1("simple comp system cons (sys)");
 }
 
-void foo() {
-  mreset(old);
-	parseSetting.clear();
-	parseSetting.addVar("t");
-	parseSetting.addVar("a");
-	int order = 1;
-	Interval cutoff_threshold = Interval(0.0,0.0);
-	
-  //TaylorModelVec pipe = parseTMV("my models{a - a*t  + a*t^2 * 0.5 - a*t^3 * 0.5 * 0.333 +  [-1,1]}");
-  TaylorModelVec pipe = parseTMV("my models{a + [-0.001,0.001]}");
-  TaylorModelVec init = parseTMV("my models{a}");
-  vector<HornerForm> ode = parseHFFromPoly("my hfs {-1*a}");
-  vector<int> comp = parseiVec("my iv <0>");
-  vector<Interval> domain = parseIVec("my Iv <[0,0.1],[-1,1]>");
-	vector<Interval> step_exp_table, step_end_exp_table;
-	construct_step_exp_table(step_exp_table, step_end_exp_table, domain[0].sup(), 2*order);
-	int paramCount = pipe.tms[0].getParamCount();
-  
-  
-  exit(0);
-  TaylorModelVec oldPipe = TaylorModelVec(pipe);
-  smallComp::computeNewRemainder(comp, oldPipe, ode, init, domain);
-  mlog("oldPipe", oldPipe);
-	mlog1("-------");
-	
-	parseSetting.clear();
-	parseSetting.addVar("t");
-	parseSetting.addVar("a");
-	MyComponent comp1;
-	TaylorModelVec comp1Pipe = parseTMV("my models{a + [-0.001,0.001]}");
-  comp1.initSet = parseTMV("my models{a + [-1.1,11.1]}");
-  comp1.odes = parseHFFromPoly("my hfs {-1*a}");
-  comp1.solveIndexes = parseiVec("my iv <0>");
-  vector<Interval> comp1Domain = parseIVec("my Iv <[0,0.1],[-1,1]>");
-  
-	vector<Interval> step_exp_table1, step_end_exp_table1;
-	construct_step_exp_table(step_exp_table1, step_end_exp_table1, comp1Domain[0].sup(), 2*order);
-  
-  
-  vector<Interval> comp1Range;
-  comp1Pipe.polyRangeNormal(comp1Range, step_exp_table1);
-  
-  MySettings settings;
-  
-  settings.step_exp_table = step_exp_table1;
-  settings.order = order;
-  settings.cutoff = cutoff_threshold;
-	settings.estimation.push_back(Interval(-1,1));
-  
-	vector<Interval> pPolyRange;
-	vector<RangeTree *> trees;
-	vector<Interval> cutoffInt;
-  
-  mlog("bef", comp1Pipe);
-  smallComp::findDecreasingRemainderFlow(comp1Pipe, pPolyRange, trees, comp1, settings, cutoffInt);
-  smallComp::refineRemainderFlow(comp1Pipe, pPolyRange, trees, comp1, settings, cutoffInt);
-  
-  mlog("dec", comp1Pipe);
-  exit(0);
-  
-  TaylorModelVec comp1Temp;
-	vector<RangeTree *> comp1Tree;
-  comp1Pipe.Picard_ctrunc_normal(comp1Temp, comp1Tree, &comp1, comp1Range, 
-      step_exp_table1, paramCount, order, cutoff_threshold);
-  //mlog("comp1_", comp1Tree);
-  mlog("comp1", comp1Temp);
-  for(int i = 0; i < 1; i++)
-    comp1Temp.Picard_update_remainder(comp1Tree, &comp1, comp1Domain[0]);
-  mlog("comp1", comp1Temp);
-  
-  
-  
-  
-  return;
-  MyComponent comp2;
-	parseSetting.clear();
-	parseSetting.addVar("t");
-	parseSetting.addVar("a");
-	parseSetting.addVar("b");
-	TaylorModelVec comp2Pipe = parseTMV("my models{a - a*t + a*t^2*0.5 +[-0.001,0.001], b + t*a*b}");
-  comp2Pipe.tms[0] = comp1Temp.tms[0];
-  comp2.initSet = parseTMV("my models{a,b}");
-  comp2.odes = parseHFFromPoly("my hfs {0, a*b}");
-  comp2.solveIndexes = parseiVec("my iv <1>");
-  vector<Interval> comp2Domain = parseIVec("my Iv <[0,0.1],[-1,1],[-1,1]>");
-	
-  vector<Interval> comp2Range;
-  comp2Pipe.polyRangeNormal(comp2Range, step_exp_table);
-  
-  TaylorModelVec comp2Temp;
-	vector<RangeTree *> comp2Tree;
-  /*comp2Pipe.Picard_ctrunc_normal(comp2Temp, comp2Tree, comp2Vars, comp2Init, comp2Range, comp2Ode, 
-      step_exp_table, paramCount, order, cutoff_threshold);*/
-  comp2Pipe.Picard_ctrunc_normal(comp2Temp, comp2Tree, &comp2, comp2Range, step_exp_table, paramCount, order, cutoff_threshold);
-      
-  mlog("comp2", comp2Temp);
-  
-  
-  for(int i = 0; i < 10; i++)
-    comp2Temp.Picard_update_remainder(comp2Tree, &comp2, domain[0]);
-  mlog("comp2", comp2Temp);
-  
-  
-  
-  
-  
-  /*
-  vector<Interval> rems;
-  comp2Temp.Picard_only_remainder(rems, comp2Tree, &comp2, domain[0]);
-  mlog("rems", rems);
-  */
-  
-  
-  
-  
-  
-	exit(0);
-}
-
-
-
 void SmallCompReachability::myRun() {
   mreset(old);
   mlog1("Simple Comp Run <");
@@ -999,7 +878,7 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
     string outName = string(settings->transformer->name);
     if (settings->discardEmptyParams)
       outName.append("_dis");
-    outName.append(".txt");
+    outName.append(".old.txt");
     pSerializer = new TMVSerializer(outName);
   }
   
@@ -1050,6 +929,8 @@ void SmallCompSystem::my_reach_picard(list<Flowpipe> & results,
   //mforce("ai", all.initSet);
   //mforce("ci", comps[0]->initSet);
   settings->domain = all.dom;
+
+  settings->log();
   
   //mforce("all", all.initSet);
   clock_t integrClock = clock();

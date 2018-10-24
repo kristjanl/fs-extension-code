@@ -6,6 +6,9 @@ CXX = g++
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
 
+
+
+
 #CFLAGS += -Dno_output
 #CFLAGS = -I . -I $(GMP_HOME) -g -O3
 #CFLAGS += -Denablelog
@@ -13,12 +16,12 @@ LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serial
 #LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
 
 #no profiling
-CFLAGS = -I . -g -O3
-CXXFLAGS = -I . -g -O3
+#CFLAGS = -I . -g -O3
+#CXXFLAGS = -I . -g -O3
 
 #profiling
-#CFLAGS = -I . -g -O2
-#CXXFLAGS = -I . -g -O2
+CFLAGS = -I . -g -O2
+CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
 CFLAGS += -Denablelog
@@ -31,20 +34,28 @@ LINK_FLAGS = -g
 # CFLAGS += -fno-omit-frame-pointer
 
 # Uncomment for gprof profiling
-CFLAGS += -pg
-LINK_FLAGS += -pg
+#CFLAGS += -pg
+#CXXFLAGS += -pg
+#LINK_FLAGS += -pg
+
+
+#if need to use local mpfr and gmp library
+CFLAGS += -I $(DEP_HOME)/include
+LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 # PBJ: modelParser.o added.  Not clear why omitted.
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o modelParser.o
+# KL: removed modelParser again, it produces conflicts if using profiling (two main functions)
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o Utils2.o CompSolver.o
 
 # All sources
 SRCS= $(OBJS:.o=.cpp)
 
 # All dependency files
 #DFILES= $(SRCS:.cpp=.d)
-DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS))
+#DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS))
+DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS) modelParser.o profiling.o)
 
-all: 
+all:
 	make outputToggle.txt
 	make flowstar
 
@@ -86,7 +97,8 @@ flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 
 %.o: %.cc %.d
 	$(CXX) -c $(CFLAGS) -o $@ $<
-%.o: %.cpp %.h %.d
+%.o: %.cpp %.h $(DEPDIR)/%.d
+	@echo "printing" #why doesn't this print anything
 	$(CXX) -c $(CFLAGS) -o $@ $<
 unittestingfast.o: unittestingfast.cpp unittesting.h
 	$(CXX) -c $(CFLAGS) -o $@ $<
@@ -122,4 +134,4 @@ include $(DEPDIR)/modelParser.tab.d $(DEPDIR)/lex.yy.d
 
 clean: 
 	rm -f flowstar *.o *.d *~ modelParser.tab.c modelParser.tab.h \
-	modelParser.output lex.yy.c myapp fastcompile testcompile
+	modelParser.output lex.yy.c myapp fastcompile testcompile .d/*

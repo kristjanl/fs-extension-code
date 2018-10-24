@@ -17,12 +17,16 @@
 #include "Utils.h"
 #include "OutputWriter.h"
 
+class MySettings2;
+
 //extern int lineNum;
 
 extern mpfr_prec_t intervalNumPrecision;
 
 extern ContinuousReachability continuousProblem;
 extern HybridReachability hybridProblem;
+extern MySettings2 *settings2;
+extern bool usePlainFlowstar;
 
 //extern ParseSetting parseSetting;
 //extern ParseResult parseResult;

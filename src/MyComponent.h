@@ -13,6 +13,7 @@ class CompDependency;
 class PrecondModel;
 
 class MySettings;
+class MySettings2;
 
 class MyComponent {
   public:
@@ -118,15 +119,26 @@ class CompDependency {
 
 vector<int> concateMapper(vector<int> & smaller, vector<int> & bigger);
 
+//TODO REMOVE after completing refactoring
 vector<MyComponent *> createComponents(MySettings *settings, 
     const vector<HornerForm> & ode);
 void makeCompIndexes(MySettings *settings, const vector<HornerForm> & ode);
+
+vector<MyComponent *> createComponents(MySettings2 *settings, 
+    const vector<HornerForm> & ode);
+void makeCompIndexes(MySettings2 *settings, const vector<HornerForm> & ode);
+
 
 void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
     const vector<HornerForm> & ode, vector<Interval> domain, 
     bool discardEmptyParams);
 
+//TODO remove after refactoring
 MyComponent getSystemComponent(vector<MyComponent *> comps, 
+    TaylorModelVec init, const vector<HornerForm> & ode, 
+    vector<Interval> domain, bool discardEmptyParams);
+
+MyComponent* pGetSystemComponent(vector<MyComponent *> comps, 
     TaylorModelVec init, const vector<HornerForm> & ode, 
     vector<Interval> domain, bool discardEmptyParams);
 

@@ -1,7 +1,6 @@
 #ifndef MYLOGGER_H_
 #define MYLOGGER_H_
 
-#include <iostream>
 #include <fstream>
 #include <string>       // std::string
 #include <iostream>     // std::cout

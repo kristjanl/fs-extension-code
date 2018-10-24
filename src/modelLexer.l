@@ -121,6 +121,15 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "decomposition" {return DECOMPOSITION;}
 "no decomposition" {return NO_DECOMPOSITION;}
 "full decomposition" {return FULL_DECOMPOSITION;}
+
+"use plain flowstar" {return USE_PLAIN_FLOWSTAR;}
+"use old impl" {return USE_OLD_IMPL;}
+"left model compositional" {return LEFT_MODEL_COMP;}
+"fully compositional" {return FULLY_COMP;}
+"auto components" {return AUTO_COMPONENTS;}
+"components" {return COMPONENTS;}
+"no components" {return NO_COMPONENTS;}
+
 "remove point params" {return REMOVE_EMPTY_PARAMS;}
 "my model" {return MYMODEL;}
 "my models" {return MYMODELS;}

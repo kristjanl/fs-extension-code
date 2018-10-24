@@ -1,5 +1,5 @@
 #include "Utils.h"
-
+#include "Utils2.h"
 
 ShrinkWrappingCondition::ShrinkWrappingCondition(int steps): 
       steps(steps) {
@@ -596,7 +596,23 @@ void addTimeToInfo(string name, string clockName, vector<string> & infos) {
   infos.push_back(sbuilder() << name << ": " << timeLookup[clockName]);
 }
 
+//TODO remove after refactoring
 void printComponents(MySettings *settings) {
+  //printing out
+  mreset(old);
+  string s;
+  for(int i = 0; i < settings->intComponents.size(); i++) {
+    vector<int> comp = settings->intComponents[i];
+    s.append(sbuilder() << "[" << settings->varNames[comp[0]]);
+    for(int j = 1; j < comp.size(); j++) {
+      s.append(sbuilder() << "," << settings->varNames[comp[j]]);
+    }
+    s.append(sbuilder() << "]");
+  }
+  mlog1(sbuilder() << "components: " << s);
+  mrestore(old);
+}
+void printComponents(MySettings2 *settings) {
   //printing out
   mreset(old);
   string s;
