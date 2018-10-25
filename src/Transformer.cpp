@@ -1,4 +1,7 @@
 #include "Transformer.h"
+#include "Utils2.h"
+
+using namespace std;
 
 void Transformer::makeNextInitSet(vector<MyComponent *> & comps, 
       MySettings & settings) {
@@ -627,7 +630,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	TaylorModelVec currentRight;
 	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
 	    prevRightPolyRange, settings.step_end_exp_table, rightParamCount, 
-	    settings.order, settings.cutoff);
+	    settings.order, *settings.cutoff);
       
   tend1(pre_insert);
 	//exit(0);
@@ -656,7 +659,7 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   //apply scaling to right model
   tstart1(pre_lin_trans);
 	currentRight.linearTrans_assign(SInv);
-	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	currentRight.cutoff_normal(settings.step_end_exp_table, *settings.cutoff);
   tend1(pre_lin_trans);
 	
 	mlog("A", A);
@@ -1032,7 +1035,7 @@ void PreconditionedTransformer::firstTransform(MyComponent & comp,
   vector<Interval> range;
   tmv.polyRangeNormal(range, settings.step_exp_table);
   left.insert_ctrunc_normal(composed, tmv, range, settings.step_exp_table,
-	     comp.dom.size(), settings.order, settings.cutoff);
+	     comp.dom.size(), settings.order, *settings.cutoff);
   mlog("composed", composed);
   */
   
@@ -1234,13 +1237,13 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
   left.add_assign(c0);
 	
 	//better not to use since part of the integration might assume no remainder
-	//left.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	//left.cutoff_normal(settings.step_end_exp_table, *settings.cutoff);
 	
 	comp->initSet = left;
   
   
 	comp->unpairedRight.linearTrans_assign(SInv);
-	comp->unpairedRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	comp->unpairedRight.cutoff_normal(settings.step_end_exp_table, *settings.cutoff);
 	
 	//pSerializer->add(left, "left_after_precond");
 	//pSerializer->add(comp->unpairedRight, "right_after_precond");
@@ -1313,7 +1316,7 @@ void SingleComponentIdentityTransformer::firstTransform2(MyComponent & comp,
   vector<Interval> range;
   tmv.polyRangeNormal(range, settings.step_exp_table);
   left.insert_ctrunc_normal(composed, tmv, range, settings.step_exp_table,
-	     comp.dom.size(), settings.order, settings.cutoff);
+	     comp.dom.size(), settings.order, *settings.cutoff);
   mlog("composed", composed);
   */
   
@@ -1445,7 +1448,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
 	TaylorModelVec currentRight;
 	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
 	    prevRightPolyRange, settings.step_end_exp_table, rightParams, 
-	    settings.order, settings.cutoff);
+	    settings.order, *settings.cutoff);
   mlog("currentRight", currentRight);
   
   vector<Interval> currentRightRange;
@@ -1471,7 +1474,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   
   //apply scaling to right model
 	currentRight.linearTrans_assign(SInv);
-	currentRight.cutoff_normal(settings.step_end_exp_table, settings.cutoff);
+	currentRight.cutoff_normal(settings.step_end_exp_table, *settings.cutoff);
   
   //make left model from scaled A matrix
   TaylorModelVec newLeft = makeLeftFromA(A, comp);

@@ -10,14 +10,12 @@
 #define MODELPARSER_H_
 
 #include "Hybrid.h"
-#include "SimpleImplApp.h"
-#include "CompApp.h"
 #include "MyLogger.h"
 #include "ParsingUtils.h"
 #include "Utils.h"
 #include "OutputWriter.h"
 
-class MySettings2;
+class MySettings;
 
 //extern int lineNum;
 
@@ -25,7 +23,7 @@ extern mpfr_prec_t intervalNumPrecision;
 
 extern ContinuousReachability continuousProblem;
 extern HybridReachability hybridProblem;
-extern MySettings2 *settings2;
+extern MySettings *settings2;
 extern bool usePlainFlowstar;
 
 //extern ParseSetting parseSetting;

@@ -1,5 +1,7 @@
 #include "MyLogger.h"
 
+using namespace std;
+
 void mylogger2::force(string s) {
   int temp = disabled;
   disabled = 0;

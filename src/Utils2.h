@@ -10,9 +10,7 @@ class Interval;
 class Transformer;
 class OutputWriter;
 
-class MySettings;//TODO remove after refactoring
-
-class MySettings2 {
+class MySettings {
   public:
     OutputWriter *writer;
     std::vector< std::vector<int> > intComponents;
@@ -29,13 +27,13 @@ class MySettings2 {
     bool discardEmptyParams;
     std::vector<std::string> varNames;
     Transformer *transformer; // determines how are initials sets transformed for each timestep
-    MySettings2();
-    MySettings2(OutputWriter *writer, int order, double step, 
+    MySettings();
+    MySettings(OutputWriter *writer, int order, double step, 
         double time, std::vector<Interval> estimation, 
         std::vector<Interval> step_exp_table, 
         std::vector<Interval> step_end_exp_table, 
         std::vector<Interval> domain, const Interval *cutoff);
     void log();
-    MySettings* toOld();
+    //MySettings* toOld();
 };
 #endif /* UTILS_H_ */

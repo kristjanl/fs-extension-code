@@ -4,10 +4,10 @@
 #include "Transformer.h"
 #include "Continuous.h" //TODO remove after refactoring
 
-MySettings2::MySettings2() : useFlow(false), discardEmptyParams(false), 
+MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
       autoComponents(false) {
 }
-MySettings2::MySettings2(OutputWriter *writer, int order, 
+MySettings::MySettings(OutputWriter *writer, int order, 
       double step, double time, vector<Interval> estimation, 
       vector<Interval> step_exp_table, 
       vector<Interval> step_end_exp_table, 
@@ -18,7 +18,7 @@ MySettings2::MySettings2(OutputWriter *writer, int order,
       discardEmptyParams(false), autoComponents(false) {
 }
 
-void MySettings2::log() {
+void MySettings::log() {
   mreset(old);
   mlog1("setting2 <");
   minc();
@@ -51,6 +51,7 @@ void MySettings2::log() {
   mrestore(old);
 }
 
+/*
 MySettings* MySettings2::toOld() {
   MySettings* ret = new MySettings;
   ret->writer = writer;
@@ -70,4 +71,4 @@ MySettings* MySettings2::toOld() {
   ret->transformer = transformer;
 
   return ret;
-}
+}*/

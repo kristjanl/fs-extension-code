@@ -5,6 +5,7 @@
 #include <iostream>
 #include <typeinfo>
 #include <algorithm>
+#include <vector>
 
 #include "TaylorModel.h"
 #include "MyLogger.h"
@@ -13,24 +14,23 @@ class CompDependency;
 class PrecondModel;
 
 class MySettings;
-class MySettings2;
 
 class MyComponent {
   public:
     MyComponent();
-    MyComponent(vector<int> vs, vector<int> tps);
+    MyComponent(std::vector<int> vs, std::vector<int> tps);
     
     //indexes to be solved in this component
-    vector<int> varIndexes;
+    std::vector<int> varIndexes;
     //linking variables, probably not needed
-    vector<int> linkVars;
+    std::vector<int> linkVars;
     //all variable indexes in component (solve + links)
-    vector<int> compVars;
+    std::vector<int> compVars;
     //indexes of variables that need to be solved (wrt component variable position)
-    vector<int> solveIndexes;
+    std::vector<int> solveIndexes;
     
     //variables introduced in component and dependencies (including implicit)
-    vector<int> allVars;
+    std::vector<int> allVars;
     bool isSolved;
     bool isPrepared;
     bool isPreconditioned;
@@ -39,16 +39,16 @@ class MyComponent {
     static int nextFreeParam;
     
     //vector of variables that will introduce parameter
-    vector<int> varsToBeIntroduced;
+    std::vector<int> varsToBeIntroduced;
     
     //parameters that are introduced in this component
-    vector<int> tpIndexes; //TODO rename
+    std::vector<int> tpIndexes; //TODO rename
     //parameters that are used in flowpipes (component's own + dependencies)
     //ordered by parameter order in the whole system
-    vector<int> allTMParams;
-    vector<CompDependency *> dependencies;
+    std::vector<int> allTMParams;
+    std::vector<CompDependency *> dependencies;
     
-    vector<MyComponent> previous;
+    std::vector<MyComponent> previous;
     
     //first are component's variables, then come dependencies
     TaylorModelVec timeStepPipe;
@@ -60,23 +60,23 @@ class MyComponent {
     
     
     
-    vector<HornerForm> odes;
-    vector<Interval> dom;
-    vector<TaylorModelVec> pipes;
-    vector<PrecondModel *> pipePairs;
-    vector<TaylorModelVec> output;
+    std::vector<HornerForm> odes;
+    std::vector<Interval> dom;
+    std::vector<TaylorModelVec> pipes;
+    std::vector<PrecondModel *> pipePairs;
+    std::vector<TaylorModelVec> output;
     
     
     void addDependency(int linkVar, MyComponent *pComp);
     
-    vector< vector<int> > previousMappers();
-    vector< vector<int> > previousMappers2();
+    std::vector< std::vector<int> > previousMappers();
+    std::vector< std::vector<int> > previousMappers2();
     void log();
     
     void addVar(int var);
-    void prepareComponent(TaylorModelVec init, const vector<HornerForm> & ode, 
-        vector<Interval> domain, bool discardEmptyParams);
-    void prepareVariables(TaylorModelVec tmv, const vector<HornerForm> & ode, 
+    void prepareComponent(TaylorModelVec init, const std::vector<HornerForm> & ode, 
+        std::vector<Interval> domain, bool discardEmptyParams);
+    void prepareVariables(TaylorModelVec tmv, const std::vector<HornerForm> & ode, 
         bool discardEmptyParams);
     void prepareMappers();
     void remapTimeStepPipe();
@@ -91,8 +91,8 @@ class MyComponent {
     
     TaylorModelVec lastPipe();
     
-    TaylorModel getRightModelForVar(vector<int> mapper, int var);
-    void getIthPipePair(vector<int> lMapper, vector<int> rMapper, 
+    TaylorModel getRightModelForVar(std::vector<int> mapper, int var);
+    void getIthPipePair(std::vector<int> lMapper, std::vector<int> rMapper, 
         TaylorModel & left, TaylorModel & right, int var, int i);
     
     void serializeFlows();
@@ -102,8 +102,8 @@ class MyComponent {
         int *linkPos);
     
   private:
-    void remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode, 
-        vector<Interval> domain);
+    void remapIVP(TaylorModelVec tmv, const std::vector<HornerForm> & ode, 
+        std::vector<Interval> domain);
 };
 
 class CompDependency {
@@ -111,35 +111,31 @@ class CompDependency {
     CompDependency(int link, MyComponent *pComp);
     int linkVar;
     MyComponent *pComp;
-    vector<int> mapper;
-    vector<int> rightMapper;
-    vector<int> leftMapper;
+    std::vector<int> mapper;
+    std::vector<int> rightMapper;
+    std::vector<int> leftMapper;
 };
 
 
-vector<int> concateMapper(vector<int> & smaller, vector<int> & bigger);
+std::vector<int> concateMapper(std::vector<int> & smaller, std::vector<int> & bigger);
 
 //TODO REMOVE after completing refactoring
-vector<MyComponent *> createComponents(MySettings *settings, 
-    const vector<HornerForm> & ode);
-void makeCompIndexes(MySettings *settings, const vector<HornerForm> & ode);
-
-vector<MyComponent *> createComponents(MySettings2 *settings, 
-    const vector<HornerForm> & ode);
-void makeCompIndexes(MySettings2 *settings, const vector<HornerForm> & ode);
+std::vector<MyComponent *> createComponents(MySettings *settings, 
+    const std::vector<HornerForm> & ode);
+void makeCompIndexes(MySettings *settings, const std::vector<HornerForm> & ode);
 
 
-void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
+void prepareComponents(std::vector<MyComponent *> & comps, TaylorModelVec init, 
+    const std::vector<HornerForm> & ode, std::vector<Interval> domain, 
     bool discardEmptyParams);
 
 //TODO remove after refactoring
-MyComponent getSystemComponent(vector<MyComponent *> comps, 
-    TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain, bool discardEmptyParams);
+MyComponent getSystemComponent(std::vector<MyComponent *> comps, 
+    TaylorModelVec init, const std::vector<HornerForm> & ode, 
+    std::vector<Interval> domain, bool discardEmptyParams);
 
-MyComponent* pGetSystemComponent(vector<MyComponent *> comps, 
-    TaylorModelVec init, const vector<HornerForm> & ode, 
-    vector<Interval> domain, bool discardEmptyParams);
+MyComponent* pGetSystemComponent(std::vector<MyComponent *> comps, 
+    TaylorModelVec init, const std::vector<HornerForm> & ode, 
+    std::vector<Interval> domain, bool discardEmptyParams);
 
 #endif /* MYCOMPONENT_H_ */

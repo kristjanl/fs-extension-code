@@ -18,9 +18,6 @@ class OutputWriter;
 #define TR_ALL_COMP			1
 #define TR_SINGLE_COMP	2
 
-
-using namespace std;
-
 class Transformer {
   private:
     int transformerType;

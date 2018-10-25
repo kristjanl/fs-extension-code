@@ -1,6 +1,8 @@
 #include "Utils.h"
 #include "Utils2.h"
 
+using namespace std;
+
 ShrinkWrappingCondition::ShrinkWrappingCondition(int steps): 
       steps(steps) {
   useSteps = true;
@@ -78,7 +80,7 @@ TaylorModelVec PrecondModel::composed(MySettings *settings) {
 	
 	//left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
 	left.insert_ctrunc_normal(ret, right, rightRange, settings->step_exp_table,
-	     settings->domain.size(), settings->order, settings->cutoff);
+	     settings->domain.size(), settings->order, *settings->cutoff);
 	
 	//logger.log("cl", left.tms[0]);
 	
@@ -598,21 +600,6 @@ void addTimeToInfo(string name, string clockName, vector<string> & infos) {
 
 //TODO remove after refactoring
 void printComponents(MySettings *settings) {
-  //printing out
-  mreset(old);
-  string s;
-  for(int i = 0; i < settings->intComponents.size(); i++) {
-    vector<int> comp = settings->intComponents[i];
-    s.append(sbuilder() << "[" << settings->varNames[comp[0]]);
-    for(int j = 1; j < comp.size(); j++) {
-      s.append(sbuilder() << "," << settings->varNames[comp[j]]);
-    }
-    s.append(sbuilder() << "]");
-  }
-  mlog1(sbuilder() << "components: " << s);
-  mrestore(old);
-}
-void printComponents(MySettings2 *settings) {
   //printing out
   mreset(old);
   string s;

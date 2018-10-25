@@ -7,6 +7,7 @@
 ---*/
 
 #include "Continuous.h"
+#include "Utils2.h"
 
 
 void vspode_error(int mode) ;
@@ -10669,7 +10670,6 @@ ContinuousSystem & ContinuousSystem::operator = (const ContinuousSystem & system
 
 
 // class ContinuousReachability
-
 ContinuousReachability::ContinuousReachability()
 {
   settings = new MySettings();
@@ -13681,189 +13681,6 @@ void ContinuousSystem::my_reach_picard(list<Flowpipe> & results, const double st
 }
 
 
-SimpleCompReachability ContinuousReachability::createSimpleComp(){
-  mreset(old);
-  mdisable();
-  mlog1("creating simplecomp");
-  exit(0);
-  SimpleCompReachability problem;
-	
-  for(int i = 0; i < stateVarNames.size(); i++) {
-    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
-    problem.declareStateVar(stateVarNames.at(i));
-  }
-  for(int i = 0; i < estimation.size(); i++) {
-    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
-		problem.estimation.push_back(estimation.at(i));
-	}
-
-	problem.precondition = precondition;
-	problem.settings = settings;
-	problem.bAdaptiveSteps = bAdaptiveSteps;
-	problem.step = step;
-	problem.time = time;
-	problem.bAdaptiveOrders = bAdaptiveOrders;
-	problem.orderType = orderType;
-	problem.globalMaxOrder = globalMaxOrder;
-
-	for (int i = 0; i < orders.size(); i++)
-	{
-		mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
-		problem.orders.push_back(orders.at(i));
-	}
-
-	problem.cutoff_threshold = cutoff_threshold;
-	strcpy(problem.outputFileName, outputFileName);
-  
-  for(int i = 0; i < outputAxes.size(); i++) {
-    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
-		problem.outputAxes.push_back(outputAxes.at(i));
-	}
-	problem.plotSetting = plotSetting;
-	problem.plotFormat = plotFormat;
-  
-  for(int i = 0; i < tmVarNames.size(); i++) {
-    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
-		problem.tmVarNames.push_back(tmVarNames.at(i));
-	}
-  
-  
-  SimpleCompSystem* pSystem = new SimpleCompSystem(system);
-  
-  problem.pSystem = pSystem;
-	problem.integrationScheme = ONLY_PICARD;
-  if(integrationScheme != ONLY_PICARD) {
-    mreset(old);
-    mlog1("not picard scheme");
-    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
-    exit(0);
-  }
-  mrestore(old);
-  return problem;
-}
-
-
-SmallCompReachability ContinuousReachability::createSmallComp(){
-  mreset(old);
-  mdisable();
-  mlog1("creating smallcomp");
-  SmallCompReachability problem = SmallCompReachability();
-	
-  for(int i = 0; i < stateVarNames.size(); i++) {
-    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
-    problem.declareStateVar(stateVarNames.at(i));
-  }
-  for(int i = 0; i < estimation.size(); i++) {
-    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
-		problem.estimation.push_back(estimation.at(i));
-	}
-	
-	
-  settings->step = step;
-  settings->estimation = estimation;
-  settings->cutoff = cutoff_threshold;
-	
-  
-  problem.precondition = precondition;
-  problem.settings = settings;
-	problem.bAdaptiveSteps = bAdaptiveSteps;
-	problem.step = step;
-	problem.time = time;
-	problem.bAdaptiveOrders = bAdaptiveOrders;
-	problem.orderType = orderType;
-	problem.globalMaxOrder = globalMaxOrder;
-  
-  for(int i = 0; i < orders.size(); i++) {
-    mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
-		problem.orders.push_back(orders.at(i));
-	}
-  
-	problem.cutoff_threshold = cutoff_threshold;
-	strcpy(problem.outputFileName, outputFileName);
-  
-  for(int i = 0; i < outputAxes.size(); i++) {
-    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
-		problem.outputAxes.push_back(outputAxes.at(i));
-	}
-	problem.plotSetting = plotSetting;
-	problem.plotFormat = plotFormat;
-  
-  for(int i = 0; i < tmVarNames.size(); i++) {
-    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
-		problem.tmVarNames.push_back(tmVarNames.at(i));
-	}
-  
-  
-  SmallCompSystem* pSystem = new SmallCompSystem(system);
-  pSystem->settings = settings;
-  
-  problem.pSystem = pSystem;
-	problem.integrationScheme = ONLY_PICARD;
-  if(integrationScheme != ONLY_PICARD) {
-    mreset(old);
-    mlog1("not picard scheme");
-    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
-    exit(0);
-  }
-  mrestore(old);
-  return problem;
-}
-
-SimpleImplReachability ContinuousReachability::createSimpleImpl(){
-  mlog1("creating si");
-  SimpleImplReachability problem;
-	
-  for(int i = 0; i < stateVarNames.size(); i++) {
-    mlog1(sbuilder() << "stateVarNames(" << i << ") = " << stateVarNames.at(i));
-    problem.declareStateVar(stateVarNames.at(i));
-  }
-  for(int i = 0; i < estimation.size(); i++) {
-    mlog1(sbuilder() << "estimation(" << i << ") = " << estimation.at(i).toString());
-		problem.estimation.push_back(estimation.at(i));
-	}
-  
-  problem.precondition = precondition;
-  problem.settings = settings;
-	problem.bAdaptiveSteps = bAdaptiveSteps;
-	problem.step = step;
-	problem.time = time;
-	problem.bAdaptiveOrders = bAdaptiveOrders;
-	problem.orderType = orderType;
-	problem.globalMaxOrder = globalMaxOrder;
-  
-  for(int i = 0; i < orders.size(); i++) {
-    mlog1(sbuilder() << "orders(" << i << ") = " << orders.at(i));
-		problem.orders.push_back(orders.at(i));
-	}
-  
-	problem.cutoff_threshold = cutoff_threshold;
-	strcpy(problem.outputFileName, outputFileName);
-  
-  for(int i = 0; i < outputAxes.size(); i++) {
-    mlog1(sbuilder() << "outputAxes(" << i << ") = " << outputAxes.at(i));
-		problem.outputAxes.push_back(outputAxes.at(i));
-	}
-	problem.plotSetting = plotSetting;
-	problem.plotFormat = plotFormat;
-  
-  for(int i = 0; i < tmVarNames.size(); i++) {
-    mlog1(sbuilder() << "tmVarNames(" << i << ") = " << tmVarNames.at(i));
-		problem.tmVarNames.push_back(tmVarNames.at(i));
-	}
-  
-  SimpleImplSystem* pSystem = new SimpleImplSystem(system);
-  
-  
-	problem.pSystem = pSystem;
-	problem.integrationScheme = ONLY_PICARD;
-  if(integrationScheme != ONLY_PICARD) {
-    mreset(old);
-    mlog1("not picard scheme");
-    mlog1(sbuilder() << "scheme: " << problem.integrationScheme);
-    exit(0);
-  }
-  return problem;
-}
 
 void ContinuousReachability::run()
 {
@@ -13880,25 +13697,7 @@ void ContinuousReachability::run()
 
 
   //TODO remove
-  if(algorithm == ALGORITHM_SIMPLE_IMPL) {
-    mforce1("simple impl");
-    SimpleImplReachability si = createSimpleImpl();
-    si.myRun();
-    exit(2);
-  } else if(algorithm == ALGORITHM_SIMPLE_COMP) {
-    mforce1("simple comp");
-    SimpleCompReachability sc = createSimpleComp();
-    sc.myRun();
-    exit(2);
-  } else if(algorithm == ALGORITHM_SMALL_COMP) {
-    mforce1("small comp");
-    SmallCompReachability sc = createSmallComp();
-    sc.myRun();
-    exit(2);
-  } else {
-    //mforce1("default");
-    contRun();
-  }
+  contRun();
   //exit(2);
   mdec();
   mlog1("run >");
@@ -13910,6 +13709,7 @@ void ContinuousReachability::myRun() {
   mlog1("dummy run");
   exit(0);
 }
+/*
 MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
       autoComponents(false) {
 }
@@ -13955,4 +13755,4 @@ void MySettings::log() {
   mdec();
   mlog1("setting >");
   mrestore(old);
-}
+}*/

@@ -109,12 +109,6 @@ public:
 	friend class HybridSystem;
 	friend class HybridReachability;
   friend class ExtractedPicard;
-  friend class SimpleCompSystem;
-	friend class SimpleCompReachability;
-  friend class SmallCompSystem;
-	friend class SmallCompReachability;
-  friend class SimpleImplSystem;
-	friend class SimpleImplReachability;
 };
 
 class MySettings;
@@ -202,21 +196,9 @@ public:
 
   virtual void my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const;
   
-	friend class SimpleImplSystem;
-	friend class SimpleCompSystem;
-  friend class SmallCompSystem;
 	friend class ContinuousReachability;
-	friend class SimpleCompReachability;
-	friend class SmallCompReachability;
-	friend class SimpleImplReachability;
 };
 
-class SimpleCompReachability;
-class SimpleCompSystem;
-class SmallCompReachability;
-class SmallCompSystem;
-class SimpleImplReachability;
-class SimpleImplSystem;
 class ShrinkWrappingCondition;
 class Transformer;
 
@@ -310,16 +292,7 @@ public:
 	int getIDForPar(const string & pName) const;
 	bool getParName(string & pName, const int id) const;
 	bool getRangeForPar(Interval & range, const string & pName) const;
-  SimpleCompReachability createSimpleComp();
-  SmallCompReachability createSmallComp();
-  SimpleImplReachability createSimpleImpl();
-  friend class SimpleCompReachability;
-  friend class SmallCompReachability;
-  friend class SimpleImplReachability;
 };
-#include "SimpleComp.h"
-#include "SmallComp.h"
-#include "SimpleImpl.h"
 
 void computeTaylorExpansion(TaylorModelVec & result, const TaylorModelVec & first_order_deriv, const TaylorModelVec & ode, const int order, const Interval & cutoff_threshold);
 void computeTaylorExpansion(TaylorModelVec & result, const TaylorModelVec & first_order_deriv, const TaylorModelVec & ode, const vector<int> & orders, const Interval & cutoff_threshold);
@@ -356,6 +329,7 @@ void exp_int_mat(Interval_matrix & result_ts, Interval_matrix & result_rem, cons
 void int_exp_int_mat(Interval_matrix & result_ts, Interval_matrix & result_rem, const Interval_matrix & A, const double step, const int order);
 
 
+/*
 class MySettings {
   public:
     OutputWriter *writer;
@@ -379,9 +353,9 @@ class MySettings {
         vector<Interval> step_exp_table, 
         vector<Interval> step_end_exp_table, 
         vector<Interval> domain, const Interval cutoff);
-    void log();
-  
+    void log();  
 };
+*/
 
 //void parseODE();
 

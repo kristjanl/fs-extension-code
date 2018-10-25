@@ -6,7 +6,7 @@
 
 
 class MySettings;
-class MySettings2;
+//class MySettings2;
 class ContinuousSystem;
 class HornerForm;
 class TaylorModelVec;
@@ -23,11 +23,11 @@ class IVP {
 
 class Solver {
   private:
-    void setUp(MySettings2 *settings, IVP & ivp);
+    void setUp(MySettings *settings, IVP & ivp);
   public:
     MyComponent *all; //TODO free
     std::vector<MyComponent *> comps;
-    void solveIVP(MySettings2 *settings, IVP ivp);
+    void solveIVP(MySettings *settings, IVP ivp);
 };
 
 #endif /* COMPSOLVER_H_ */

@@ -11,7 +11,7 @@
 #include "OutputWriter.h"
 #include "Continuous.h"
 
-class MySettings2;
+class MySettings;
 
 //start the clock with variable name <name>Start
 #define tstart(name) clock_t name##Start = clock();
@@ -37,8 +37,6 @@ extern map<string, double> timeLookup;
 
 void printTimes(string prefix);
 
-using namespace std;
-
 class ShrinkWrappingCondition {
 	public:
 		ShrinkWrappingCondition(int steps);
@@ -52,8 +50,6 @@ class ShrinkWrappingCondition {
     int steps, cycleSteps;
     int count;
 };
-
-class MySettings;
 
 class PrecondModel {
   public:
@@ -122,7 +118,6 @@ void addMyInfo(vector<string> & info);
 void addFlowInfo(vector<string> & info);
 
 void printComponents(MySettings *settings);
-void printComponents(MySettings2 *settings);
 
 #endif /* UTILS_H_ */
 

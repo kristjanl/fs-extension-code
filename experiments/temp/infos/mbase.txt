@@ -7,8 +7,8 @@ remap 2: 0
 int time: 0.04
 picard poly: 0.01
 picard remainder: 0.03
-picard decreasing: 0.01
-picard refining: 0.02
+picard decreasing: 0.02
+picard refining: 0.01
 pstart: 0
 pm: 0
 pltr: 0
@@ -19,6 +19,6 @@ plintra: 0
 pleft: 0
 pend: 0
 refstart: 0
-reffirst: 0.01
+reffirst: 0.02
 refrem: 0
 refsub: 0

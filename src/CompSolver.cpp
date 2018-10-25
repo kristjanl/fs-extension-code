@@ -5,8 +5,9 @@
 #include "MyComponent.h"
 #include "Polynomial.h"
 #include "Interval.h"
+#include "Transformer.h"
 
-void Solver::setUp(MySettings2 *settings, IVP & ivp) {
+void Solver::setUp(MySettings *settings, IVP & ivp) {
   cout << "setting up\n";
   
   if(pSerializer == NULL) {
@@ -80,7 +81,7 @@ namespace compSolver{
     
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
-    const Interval & cutoff_threshold = settings.cutoff;
+    const Interval & cutoff_threshold = *settings.cutoff;
 
    
     //number of system variables (in the component)
@@ -222,7 +223,7 @@ namespace compSolver{
 	  
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
-    const Interval & cutoff_threshold = settings.cutoff;
+    const Interval & cutoff_threshold = *settings.cutoff;
     
 	  //number of taylor model parameters
     //int paramCount = comp.initSet.tms[0].getParamCount();
@@ -307,13 +308,13 @@ namespace compSolver{
     tstart(sc_int_poly);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
-      p.Picard_no_remainder_assign(&component, varCount + 1, i, settings.cutoff);
+      p.Picard_no_remainder_assign(&component, varCount + 1, i, *settings.cutoff);
     }
     mlog("poly", p);
     
     //pSerializer->add(p, "int_poly");
     
-    p.cutoff(settings.cutoff);
+    p.cutoff(*settings.cutoff);
     tend(sc_int_poly);
     
 	  vector<Interval> pPolyRange;
@@ -539,7 +540,10 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
 
 
 
-void Solver::solveIVP(MySettings2 *settings, IVP ivp) {
+void Solver::solveIVP(MySettings *settings, IVP ivp) {
+
+
+  exit(0);
   mforce1("solve ivp <");
   mreset(old);
   minc();
@@ -555,14 +559,13 @@ void Solver::solveIVP(MySettings2 *settings, IVP ivp) {
   clock_t integrClock = clock();
   double t;
 
-  MySettings *oSettings = settings->toOld();
   for(t = 0; (t + THRESHOLD_HIGH) < settings->time; t+= settings->step) {
     //mlog1(sbuilder() << "t: " << t);
     cerr << ".";
     try{
       mlog1(sbuilder() << "before transform");
       tstart(sc_transfrom);
-      settings->transformer->transform(*all, comps, *oSettings);
+      settings->transformer->transform(*all, comps, *settings);
       tend(sc_transfrom);
       mlog1(sbuilder() << "after transform");  
       tstart(sc_integrate);
@@ -571,7 +574,7 @@ void Solver::solveIVP(MySettings2 *settings, IVP ivp) {
           it < comps.end(); it++) {
         //mlog("init", (*it)->initSet);
         //mforce("c", (*it)->compVars);
-        compSolver::doSingleStep(**it, *oSettings);
+        compSolver::doSingleStep(**it, *settings);
         //mlog("last", (*it)->lastPipe());
       }
       tend(sc_integrate);
@@ -609,7 +612,7 @@ void Solver::solveIVP(MySettings2 *settings, IVP ivp) {
     cout << "not creating my output" << endl;
   #else
     cout << "creating my output" << endl;
-    compSolver::createOutput(comps, *all, settings->transformer, settings->toOld());
+    compSolver::createOutput(comps, *all, settings->transformer, settings);
     //settings->transformer->addInfo(writer.info);
     addMyInfo(settings->writer->info);
     tstart(sc_post_add);

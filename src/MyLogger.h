@@ -56,7 +56,6 @@
 #endif
 
 
-using namespace std;
 
 //class TaylorModelVec;
 //class TaylorModel;
@@ -87,25 +86,25 @@ class mylogger2 {
 		mylogger2();
 		mylogger2(bool disabled);
 		
-		void log(string, TaylorModelVec);
-		void log(string, TaylorModel);
-		void log(string, Polynomial);
-		void log(string, Monomial);
-		void log(string, vector<Interval>);
-		void log(string, vector<int>);
-		void log(string, vector<string>);
-		void log(string, vector<HornerForm>);
-		void log(string, HornerForm);
-		void log(string, vector<RangeTree *>);
-		void log(string, RangeTree *);
-    void log(string, Matrix m);
-    void log(string, set<int> myset);
+		void log(std::string, TaylorModelVec);
+		void log(std::string, TaylorModel);
+		void log(std::string, Polynomial);
+		void log(std::string, Monomial);
+		void log(std::string, std::vector<Interval>);
+		void log(std::string, std::vector<int>);
+		void log(std::string, std::vector<std::string>);
+		void log(std::string, std::vector<HornerForm>);
+		void log(std::string, HornerForm);
+		void log(std::string, std::vector<RangeTree *>);
+		void log(std::string, RangeTree *);
+    void log(std::string, Matrix m);
+    void log(std::string, std::set<int> myset);
 		
 		void log(Polynomial *);
     void log(Monomial m);
     
-    void force(string s);
-		void log(string s);
+    void force(std::string s);
+		void log(std::string s);
     void log(int i);
 		
 		void inc();
@@ -120,7 +119,7 @@ class mylogger2 {
 	
 };
 
-vector<string> getVNames(int i);
+std::vector<std::string> getVNames(int i);
 
 
 extern mylogger2 logger;

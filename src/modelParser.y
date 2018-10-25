@@ -11,6 +11,7 @@
 	#include "modelParser.h"
 	#include "MyLogger.h"
 	#include "Utils2.h"
+  #include "Transformer.h"
 
 	extern int yyerror(const char *);
 	extern int yyerror(string);
@@ -19,7 +20,6 @@
 	extern void parseMpfr(string *str, mpfr_t num);
 	bool err;
 	bool usePlainFlowstar = false;
-	bool useOldImpl = false;
 	//could get rid of this if determining the use of flowstar before preconditioning method
 	bool plainFlowPrecondMethod = false;
 %}
@@ -78,7 +78,7 @@
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
 %token DECOMPOSITION NO_DECOMPOSITION FULL_DECOMPOSITION
 
-%token USE_PLAIN_FLOWSTAR USE_OLD_IMPL
+%token USE_PLAIN_FLOWSTAR
 %token LEFT_MODEL_COMP FULLY_COMP
 %token AUTO_COMPONENTS COMPONENTS NO_COMPONENTS
 
@@ -152,7 +152,7 @@ model: CONTINUOUS '{' continuous '}'
 
 
 
-	if(usePlainFlowstar || useOldImpl) {
+	if(usePlainFlowstar) {
 		int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		if(mkres < 0 && errno != EEXIST)
 		{
@@ -2784,9 +2784,6 @@ implPicker: USE_PLAIN_FLOWSTAR {
 	}
 	cout << "using f* impl\n";
 	usePlainFlowstar = true;
-} | USE_OLD_IMPL {
-	useOldImpl = true;
-  //TODO remove
 } | {
 	cout << "using my impl\n";
 };

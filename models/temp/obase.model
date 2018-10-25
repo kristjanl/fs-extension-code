@@ -13,7 +13,7 @@ continuous reachability
     #left model compositional 
     
     #QR precondition2
-    identity precondition
+    QR precondition
     #no processing
     
     gnuplot interval x1,x1

@@ -45,7 +45,7 @@ LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 # PBJ: modelParser.o added.  Not clear why omitted.
 # KL: removed modelParser again, it produces conflicts if using profiling (two main functions)
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o SimpleImplApp.o ExtractedPicard.o OutputWriter.o SimpleImpl.o SimpleComp.o SmallComp.o CompApp.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o Utils2.o CompSolver.o
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o ExtractedPicard.o OutputWriter.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o Utils2.o CompSolver.o
 
 # All sources
 SRCS= $(OBJS:.o=.cpp)
@@ -71,7 +71,6 @@ testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o
 
 # recompile only those .o files that are concerned with making output
 outputToggle.txt: outputToggle.txt
-	rm SmallComp.o
 	rm modelParser.tab.o
 	touch outputToggle.txt
 
