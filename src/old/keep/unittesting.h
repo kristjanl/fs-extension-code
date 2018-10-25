@@ -9,6 +9,6 @@
 #include "OutputWriter.h"
 #include "Continuous.h"
 #include "ParsingUtils.h"
-#include "SmallComp.h"
+//#include "SmallComp.h"
 
 #endif /* UNITTESTING_H_ */

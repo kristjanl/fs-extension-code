@@ -19,6 +19,6 @@ plintra: 0
 pleft: 0
 pend: 0
 refstart: 0
-reffirst: 0.02
-refrem: 0
+reffirst: 0.01
+refrem: 0.01
 refsub: 0

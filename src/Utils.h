@@ -2,16 +2,15 @@
 #define UTILS_H_
 
 #include <map>
-
-#include "include.h"
-#include "TaylorModel.h"
-#include "MyLogger.h"
-#include "MyComponent.h"
-#include "Interval.h"
-#include "OutputWriter.h"
-#include "Continuous.h"
+#include <string>
+#include <vector>
 
 class MySettings;
+class MyComponent;
+class TaylorModelVec;
+class Interval;
+class Transformer;
+class OutputWriter;
 
 //start the clock with variable name <name>Start
 #define tstart(name) clock_t name##Start = clock();
@@ -33,16 +32,46 @@ class MySettings;
 
 #define taddToInfo(infoName, clockName, infos) addTimeToInfo(infoName, #clockName , infos)
 
-extern map<string, double> timeLookup;
+extern std::map<std::string, double> timeLookup;
 
-void printTimes(string prefix);
+void printTimes(std::string prefix);
+
+
+class MySettings {
+  public:
+    OutputWriter *writer;
+    std::vector< std::vector<int> > intComponents;
+    bool autoComponents;
+    int order;
+    double step; 
+    double time;
+    std::vector<Interval> estimation;
+    std::vector<Interval> step_exp_table;
+    std::vector<Interval> step_end_exp_table;
+    std::vector<Interval> domain;
+    const Interval *cutoff;
+    bool useFlow;//TODO remove
+    bool discardEmptyParams;
+    std::vector<std::string> varNames;
+    Transformer *transformer; // determines how are initials sets transformed for each timestep
+    MySettings();
+    MySettings(OutputWriter *writer, int order, double step, 
+        double time, std::vector<Interval> estimation, 
+        std::vector<Interval> step_exp_table, 
+        std::vector<Interval> step_end_exp_table, 
+        std::vector<Interval> domain, const Interval *cutoff);
+    void log();
+    //MySettings* toOld();
+};
+
+
 
 class ShrinkWrappingCondition {
 	public:
 		ShrinkWrappingCondition(int steps);
 		ShrinkWrappingCondition(); //constructor for using remainder
-		bool checkApplicability(const vector<MyComponent *> comps, 
-		    const vector<Interval> & estimation);
+		bool checkApplicability(const std::vector<MyComponent *> comps, 
+		    const std::vector<Interval> & estimation);
 		void log() const;
 		int getCount() const;
   private:
@@ -51,73 +80,65 @@ class ShrinkWrappingCondition {
     int count;
 };
 
-class PrecondModel {
-  public:
-    PrecondModel(TaylorModelVec left, TaylorModelVec right);
-    
-    TaylorModelVec left;
-    TaylorModelVec right;
-    
-    TaylorModelVec composed(MySettings *settings);
-};
 
 
-class NamedTMV {
-  public:
-    string name;
-    TaylorModelVec tmv;
-    NamedTMV(string name, TaylorModelVec tmv);
-};
 
-void serializeTMV(TaylorModelVec & tmv, string filename);
-void serializeFlows(MyComponent *comp, string filename);
-vector<TaylorModelVec> & deserializeFlows(string filename);
-vector<TaylorModelVec *> pDeserializeFlows(string filename);
-vector<NamedTMV> pDeserializeNamedFlows(string filename);
+void serializeTMV(TaylorModelVec & tmv, std::string filename);
+void serializeFlows(MyComponent *comp, std::string filename);
+std::vector<TaylorModelVec> & deserializeFlows(std::string filename);
+std::vector<TaylorModelVec *> pDeserializeFlows(std::string filename);
 
-void compareFlows(vector<TaylorModelVec *> & first, 
-    vector<TaylorModelVec *> & second);
-void compareFlows(vector<TaylorModelVec> & first, 
-    vector<TaylorModelVec> & second);
-double compareIntervalVecs(vector<Interval> & f, vector<Interval> & s);
+void compareFlows(std::vector<TaylorModelVec *> & first, 
+    std::vector<TaylorModelVec *> & second);
+void compareFlows(std::vector<TaylorModelVec> & first, 
+    std::vector<TaylorModelVec> & second);
+double compareIntervalVecs(std::vector<Interval> & f, std::vector<Interval> & s);
 
-void printTMVFiles(string file1, string file2, string name, 
+void printTMVFiles(std::string file1, std::string file2, std::string name, 
     int index1, int index2);
     
-void toMathematica(string file);
+void toMathematica(std::string file);
 
-vector<Interval> getUnitBox(int n);
+std::vector<Interval> getUnitBox(int n);
 
 class TMVSerializer {
   public:
-    TMVSerializer(string filename);
-    TMVSerializer(string filename, int maxSize);
-    TMVSerializer(string filename, int maxSize, bool active);
+    TMVSerializer(std::string filename);
+    TMVSerializer(std::string filename, int maxSize);
+    TMVSerializer(std::string filename, int maxSize, bool active);
     void add(const TaylorModelVec & tmv);
-    void add(const TaylorModelVec & tmv, string name);
+    void add(const TaylorModelVec & tmv, std::string name);
     void serialize();
     void activate();
-  private:
-    string filename;
-    vector<TaylorModelVec> tmvs;
-    vector<string> names;
+  public:
+    std::string filename;
+    std::vector<TaylorModelVec> tmvs;
+    std::vector<std::string> names;
     int maxSize;
     bool active;
 };
 
 extern TMVSerializer *pSerializer;
 
-void addTimeToInfo(string name, string clockName, vector<string> & infos);
+void addTimeToInfo(std::string name, std::string clockName, std::vector<std::string> & infos);
 
-int findPos(int value, vector<int> *v);
+int findPos(int value, const std::vector<int> *v);
 
-int isIn(int value, vector<int> *v);
+int isIn(int value, const std::vector<int> *v);
 
 
-void addMyInfo(vector<string> & info);
-void addFlowInfo(vector<string> & info);
+void addMyInfo(std::vector<std::string> & info);
+void addFlowInfo(std::vector<std::string> & info);
 
 void printComponents(MySettings *settings);
+
+TaylorModelVec getUnitTmv(int varCount);
+TaylorModelVec getNVarMParam(int varCount, int paramCount);
+TaylorModelVec getNVarMParam(int varCount, std::vector<int> params);
+
+void createOutput(std::vector<MyComponent *> comps, MyComponent & all, 
+    Transformer *transformer, MySettings *settings);
+
 
 #endif /* UTILS_H_ */
 

@@ -1,5 +1,6 @@
 #include "Transformer.h"
-#include "Utils2.h"
+#include "Utils.h"
+#include "PreconditionedTMV.h"
 
 using namespace std;
 
@@ -537,24 +538,6 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
   mdec();
   mlog1("sw cont >");
   mrestore(old);
-}
-
-TaylorModelVec getUnitTmv(int varCount) {
-  vector<TaylorModel> tms;
-  for(int i = 0; i < varCount; i++) {
-    vector<Interval> temp;
-    temp.push_back(Interval(0));
-    for(int j = 0; j < varCount; j++) {
-      if(i == j) {
-        temp.push_back(Interval(1));
-        continue;
-      }
-      temp.push_back(Interval(0));
-    }
-	  tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
-  }
-  TaylorModelVec ret(tms);
-  return ret;
 }
 
 
@@ -1541,42 +1524,6 @@ void NullTransformer::addInfo(vector<string> & info) {
 void ShrinkWrapper::addInfo(vector<string> & info) {
   taddToInfo("postprocess", sw_wrapping, info);
   //throw std::runtime_error("don't call add info on SW yet");
-}
-
-void PreconditionedTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
-  for(int i = 0; i < comps.size(); i++) {
-    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
-      CompDependency dep = *comps[i]->dependencies[j];
-      //use the left model mapper during integration
-      dep.mapper = dep.leftMapper; 
-    }
-  }
-}
-void ShrinkWrapper::setIntegrationMapper(vector<MyComponent *> comps) {
-  for(int i = 0; i < comps.size(); i++) {
-    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
-      CompDependency dep = *comps[i]->dependencies[j];
-      dep.mapper = dep.rightMapper;
-    }
-  }
-}
-void QRTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
-  for(int i = 0; i < comps.size(); i++) {
-    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
-      CompDependency dep = *comps[i]->dependencies[j];
-      //use the left model mapper during integration
-      dep.mapper = dep.leftMapper; 
-    }
-  }
-}
-void NullTransformer::setIntegrationMapper(vector<MyComponent *> comps) {
-  for(int i = 0; i < comps.size(); i++) {
-    for(int j = 0; j < comps[i]->dependencies.size(); j++) {
-      CompDependency dep = *comps[i]->dependencies[j];
-      dep.mapper = dep.rightMapper;
-    }
-  }
-  //throw std::runtime_error("don't call setIntegrationMapper on Null yet");
 }
 
 int Transformer::getType() {

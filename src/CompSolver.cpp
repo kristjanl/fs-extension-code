@@ -1,6 +1,6 @@
 #include "CompSolver.h"
 #include "MyLogger.h"
-#include "Utils2.h"
+#include "Utils.h"
 #include "Continuous.h"
 #include "MyComponent.h"
 #include "Polynomial.h"
@@ -33,37 +33,21 @@ void Solver::setUp(MySettings *settings, IVP & ivp) {
   TaylorModelVec & currentTMV = *ivp.initSet;
   //currentTMV.pushConstantToRemainder();
   
-  //domain of the TM variable
+  ivp.domain[0] = step_exp_table[1]; //set domain[0] to timestep
+  settings->domain = ivp.domain;
   vector<Interval> & domain = ivp.domain;
-  domain[0] = step_exp_table[1]; //set domain[0] to timestep
-  settings->domain = domain;
 
-  //TODO possible remove
-  //vector<TaylorModelVec> pipes;
-  
   //mlog1("before preparing");
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
-    (*it)->prepareComponent(currentTMV, ivp.hfOde, domain, 
-        settings->discardEmptyParams);
+    (*it)->prepareComponent(currentTMV, ivp.hfOde, settings);
   }
-  //TODO refactor
-  for(vector<MyComponent *>::iterator it = comps.begin(); 
-      it < comps.end(); it++) {
-    (*it)->usingPreconditioning = settings->transformer->isPreconditioned;
-  }
-  settings->transformer->setIntegrationMapper(comps);
   
-  /*
-  MyComponent all = getSystemComponent(comps, currentTMV, ivp.hfOde, domain, 
-      settings->discardEmptyParams);
-  */
-  all = pGetSystemComponent(comps, currentTMV, ivp.hfOde, domain, 
-      settings->discardEmptyParams);
+  all = pGetSystemComponent(comps, currentTMV, ivp.hfOde, settings);
 
-  settings->domain = all->dom; //need to use all, since some params may be discarded
-
-  //settings->log();
+  //(possibly) need to use domain from all
+  //since some parameterss may be discarded
+  settings->domain = all->dom; 
 }
 
 namespace compSolver{
@@ -109,7 +93,7 @@ namespace compSolver{
 	  //evaluate this one seperately to get the cutoff measure
 	  //and higher order terms
 	  
-	  //TODO make this one compositional!!!
+	  //TODO make this one compositional
 	  
     //tstart(sc_int_noncomp);
     tend1(ref_start);
@@ -127,7 +111,7 @@ namespace compSolver{
 	  
 	  //should be because of the turncated parts and uncertainties (?)
 	  for(int i=0; i < varCount; i++) {
-  	  //TODO make this one compositional!!! (no need to find remainders for 
+  	  //TODO make this one compositional (no need to find remainders for 
   	  //solved variables
 	    //bound higher order terms
 		  Polynomial polyTemp;
@@ -399,151 +383,45 @@ namespace compSolver{
     mlog1("doSingleStep >");
     mrestore(old);
   }
-
-
-void createFullyCompositionalOutput(vector<MyComponent *> comps, 
-      MyComponent & all, Transformer *transformer, MySettings *settings) {
-  mreset(old);
-  mdisable();
-  mlog1("fully comp");
-  
-  mlog("allVars", all.allVars);
-  mlog("varIndexes", all.varIndexes);
-  mlog1(sbuilder() << all.dependencies.size());
-  
-  int pipes = all.dependencies[0]->pComp->pipePairs.size();
-  TaylorModel left, right;
-  
-  
-  for(int step = 0; step < pipes; step++) {
-    mlog1(sbuilder() << "step: " << step);
-    
-    TaylorModelVec left, right;
-    for(int var = 0; var < all.allVars.size(); var++) {
-      mlog1(sbuilder() << "var: " << var);
-      
-      
-      vector<int> lMapper;
-      vector<int> rMapper;
-      MyComponent *curComp = &all;
-      
-      
-      while(true) {
-        mlog1("in while");
-        int pos = findPos(var, &curComp->varIndexes);
-        mlog1(sbuilder() << "pos: " << pos);
-        
-        if(pos < curComp->varIndexes.size()) {
-          mlog1("can return straight");
-          
-          TaylorModel singleLeft = curComp->pipePairs[step]->left.tms[pos];
-          TaylorModel singleRight = curComp->pipePairs[step]->right.tms[pos];
-          
-          mlog("l", singleLeft);
-          mlog("r", singleRight);
-          
-          left.tms.push_back(singleLeft.transform(lMapper));
-          right.tms.push_back(singleRight.transform(rMapper));
-          break;
-        }
-        
-        
-        bool foundDep = false;
-        for(int j = 0; j < curComp->dependencies.size(); j++) {
-          CompDependency *dep = curComp->dependencies[j];
-          mlog("depAll", dep->pComp->allVars);
-          
-          //is variable in dependency implicit variables
-          bool in = isIn(var, &dep->pComp->allVars);
-          
-          //if variable is not in dependency skip dependency
-          if(in == false) {
-            continue;
-          }
-          foundDep = true;
-          curComp = dep->pComp;
-          
-          lMapper = concateMapper(dep->leftMapper, lMapper);
-          rMapper = concateMapper(dep->rightMapper, rMapper);
-          mlog("lm", lMapper);
-          mlog("rm", rMapper);
-        }
-        if(foundDep == false) {
-          stringstream ss;
-          ss << "should never get to this point, ";
-          ss << "either variable is in componenent or one of the dependencies";
-          throw std::runtime_error(ss.str());
-        }
-      }
-    }//end of var
-    
-    mlog("left", left);
-    mlog("right", right);
-    all.pipePairs.push_back(new PrecondModel(left, right));
-  }//end of step
-  mrestore(old);
 }
 
-//TODO move to OutputWriter
-void createOutput(vector<MyComponent *> comps, MyComponent & all, 
-      Transformer *transformer, MySettings *settings) {
-  tstart(sc_post_composing);
-  if(transformer->isPreconditioned == false)
-    return;
+void Solver::post(MySettings *settings) {
   
-  mlog1("making system flowpipes");  
-  //if fully compositional  
-  tstart(tr_remap3);
+  //tprint("sc_transfrom");
+  //tprint("tr_eval");
+  //tprint("tr_remap");
+  //tprint("tr_comp_pre");
   
-  if(transformer->getType() == TR_SINGLE_COMP) {
-    //transformer preconditions single component at a time
-    //need to add last flowpipe for all components
-    for(int i = 0; i < comps.size(); i++) {
-      comps[i]->pipePairs.push_back(
-          new PrecondModel(comps[i]->timeStepPipe, comps[i]->unpairedRight));
-    }
-    createFullyCompositionalOutput(comps, all, transformer, settings);
-  } else if(transformer->getType() == TR_ALL_COMP) {
-    //tranformer maps everything to system, then precondtions
-    //need to remap last integration result, add last flowpipe for system component
-    all.remapTimeStepPipe();
-    all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
-    
-    //mforce3(old3, "all.right3", all.unpairedRight);
-  } else {
-    //old code might not be compatible, look into it when problems arise
-    throw std::runtime_error("don't know how to make output");
-  }
-  tend(tr_remap3);
+
+  #ifdef no_output
+    cout << "not creating my output" << endl;
+  #else
+    cout << "creating my output" << endl;
+    createOutput(comps, *all, settings->transformer, settings);
+    //settings->transformer->addInfo(writer.info);
+    addMyInfo(settings->writer->info);
+    tstart(sc_post_add);
+    cout << "writing output" << endl;
+    //need to use all->dom, since some parameters maybe be discarded
+    settings->writer->addComponents(comps, all->dom, *all, 
+        settings->transformer->isPreconditioned);
+    tend(sc_post_add);
+    tstart(sc_post_write);
+    settings->writer->writeCSV();
+    settings->writer->writeInfo();
+    settings->writer->finish();
+    tend(sc_post_write);
+  #endif
+  //tprint("sc_post");
+  //tprint("tr_");
+  //cout << "here2" << endl;
   
-  mlog1("composing flowpipes");
-  for(int i = 0; i < all.pipePairs.size(); i++) {
-    cout << ".";
-    //pSerializer->add(all.pipePairs[i]->left, "comp_left");
-    //pSerializer->add(all.pipePairs[i]->right, "comp_right");
-    TaylorModelVec composed = all.pipePairs[i]->composed(settings);
-    
-    //pSerializer->add(composed, "composed");
-	  all.output.push_back(composed);
-	  //pSerializer->add(composed, "composed");
-  }
-  
-  cout << all.output.size();
-  cout << endl;
-  tend(sc_post_composing);
+  if(pSerializer != NULL)
+    pSerializer->serialize();
 }
-
-
-}
-
-
-
 
 
 void Solver::solveIVP(MySettings *settings, IVP ivp) {
-
-
-  exit(0);
   mforce1("solve ivp <");
   mreset(old);
   minc();
@@ -596,59 +474,21 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   }
   cerr << endl;
 
-  settings->writer->info.push_back(sbuilder() << "int progress: " << t);
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
+
+  settings->writer->info.push_back(sbuilder() << "int progress: " << t);
+
   cout << "computation time: " << integrTime << endl;
   settings->writer->info.push_back(sbuilder() << "computation time: " << integrTime);
-  
-  //tprint("sc_transfrom");
-  //tprint("tr_eval");
-  //tprint("tr_remap");
-  //tprint("tr_comp_pre");
-  
 
-  #ifdef no_output
-    cout << "not creating my output" << endl;
-  #else
-    cout << "creating my output" << endl;
-    compSolver::createOutput(comps, *all, settings->transformer, settings);
-    //settings->transformer->addInfo(writer.info);
-    addMyInfo(settings->writer->info);
-    tstart(sc_post_add);
-    cout << "writing output" << endl;
-    //need to use all->dom, since some parameters maybe be discarded
-    settings->writer->addComponents(comps, all->dom, *all, 
-        settings->transformer->isPreconditioned);
-    tend(sc_post_add);
-    tstart(sc_post_write);
-    settings->writer->writeCSV();
-    settings->writer->writeInfo();
-    settings->writer->finish();
-    tend(sc_post_write);
-  #endif
-  //tprint("sc_post");
-  //tprint("tr_");
-  //cout << "here2" << endl;
-  
-  
-  /*
-  if(settings->transformer->isWrapper) {
-    //TODO
-    //writer.info.push_back(sbuilder() << "shrink wraps: " << swChecker->getCount());
-  } else
-    writer.info.push_back(sbuilder() << "shrink wraps: 0");
-  */
+  post(settings);
   
   mdec();
   mrestore(old);
 
   mdec();
   mlog1("solve ivp >");
-  
-  if(pSerializer != NULL)
-    pSerializer->serialize();
-
 }
 
 

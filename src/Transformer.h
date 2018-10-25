@@ -30,7 +30,6 @@ class Transformer {
     const bool isWrapper;
     const string name;
     virtual void addInfo(vector<string> & info) = 0;
-    virtual void setIntegrationMapper(vector<MyComponent *> comps) = 0;
     int getType();
     int count;
 };
@@ -42,7 +41,6 @@ class ShrinkWrapper: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info);
-    void setIntegrationMapper(vector<MyComponent *> comps);
   private:
     ShrinkWrappingCondition *swChecker;
 };
@@ -60,7 +58,6 @@ class PreconditionedTransformer: public Transformer {
         MySettings & settings);
     void firstTransform(MyComponent & comp, MySettings & settings);
     void addInfo(vector<string> & info);
-    void setIntegrationMapper(vector<MyComponent *> comps);
     void getScaling(Matrix & S, Matrix & SInv, vector<Interval> & rightRange);
 };
 
@@ -71,7 +68,6 @@ class QRTransformer: public PreconditionedTransformer {
         MySettings & settings);
     virtual void getMatrices(Matrix & a, Matrix & aInv, 
         const TaylorModelVec & x0) = 0;
-    void setIntegrationMapper(vector<MyComponent *> comps); //remove after extending preconditioned
     TaylorModelVec getLeftToRight(TaylorModelVec & leftStar, Matrix & invA);
 };
 
@@ -137,7 +133,6 @@ class NullTransformer: public Transformer {
     void transform(MyComponent & all, vector<MyComponent *> & comps, 
         MySettings & settings);
     void addInfo(vector<string> & info);
-    void setIntegrationMapper(vector<MyComponent *> comps);
 };
 
 

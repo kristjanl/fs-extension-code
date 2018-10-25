@@ -516,9 +516,9 @@ BOOST_AUTO_TEST_CASE (apply_sw) {
 	c1.pipes.push_back(c1.initSet);
 	c2.pipes.push_back(c2.initSet);
 	
-  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  MyComponent *all = pGetSystemComponent(comps, parsed, hfs, domain);
   
-  smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
+  smallComp::applyShrinkWrapping(*all, domain, step_end_exp_table, 
       comps, writer);
 
   
@@ -586,14 +586,14 @@ BOOST_AUTO_TEST_CASE (apply_sw_with_introduction) {
 	c2.pipes.push_back(c2.initSet);
 	c3.pipes.push_back(c3.initSet);
   
-  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  MyComponent *all = pGetSystemComponent(comps, parsed, hfs, domain);
   
   /*
   mlog("c1", c1.initSet);
   mlog("c2", c2.initSet);
   mlog("c3", c3.initSet);
   */
-  smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
+  smallComp::applyShrinkWrapping(*all, domain, step_end_exp_table, 
       comps, writer);
   
 	parseSetting.clear();

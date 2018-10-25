@@ -456,7 +456,4 @@ void sqrt_taylor_only_remainder(Interval & result, const Interval & remainder, l
 extern ParseSetting parseSetting;
 extern ParseResult parseResult;
 
-
-#include "MyComponent.h"
-
 #endif /* TAYLORMODEL_H_ */

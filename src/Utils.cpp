@@ -1,7 +1,71 @@
 #include "Utils.h"
-#include "Utils2.h"
+
+#include "TaylorModel.h"
+#include "MyComponent.h"
+#include "Interval.h"
+#include "OutputWriter.h"
+#include "Transformer.h"
+#include "PreconditionedTMV.h"
 
 using namespace std;
+
+//in .cpp since then header doesn't have to depend on TaylorModelVec.h
+class NamedTMV {
+  public:
+    string name;
+    TaylorModelVec tmv;
+    NamedTMV(string name, TaylorModelVec tmv);
+};
+vector<NamedTMV> pDeserializeNamedFlows(string filename);
+
+
+MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
+      autoComponents(false) {
+}
+MySettings::MySettings(OutputWriter *writer, int order, 
+      double step, double time, vector<Interval> estimation, 
+      vector<Interval> step_exp_table, 
+      vector<Interval> step_end_exp_table, 
+      vector<Interval> domain, const Interval *cutoff)
+      : writer(writer), order(order), step(step), time(time), 
+      estimation(estimation), step_exp_table(step_exp_table), 
+      step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
+      discardEmptyParams(false), autoComponents(false) {
+}
+
+void MySettings::log() {
+  mreset(old);
+  mlog1("setting2 <");
+  minc();
+  mlog1(sbuilder() << "autoComponents: " << autoComponents);
+  mlog1(sbuilder() << "order: " << order);
+  mlog1(sbuilder() << "step: " << step);
+  mlog1(sbuilder() << "time: " << time);
+  mlog1(sbuilder() << "useFlow: " << useFlow);
+  mlog1(sbuilder() << "discardEmptyParams: " << discardEmptyParams);
+  mlog("estimation", estimation);
+  if(step_exp_table.size() < 2) {
+    mlog1("step_exp_table is empty");
+  } else {
+    mlog1(sbuilder() << "step_exp_table[1]: " << step_exp_table[1].toString());
+  }
+  if(step_end_exp_table.size() < 2) {
+    mlog1("step_end_exp_table is empty");
+  } else {
+    mlog1(sbuilder() << "step_end_exp_table[1]: " << step_end_exp_table[1].toString());
+  }
+  mlog("domain", domain);
+  mlog1(sbuilder() << "cutoff: " << cutoff->toString(5));
+  mlog("varNames", varNames);
+  mlog1(sbuilder() << "number of components: " << intComponents.size());
+  for(int i = 0; i < intComponents.size(); i++) {
+    mlog(sbuilder() << "comp[" << i << "]", intComponents[i]);
+  }
+  mdec();
+  mlog1("setting2 >");
+  mrestore(old);
+}
+
 
 ShrinkWrappingCondition::ShrinkWrappingCondition(int steps): 
       steps(steps) {
@@ -60,35 +124,6 @@ bool ShrinkWrappingCondition::checkApplicability(vector<MyComponent *> comps,
 
 int ShrinkWrappingCondition::getCount() const {
   return count;
-}
-
-
-
-
-PrecondModel::PrecondModel(TaylorModelVec left, TaylorModelVec right) : 
-      left(left), right(right) {
-}
-
-TaylorModelVec PrecondModel::composed(MySettings *settings) {
-  TaylorModelVec ret;
-	//mforce("comp_left", left);
-	//mforce("comp_right", right);
-  
-  vector<Interval> rightRange;
-	//right.polyRange(rightRange, settings->domain);
-  right.polyRangeNormal(rightRange, settings->step_exp_table);
-	
-	//left.insert_ctrunc(ret, right, rightRange, settings->domain, settings->order, 0);
-	left.insert_ctrunc_normal(ret, right, rightRange, settings->step_exp_table,
-	     settings->domain.size(), settings->order, *settings->cutoff);
-	
-	//logger.log("cl", left.tms[0]);
-	
-	//pSerializer->add(right, "comp_right");
-	//pSerializer->add(left, "comp_left");
-	//pSerializer->add(ret, "comp_comp");
-	//mforce("ret", ret);
-	return ret;
 }
 
 
@@ -615,11 +650,11 @@ void printComponents(MySettings *settings) {
   mrestore(old);
 }
 
-int findPos(int value, vector<int> *v) {
+int findPos(int value, const vector<int> *v) {
   return find(v->begin(), v->end(), value) - v->begin();
 }
 
-int isIn(int value, vector<int> *v) {
+int isIn(int value, const vector<int> *v) {
   return find(v->begin(), v->end(), value) != v->end();
 }
 
@@ -680,4 +715,194 @@ void addFlowInfo(vector<string> & info) {
   taddToInfo("pleft", fl_pre_left, info);
   taddToInfo("pend", fl_pre_end, info);
   
+}
+
+TaylorModelVec getUnitTmv(int varCount) {
+  vector<TaylorModel> tms;
+  for(int i = 0; i < varCount; i++) {
+    vector<Interval> temp;
+    temp.push_back(Interval(0));
+    for(int j = 0; j < varCount; j++) {
+      if(i == j) {
+        temp.push_back(Interval(1));
+        continue;
+      }
+      temp.push_back(Interval(0));
+    }
+	  tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
+  }
+  TaylorModelVec ret(tms);
+  return ret;
+}
+TaylorModelVec getNVarMParam(int varCount, int paramCount) {
+  if(varCount == 0)
+    return TaylorModelVec();
+  int shift = paramCount - varCount;
+  vector<TaylorModel> tms;
+  Matrix coefs(varCount, paramCount + 1);
+  for(int i = 0; i < varCount; i++) {
+    for(int j = 0; j < paramCount; j++) {
+      if(i == j) {
+        coefs.set(1, i, j + 1 + shift);
+      }
+    }
+  }
+  TaylorModelVec ret(coefs);
+  return ret;
+}
+TaylorModelVec getNVarMParam(int varCount, vector<int> params) {
+  if(varCount == 0)
+    return TaylorModelVec();
+  vector<TaylorModel> tms;
+  for(int i = 0; i < varCount; i++) {
+    vector<Interval> temp;
+    temp.push_back(Interval(0));
+    for(int j = 0; j < varCount; j++) {
+      if(isIn(j, &params) == false) {
+        continue;
+      }
+      if(i == j) {
+        temp.push_back(Interval(1));
+        continue;
+      }
+      temp.push_back(Interval(0));
+      //temp.push_back(Interval(1));
+    }
+    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
+  }
+  TaylorModelVec ret(tms);
+  return ret;
+}
+
+
+void createFullyCompositionalOutput(vector<MyComponent *> comps, 
+    MyComponent & all, Transformer *transformer, MySettings *settings) {
+  mreset(old);
+  mdisable();
+  mlog1("fully comp");
+  
+  mlog("allVars", all.allVars);
+  mlog("varIndexes", all.varIndexes);
+  mlog1(sbuilder() << all.dependencies.size());
+  
+  int pipes = all.dependencies[0]->pComp->pipePairs.size();
+  TaylorModel left, right;
+  
+  
+  for(int step = 0; step < pipes; step++) {
+    mlog1(sbuilder() << "step: " << step);
+    
+    TaylorModelVec left, right;
+    for(int var = 0; var < all.allVars.size(); var++) {
+      mlog1(sbuilder() << "var: " << var);
+      
+      
+      vector<int> lMapper;
+      vector<int> rMapper;
+      MyComponent *curComp = &all;
+      
+      
+      while(true) {
+        mlog1("in while");
+        int pos = findPos(var, &curComp->varIndexes);
+        mlog1(sbuilder() << "pos: " << pos);
+        
+        if(pos < curComp->varIndexes.size()) {
+          mlog1("can return straight");
+          
+          TaylorModel singleLeft = curComp->pipePairs[step]->left.tms[pos];
+          TaylorModel singleRight = curComp->pipePairs[step]->right.tms[pos];
+          
+          mlog("l", singleLeft);
+          mlog("r", singleRight);
+          
+          left.tms.push_back(singleLeft.transform(lMapper));
+          right.tms.push_back(singleRight.transform(rMapper));
+          break;
+        }
+        
+        
+        bool foundDep = false;
+        for(int j = 0; j < curComp->dependencies.size(); j++) {
+          CompDependency *dep = curComp->dependencies[j];
+          mlog("depAll", dep->pComp->allVars);
+          
+          //is variable in dependency implicit variables
+          bool in = isIn(var, &dep->pComp->allVars);
+          
+          //if variable is not in dependency skip dependency
+          if(in == false) {
+            continue;
+          }
+          foundDep = true;
+          curComp = dep->pComp;
+          
+          lMapper = concateMapper(dep->leftMapper, lMapper);
+          rMapper = concateMapper(dep->rightMapper, rMapper);
+          mlog("lm", lMapper);
+          mlog("rm", rMapper);
+        }
+        if(foundDep == false) {
+          stringstream ss;
+          ss << "should never get to this point, ";
+          ss << "either variable is in componenent or one of the dependencies";
+          throw std::runtime_error(ss.str());
+        }
+      }
+    }//end of var
+    
+    mlog("left", left);
+    mlog("right", right);
+    all.pipePairs.push_back(new PrecondModel(left, right));
+  }//end of step
+  mrestore(old);
+}
+
+
+void createOutput(vector<MyComponent *> comps, MyComponent & all, 
+      Transformer *transformer, MySettings *settings) {
+  tstart(sc_post_composing);
+  if(transformer->isPreconditioned == false)
+    return;
+  
+  mlog1("making system flowpipes");  
+  //if fully compositional  
+  tstart(tr_remap3);
+  
+  if(transformer->getType() == TR_SINGLE_COMP) {
+    //transformer preconditions single component at a time
+    //need to add last flowpipe for all components
+    for(int i = 0; i < comps.size(); i++) {
+      comps[i]->pipePairs.push_back(
+          new PrecondModel(comps[i]->timeStepPipe, comps[i]->unpairedRight));
+    }
+    createFullyCompositionalOutput(comps, all, transformer, settings);
+  } else if(transformer->getType() == TR_ALL_COMP) {
+    //tranformer maps everything to system, then precondtions
+    //need to remap last integration result, add last flowpipe for system component
+    all.remapTimeStepPipe();
+    all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
+    
+    //mforce3(old3, "all.right3", all.unpairedRight);
+  } else {
+    //old code might not be compatible, look into it when problems arise
+    throw std::runtime_error("don't know how to make output");
+  }
+  tend(tr_remap3);
+  
+  mlog1("composing flowpipes");
+  for(int i = 0; i < all.pipePairs.size(); i++) {
+    cout << ".";
+    //pSerializer->add(all.pipePairs[i]->left, "comp_left");
+    //pSerializer->add(all.pipePairs[i]->right, "comp_right");
+    TaylorModelVec composed = all.pipePairs[i]->composed(settings);
+    
+    //pSerializer->add(composed, "composed");
+    all.output.push_back(composed);
+    //pSerializer->add(composed, "composed");
+  }
+  
+  cout << all.output.size();
+  cout << endl;
+  tend(sc_post_composing);
 }

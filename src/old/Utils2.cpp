@@ -2,7 +2,7 @@
 #include "Interval.h"
 #include "OutputWriter.h"
 #include "Transformer.h"
-#include "Continuous.h" //TODO remove after refactoring
+
 
 MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
       autoComponents(false) {

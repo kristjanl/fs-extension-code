@@ -5,7 +5,7 @@
 #include "Interval.h"
 #include "Monomial.h"
 #include "Polynomial.h"
-#include "SmallComp.h"
+//#include "SmallComp.h"
 #include "OutputWriter.h"
 #include "Continuous.h"
 

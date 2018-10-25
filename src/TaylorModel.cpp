@@ -8,6 +8,7 @@
 
 #include "TaylorModel.h"
 #include "MyLogger.h"
+#include "MyComponent.h"
 
 ParseSetting parseSetting;
 ParseResult parseResult;

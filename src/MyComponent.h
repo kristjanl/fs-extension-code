@@ -36,7 +36,6 @@ class MyComponent {
     bool isPreconditioned;
     bool firstPrecondition;
     bool usingPreconditioning;
-    static int nextFreeParam;
     
     //vector of variables that will introduce parameter
     std::vector<int> varsToBeIntroduced;
@@ -75,7 +74,7 @@ class MyComponent {
     
     void addVar(int var);
     void prepareComponent(TaylorModelVec init, const std::vector<HornerForm> & ode, 
-        std::vector<Interval> domain, bool discardEmptyParams);
+        MySettings *settings);
     void prepareVariables(TaylorModelVec tmv, const std::vector<HornerForm> & ode, 
         bool discardEmptyParams);
     void prepareMappers();
@@ -124,18 +123,8 @@ std::vector<MyComponent *> createComponents(MySettings *settings,
     const std::vector<HornerForm> & ode);
 void makeCompIndexes(MySettings *settings, const std::vector<HornerForm> & ode);
 
-
-void prepareComponents(std::vector<MyComponent *> & comps, TaylorModelVec init, 
-    const std::vector<HornerForm> & ode, std::vector<Interval> domain, 
-    bool discardEmptyParams);
-
-//TODO remove after refactoring
-MyComponent getSystemComponent(std::vector<MyComponent *> comps, 
-    TaylorModelVec init, const std::vector<HornerForm> & ode, 
-    std::vector<Interval> domain, bool discardEmptyParams);
-
 MyComponent* pGetSystemComponent(std::vector<MyComponent *> comps, 
     TaylorModelVec init, const std::vector<HornerForm> & ode, 
-    std::vector<Interval> domain, bool discardEmptyParams);
+    MySettings *settings);
 
 #endif /* MYCOMPONENT_H_ */

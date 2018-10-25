@@ -45,7 +45,10 @@ LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 # PBJ: modelParser.o added.  Not clear why omitted.
 # KL: removed modelParser again, it produces conflicts if using profiling (two main functions)
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o Geometry.o Constraints.o Hybrid.o MyLogger.o ExtractedPicard.o OutputWriter.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o Transformer.o Utils2.o CompSolver.o
+OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o 
+OBJS += Geometry.o Constraints.o Hybrid.o MyLogger.o ExtractedPicard.o 
+OBJS += OutputWriter.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o 
+OBJS += Transformer.o CompSolver.o PreconditionedTMV.o
 
 # All sources
 SRCS= $(OBJS:.o=.cpp)

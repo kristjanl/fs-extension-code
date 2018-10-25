@@ -423,7 +423,7 @@ void applySw() {
 	c1.pipes.push_back(c1.initSet);
 	c2.pipes.push_back(c2.initSet);
 	
-  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  MyComponent *all = pGetSystemComponent(comps, parsed, hfs, domain);
   
   /*TODO add back
   smallComp::applyShrinkWrapping(all, domain, step_end_exp_table, 
@@ -496,7 +496,7 @@ void sw3() {
 	c2.pipes.push_back(c2.initSet);
 	c3.pipes.push_back(c3.initSet);
   
-  MyComponent all = getSystemComponent(comps, parsed, hfs, domain);
+  MyComponent *all = pGetSystemComponent(comps, parsed, hfs, domain);
   
   /*
   mlog("c1", c1.initSet);

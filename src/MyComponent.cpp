@@ -4,82 +4,11 @@
 //MySettings class (in Cont.h)
 //https://stackoverflow.com/questions/6988924/invalid-use-of-incomplete-type-forward-declaration
 #include "Continuous.h"
-#include "Utils2.h"
+#include "Utils.h"
+#include "PreconditionedTMV.h"
+#include "Transformer.h"
 
 using namespace std;
-
-//TODO remove! (duplicate of Transformer function
-namespace MyComponentRemove{
-  //duplicated in Utils
-  int findPos(int value, vector<int> *v) {
-    return find(v->begin(), v->end(), value) - v->begin();
-  }
-  //duplicated in Utils
-  int isIn(int value, vector<int> *v) {
-    return find(v->begin(), v->end(), value) != v->end();
-  }
-  
-  TaylorModelVec getUnitTmv(int varCount) {
-    vector<TaylorModel> tms;
-    for(int i = 0; i < varCount; i++) {
-      vector<Interval> temp;
-      temp.push_back(Interval(0));
-      for(int j = 0; j < varCount; j++) {
-        if(i == j) {
-          temp.push_back(Interval(1));
-          continue;
-        }
-        temp.push_back(Interval(0));
-      }
-	    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
-    }
-    TaylorModelVec ret(tms);
-    
-	  //mlog("ret", ret);
-    return ret;
-  }
-  
-  //TODO make this smarter (to support any given initial TM)
-  TaylorModelVec getNVarMParam(int varCount, int paramCount) {
-    if(varCount == 0)
-      return TaylorModelVec();
-    int shift = paramCount - varCount;
-    vector<TaylorModel> tms;
-    Matrix coefs(varCount, paramCount + 1);
-    for(int i = 0; i < varCount; i++) {
-      for(int j = 0; j < paramCount; j++) {
-        if(i == j) {
-          coefs.set(1, i, j + 1 + shift);
-        }
-      }
-    }
-    TaylorModelVec ret(coefs);
-    return ret;
-  }
-  TaylorModelVec getNVarMParam(int varCount, vector<int> params) {
-    if(varCount == 0)
-      return TaylorModelVec();
-    vector<TaylorModel> tms;
-    for(int i = 0; i < varCount; i++) {
-      vector<Interval> temp;
-      temp.push_back(Interval(0));
-      for(int j = 0; j < varCount; j++) {
-        if(MyComponentRemove::isIn(j, &params) == false) {
-          continue;
-        }
-        if(i == j) {
-          temp.push_back(Interval(1));
-          continue;
-        }
-        temp.push_back(Interval(0));
-        //temp.push_back(Interval(1));
-      }
-	    tms.push_back(TaylorModel(Polynomial(temp), Interval(0)));
-    }
-    TaylorModelVec ret(tms);
-    return ret;
-  }
-}
 
 MyComponent::MyComponent(vector<int> vs, vector<int> tps):varIndexes(vs),tpIndexes(tps) {
   isSolved = false;
@@ -466,8 +395,7 @@ void MyComponent::remapIVP(TaylorModelVec tmv, const vector<HornerForm> & ode,
 //prepares variables, mappers and intial set
 //TODO could refactor to use IVP
 void MyComponent::prepareComponent(TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
-    bool discardEmptyParams) {
+    const vector<HornerForm> & ode, MySettings *settings) {
   //return if variables have already been prepared
   if(isPrepared) {
     return;
@@ -484,19 +412,34 @@ void MyComponent::prepareComponent(TaylorModelVec init,
         it < dependencies.end(); it++) {
     mlog1(sbuilder() << "link: " << (*it)->linkVar);
     MyComponent *pComp = (*it)->pComp;
-    pComp->prepareComponent(init, ode, domain, discardEmptyParams);
+    pComp->prepareComponent(init, ode, settings);
   }
-  prepareVariables(init, ode, discardEmptyParams);
+  prepareVariables(init, ode, settings->discardEmptyParams);
   prepareMappers();
-  remapIVP(init, ode, domain);
+  remapIVP(init, ode, settings->domain);
   timeStepPipe = TaylorModelVec(this->initSet);
   
   //only create a part of right taylor model 
-  //unpairedRight = MyComponentRemove::getUnitTmv(allTMParams.size());
-  unpairedRight = MyComponentRemove::getUnitTmv(tpIndexes.size());
-  unpairedRight = MyComponentRemove::getNVarMParam(tpIndexes.size(),
+  //unpairedRight = getUnitTmv(allTMParams.size());
+  unpairedRight = getUnitTmv(tpIndexes.size());
+  unpairedRight = getNVarMParam(tpIndexes.size(),
       allTMParams.size());
   //mforce3(aaaa, "in prepare2", unpairedRight);
+
+
+  //denote that using preconditioned transformer
+  usingPreconditioning = settings->transformer->isPreconditioned;
+
+  for(int j = 0; j < dependencies.size(); j++) {
+    CompDependency dep = *dependencies[j];
+    //use left mapper when preconditioned
+    if(settings->transformer->isPreconditioned) {
+      dep.mapper = dep.leftMapper;
+    } else {
+      dep.mapper = dep.rightMapper;
+    }
+  }
+
   isPrepared = true;
   
   mdec();
@@ -932,47 +875,9 @@ vector<MyComponent *> createComponents(MySettings *settings,
 }
 
 
-MyComponent getSystemComponent(vector<MyComponent *> comps,
-    TaylorModelVec init, const vector<HornerForm> & ode,
-    vector<Interval> domain, bool discardEmptyParams) {
-  mreset(old);
-  mdisable();
-  MyComponent ret;
-  for(vector<MyComponent *>::iterator it = comps.begin(); 
-      it < comps.end(); it++) {
-    for(vector<int>::iterator i2 = (*it)->varIndexes.begin();
-        i2 < (*it)->varIndexes.end(); i2++) {
-      ret.addDependency(*i2, *it);
-    }
-  }
-  ret.prepareComponent(init, ode, domain, discardEmptyParams);
-  
-  //mlog("av", ret.allVars);
-  //mlog("cv", ret.compVars);
-  
-  TaylorModelVec temp;  
-  //need to reorder initset wrt allVars
-  for(int i = 0; i < ret.allVars.size(); i++) {
-    int var = ret.allVars[i];
-    int place = MyComponentRemove::findPos(var, &ret.compVars);
-    mlog1(sbuilder() << "place: " << place);
-    temp.tms.push_back(ret.initSet.tms[place]);
-  }
-  ret.initSet = temp;
-  
-  //ret.unpairedRight = MyComponentRemove::getUnitTmv(init.tms.size());
-  ret.unpairedRight = MyComponentRemove::getNVarMParam(init.tms.size(), 
-      ret.allTMParams);
-  mrestore(old);
-  
-  ret.usingPreconditioning = comps[0]->usingPreconditioning;
-  
-  return ret;
-}
-
 MyComponent* pGetSystemComponent(vector<MyComponent *> comps,
     TaylorModelVec init, const vector<HornerForm> & ode,
-    vector<Interval> domain, bool discardEmptyParams) {
+    MySettings *settings) {
   mreset(old);
   mdisable();
   MyComponent *ret = new MyComponent;
@@ -983,7 +888,7 @@ MyComponent* pGetSystemComponent(vector<MyComponent *> comps,
       ret->addDependency(*i2, *it);
     }
   }
-  ret->prepareComponent(init, ode, domain, discardEmptyParams);
+  ret->prepareComponent(init, ode, settings);
   
   //mlog("av", ret.allVars);
   //mlog("cv", ret.compVars);
@@ -992,14 +897,14 @@ MyComponent* pGetSystemComponent(vector<MyComponent *> comps,
   //need to reorder initset wrt allVars
   for(int i = 0; i < ret->allVars.size(); i++) {
     int var = ret->allVars[i];
-    int place = MyComponentRemove::findPos(var, &ret->compVars);
+    int place = findPos(var, &ret->compVars);
     mlog1(sbuilder() << "place: " << place);
     temp.tms.push_back(ret->initSet.tms[place]);
   }
   ret->initSet = temp;
   
-  //ret->unpairedRight = MyComponentRemove::getUnitTmv(init.tms.size());
-  ret->unpairedRight = MyComponentRemove::getNVarMParam(init.tms.size(), 
+  //ret->unpairedRight = getUnitTmv(init.tms.size());
+  ret->unpairedRight = getNVarMParam(init.tms.size(), 
       ret->allTMParams);
   mrestore(old);
   
@@ -1007,33 +912,6 @@ MyComponent* pGetSystemComponent(vector<MyComponent *> comps,
   
   return ret;
 }
-
-
-void prepareComponents(vector<MyComponent *> & comps, TaylorModelVec init, 
-    const vector<HornerForm> & ode, vector<Interval> domain, 
-    bool discardEmptyParams) {
-  mreset(old);
-  mdisable();
-  mlog1("preparing components <");
-  minc();
-  mforce1("shouldn't be used");
-  exit(0);
-  
-  mlog("init", init);
-  for(vector<MyComponent *>::iterator it = comps.begin(); 
-      it < comps.end(); it++) {
-    (*it)->prepareComponent(init, ode, domain, discardEmptyParams);
-    mlog("pre Init", (*it)->initSet);
-  }
-
-  mdec();
-  mlog1("preparing components >");
-  mrestore(old);
-}
-
-int MyComponent::nextFreeParam = -1;
-
-
 
 PrecondModel *MyComponent::lastPre() {
   return pipePairs[pipePairs.size() - 1];
@@ -1105,7 +983,7 @@ void MyComponent::computeMappingPositions(int variable, int *depPos,
   mlog1(sbuilder() << "variable: " << variable);
   
   //dependency position
-  *depPos = MyComponentRemove::findPos(variable, &linkVars);
+  *depPos = findPos(variable, &linkVars);
   
   if(*depPos >= linkVars.size()) {
     throw invalid_argument(sbuilder() << "not wasn't linkVars, pos: " << *depPos); 
@@ -1115,9 +993,9 @@ void MyComponent::computeMappingPositions(int variable, int *depPos,
   mlog1(sbuilder() << "*depPos: " << *depPos);
   
   //position of linking variable in precomputed component
-  *dLinkPos = MyComponentRemove::findPos(variable, &(pComp->compVars));
+  *dLinkPos = findPos(variable, &(pComp->compVars));
   //position of linking variable in current component
-  *linkPos = MyComponentRemove::findPos(variable, &compVars);
+  *linkPos = findPos(variable, &compVars);
   if(*dLinkPos >= pComp->compVars.size()) {
     mlog1(sbuilder() << "*dLinkPos: " << *dLinkPos);
     mlog("compVars", compVars);
@@ -1138,7 +1016,7 @@ void MyComponent::getIthPipePair(vector<int> lMapper, vector<int> rMapper,
         TaylorModel & left, TaylorModel & right, int var, int i) {
   mforce1("getting ith");
   
-  int pos = MyComponentRemove::findPos(var, &varIndexes);
+  int pos = findPos(var, &varIndexes);
   if(pos < varIndexes.size()) {
     //TaylorModel left = pipePairs[i]->left.tms[pos];
     
@@ -1166,7 +1044,7 @@ TaylorModel MyComponent::getRightModelForVar(vector<int> mapper, int var) {
   mlog1(sbuilder() << "getting flowpipe for " << var);
   mlog("mapper", mapper);
   
-  int pos = MyComponentRemove::findPos(var, &varIndexes);
+  int pos = findPos(var, &varIndexes);
   if(pos < varIndexes.size()) {
     mlog1(mapper.size());
     mlog1("can return straight");
@@ -1194,7 +1072,7 @@ TaylorModel MyComponent::getRightModelForVar(vector<int> mapper, int var) {
     mlog("depAll", dep->pComp->allVars);
     
     //is variable in dependency implicit variables
-    bool in = MyComponentRemove::isIn(var, &dep->pComp->allVars);
+    bool in = isIn(var, &dep->pComp->allVars);
     
     //if variable is not in dependency skip dependency
     if(in == false) {

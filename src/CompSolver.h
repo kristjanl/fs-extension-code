@@ -24,6 +24,7 @@ class IVP {
 class Solver {
   private:
     void setUp(MySettings *settings, IVP & ivp);
+    void post(MySettings *settings);
   public:
     MyComponent *all; //TODO free
     std::vector<MyComponent *> comps;
