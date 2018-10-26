@@ -9,8 +9,10 @@ continuous reachability
     remainder estimation 1e-2
     
     
+    use cflow
+    
     #fully compositional
-    #left model compositional 
+    left model compositional 
     
     #QR precondition2
     identity precondition
@@ -25,7 +27,6 @@ continuous reachability
     remove point params
     
     #use plain flowstar
-    use cflow
     
     #auto components
     no components

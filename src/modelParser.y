@@ -2106,8 +2106,7 @@ IDENT EQ NUM
 
 
 //TODO remove algorithm decomposition
-settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM 
-CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker compositionality
+settings: FIXEDST NUM TIME NUM remainder_estimation implPicker precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params compositionality
 {
   settings2->step = $2;
   settings2->time = $4;
@@ -2120,7 +2119,7 @@ CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker composit
 		exit(1);
 	}
 
-	int order = (int)$9;
+	int order = (int)$10;
   settings2->order = order;
 	if(order <= 0)
 	{
@@ -2144,26 +2143,26 @@ CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker composit
 	hybridProblem.global_setting.orders.push_back(order);
 	hybridProblem.global_setting.globalMaxOrder = order;
 
-	if($11 <= 0)
+	if($12 <= 0)
 	{
 		parseError("The cutoff threshold should be a positive number.", lineNum);
 		exit(1);
 	}
 
-	Interval cutoff_threshold(-$11,$11);
+	Interval cutoff_threshold(-$12,$12);
 	continuousProblem.cutoff_threshold = cutoff_threshold;
 	hybridProblem.global_setting.cutoff_threshold = cutoff_threshold;
   settings2->cutoff = new Interval(cutoff_threshold);
 
-	intervalNumPrecision = (int)$13;
+	intervalNumPrecision = (int)$14;
 
-	strcpy(continuousProblem.outputFileName, (*$15).c_str());
-	strcpy(hybridProblem.outputFileName, (*$15).c_str());
-	mlog1(sbuilder() << "cutoff_thrs: " << $11 << ", intnumprec: " << $13 << ", outFname: " << *$15);
+	strcpy(continuousProblem.outputFileName, (*$16).c_str());
+	strcpy(hybridProblem.outputFileName, (*$16).c_str());
+	mlog1(sbuilder() << "cutoff_thrs: " << $12 << ", intnumprec: " << $14 << ", outFname: " << *$16);
 	
 	//settings2->log();
 
-	delete $15;
+	delete $16;
 }
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' MIN NUM ',' MAX NUM '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
