@@ -78,7 +78,7 @@
 %token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
 %token DECOMPOSITION NO_DECOMPOSITION FULL_DECOMPOSITION
 
-%token USE_PLAIN_FLOWSTAR
+%token USE_PLAIN_FLOWSTAR USE_CFLOW
 %token LEFT_MODEL_COMP FULLY_COMP
 %token AUTO_COMPONENTS COMPONENTS NO_COMPONENTS
 
@@ -2778,14 +2778,14 @@ point_params: REMOVE_EMPTY_PARAMS {
   //initialized to false in constructor
 };
 
-implPicker: USE_PLAIN_FLOWSTAR {
-	if (plainFlowPrecondMethod == false) {
+implPicker: USE_CFLOW {
+	mlog1("using my impl");
+} | {
+  if (plainFlowPrecondMethod == false) {
 		parseError("Flowstar only supports (non compositional) identity and QR precondition.", lineNum);
 	}
 	cout << "using f* impl\n";
 	usePlainFlowstar = true;
-} | {
-	cout << "using my impl\n";
 };
 
 

@@ -2,11 +2,11 @@ int progress: 1
 eval t: 0
 precond time: 0
 int time: 0.05
-picard poly: 0
-picard remainder: 0.05
+picard poly: 0.01
+picard remainder: 0.04
 picard decreasing: 0.04
-picard refining: 0.01
-reffirst: 0.03
+picard refining: 0
+reffirst: 0.04
 pstart: 0
 pm: 0
 pltr: 0

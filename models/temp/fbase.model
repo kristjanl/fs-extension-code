@@ -13,7 +13,6 @@ continuous reachability
     cutoff 1e-15
     precision 53
     output fbase
-    use plain flowstar
     print on
   }
 

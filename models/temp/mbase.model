@@ -25,6 +25,7 @@ continuous reachability
     remove point params
     
     #use plain flowstar
+    use cflow
     
     #auto components
     no components

@@ -123,6 +123,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "full decomposition" {return FULL_DECOMPOSITION;}
 
 "use plain flowstar" {return USE_PLAIN_FLOWSTAR;}
+"use cflow" {return USE_CFLOW;}
 "left model compositional" {return LEFT_MODEL_COMP;}
 "fully compositional" {return FULLY_COMP;}
 "auto components" {return AUTO_COMPONENTS;}

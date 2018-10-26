@@ -59,7 +59,6 @@ SRCS= $(OBJS:.o=.cpp)
 DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS) modelParser.o profiling.o)
 
 all:
-	make outputToggle.txt
 	make flowstar
 
 .PHONY: test profiling
@@ -71,11 +70,6 @@ test:
 testcompile: $(OBJS) unittesting.o lex.yy.o modelParser.tab.o 
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
 
-
-# recompile only those .o files that are concerned with making output
-outputToggle.txt: outputToggle.txt
-	rm modelParser.tab.o
-	touch outputToggle.txt
 
 
 .PHONY: fast
