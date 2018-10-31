@@ -2339,8 +2339,10 @@ void TaylorModelVec::Picard_ctrunc_normal_assign(const TaylorModelVec & x0, cons
 	*this = result;
 }
 
-void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
-{
+void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, 
+    const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, 
+    const vector<Interval> & step_exp_table, const int numVars, const int order, 
+    const Interval & cutoff_threshold) const {
   //mforce1("my version shouldn't call this1");
   //exit(0);
   mreset(old);
@@ -2391,6 +2393,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
 	//mlog("result", result);
 	mdec();
 	mrestore(old);
+  //mforce("result", result);
 }
 
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
@@ -2557,7 +2560,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
     }
 	}
 	//mlog("result", result);
-	
+	//mforce("result", result);
 	mdec();
 	mrestore(old);
 }

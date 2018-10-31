@@ -1,0 +1,70 @@
+continuous reachability
+{
+  state var AND_1,AND,OR_1,OR,REPORTER,STRAND_3,STRAND_2,sp11,
+            sp16,sp19,STRAND_1,STRAND,sp21,sp26,sp29
+#            ,sp10,sp20,sp30 
+
+  setting
+  {
+    fixed steps 0.05
+    time 1.1
+    remainder estimation 1e-3
+    identity precondition
+    gnuplot interval AND_1,AND
+    fixed orders 2
+    cutoff 1e-15
+    precision 53
+    output no_extra_int
+    alg_small_comp flow impl
+    #remove point params
+    use cflow
+    auto components
+    print on
+  }
+
+  poly ode 1
+  {
+    AND_1' = -(((5000 * 5e-5) * STRAND_2) * AND_1)
+    AND' = -(((5000 * 5e-05) * STRAND) * AND)
+    OR_1' = -(((5000 * 5e-5) * sp16) * OR_1)
+    OR' = -(((5000 * 5e-05) * sp26) * OR)
+    REPORTER' = -(((5000 * 5e-5) * sp19) * REPORTER) - (((5000 * 5e-05) * sp29) * REPORTER)
+    STRAND_3' = -(((5000 * 5e-5) * STRAND_3) * sp11)
+    STRAND_2' = -(((5000 * 5e-5) * STRAND_2) * AND_1)
+    sp11' = (((5000 * 5e-5) * STRAND_2) * AND_1) - (((5000 * 5e-5) * STRAND_3) * sp11)
+    sp16' = (((5000 * 5e-5) * STRAND_3) * sp11) - (((5000 * 5e-5) * sp16) * OR_1)
+    sp19' = (((5000 * 5e-5) * sp16) * OR_1) - (((5000 * 5e-5) * sp19) * REPORTER)
+    STRAND_1' = -(((5000 * 5e-05) * STRAND_1) * sp21)
+    STRAND' = -(((5000 * 5e-05) * STRAND) * AND)
+    sp21' = (((5000 * 5e-05) * STRAND) * AND) - (((5000 * 5e-05) * STRAND_1) * sp21)
+    sp26' = (((5000 * 5e-05) * STRAND_1) * sp21) - (((5000 * 5e-05) * sp26) * OR)
+    sp29' = (((5000 * 5e-05) * sp26) * OR) - (((5000 * 5e-05) * sp29) * REPORTER)
+#    sp10' = (((5000 * 5e-5) * sp19) * REPORTER) + (((5000 * 5e-05) * sp29) * REPORTER)
+#    sp20' = (((5000 * 5e-5) * sp19) * REPORTER)
+#    sp30' = (((5000 * 5e-05) * sp29) * REPORTER)
+  }
+
+  init
+  {
+    AND_1 in [0.99,1.01]
+    AND  in [0.99,1.01]
+    OR_1 in [0.99,1.01]
+    OR  in [0.99,1.01]
+    REPORTER in [0.99,1.01]
+    STRAND_3 in [0.99,1.01]
+    STRAND_2 in [0.99,1.01]
+    STRAND_1 in [0.0, 0.0001]
+    STRAND in [0.0, 0.0001]
+    
+    sp11 in [0.0, 0.0001]
+    sp16 in [0.0, 0.0001]
+    sp19 in [0.0, 0.0001]
+    sp21 in [0.0, 0.0001]
+    sp26 in [0.0, 0.0001]
+    sp29 in [0.0, 0.0001]
+#    sp10 in [0.0, 0.0001]
+#    sp20 in [0.0, 0.0001]
+#    sp30 in [0.0, 0.0001]
+  }
+}
+

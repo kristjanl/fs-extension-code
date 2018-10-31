@@ -7,14 +7,48 @@
 #include "Interval.h"
 #include "Transformer.h"
 
+
+map<string,double> timeMap;
+map<string,int> refMap;
+
+void foo(string name, double d) {
+  timeMap[name] += d;
+}
+void addTime(clock_t start, string name) {
+  clock_t end = clock();
+  double dur = double(end - start) / CLOCKS_PER_SEC;
+  foo(name, dur);
+}
+void addRef(int ref, string name) {
+  refMap[name] + ref;
+}
+void addTime(clock_t start, clock_t end, string name) {
+  double dur = double(end - start) / CLOCKS_PER_SEC;
+  foo(name, dur);
+}
+void bar(string name) {
+  for(map<string,double>::iterator iter = timeMap.begin(); 
+      iter != timeMap.end(); ++iter) {
+    //only print the Transformer clocks
+    //cout << "f:" << iter->first << endl;
+    //cout << "s:" << iter->second << endl;
+  }
+  cout << name << ": " << timeMap[name] << endl;
+}
+
+void bar2(string name) {
+  cout << name << ": " << refMap[name] << endl;
+}
+
 void Solver::setUp(MySettings *settings, IVP & ivp) {
   cout << "setting up\n";
   
   if(pSerializer == NULL) {
     //transformer name appended with .txt
     string outName = string(settings->transformer->name);
-    if (settings->discardEmptyParams)
+    if (settings->discardEmptyParams) {
       outName.append("_dis");
+    }
     outName.append(".txt");
     mlog1(sbuilder() << "serializer name: " << outName);
     pSerializer = new TMVSerializer(outName);
@@ -90,6 +124,7 @@ namespace compSolver{
         continue;
 		  p.tms[i].remainder = guess[i];
 	  }
+    //pSerializer->add(p, "inspect");
 	  //evaluate this one seperately to get the cutoff measure
 	  //and higher order terms
 	  
@@ -101,10 +136,10 @@ namespace compSolver{
 	  TaylorModelVec compTemp;
     p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
       step_exp_table, paramCount, order, cutoff_threshold);
+    //pSerializer->add(compTemp, "inspect");
     tend1(ref_first_picard);
     tstart1(ref_rem);
     
-    mlog("comTemp", compTemp);
     mlog("tmv", compTemp);
     mlog("tm0", compTemp.tms[0]);
 	  mlog("solve", comp.solveIndexes);
@@ -124,6 +159,7 @@ namespace compSolver{
 		  
       compTemp.tms[i].remainder += intTemp;
 	  }
+    //pSerializer->add(compTemp, "inspect");
     tend1(ref_rem);
 	  tstart1(ref_subset);
     //tend(sc_int_noncomp);
@@ -146,10 +182,11 @@ namespace compSolver{
 		
 		int counter = 0;
 		//increase until you get subset remainders
+    //mforce1(sbuilder() << "notSubset: " << notSubset);
 	  while( notSubset ) {
 	    //error when can't find decreasing
       if(counter++ == MAX_REFINEMENT_STEPS) {
-        throw IntegrationException("max increase couldn't find a remainder");
+        throw IntegrationException("max increase couldn't find a remainder (in finding contracting)");
       }
       //mforce1(sbuilder() << "counter to find decreasing: " << counter);
 	    
@@ -176,7 +213,6 @@ namespace compSolver{
 		    }
 		  }
 		}
-		
 		//set the remainders to such that they decrease
 	  for(int i = 0; i < varCount; i++) {
       if(comp.isSolveVar(i) == false)
@@ -222,10 +258,13 @@ namespace compSolver{
 	  bool stop = false;
 	  int counter = 0;
 	  while( stop == false ) {
-  	  if(counter++ == MAX_REFINEMENT_STEPS - 1)
-	      throw IntegrationException(sbuilder() << "max refinement steps");
+  	  if(counter++ == MAX_REFINEMENT_STEPS - 1) {
+        break;
+	      //throw IntegrationException(sbuilder() << "max refinement steps");
+      }
 	    //mforce1(sbuilder() << "counter: " << counter);
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
+      //pSerializer->add(p, "only_rem");
       
 	    stop = true;
 	    
@@ -238,18 +277,22 @@ namespace compSolver{
 	    for(int i = 0; i < varCount; i++) {
         if(comp.isSolveVar(i) == false)
           continue;
+        //they are actually equal but mpfr libary rounds the ratio to not be 1
 	      if(p.tms[i].remainder.widthRatio(newRemainders[i]) <= STOP_RATIO) {
           //mlog1("redoing");
           stop = false;
           break;
         }
 	    }
-	    
 	    for(int i = 0; i < varCount; i++) {
         if(comp.isSolveVar(i) == false)
           continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
+      if(stop) {
+        //cout << counter << endl;
+        addRef(counter, comp.getVarName(&settings));
+      }
   	  //mforce("mr", p.getRemainders());
 	  }
 	  //mdec();
@@ -257,6 +300,8 @@ namespace compSolver{
 	  mrestore(old);
 	}
 
+  bool print = true;
+  bool print2 = false;
   void advanceFlow(MyComponent & component, MySettings & settings) {
     //tstart(sc_int_pre);
     mreset(old);
@@ -264,12 +309,26 @@ namespace compSolver{
     mlog1("advance flow <");
     minc();
     
-    mlog("var", component.varIndexes);
-    mlog("links", component.linkVars);
-    mlog("init", component.initSet);
+    //mlog("var", component.varIndexes);
+    //mlog("links", component.linkVars);
+    //mlog("init", component.initSet);
     //tstart(sc_int_all);
+    string compName = component.getVarName(&settings);
+    /*
+    if(print) {
+      if(component.getVarName(&settings).find("OR_1") != string::npos) {
+        print2 = true;
+        mforce1("");
+        mforce("init[0]", component.initSet.tms[0]);
+        mforce("init[1]", component.initSet.tms[1]);
+      }
+    }
+    */
+    //mforce1(component.getVarName(&settings));
+    //mforce("init", component.initSet);
     
     //variable when picard approximation is stored
+    //clock_t c1 = clock();
     TaylorModelVec & p = component.timeStepPipe;
     mlog("tsp", component.timeStepPipe);
     
@@ -287,13 +346,16 @@ namespace compSolver{
     //int varCount = p.tms.size();
     
     //tend(sc_int_pre);
-    
+    //addTime(c1, compName + ".init");
     
     tstart(sc_int_poly);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
       p.Picard_no_remainder_assign(&component, varCount + 1, i, *settings.cutoff);
+      //mforce1(sbuilder() << i);
+      //mforce("poly", p);
     }
+    
     mlog("poly", p);
     
     //pSerializer->add(p, "int_poly");
@@ -335,7 +397,15 @@ namespace compSolver{
     
     mlog("comp.tsp", component.timeStepPipe);
     mlog("tsp", p);
-        
+    //mforce("tsp", p.tms[1]);
+
+    if(print) {
+      //if(component.getVarName(&settings).find("OR_1") != string::npos) {
+        //mforce("tsp[0]", p.tms[0]);
+        //mforce("tsp[1]", p.tms[1]);
+      //}
+    }
+
     mdec();
     mlog1("advance flow >");
     mrestore(old);    
@@ -420,7 +490,6 @@ void Solver::post(MySettings *settings) {
     pSerializer->serialize();
 }
 
-
 void Solver::solveIVP(MySettings *settings, IVP ivp) {
   mforce1("solve ivp <");
   mreset(old);
@@ -430,7 +499,6 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   //settings->toOld()->log();
   setUp(settings, ivp);
 
-  mforce("vars", this->all->allVars);
   mforce1(sbuilder() << "size: " << comps.size());
   
   
@@ -438,7 +506,8 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   double t;
 
   for(t = 0; (t + THRESHOLD_HIGH) < settings->time; t+= settings->step) {
-    //mlog1(sbuilder() << "t: " << t);
+    //mforce1(sbuilder() << "t: " << t);
+    if(t > 1) compSolver::print = true;
     cerr << ".";
     try{
       mlog1(sbuilder() << "before transform");
@@ -452,7 +521,11 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
           it < comps.end(); it++) {
         //mlog("init", (*it)->initSet);
         //mforce("c", (*it)->compVars);
+        clock_t bef = clock();
         compSolver::doSingleStep(**it, *settings);
+        clock_t aft = clock();
+        double dur = double(aft - bef) / CLOCKS_PER_SEC;
+        foo((*it)->getVarName(settings), dur);
         //mlog("last", (*it)->lastPipe());
       }
       tend(sc_integrate);
@@ -473,6 +546,14 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
     //break; //only the first step, REMOVE!
   }
   cerr << endl;
+
+  
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    //bar((*it)->getVarName(settings) + ".init");
+    bar2((*it)->getVarName(settings));
+  }
+  
 
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;

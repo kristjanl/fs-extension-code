@@ -99,6 +99,7 @@ class MyComponent {
     
     void computeMappingPositions(int variable, int *depPos, int *dLinkPos, 
         int *linkPos);
+    string getVarName(MySettings *settings);
     
   private:
     void remapIVP(TaylorModelVec tmv, const std::vector<HornerForm> & ode, 

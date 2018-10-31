@@ -1,0 +1,47 @@
+continuous reachability
+{
+  state var AND_1,STRAND_2,sp12,sp13,STRAND_3,sp11,sp14,sp15
+
+  setting
+  {
+    fixed steps 0.05
+    time 1
+    remainder estimation 1e-3
+    identity precondition
+    gnuplot interval AND_1,AND_1
+    fixed orders 2
+    cutoff 1e-15
+    precision 53
+    output t8_int
+    alg_small_comp flow impl
+    #remove point params
+    use cflow
+    no components
+    print on
+  }
+
+  poly ode 1
+  {
+    AND_1' = -(((5000 * 5e-5) * STRAND_2) * AND_1)
+    STRAND_2' = -(((5000 * 5e-5) * STRAND_2) * AND_1)
+    sp12' = (((5000 * 5e-5) * STRAND_2) * AND_1)
+    sp13' = (((5000 * 5e-5) * STRAND_2) * AND_1)
+    STRAND_3' = -(((5000 * 5e-5) * STRAND_3) * sp11)
+    sp11' = (((5000 * 5e-5) * STRAND_2) * AND_1) - (((5000 * 5e-5) * STRAND_3) * sp11)
+    sp14' = (((5000 * 5e-5) * STRAND_3) * sp11)
+    sp15' = (((5000 * 5e-5) * STRAND_3) * sp11)
+  }
+
+  init
+  {
+    AND_1 in [0.99,1.01]
+    STRAND_2 in [0.99,1.01]
+    sp12 in [0.0, 0.0001]
+    sp13 in [0.0, 0.0001]
+    STRAND_3 in [0.99,1.01]
+    sp11 in [0.0, 0.0001]
+    sp14 in [0.0, 0.0001]
+    sp15 in [0.0, 0.0001]
+  }
+}
+

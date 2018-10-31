@@ -2,6 +2,23 @@
 
 using namespace std;
 
+/*
+template <typename T>
+void mylogger2::force(T t) {
+  int temp = disabled;
+  disabled = 0;
+  log(t);
+  disabled = temp;
+}
+
+template <typename T>
+void mylogger2::log(T t) {
+	if(disabled > 0)
+		return;
+	cout << string(ltab, ' ');
+	cout << t << endl;
+}*/
+
 void mylogger2::force(string s) {
   int temp = disabled;
   disabled = 0;

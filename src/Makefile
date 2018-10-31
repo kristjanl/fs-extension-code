@@ -24,10 +24,10 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
-CFLAGS += -Ddo_checks
-CXXFLAGS += -Ddo_checks
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
 LINK_FLAGS = -g
 
 # Uncomment for "perf --call-graph fp" profiling

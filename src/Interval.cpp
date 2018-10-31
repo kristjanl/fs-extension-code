@@ -1759,6 +1759,8 @@ void Interval::log_assign()
 
 double Interval::widthRatio(const Interval & I) const
 {
+  //mforce1(sbuilder() << "this: " << this->toString(50));
+  //mforce1(sbuilder() << "I: " << I.toString(50));
 	mpfr_t width1, width2, ratio;
 	mpfr_inits2(intervalNumPrecision, width1, width2, ratio, (mpfr_ptr) 0);
 

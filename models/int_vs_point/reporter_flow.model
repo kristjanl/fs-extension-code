@@ -1,0 +1,34 @@
+continuous reachability
+{
+  state var REPORTER,sp19,sp29
+
+  setting
+  {
+    fixed steps 0.05
+    time 0.05
+    remainder estimation 1e-3
+    identity precondition
+    gnuplot interval REPORTER,REPORTER
+    fixed orders 12
+    cutoff 1e-15
+    precision 53
+    output reporter_flow
+    alg_small_comp flow impl
+    print on
+  }
+
+  poly ode 1
+  {
+    REPORTER' = -(((5000 * 5e-5) * sp19) * REPORTER) - (((5000 * 5e-05) * sp29) * REPORTER)
+    sp19' = -(((5000 * 5e-5) * sp19) * REPORTER)
+    sp29' = -(((5000 * 5e-5) * sp29) * REPORTER)
+  }
+
+  init
+  {
+    REPORTER in [0.999,1.001]
+    sp19 in [0.0, 0.0]
+    sp29 in [0.0, 0.0]
+  }
+}
+

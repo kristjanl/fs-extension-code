@@ -1101,7 +1101,17 @@ int MyComponent::getIntergrationParamCount() {
   return allTMParams.size() + 1;
 }
 
-
+string MyComponent::getVarName(MySettings *settings) {
+  stringstream ss;
+  vector<int> & v = varIndexes;
+  vector<int>::iterator it = v.begin();
+  if(it != v.end())
+    ss << settings->varNames[*it++];
+  for(; it != v.end(); it++) {
+    ss << "," << settings->varNames[*it];
+  }
+  return ss.str();
+}
 
 
 

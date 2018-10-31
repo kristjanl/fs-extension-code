@@ -103,6 +103,12 @@ class mylogger2 {
 		void log(Polynomial *);
     void log(Monomial m);
     
+
+    //template <typename T>
+    //void force(T t);
+    //template <typename T>
+    //void log(T t);
+
     void force(std::string s);
 		void log(std::string s);
     void log(int i);

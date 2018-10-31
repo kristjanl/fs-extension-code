@@ -252,7 +252,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   tstart(fl_int_rem);
   
 	tstart(sc_int_rem_setup);
-  pSerializer->add(x, "no_rem");
+  //pSerializer->add(x, "no_rem");
 	
 	bool bfound = true;
 
@@ -260,6 +260,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	{
 		x.tms[i].remainder = estimation[i]; // + step_uncertainties[i];		// apply the remainder estimation
 	}
+  //pSerializer->add(x, "inspect");
 
 	TaylorModelVec tmvTemp;
 	vector<RangeTree *> trees;
@@ -270,6 +271,8 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	x.Picard_ctrunc_normal(tmvTemp, trees, x0, xPolyRange, ode,
       step_exp_table, rangeDim+1, order, cutoff_threshold);
   tend1(fl_ref_first_picard);
+
+  //pSerializer->add(tmvTemp, "inspect");
 
 	// compute the interval evaluation of the polynomial difference, this part is not able to be reduced by Picard iteration
 	vector<Interval> intDifferences;
@@ -289,6 +292,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	{
 		tmvTemp.tms[i].remainder += intDifferences[i];
 	}
+  //pSerializer->add(tmvTemp, "inspect");
 
 	for(int i=0; i<rangeDim; ++i)
 	{
@@ -298,7 +302,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			break;
 		}
 	}
-	
+	//mforce1(sbuilder() << "bfound: " << bfound);
 	//mforce1("initial");
 
 	if(!bfound)
@@ -322,12 +326,16 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
     
 		vector<Interval> newRemainders;
 		x.Picard_only_remainder(newRemainders, trees, x0, ode, step_exp_table[1]);
+    //pSerializer->add(x, "only_rem");
 
 		// add the uncertainties and the cutoff intervals onto the result
 		for(int i=0; i<rangeDim; ++i)
 		{
 			newRemainders[i] += intDifferences[i];
 		}
+    //mforce("new rem", newRemainders);
+    
+
 
 		for(int i=0; i<rangeDim; ++i)
 		{

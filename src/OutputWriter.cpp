@@ -128,6 +128,7 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
   mreset(old);
+  mdisable();
   mlog1("adding components");
   minc();
   

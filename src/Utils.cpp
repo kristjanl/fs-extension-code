@@ -564,7 +564,7 @@ void TMVSerializer::serialize() {
   mreset(old);
   mlog1("");
   mforce1(sbuilder() << "serializing tmvs to '" << filename << "'");
-  mlog1(sbuilder() << "size: " << tmvs.size());
+  //mlog1(sbuilder() << "size: " << tmvs.size());
   FILE *fp = fopen(filename.c_str(), "w");
   
   

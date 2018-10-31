@@ -15,7 +15,8 @@ continuous reachability
     output temp_pdis
     alg_small_comp flow impl
     remove point params
-    decomposition [[x1,x2,x3]]
+    use cflow
+    no components
     print on
   }
 
