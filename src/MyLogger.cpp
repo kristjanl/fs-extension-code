@@ -269,3 +269,7 @@ void mylogger2::log(string name, Monomial m) {
   logger.log(sbuilder() << name << " = " << 
       m.toString(getVNames(m.getVariableCount())));
 }
+
+int mylogger2::getLtab() {
+  return ltab;
+}

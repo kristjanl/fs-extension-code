@@ -1988,7 +1988,7 @@ string toStringHelper(const mpfr_t data, int prec) {
 
 string Interval::toString() const {
   //mlog1("() version");
-  return toString(5);
+  return toString(15);
 }
 
 string Interval::toString(int prec) const {

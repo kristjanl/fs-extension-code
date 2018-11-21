@@ -1102,6 +1102,8 @@ int MyComponent::getIntergrationParamCount() {
 }
 
 string MyComponent::getVarName(MySettings *settings) {
+  if(varName.empty() == false)
+    return varName;
   stringstream ss;
   vector<int> & v = varIndexes;
   vector<int>::iterator it = v.begin();
@@ -1110,7 +1112,8 @@ string MyComponent::getVarName(MySettings *settings) {
   for(; it != v.end(); it++) {
     ss << "," << settings->varNames[*it];
   }
-  return ss.str();
+  varName = ss.str();
+  return varName;
 }
 
 

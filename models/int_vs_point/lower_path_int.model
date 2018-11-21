@@ -1,0 +1,43 @@
+continuous reachability
+{
+  state var AND,OR,STRAND_1,STRAND,sp21,sp26
+
+  setting
+  {
+    fixed steps 0.05
+    time 1
+    remainder estimation 1e-3
+    identity precondition
+    gnuplot interval AND,AND
+    fixed orders 2
+    cutoff 1e-15
+    precision 53
+    output lower_path_int
+    alg_small_comp flow impl
+    #remove point params
+    use cflow
+    auto components
+    print on
+  }
+
+  poly ode 1
+  {
+    AND' = -(((5000 * 5e-05) * STRAND) * AND)
+    STRAND_1' = -(((5000 * 5e-05) * STRAND_1) * sp21)
+    sp21' = (((5000 * 5e-05) * STRAND) * AND) - (((5000 * 5e-05) * STRAND_1) * sp21)
+    OR' = -(((5000 * 5e-05) * sp26) * OR)
+    sp26' = (((5000 * 5e-05) * STRAND_1) * sp21) - (((5000 * 5e-05) * sp26) * OR)
+    STRAND' = -(((5000 * 5e-05) * STRAND) * AND)
+  }
+
+  init
+  {
+    AND  in [0.99,1.01]
+    STRAND in [0.0, 0.0001]
+    OR  in [0.99,1.01]
+    sp26 in [0.0, 0.0001]
+    STRAND_1 in [0.0, 0.0001]
+    sp21 in [0.0, 0.0001]
+  }
+}
+

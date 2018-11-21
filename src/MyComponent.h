@@ -16,6 +16,8 @@ class PrecondModel;
 class MySettings;
 
 class MyComponent {
+  private:
+    string varName;
   public:
     MyComponent();
     MyComponent(std::vector<int> vs, std::vector<int> tps);
@@ -64,6 +66,8 @@ class MyComponent {
     std::vector<TaylorModelVec> pipes;
     std::vector<PrecondModel *> pipePairs;
     std::vector<TaylorModelVec> output;
+    
+    std::vector<Interval> lastRems;//rem state (3/3)
     
     
     void addDependency(int linkVar, MyComponent *pComp);

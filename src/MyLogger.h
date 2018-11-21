@@ -119,6 +119,7 @@ class mylogger2 {
 		void enable();
 		int reset();
 		void restore(int old);
+		int getLtab();
 	private:
 		int ltab;
 		int disabled;

@@ -24,10 +24,12 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-#CFLAGS += -Denablelog
-#CXXFLAGS += -Denablelog
-#CFLAGS += -Ddo_checks
-#CXXFLAGS += -Ddo_checks
+CFLAGS += -Denablelog
+CXXFLAGS += -Denablelog
+CFLAGS += -Ddo_checks
+CXXFLAGS += -Ddo_checks
+#CFLAGS += -Dno_output
+#CXXFLAGS += -Dno_output
 LINK_FLAGS = -g
 
 # Uncomment for "perf --call-graph fp" profiling
@@ -94,7 +96,7 @@ flowstar: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 %.o: %.cc %.d
 	$(CXX) -c $(CFLAGS) -o $@ $<
 %.o: %.cpp %.h $(DEPDIR)/%.d
-	@echo "printing" #why doesn't this print anything
+#	@echo "printing" #why doesn't this print anything
 	$(CXX) -c $(CFLAGS) -o $@ $<
 unittestingfast.o: unittestingfast.cpp unittesting.h
 	$(CXX) -c $(CFLAGS) -o $@ $<

@@ -5,7 +5,7 @@ continuous reachability
   setting
   {
     fixed steps 0.05
-    time 11.1
+    time 0.05
     remainder estimation 1e-3
     identity precondition
     gnuplot interval AND_1,AND_1

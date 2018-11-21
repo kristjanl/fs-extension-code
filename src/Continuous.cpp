@@ -9372,7 +9372,8 @@ void ContinuousSystem::reach_picard(list<Flowpipe> & results, const double step,
 		}
 	}
   settings->writer->info.push_back(sbuilder() << "int progress: " << t);
-  addFlowInfo(settings->writer->info);
+  //addFlowInfo(settings->writer->info);
+  addMyInfo(settings->writer->info);
   
   cout << endl;
   mdec();

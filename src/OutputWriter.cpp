@@ -1,4 +1,5 @@
 #include "OutputWriter.h"
+#include "Utils.h"
 
 OutputWriter::OutputWriter(string name2, int var1, int var2): 
     name(name2), var1Index(var1),var2Index(var2) {
@@ -103,17 +104,17 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
   data2.at(0).push_back("0");
   data2.at(1).push_back("0");
   //size - 1, since first one was added manually
-  for(int i = 0; i < all.output.size() - 1; i++) {
+  for(int i = 1; i < all.output.size(); i++) {
     Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
     data2.at(0).push_back(timeInt.getLower(5));
     data2.at(1).push_back(timeInt.getHigher(5));
   }
   cout << all.output.size() << endl;
-  
   for(int i = 0; i < all.output.size(); i++) {
     TaylorModelVec tmv = all.output[i];
     for(int var = 0; var < tmv.tms.size(); var++) {
-      Interval pipe = evalVarToInterval(tmv, domain, var);
+      int varInAll = findPos(var, &(all.compVars));
+      Interval pipe = evalVarToInterval(tmv, domain, varInAll);
       
       data2.at((var +1)*2).push_back(pipe.getLower());
       data2.at((var +1)*2+1).push_back(pipe.getHigher());

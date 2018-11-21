@@ -2255,7 +2255,6 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
   TaylorModelVec compPicard;
 	for(int i=0; i<sIndexes.size(); ++i) {
 	  TaylorModel tmTemp;
-	  //mlog("ode", comp->odes[sIndexes[i]]);
 		comp->odes[sIndexes[i]].insert_no_remainder(tmTemp, *this, numVars, order-1,
 		    cutoff_threshold);
 		compPicard.tms.push_back(tmTemp);

@@ -10,6 +10,16 @@
 
 map<string,double> timeMap;
 map<string,int> refMap;
+map<string, map<int,int> > compStepMap;
+
+int curStep = 0;
+
+/*
+map<string,clock_t> start;
+
+void foo(string name) {
+
+}*/
 
 void foo(string name, double d) {
   timeMap[name] += d;
@@ -20,23 +30,29 @@ void addTime(clock_t start, string name) {
   foo(name, dur);
 }
 void addRef(int ref, string name) {
-  refMap[name] + ref;
+  refMap[name] += ref;
 }
 void addTime(clock_t start, clock_t end, string name) {
   double dur = double(end - start) / CLOCKS_PER_SEC;
   foo(name, dur);
 }
 void bar(string name) {
+  /*
   for(map<string,double>::iterator iter = timeMap.begin(); 
       iter != timeMap.end(); ++iter) {
-    //only print the Transformer clocks
     //cout << "f:" << iter->first << endl;
     //cout << "s:" << iter->second << endl;
-  }
+  }*/
   cout << name << ": " << timeMap[name] << endl;
 }
 
 void bar2(string name) {
+  /*
+  for(map<string,int>::iterator iter = refMap.begin(); 
+      iter != refMap.end(); ++iter) {
+    cout << "f:" << iter->first << endl;
+    cout << "s:" << iter->second << endl;
+  }//*/
   cout << name << ": " << refMap[name] << endl;
 }
 
@@ -95,7 +111,7 @@ namespace compSolver{
 	  mlog1("findDecreasingRemainderFlow <");
 	  minc();
 	  mlog("init", comp.initSet);
-    tstart1(ref_start);
+    tstart1(pic_ref_start);
     
     const vector<Interval> & step_exp_table = settings.step_exp_table;
     int order = settings.order;
@@ -115,7 +131,13 @@ namespace compSolver{
 	  //initial guess for the remainder
 	  vector<Interval> guess;
 	  for(int i = 0; i < varCount; i++) {
-	    guess.push_back(settings.estimation[i]);
+      /*TODO decide to include or not (rem state 1/3)
+      if(comp.lastRems.size() != 0) {
+        guess.push_back(comp.lastRems[i] * 2);
+        continue;
+      }*/
+      //old code (used on first iteration)
+      guess.push_back(settings.estimation[i]);
 	  }
 	  
 	  //set the remainder to be initial guess
@@ -131,14 +153,14 @@ namespace compSolver{
 	  //TODO make this one compositional
 	  
     //tstart(sc_int_noncomp);
-    tend1(ref_start);
-    tstart1(ref_first_picard);
+    tend1(pic_ref_start);
+    tstart1(pic_ref_first);
 	  TaylorModelVec compTemp;
     p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
       step_exp_table, paramCount, order, cutoff_threshold);
     //pSerializer->add(compTemp, "inspect");
-    tend1(ref_first_picard);
-    tstart1(ref_rem);
+    tend1(pic_ref_first);
+    tstart1(pic_ref_rem);
     
     mlog("tmv", compTemp);
     mlog("tm0", compTemp.tms[0]);
@@ -160,8 +182,8 @@ namespace compSolver{
       compTemp.tms[i].remainder += intTemp;
 	  }
     //pSerializer->add(compTemp, "inspect");
-    tend1(ref_rem);
-	  tstart1(ref_subset);
+    tend1(pic_ref_rem);
+	  tstart1(pic_ref_subset);
     //tend(sc_int_noncomp);
 	  
 	  bool notSubset = false;
@@ -196,7 +218,6 @@ namespace compSolver{
           continue;
 		    p.tms[i].remainder = guess[i];
 		  }
-		  
 		  //compute new remainders
   		p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
   		
@@ -213,6 +234,7 @@ namespace compSolver{
 		    }
 		  }
 		}
+    //mforce1(sbuilder() << "counter to find decreasing: " << counter);
 		//set the remainders to such that they decrease
 	  for(int i = 0; i < varCount; i++) {
       if(comp.isSolveVar(i) == false)
@@ -226,7 +248,7 @@ namespace compSolver{
   	    p.tms[i].remainder = newRemainders[i];
   	  }
 	  }
-	  tend1(ref_subset);
+	  tend1(pic_ref_subset);
 	  mdec();
 	  mlog1("findDecreasingRemainderFlow >");
 	  mrestore(old);
@@ -265,6 +287,7 @@ namespace compSolver{
 	    //mforce1(sbuilder() << "counter: " << counter);
       p.Picard_only_remainder(newRemainders, trees, &comp, step_exp_table[1]);
       //pSerializer->add(p, "only_rem");
+      //mforce("new", newRemainders);
       
 	    stop = true;
 	    
@@ -289,12 +312,17 @@ namespace compSolver{
           continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
-      if(stop) {
-        //cout << counter << endl;
-        addRef(counter, comp.getVarName(&settings));
-      }
+      //if(stop) {
+      //  //cout << counter << endl;
+      //  addRef(counter, comp.getVarName(&settings));
+      //}
   	  //mforce("mr", p.getRemainders());
 	  }
+    compStepMap[comp.getVarName(&settings)][curStep] = counter;
+    /*TODO decide to include or not (rem state 2/3)
+    comp.lastRems = newRemainders;
+    */
+    //mforce1(sbuilder() << "counter: " << counter);
 	  //mdec();
 	  mlog1("refineRemainderFlow >");
 	  mrestore(old);
@@ -324,7 +352,7 @@ namespace compSolver{
       }
     }
     */
-    //mforce1(component.getVarName(&settings));
+    //mforce1(sbuilder() << "[" << component.getVarName(&settings) << "]");
     //mforce("init", component.initSet);
     
     //variable when picard approximation is stored
@@ -348,7 +376,7 @@ namespace compSolver{
     //tend(sc_int_pre);
     //addTime(c1, compName + ".init");
     
-    tstart(sc_int_poly);
+    tstart(pic_poly);
     //find the picard polynomial
     for(int i = 1; i <= settings.order; i++) {
       p.Picard_no_remainder_assign(&component, varCount + 1, i, *settings.cutoff);
@@ -361,7 +389,7 @@ namespace compSolver{
     //pSerializer->add(p, "int_poly");
     
     p.cutoff(*settings.cutoff);
-    tend(sc_int_poly);
+    tend(pic_poly);
     
 	  vector<Interval> pPolyRange;
 	  vector<RangeTree *> trees;
@@ -372,18 +400,18 @@ namespace compSolver{
     //pSerializer->add(p, "no_rem");
     
     tstart(sc_int_rem);
-    tstart(sc_int_find_dec);
+    tstart(pic_decr);
 	  findDecreasingRemainderFlow(p, pPolyRange, trees, component, settings,
 	      cutoffInt);
-    tend(sc_int_find_dec);
+    tend(pic_decr);
     
     
     //pSerializer->add(p, "int_dec");
 	  
     mlog("dec", p);
-    tstart(sc_int_refine);
+    tstart(pic_ref);
     refineRemainderFlow(p, pPolyRange, trees, component, settings, cutoffInt);
-    tend(sc_int_refine);
+    tend(pic_ref);
     tend(sc_int_rem);
     
 	  
@@ -393,7 +421,7 @@ namespace compSolver{
     pSerializer->add(p, "int_end");
     
     
-    mlog1(component.pipes.size());
+    //mlog1(component.pipes.size());
     
     mlog("comp.tsp", component.timeStepPipe);
     mlog("tsp", p);
@@ -458,7 +486,6 @@ namespace compSolver{
 void Solver::post(MySettings *settings) {
   
   //tprint("sc_transfrom");
-  //tprint("tr_eval");
   //tprint("tr_remap");
   //tprint("tr_comp_pre");
   
@@ -515,27 +542,28 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
       settings->transformer->transform(*all, comps, *settings);
       tend(sc_transfrom);
       mlog1(sbuilder() << "after transform");  
-      tstart(sc_integrate);
+      tstart(int_time);
       //solve components
       for(vector<MyComponent *>::iterator it = comps.begin(); 
           it < comps.end(); it++) {
         //mlog("init", (*it)->initSet);
         //mforce("c", (*it)->compVars);
-        clock_t bef = clock();
+        //clock_t bef = clock();
         compSolver::doSingleStep(**it, *settings);
-        clock_t aft = clock();
-        double dur = double(aft - bef) / CLOCKS_PER_SEC;
-        foo((*it)->getVarName(settings), dur);
+        //clock_t aft = clock();
+        //double dur = double(aft - bef) / CLOCKS_PER_SEC;
+        //foo((*it)->getVarName(settings), dur);
         //mlog("last", (*it)->lastPipe());
       }
-      tend(sc_integrate);
+      tend(int_time);
       mlog1(sbuilder() << "after integration");
       //don't intdicate that components are solved anymore
       for(int i = 0; i < comps.size(); i++) {
         comps[i]->isSolved = false;
       }
+      curStep++;
       //make apppropriate next initial set
-      //cout << "integrate: " << timeLookup["sc_integrate"] << endl;
+      //cout << "integrate: " << timeLookup["int_time"] << endl;
       //cout << "transform: " << timeLookup["sc_transfrom"] << endl;
     }catch(IntegrationException& e) {
       logger.force("IntegrationException caught");
@@ -550,8 +578,12 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
+    string name = (*it)->getVarName(settings);
     //bar((*it)->getVarName(settings) + ".init");
-    bar2((*it)->getVarName(settings));
+    //bar2((*it)->getVarName(settings));
+    for(int i = 0; i < curStep; i++) {
+      mforce1(sbuilder() << name << "[" << i << "] = " << compStepMap[name][i]);
+    }
   }
   
 

@@ -8,7 +8,7 @@ continuous reachability
   setting
   {
     fixed steps 0.05
-    time 1.1
+    time 5
     remainder estimation 1e-3
     identity precondition
     gnuplot interval AND_1,AND
@@ -17,7 +17,7 @@ continuous reachability
     precision 53
     output full_point
     alg_small_comp flow impl
-    remove point params
+    #remove point params
     use cflow
     auto components
     print on

@@ -23,7 +23,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	Interval intZero, intOne(1,1), intUnit(-1,1);
 	result.clear();
   
-	tstart(fl_eval);
+	tstart(eval_t);
   //mlog("step", step_end_exp_table);
   //mlog("est", estimation);
 	mlog1(sbuilder() << ode.size());
@@ -55,7 +55,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	
 	
 	
-	tend(fl_eval);
+	tend(eval_t);
 	
 	//pSerializer->add(range_of_x0, "leftStar");
 	
@@ -236,22 +236,22 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
   */
   
 	
-  tstart(fl_integrate);
+  tstart(int_time);
   
   
   
   
-  tstart(fl_int_poly);
+  tstart(pic_poly);
 	for(int i=1; i<=order; ++i)
 	{
 		x.Picard_no_remainder_assign(x0, ode_centered, rangeDim+1, i, cutoff_threshold);
 	}	
 	x.cutoff(cutoff_threshold);
-  tend(fl_int_poly);
+  tend(pic_poly);
   
   tstart(fl_int_rem);
   
-	tstart(sc_int_rem_setup);
+	tstart(pic_decr);
   //pSerializer->add(x, "no_rem");
 	
 	bool bfound = true;
@@ -267,10 +267,10 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 
 	vector<Interval> xPolyRange;
 	x.polyRangeNormal(xPolyRange, step_exp_table);
-  tstart1(fl_ref_first_picard);
+  tstart1(pic_ref_first);
 	x.Picard_ctrunc_normal(tmvTemp, trees, x0, xPolyRange, ode,
       step_exp_table, rangeDim+1, order, cutoff_threshold);
-  tend1(fl_ref_first_picard);
+  tend1(pic_ref_first);
 
   //pSerializer->add(tmvTemp, "inspect");
 
@@ -315,9 +315,9 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 			x.tms[i].remainder = tmvTemp.tms[i].remainder;
 	}
 
-	tend(sc_int_rem_setup);
+	tend(pic_decr);
   
-	tstart(fl_int_refine);
+	tstart(pic_ref);
 	bool bfinished = false;
 	for(int rSteps = 0; !bfinished && (rSteps <= MAX_REFINEMENT_STEPS); ++rSteps)
 	{
@@ -360,7 +360,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	}
   //mforce("x", x);
 	//exit(0);
-	tend(fl_int_refine);
+	tend(pic_ref);
 	result.tmvPre = x;
 	result.domain = domain;
 	result.domain[0] = step_exp_table[1];
@@ -375,7 +375,7 @@ int Flowpipe::advance_picard2(Flowpipe & result, const vector<HornerForm> & ode,
 	mdec();
 	mlog1("Picard1 >");
 	mrestore(old);
-  tend(fl_integrate);
+  tend(int_time);
   
   
   /*

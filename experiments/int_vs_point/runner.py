@@ -24,9 +24,10 @@ modelTypes = ["4", "8", "12"]
 modelTypes = ["2"]
 modelTypes = ["no_extra", "full"]
 modelTypes = ["reporter"]
-modelTypes = ["one_path"]
 modelTypes = ["one_path_with_extra"]
+modelTypes = ["one_path"]
 modelTypes = ["full"]
+modelTypes = ["lower_path"]
 
 param = ["int", "point"]
 

@@ -629,7 +629,6 @@ void printTimes(string prefix) {
 }
 
 void addTimeToInfo(string name, string clockName, vector<string> & infos) {
-  
   infos.push_back(sbuilder() << name << ": " << timeLookup[clockName]);
 }
 
@@ -660,6 +659,14 @@ int isIn(int value, const vector<int> *v) {
 
 
 void addMyInfo(vector<string> & info) {
+  for(map<string,double>::iterator it = timeLookup.begin(); 
+      it != timeLookup.end(); it++) {
+    //cout << it->first << "\t" << it->second << endl;
+    info.push_back(sbuilder() << it->first << ": " << it->second);
+  }
+  return;
+
+
   taddToInfo("remap 1", tr_remap1, info);
   taddToInfo("eval t", tr_eval, info);
   taddToInfo("precond time", tr_precond, info);
@@ -878,11 +885,24 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     }
     createFullyCompositionalOutput(comps, all, transformer, settings);
   } else if(transformer->getType() == TR_ALL_COMP) {
+    mforce1("ALL COMP");
     //tranformer maps everything to system, then precondtions
     //need to remap last integration result, add last flowpipe for system component
     all.remapTimeStepPipe();
     all.pipePairs.push_back(new PrecondModel(all.timeStepPipe, all.unpairedRight));
-    
+    //mforce1(all.getVarName(settings));
+    //mforce("all.tsp", all.timeStepPipe);
+    //mforce("all.tsp", all.unpairedRight);
+    /*
+    mforce1(sbuilder() << all.dependencies[0]->linkVar);
+    mforce1(sbuilder() << all.dependencies[1]->linkVar);
+    mforce1(sbuilder() << all.dependencies[2]->linkVar);
+    mforce1(sbuilder() << all.dependencies[3]->linkVar);
+    mforce1(sbuilder() << all.dependencies[4]->linkVar);
+    mforce1(sbuilder() << all.dependencies[5]->linkVar);
+    mforce1("end");
+    all.log();
+    */
     //mforce3(old3, "all.right3", all.unpairedRight);
   } else {
     //old code might not be compatible, look into it when problems arise

@@ -2596,7 +2596,6 @@ bool HornerForm::getVars(int vars[]) const {
   
   //return true if constant is non zero
   bool ret = !constant.subseteq(Interval());
-  
   int varIndex = 0;
   for(vector<HornerForm>::const_iterator it = hornerForms.begin(); 
       it < hornerForms.end(); it++, varIndex++) {    
@@ -2611,7 +2610,6 @@ bool HornerForm::getVars(int vars[]) const {
     ret |= nonZero;
     //mlog1(sbuilder() << "b:" << nonZero);
   }
-  
   //mlog1(sbuilder() << "ret: " << ret);
   mdec();
   return ret;
@@ -2659,16 +2657,14 @@ vector<int> HornerForm::getVars() const {
   minc();
   mreset(old);
   mlog("hf", *this);
-  mlog1("aa");
-  //exit(0);
   //mlog1(sbuilder() << "this: " << toString());
   //mlog1(sbuilder() << constant.toString() << ", " << hornerForms.size());
   
   //return true if constant is non zero
   vector<int> ret;
   
-  
   mrestore(old);
+  mdec();
   return ret;
   /*
   bool ret = !constant.subseteq(Interval());
@@ -2691,4 +2687,8 @@ vector<int> HornerForm::getVars() const {
   //mlog1(sbuilder() << "ret: " << ret);
   mdec();
   return ret;*/
+}
+
+int HornerForm::getVarCount() const {
+	return hornerForms.size();
 }
