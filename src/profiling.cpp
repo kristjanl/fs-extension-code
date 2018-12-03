@@ -2,9 +2,11 @@
 #include <algorithm> 
 #include <utility>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+
+#include "Exceptions.h"
 #include "profiling.h"
-
-
 
 using namespace std;
 
@@ -1027,12 +1029,67 @@ void foo(Se se) {
 }
 
 
+
+
+long getTime() {
+  struct rusage usage1;
+  int res1 = getrusage(RUSAGE_SELF, &usage1);
+  return  (long)usage1.ru_utime.tv_sec * 1000000 + usage1.ru_utime.tv_usec;
+}
+
+string getDiff(long t1, long t2, bool div=true) {
+  stringstream ss;
+  if(div)
+    ss << (t2 - t1) / 1e6;
+  else
+    ss << (t2 - t1);
+  return ss.str();
+}
+
+Monomial getMono(int dim, bool first=true) {
+  vector<int> d;
+  if(first)
+    d.push_back(2);
+  for(int j = 0; j < dim - 1; j++) {
+    d.push_back(0);
+  }
+  if(first == false)
+    d.push_back(2);
+  return Monomial(Interval(2), d);
+}
+
+
+
+void monoArith() {
+
+  for(int dim = 1; dim < 200 + 1; dim += 1) {
+    Monomial m1 = getMono(dim - 1, false);
+    Monomial m2 = getMono(dim - 1, false);
+
+    cout << dim;
+    long t1 = getTime();
+    for(int i = 0; i < 10000; i++)
+      Monomial m3 = m1 * m2;
+
+    //mlog("m3", m3);
+    //m1 *= m2;
+    long t2 = getTime();
+
+    //mlog("m1", m1);
+    //mlog("m2", m2);
+    //mlog("m3", m3);
+    cout << "\t " << getDiff(t1, t2, false) << endl;
+  }
+}
+
+
 int main() {
+  monoArith();
 
   //polyPart();
   //poly();
   //tree();
-  refining();
+  //refining();
   //decPart();
   //decreasing();
   //precond();

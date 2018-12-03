@@ -9,7 +9,11 @@
 #include <stdexcept>
 #include <set>
 
-#include "Interval.h"
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
 #include "Polynomial.h"
 #include "TaylorModel.h"
 

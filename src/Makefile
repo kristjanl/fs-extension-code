@@ -2,11 +2,9 @@ DEPDIR = .d
 $(shell mkdir -p $(DEPDIR) >/dev/null)
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
-CXX = g++
+CXX = g++ -std=c++11
 include makefile.local
 LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
-
-
 
 
 #CFLAGS += -Dno_output
@@ -24,13 +22,18 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
-CFLAGS += -Ddo_checks
-CXXFLAGS += -Ddo_checks
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
 #CFLAGS += -Dno_output
 #CXXFLAGS += -Dno_output
 LINK_FLAGS = -g
+
+#use DoubleInterval
+#CFLAGS += -DDInt
+#CXXFLAGS += -DDInt
+
 
 # Uncomment for "perf --call-graph fp" profiling
 # CFLAGS += -fno-omit-frame-pointer
@@ -47,7 +50,9 @@ LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 # PBJ: modelParser.o added.  Not clear why omitted.
 # KL: removed modelParser again, it produces conflicts if using profiling (two main functions)
-OBJS = Interval.o Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o 
+OBJS = Interval.o
+#OBJS = DoubleInterval.o
+OBJS += Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o 
 OBJS += Geometry.o Constraints.o Hybrid.o MyLogger.o ExtractedPicard.o 
 OBJS += OutputWriter.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o 
 OBJS += Transformer.o CompSolver.o PreconditionedTMV.o
@@ -62,6 +67,7 @@ DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS) modelParser.o profiling.o)
 
 all:
 	make flowstar
+	make profiling
 
 .PHONY: test profiling
 
@@ -85,7 +91,6 @@ fastcompile: $(OBJS) lex.yy.o ParsingUtils.o modelParser.tab.o unittestingfast.o
   
 profiling: $(OBJS) lex.yy.o ParsingUtils.o modelParser.tab.o profiling.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)
-	./profiling
 
 myapp: $(OBJS) lex.yy.o modelParser.tab.o modelParser.o
 	g++ $(LINK_FLAGS) -o $@ $^ $(LIBS)

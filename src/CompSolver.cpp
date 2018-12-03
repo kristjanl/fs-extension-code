@@ -4,8 +4,14 @@
 #include "Continuous.h"
 #include "MyComponent.h"
 #include "Polynomial.h"
-#include "Interval.h"
 #include "Transformer.h"
+#include "Exceptions.h"
+
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
 
 
 map<string,double> timeMap;
@@ -590,6 +596,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
 
+  
   settings->writer->info.push_back(sbuilder() << "int progress: " << t);
 
   cout << "computation time: " << integrTime << endl;

@@ -14,7 +14,8 @@ continuous reachability
   precision 53
   output Lotka_Volterra_10_qr2_nocomp
   alg_small_comp flow impl
-  no decomposition
+  use cflow
+  no components
   print on
  }
 	

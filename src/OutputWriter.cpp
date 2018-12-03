@@ -283,9 +283,25 @@ void OutputWriter::writeInfo() {
   infoFile.open(infoName.c_str());
   
   //info.push_back(sbuilder() << "shrink wrapping time: " << swTime);
+
+
   
   for(vector<string>::iterator it = info.begin(); it < info.end(); it++) {
-    //mlog1(*it);  
+
+    std::string str = *it;
+    //rounding mode add 0*1 to the end of the string, removing it (checking whether it's atleast len 3)
+    if(*(str.end() - 1) == '1' && *(str.end() - 2) == '0' && *(str.end() - 3) == '0') {
+      std::string::iterator it2 = str.end()-2;
+      for(; it2 >= str.begin(); it2--) {
+        if(*it2 != '0') {
+          break;
+        }
+      }
+      //cout << "str: " << str << endl;;
+      //cout << "substr: " << string(str.begin(), it2+1) << endl;
+      *it = string(str.begin(), it2+1);
+    }
+
     infoFile << *it << endl;
   }
   infoFile.close();

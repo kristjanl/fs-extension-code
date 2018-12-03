@@ -2,7 +2,11 @@
 
 #include "TaylorModel.h"
 #include "MyComponent.h"
-#include "Interval.h"
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
 #include "OutputWriter.h"
 #include "Transformer.h"
 #include "PreconditionedTMV.h"
@@ -561,6 +565,8 @@ void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
 }
 
 void TMVSerializer::serialize() {
+  cout << "silently stopping serializer\n";
+  return;
   mreset(old);
   mlog1("");
   mforce1(sbuilder() << "serializing tmvs to '" << filename << "'");

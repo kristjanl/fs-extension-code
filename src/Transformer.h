@@ -5,7 +5,11 @@
 #include "TaylorModel.h"
 #include "MyLogger.h"
 #include "MyComponent.h"
-#include "Interval.h"
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
 #include "OutputWriter.h"
 #include "Continuous.h"
 #include "Utils.h"

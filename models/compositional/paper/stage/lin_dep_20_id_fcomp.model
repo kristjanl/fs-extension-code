@@ -7,14 +7,16 @@ continuous reachability
     fixed steps 0.1
     time 1
     remainder estimation 1e-3
-    compositional identity precondition
+    fully compositional
+    identity precondition
     gnuplot interval x1,x1
     fixed orders 5
     cutoff 1e-15
     precision 53
     output lin_dep_20_id_fcomp
     alg_small_comp flow impl
-    decomposition [[x1],[x2],[x3],[x4],[x5],[x6],[x7],[x8],[x9],[x10],[x11],[x12],[x13],[x14],[x15],[x16],[x17],[x18],[x19],[x20]]
+    use cflow
+    auto components
     print on
   }
 

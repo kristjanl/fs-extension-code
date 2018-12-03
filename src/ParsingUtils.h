@@ -2,7 +2,11 @@
 #define PARSINGUTILS_H_
 
 #include "include.h"
-#include "Interval.h"
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
 #include "Monomial.h"
 #include "Polynomial.h"
 #include "MyComponent.h"

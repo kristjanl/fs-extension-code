@@ -26,6 +26,7 @@ continuous reachability
     fixed steps 0.05
     time 40  
     remainder estimation 1e-3
+    left model compositional 
     identity precondition
     gnuplot interval AND_1,AND_1
     fixed orders 2
@@ -33,7 +34,8 @@ continuous reachability
     precision 53
     output and_or_v2_nocomp
     alg_small_comp flow impl
-    no decomposition
+    use cflow
+    no components
     print on
   }
 

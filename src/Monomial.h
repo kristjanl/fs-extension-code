@@ -11,7 +11,13 @@
 
 
 #include <stdexcept>
-#include "Interval.h"
+
+#ifdef DInt
+  #include "DoubleInterval.h"
+#else
+  #include "Interval.h"
+#endif
+
 #include <sstream>
 
 class Monomial

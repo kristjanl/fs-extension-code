@@ -1,11 +1,32 @@
 int progress: 1000
-computation time: 36.19
-remap 1: 0.16
-evaluate t: 0.06
-precond time: 7.28
-remap 2: 0.13
-int time: 28.45
-picard poly: 11.92
-picard remainder: 16.22
-picard decreasing: 14.43
-picard refining: 1.76
+computation time: 24.7
+eval_t: 0.03
+int_time: 19.36
+pic_decr: 9.93
+pic_poly: 9.15
+pic_ref: 0.11
+pic_ref_first: 9.55
+pic_ref_rem: 0.2
+pic_ref_start: 0.18
+pic_ref_subset: 0
+pre_end: 0.08
+pre_insert: 5
+pre_left: 0.01
+pre_lin_trans: 0.04
+pre_ltr: 0
+pre_matrix: 0
+pre_r_range: 0.01
+pre_scaling_m: 0.03
+pre_start: 0.01
+sc_int_rem: 10.05
+sc_post_composing: 7.79
+sc_transfrom: 5.34
+tr_comp_pre: 5.18
+tr_part1: 0.01
+tr_part2: 5.17
+tr_part_all: 5.18
+tr_part_matrix: 0
+tr_precond: 5.18
+tr_remap1: 0.1
+tr_remap2: 0
+tr_remap3: 0

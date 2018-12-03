@@ -12,6 +12,7 @@
 	#include "MyLogger.h"
 	#include "Utils.h"
   #include "Transformer.h"
+	#include "DoubleInterval.h"
 
 	extern int yyerror(const char *);
 	extern int yyerror(string);

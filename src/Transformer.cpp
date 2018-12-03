@@ -1,6 +1,7 @@
 #include "Transformer.h"
 #include "Utils.h"
 #include "PreconditionedTMV.h"
+#include "Exceptions.h"
 
 using namespace std;
 

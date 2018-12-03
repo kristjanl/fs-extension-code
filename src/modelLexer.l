@@ -242,6 +242,12 @@ vector<HornerForm> parseHFFromPoly(string s) {
   delete parseResult.polys;
   return ret;
 }
+
+Monomial parseMono(string s) {
+  parse(s);
+  return parseResult.mono;
+}
+
 vector<int> parseiVec(string s) {
   parse(s);
   return parseResult.integerVec;

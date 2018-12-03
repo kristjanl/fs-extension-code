@@ -1,11 +1,18 @@
 int progress: 100
-computation time: 6.54
-remap 1: 0
-evaluate t: 0.02
-precond time: 0.83
-remap 2: 0
-int time: 5.63
-picard poly: 1.36
-picard remainder: 4.22
-picard decreasing: 2.73
-picard refining: 1.49
+computation time: 2.61
+eval_t: 0.02
+int_time: 2.07
+pic_decr: 1.04
+pic_poly: 0.94
+pic_ref: 0.07
+pic_ref_first: 0.85
+pic_ref_rem: 0.11
+pic_ref_start: 0.07
+pic_ref_subset: 0
+sc_int_rem: 1.11
+sc_post_composing: 3.25
+sc_transfrom: 0.54
+tr_comp_pre: 0.47
+tr_precond: 0.47
+tr_remap1: 0.01
+tr_remap3: 0.11
