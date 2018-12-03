@@ -56,8 +56,8 @@ infoFields = [
     ("pic_decr", "p decr"),
     ("pic_ref", "p ref"),
     ("tr_precond", "Precond t"), 
-    ("remap 1", "RM 1"), 
-    ("remap 2", "RM 2"), 
+    ("tr_remap1", "RM 1"), 
+    ("tr_remap2", "RM 2"), 
 ]
 
 
