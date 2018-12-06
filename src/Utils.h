@@ -142,3 +142,8 @@ void createOutput(std::vector<MyComponent *> comps, MyComponent & all,
 
 #endif /* UTILS_H_ */
 
+
+
+long getTime();
+
+std::string getDiff(long t1, long t2, bool div);

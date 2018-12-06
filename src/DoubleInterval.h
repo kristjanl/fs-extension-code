@@ -18,13 +18,16 @@
 
 
 #include "include.h"
-extern mpfr_prec_t intervalNumPrecision;
+//extern mpfr_prec_t intervalNumPrecision;
 
 class Interval
 {
 private:
 	double lo;		// the lower bound
 	double up;		// the upper bound
+  static int lastUsed;
+  inline double mulMin(const Interval & I) const;
+  inline double mulMax(const Interval & I) const;
 public:
 	Interval();
 	Interval(const double c);

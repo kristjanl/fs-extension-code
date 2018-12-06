@@ -10,7 +10,7 @@
 
 using namespace std;
 
-
+#include "Utils.h"
 
 
 
@@ -1031,20 +1031,6 @@ void foo(Se se) {
 
 
 
-long getTime() {
-  struct rusage usage1;
-  int res1 = getrusage(RUSAGE_SELF, &usage1);
-  return  (long)usage1.ru_utime.tv_sec * 1000000 + usage1.ru_utime.tv_usec;
-}
-
-string getDiff(long t1, long t2, bool div=true) {
-  stringstream ss;
-  if(div)
-    ss << (t2 - t1) / 1e6;
-  else
-    ss << (t2 - t1);
-  return ss.str();
-}
 
 Monomial getMono(int dim, bool first=true) {
   vector<int> d;
@@ -1059,25 +1045,31 @@ Monomial getMono(int dim, bool first=true) {
 }
 
 
-
+//#include <fenv.h>
 void monoArith() {
-
-  for(int dim = 1; dim < 200 + 1; dim += 1) {
+  for(int dim = 1; dim < 50 + 1; dim += 1) {
     Monomial m1 = getMono(dim - 1, false);
     Monomial m2 = getMono(dim - 1, false);
 
     cout << dim;
-    long t1 = getTime();
-    for(int i = 0; i < 10000; i++)
+
+    long t1, t2;
+
+    /*
+    t1 = getTime();
+    for(int i = 0; i < 10000; i++) {
       Monomial m3 = m1 * m2;
-
-    //mlog("m3", m3);
-    //m1 *= m2;
-    long t2 = getTime();
-
-    //mlog("m1", m1);
-    //mlog("m2", m2);
-    //mlog("m3", m3);
+      //m1 *= m2;
+    }
+    t2 = getTime();
+    cout << "\t " << getDiff(t1, t2, false);
+    */
+    t1 = getTime();
+    for(int i = 0; i < 100000; i++) {
+      Monomial m3 = m1 * m2;
+      //m1 *= m2;
+    }
+    t2 = getTime();
     cout << "\t " << getDiff(t1, t2, false) << endl;
   }
 }

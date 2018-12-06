@@ -7,6 +7,7 @@
 ---*/
 
 #include "Monomial.h"
+#include "Utils.h"
 
 Monomial::Monomial()
 {
@@ -127,22 +128,12 @@ Monomial & Monomial::operator += (const Monomial & monomial)
 	return *this;
 }
 
-
-#include <sys/time.h>
-#include <sys/resource.h>
-
-long getTime2() {
-  struct rusage usage1;
-  int res1 = getrusage(RUSAGE_SELF, &usage1);
-  return  (long)usage1.ru_utime.tv_sec * 1000000 + usage1.ru_utime.tv_usec;
-}
-
 Monomial & Monomial::operator *= (const Monomial & monomial)
 {
-  //long t11 = getTime2();
+  //long ti1 = getTime();
   //for(int j = 0; j < 10000; j++)
 	coefficient *= monomial.coefficient;
-  //long t12 = getTime2();
+  //long ti2 = getTime();
 	
 	#ifdef do_checks
 	  //cout << "doing check" << endl;
@@ -154,19 +145,19 @@ Monomial & Monomial::operator *= (const Monomial & monomial)
 	  }
   #endif
 
-  //long t21 = getTime2();
+  //long tp1 = getTime();
   //for(int j = 0; j < 10000; j++)
 	for(int i=0; i<degrees.size(); ++i)
 	{
 		degrees[i] += monomial.degrees[i];
 	}
-  //long t22 = getTime2();
+  //long tp2 = getTime();
 
 
   //std::cout << "t1:" << (t12 - t11) << "\n";
   //std::cout << "t2:" << (t22 - t21) << "\n";
-  //std::cout << "\t" << (t12 - t11);
-  //std::cout << "\t" << (t22 - t21);
+  //std::cout << "\t" << (ti2 - ti1);
+  //std::cout << "\t" << (tp2 - tp1);
 
 	d += monomial.d;
 	return *this;

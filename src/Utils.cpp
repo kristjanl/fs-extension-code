@@ -1,3 +1,6 @@
+#include <sys/time.h>
+#include <sys/resource.h>
+
 #include "Utils.h"
 
 #include "TaylorModel.h"
@@ -10,6 +13,7 @@
 #include "OutputWriter.h"
 #include "Transformer.h"
 #include "PreconditionedTMV.h"
+
 
 using namespace std;
 
@@ -931,4 +935,22 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   cout << all.output.size();
   cout << endl;
   tend(sc_post_composing);
+}
+
+
+
+long getTime() {
+  struct rusage usage1;
+  int res1 = getrusage(RUSAGE_SELF, &usage1);
+  return  (long)(usage1.ru_utime.tv_sec + usage1.ru_stime.tv_sec) * 1000000
+      + usage1.ru_utime.tv_usec + usage1.ru_stime.tv_usec;
+}
+
+string getDiff(long t1, long t2, bool div=true) {
+  stringstream ss;
+  if(div)
+    ss << (t2 - t1) / 1e6;
+  else
+    ss << (t2 - t1);
+  return ss.str();
 }

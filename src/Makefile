@@ -30,9 +30,6 @@ CXXFLAGS = -I . -g -O2
 #CXXFLAGS += -Dno_output
 LINK_FLAGS = -g
 
-#use DoubleInterval
-#CFLAGS += -DDInt
-#CXXFLAGS += -DDInt
 
 
 # Uncomment for "perf --call-graph fp" profiling
@@ -45,13 +42,19 @@ LINK_FLAGS = -g
 
 
 #if need to use local mpfr and gmp library
-CFLAGS += -I $(DEP_HOME)/include
-LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
+#CFLAGS += -I $(DEP_HOME)/include
+#LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
+
+
+#if using double Interval
+CFLAGS += -DDInt
+CXXFLAGS += -DDInt
+OBJS = DoubleInterval.o
+#if using mpfr Interval
+#OBJS = Interval.o
 
 # PBJ: modelParser.o added.  Not clear why omitted.
 # KL: removed modelParser again, it produces conflicts if using profiling (two main functions)
-OBJS = Interval.o
-#OBJS = DoubleInterval.o
 OBJS += Matrix.o Monomial.o Polynomial.o TaylorModel.o Continuous.o 
 OBJS += Geometry.o Constraints.o Hybrid.o MyLogger.o ExtractedPicard.o 
 OBJS += OutputWriter.o MyComponent.o  Exceptions.o ParsingUtils.o Utils.o 

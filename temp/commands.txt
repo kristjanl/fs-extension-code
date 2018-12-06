@@ -1,0 +1,2 @@
+valgrind --tool=callgrind ../src/profiling
+ls -t | head -n 1 | xargs kcachegrind

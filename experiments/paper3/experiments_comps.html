@@ -1,0 +1,680 @@
+<html>
+<head>
+  <link rel='stylesheet' type='text/css' href='../scripts/table.css'></head>
+<body>
+<table class='headerTable'>
+  <tr>
+    <th class='modelCell'>Model</th>
+    <th class='dataCell'>Dim</th> 
+    <th class='dataCell'>Order</th>
+    <th class='dataCell'>step</th>
+    <th class='dataCell'>Time (goal)</th>
+    <th class='dataCell'>Int Progress</th>
+    <th class='dataCell'>Comp t</th>
+    <th class='dataCell'>Stop Reason</th>
+    <th class='dataCell'>Int t</th>
+    <th class='dataCell'>p poly</th>
+    <th class='dataCell'>p decr</th>
+    <th class='dataCell'>p ref</th>
+    <th class='dataCell'>Precond t</th>
+    <th class='dataCell'>RM 1</th>
+    <th class='dataCell'>RM 2</th>
+    <th class='dataCell'>W(var range)</th>
+  </tr>
+</table>
+<table class='dataTable'>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/Lotka_Volterra_10_qr2_comp.model'>Lotka_Volterra_10_qr2_comp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>4</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>10</td>
+    <td class='dataCell'>10.</td>
+    <td class='dataCell'>8.4</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>3.92</td>
+    <td class='dataCell'>1.61</td>
+    <td class='dataCell'>2.06</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>3.94</td>
+    <td class='dataCell'>0.3</td>
+    <td class='dataCell'>0.04</td>
+    <td class='dataCell'>2.03082, 2.43102, 2.43102, 2.03082</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'> state var x_0</div>
+          <a href='images/Lotka_Volterra_10_qr2_comp_comps_1_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_comp_comps_1_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>y_0</div>
+          <a href='images/Lotka_Volterra_10_qr2_comp_comps_2_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_comp_comps_2_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>y_2</div>
+          <a href='images/Lotka_Volterra_10_qr2_comp_comps_6_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_comp_comps_6_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x_5</div>
+          <a href='images/Lotka_Volterra_10_qr2_comp_comps_11_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_comp_comps_11_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/Lotka_Volterra_10_qr2_nocomp.model'>Lotka_Volterra_10_qr2_nocomp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>4</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>10</td>
+    <td class='dataCell'>10.</td>
+    <td class='dataCell'>9.43</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>5.14</td>
+    <td class='dataCell'>2.41</td>
+    <td class='dataCell'>2.43</td>
+    <td class='dataCell'>0.27</td>
+    <td class='dataCell'>3.82</td>
+    <td class='dataCell'>0.21</td>
+    <td class='dataCell'>0.04</td>
+    <td class='dataCell'>2.03082, 2.43102, 2.43102, 2.03082</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'> state var x_0</div>
+          <a href='images/Lotka_Volterra_10_qr2_nocomp_comps_1_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_nocomp_comps_1_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>y_0</div>
+          <a href='images/Lotka_Volterra_10_qr2_nocomp_comps_2_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_nocomp_comps_2_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>y_2</div>
+          <a href='images/Lotka_Volterra_10_qr2_nocomp_comps_6_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_nocomp_comps_6_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x_5</div>
+          <a href='images/Lotka_Volterra_10_qr2_nocomp_comps_11_t_10.0.png'><img src='images/Lotka_Volterra_10_qr2_nocomp_comps_11_t_10.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/sq_deg_long_10_id_fcomp.model'>sq_deg_long_10_id_fcomp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>0.59</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.48</td>
+    <td class='dataCell'>0.28</td>
+    <td class='dataCell'>0.17</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>0.07</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.0109325, 0.0109325, 0.0109325, 0.0109325</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1_0</div>
+          <a href='images/sq_deg_long_10_id_fcomp_comps_1_t_100.0.png'><img src='images/sq_deg_long_10_id_fcomp_comps_1_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_0</div>
+          <a href='images/sq_deg_long_10_id_fcomp_comps_2_t_100.0.png'><img src='images/sq_deg_long_10_id_fcomp_comps_2_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_2</div>
+          <a href='images/sq_deg_long_10_id_fcomp_comps_6_t_100.0.png'><img src='images/sq_deg_long_10_id_fcomp_comps_6_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x1_5</div>
+          <a href='images/sq_deg_long_10_id_fcomp_comps_11_t_100.0.png'><img src='images/sq_deg_long_10_id_fcomp_comps_11_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/sq_deg_long_10_id_comp.model'>sq_deg_long_10_id_comp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>0.76</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.46</td>
+    <td class='dataCell'>0.33</td>
+    <td class='dataCell'>0.12</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>0.25</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.0109325, 0.0109325, 0.0109325, 0.0109325</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1_0</div>
+          <a href='images/sq_deg_long_10_id_comp_comps_1_t_100.0.png'><img src='images/sq_deg_long_10_id_comp_comps_1_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_0</div>
+          <a href='images/sq_deg_long_10_id_comp_comps_2_t_100.0.png'><img src='images/sq_deg_long_10_id_comp_comps_2_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_2</div>
+          <a href='images/sq_deg_long_10_id_comp_comps_6_t_100.0.png'><img src='images/sq_deg_long_10_id_comp_comps_6_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x1_5</div>
+          <a href='images/sq_deg_long_10_id_comp_comps_11_t_100.0.png'><img src='images/sq_deg_long_10_id_comp_comps_11_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/sq_deg_long_10_id_nocomp.model'>sq_deg_long_10_id_nocomp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>100</td>
+    <td class='dataCell'>1.05</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.79</td>
+    <td class='dataCell'>0.48</td>
+    <td class='dataCell'>0.27</td>
+    <td class='dataCell'>0.04</td>
+    <td class='dataCell'>0.22</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.0109325, 0.0109325, 0.0109325, 0.0109325</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1_0</div>
+          <a href='images/sq_deg_long_10_id_nocomp_comps_1_t_100.0.png'><img src='images/sq_deg_long_10_id_nocomp_comps_1_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_0</div>
+          <a href='images/sq_deg_long_10_id_nocomp_comps_2_t_100.0.png'><img src='images/sq_deg_long_10_id_nocomp_comps_2_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2_2</div>
+          <a href='images/sq_deg_long_10_id_nocomp_comps_6_t_100.0.png'><img src='images/sq_deg_long_10_id_nocomp_comps_6_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x1_5</div>
+          <a href='images/sq_deg_long_10_id_nocomp_comps_11_t_100.0.png'><img src='images/sq_deg_long_10_id_nocomp_comps_11_t_100.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/lin_dep_20_id_fcomp.model'>lin_dep_20_id_fcomp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>0.1</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>1.</td>
+    <td class='dataCell'>0.08</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.04</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.466105, 0.506888, 0.509228, 0.509228</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/lin_dep_20_id_fcomp_comps_1_t_1.0.png'><img src='images/lin_dep_20_id_fcomp_comps_1_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/lin_dep_20_id_fcomp_comps_2_t_1.0.png'><img src='images/lin_dep_20_id_fcomp_comps_2_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/lin_dep_20_id_fcomp_comps_6_t_1.0.png'><img src='images/lin_dep_20_id_fcomp_comps_6_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x11</div>
+          <a href='images/lin_dep_20_id_fcomp_comps_11_t_1.0.png'><img src='images/lin_dep_20_id_fcomp_comps_11_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/lin_dep_20_id_comp.model'>lin_dep_20_id_comp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>0.1</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>1.</td>
+    <td class='dataCell'>0.07</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.06</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.466105, 0.506888, 0.509228, 0.509228</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/lin_dep_20_id_comp_comps_1_t_1.0.png'><img src='images/lin_dep_20_id_comp_comps_1_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/lin_dep_20_id_comp_comps_2_t_1.0.png'><img src='images/lin_dep_20_id_comp_comps_2_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/lin_dep_20_id_comp_comps_6_t_1.0.png'><img src='images/lin_dep_20_id_comp_comps_6_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x11</div>
+          <a href='images/lin_dep_20_id_comp_comps_11_t_1.0.png'><img src='images/lin_dep_20_id_comp_comps_11_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/lin_dep_20_id_nocomp.model'>lin_dep_20_id_nocomp.model</a></td>
+    <td class='dataCell'>20</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>0.1</td>
+    <td class='dataCell'>1</td>
+    <td class='dataCell'>1.</td>
+    <td class='dataCell'>0.07</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.02</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.466105, 0.506888, 0.509228, 0.509228</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/lin_dep_20_id_nocomp_comps_1_t_1.0.png'><img src='images/lin_dep_20_id_nocomp_comps_1_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/lin_dep_20_id_nocomp_comps_2_t_1.0.png'><img src='images/lin_dep_20_id_nocomp_comps_2_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/lin_dep_20_id_nocomp_comps_6_t_1.0.png'><img src='images/lin_dep_20_id_nocomp_comps_6_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x11</div>
+          <a href='images/lin_dep_20_id_nocomp_comps_11_t_1.0.png'><img src='images/lin_dep_20_id_nocomp_comps_11_t_1.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_v3_fcomp.model'>and_v3_fcomp.model</a></td>
+    <td class='dataCell'>7</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>10</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>7.32</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>6.02</td>
+    <td class='dataCell'>3.07</td>
+    <td class='dataCell'>2.85</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>1.22</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.00676472, 0.00676472, 0.0207744</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/and_v3_fcomp_comps_1_t_1000.0.png'><img src='images/and_v3_fcomp_comps_1_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/and_v3_fcomp_comps_2_t_1000.0.png'><img src='images/and_v3_fcomp_comps_2_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/and_v3_fcomp_comps_6_t_1000.0.png'><img src='images/and_v3_fcomp_comps_6_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_v3_comp.model'>and_v3_comp.model</a></td>
+    <td class='dataCell'>7</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>10</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>7.46</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>6.19</td>
+    <td class='dataCell'>3.07</td>
+    <td class='dataCell'>3.04</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>1.18</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.00676472, 0.00676472, 0.0220205</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/and_v3_comp_comps_1_t_1000.0.png'><img src='images/and_v3_comp_comps_1_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/and_v3_comp_comps_2_t_1000.0.png'><img src='images/and_v3_comp_comps_2_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/and_v3_comp_comps_6_t_1000.0.png'><img src='images/and_v3_comp_comps_6_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_v3_nocomp.model'>and_v3_nocomp.model</a></td>
+    <td class='dataCell'>7</td> 
+    <td class='dataCell'>5</td>
+    <td class='dataCell'>10</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>1000</td>
+    <td class='dataCell'>6.01</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>4.69</td>
+    <td class='dataCell'>1.62</td>
+    <td class='dataCell'>3.05</td>
+    <td class='dataCell'>0.01</td>
+    <td class='dataCell'>1.23</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>0</td>
+    <td class='dataCell'>0.00676472, 0.00676472, 0.0220206</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var x1</div>
+          <a href='images/and_v3_nocomp_comps_1_t_1000.0.png'><img src='images/and_v3_nocomp_comps_1_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x2</div>
+          <a href='images/and_v3_nocomp_comps_2_t_1000.0.png'><img src='images/and_v3_nocomp_comps_2_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>x6</div>
+          <a href='images/and_v3_nocomp_comps_6_t_1000.0.png'><img src='images/and_v3_nocomp_comps_6_t_1000.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_or_v2_fcomp.model'>and_or_v2_fcomp.model</a></td>
+    <td class='dataCell'>30</td> 
+    <td class='dataCell'>2</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>40</td>
+    <td class='dataCell'>40.</td>
+    <td class='dataCell'>4.67</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>2.34</td>
+    <td class='dataCell'>0.7</td>
+    <td class='dataCell'>1.1</td>
+    <td class='dataCell'>0.07</td>
+    <td class='dataCell'>1.25</td>
+    <td class='dataCell'>0.71</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>0.0243658, 0.0243658, 0.0331673, 0.0001001, 0.0794527</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var AND_1</div>
+          <a href='images/and_or_v2_fcomp_comps_1_t_40.0.png'><img src='images/and_or_v2_fcomp_comps_1_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_2</div>
+          <a href='images/and_or_v2_fcomp_comps_2_t_40.0.png'><img src='images/and_or_v2_fcomp_comps_2_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp13</div>
+          <a href='images/and_or_v2_fcomp_comps_6_t_40.0.png'><img src='images/and_or_v2_fcomp_comps_6_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_1
+            </div>
+          <a href='images/and_or_v2_fcomp_comps_11_t_40.0.png'><img src='images/and_or_v2_fcomp_comps_11_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp17</div>
+          <a href='images/and_or_v2_fcomp_comps_21_t_40.0.png'><img src='images/and_or_v2_fcomp_comps_21_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_or_v2_comp.model'>and_or_v2_comp.model</a></td>
+    <td class='dataCell'>30</td> 
+    <td class='dataCell'>2</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>40</td>
+    <td class='dataCell'>40.</td>
+    <td class='dataCell'>6.34</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>3.16</td>
+    <td class='dataCell'>1.01</td>
+    <td class='dataCell'>1.12</td>
+    <td class='dataCell'>0.16</td>
+    <td class='dataCell'>2.39</td>
+    <td class='dataCell'>0.33</td>
+    <td class='dataCell'>0.19</td>
+    <td class='dataCell'>0.0243658, 0.0243658, 0.033482, 0.0001001, 0.0799834</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var AND_1</div>
+          <a href='images/and_or_v2_comp_comps_1_t_40.0.png'><img src='images/and_or_v2_comp_comps_1_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_2</div>
+          <a href='images/and_or_v2_comp_comps_2_t_40.0.png'><img src='images/and_or_v2_comp_comps_2_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp13</div>
+          <a href='images/and_or_v2_comp_comps_6_t_40.0.png'><img src='images/and_or_v2_comp_comps_6_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_1
+            </div>
+          <a href='images/and_or_v2_comp_comps_11_t_40.0.png'><img src='images/and_or_v2_comp_comps_11_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp17</div>
+          <a href='images/and_or_v2_comp_comps_21_t_40.0.png'><img src='images/and_or_v2_comp_comps_21_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+  <tr align="center">
+    <td class='modelCell'><a href='../../models/compositional/paper/stage/and_or_v2_nocomp.model'>and_or_v2_nocomp.model</a></td>
+    <td class='dataCell'>30</td> 
+    <td class='dataCell'>2</td>
+    <td class='dataCell'>0.05</td>
+    <td class='dataCell'>40</td>
+    <td class='dataCell'>40.</td>
+    <td class='dataCell'>7.63</td>
+    <td class='dataCell'>-</td>
+    <td class='dataCell'>4.45</td>
+    <td class='dataCell'>1.29</td>
+    <td class='dataCell'>2.16</td>
+    <td class='dataCell'>0.95</td>
+    <td class='dataCell'>2.58</td>
+    <td class='dataCell'>0.25</td>
+    <td class='dataCell'>0.03</td>
+    <td class='dataCell'>'<b>0.0243657</b>', '<b>0.0243657</b>', 0.0334819, 0.0001001, 0.0799828</td>
+    <td align="left">
+    <table><tr>
+      <td>
+        <div>
+          <div align='center'>  state var AND_1</div>
+          <a href='images/and_or_v2_nocomp_comps_1_t_40.0.png'><img src='images/and_or_v2_nocomp_comps_1_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_2</div>
+          <a href='images/and_or_v2_nocomp_comps_2_t_40.0.png'><img src='images/and_or_v2_nocomp_comps_2_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp13</div>
+          <a href='images/and_or_v2_nocomp_comps_6_t_40.0.png'><img src='images/and_or_v2_nocomp_comps_6_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>STRAND_1
+            </div>
+          <a href='images/and_or_v2_nocomp_comps_11_t_40.0.png'><img src='images/and_or_v2_nocomp_comps_11_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+      <td>
+        <div>
+          <div align='center'>sp17</div>
+          <a href='images/and_or_v2_nocomp_comps_21_t_40.0.png'><img src='images/and_or_v2_nocomp_comps_21_t_40.0.png' style='width:200px;height:150px;'></a>
+        </div>
+      </td>
+    </tr></table>
+    </td>
+  </tr>
+<tr style="border-bottom:3px solid black"><td colspan="100%"><hr /></td></tr>
+</table>
+</body>
+</html>

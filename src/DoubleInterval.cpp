@@ -24,6 +24,7 @@ using namespace std;
 //TODO remove this later likely
 //because of modelparser.y
 mpfr_prec_t intervalNumPrecision = normal_precision;
+int Interval::lastUsed = -1;
 
 Interval::Interval()
 {
@@ -403,10 +404,21 @@ Interval & Interval::operator = (const Interval & I)
 
 Interval & Interval::operator += (const Interval & I)
 {
-	std::fesetround(FE_DOWNWARD);
-	lo += I.lo;
-	std::fesetround(FE_UPWARD);
-	up += I.up;
+  if(lastUsed == FE_DOWNWARD) {
+    lo += I.lo;
+    std::fesetround(FE_UPWARD);
+    up += I.up;
+    lastUsed = FE_UPWARD;
+  } else {
+    if (lastUsed != FE_UPWARD) {
+      std::fesetround(FE_UPWARD);
+    }
+    up += I.up;
+	  std::fesetround(FE_DOWNWARD);
+    lo += I.lo;
+    lastUsed = FE_DOWNWARD;
+  }
+
 	return *this;
 }
 
@@ -419,6 +431,75 @@ Interval & Interval::operator -= (const Interval & I)
 	return *this;
 }
 
+inline double Interval::mulMin(const Interval & I) const {
+  double lolo, loup, uplo, upup, min;
+	// compute the lower bound
+	lolo = lo * I.lo;
+	loup = lo * I.up;
+	uplo = up * I.lo;
+	upup = up * I.up;
+
+	min = lolo;
+	if(min > loup) {
+		min = loup;
+	}
+	if(min > uplo) {
+		min = uplo;
+	}
+	if(min > upup) {
+		min = upup;
+	}
+  return min;
+}
+
+
+inline double Interval::mulMax(const Interval & I) const {
+  double lolo, loup, uplo, upup, max;
+	lolo = lo * I.lo;
+	loup = lo * I.up;
+	uplo = up * I.lo;
+	upup = up * I.up;
+
+	max = lolo;
+	if(max < loup) {
+		max = loup;
+	}
+	if(max < uplo) {
+		max = uplo;
+	}
+	if(max < upup) {
+		max = upup;
+	}
+  return max;
+}
+
+//*
+Interval & Interval::operator *= (const Interval & I)
+{
+  double min, max;
+  if(lastUsed == FE_DOWNWARD) {
+	  //std::fesetround(FE_DOWNWARD);// can skip this one
+	  min = mulMin(I);
+    std::fesetround(FE_UPWARD);
+	  max = mulMax(I);
+    lastUsed = FE_UPWARD;
+  } else {
+    if (lastUsed != FE_UPWARD) { //can possibly skip this one
+      std::fesetround(FE_UPWARD);
+    }
+	  max = mulMax(I);
+    std::fesetround(FE_DOWNWARD);
+	  min = mulMin(I);
+    lastUsed = FE_DOWNWARD;
+  }
+
+	lo = min;
+	up = max;
+
+	return *this;
+}//*/
+
+/*
 Interval & Interval::operator *= (const Interval & I)
 {
   double lolo, loup, uplo, upup, min, max;
@@ -463,6 +544,7 @@ Interval & Interval::operator *= (const Interval & I)
 
 	return *this;
 }
+//*/
 
 Interval & Interval::operator /= (const Interval & I)
 {

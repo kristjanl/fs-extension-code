@@ -6,11 +6,11 @@ pic_decr: 0.01
 pic_poly: 0.04
 pic_ref: 0
 pic_ref_first: 0
-pic_ref_rem: 0.01
+pic_ref_rem: 0
 pic_ref_start: 0
-pic_ref_subset: 0
+pic_ref_subset: 0.01
 sc_int_rem: 0.01
-sc_post_composing: 0.09
+sc_post_composing: 0.08
 sc_transfrom: 0.03
 tr_comp_pre: 0.01
 tr_precond: 0.01
