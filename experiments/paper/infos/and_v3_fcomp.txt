@@ -1,18 +1,18 @@
 int progress: 1000
-computation time: 25
-eval_t: 0.04
-int_time: 19.5
-pic_decr: 10.04
-pic_poly: 9.22
-pic_ref: 0.1
-pic_ref_first: 9.73
-pic_ref_rem: 0.18
-pic_ref_start: 0.12
+computation time: 24.51
+eval_t: 0.09
+int_time: 19.02
+pic_decr: 9.73
+pic_poly: 9.1
+pic_ref: 0.08
+pic_ref_first: 9.45
+pic_ref_rem: 0.13
+pic_ref_start: 0.15
 pic_ref_subset: 0
-sc_int_rem: 10.14
-sc_post_composing: 7.97
-sc_transfrom: 5.5
-tr_comp_pre: 5.32
-tr_precond: 5.32
-tr_remap1: 0.05
-tr_remap3: 0.13
+sc_int_rem: 9.81
+sc_post_composing: 8.21
+sc_transfrom: 5.49
+tr_comp_pre: 5.27
+tr_precond: 5.27
+tr_remap1: 0.03
+tr_remap3: 0.12

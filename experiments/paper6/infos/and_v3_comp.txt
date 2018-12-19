@@ -1,0 +1,32 @@
+int progress: 1000
+computation time: 24.9
+eval_t: 0.02
+int_time: 19.4
+pic_decr: 9.99
+pic_poly: 9.12
+pic_ref: 0.08
+pic_ref_first: 9.63
+pic_ref_rem: 0.18
+pic_ref_start: 0.17
+pic_ref_subset: 0
+pre_end: 0.1
+pre_insert: 5.14
+pre_left: 0
+pre_lin_trans: 0.04
+pre_ltr: 0
+pre_matrix: 0
+pre_r_range: 0.04
+pre_scaling_m: 0.06
+pre_start: 0.01
+sc_int_rem: 10.07
+sc_post_composing: 8.16
+sc_transfrom: 5.5
+tr_comp_pre: 5.39
+tr_part1: 0.01
+tr_part2: 5.38
+tr_part_all: 5.39
+tr_part_matrix: 0
+tr_precond: 5.4
+tr_remap1: 0.05
+tr_remap2: 0
+tr_remap3: 0
