@@ -22,10 +22,10 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-#CFLAGS += -Denablelog
-#CXXFLAGS += -Denablelog
-#CFLAGS += -Ddo_checks
-#CXXFLAGS += -Ddo_checks
+CFLAGS += -Denablelog
+CXXFLAGS += -Denablelog
+CFLAGS += -Ddo_checks
+CXXFLAGS += -Ddo_checks
 #CFLAGS += -Dno_output
 #CXXFLAGS += -Dno_output
 LINK_FLAGS = -g
@@ -41,17 +41,17 @@ LINK_FLAGS = -g
 #LINK_FLAGS += -pg
 
 
-#if need to use local mpfr and gmp library
+#if using local install for dependencies
 #CFLAGS += -I $(DEP_HOME)/include
 #LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 
 #if using double Interval
-CFLAGS += -DDInt
-CXXFLAGS += -DDInt
-OBJS = DoubleInterval.o
+#CFLAGS += -DDInt
+#CXXFLAGS += -DDInt
+#OBJS = DoubleInterval.o
 #if using mpfr Interval
-#OBJS = Interval.o
+OBJS = Interval.o
 
 # PBJ: modelParser.o added.  Not clear why omitted.
 # KL: removed modelParser again, it produces conflicts if using profiling (two main functions)

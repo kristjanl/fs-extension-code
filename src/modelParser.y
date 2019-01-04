@@ -20,7 +20,7 @@
 	extern int yyparse();
 	extern void parseMpfr(string *str, mpfr_t num);
 	bool err;
-	bool usePlainFlowstar = false;
+	bool useCFlow = false;
 	//could get rid of this if determining the use of flowstar before preconditioning method
 	bool plainFlowPrecondMethod = false;
 %}
@@ -65,7 +65,7 @@
 %token REMEST
 %token INTERVAL OCTAGON GRID
 %token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPROCESS
-%token QRPRECOND1 QRPRECOND2 QRPRECOND3
+%token QRPRECOND1 PAPRECOND QRPRECOND3
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -76,10 +76,8 @@
 %token GNUPLOT MATLAB COMPUTATIONPATHS
 %token LINEARODE PAR
 %token METHOD
-%token ALGORITHM ALG_FLOW ALG_SIMPLE_IMPL ALG_SIMPLE_COMP ALG_SMALL_COMP FLOW_IMPL
-%token DECOMPOSITION NO_DECOMPOSITION FULL_DECOMPOSITION
 
-%token USE_PLAIN_FLOWSTAR USE_CFLOW
+%token USE_CFLOW
 %token LEFT_MODEL_COMP FULLY_COMP
 %token AUTO_COMPONENTS COMPONENTS NO_COMPONENTS
 
@@ -147,13 +145,12 @@
 
 model: CONTINUOUS '{' continuous '}'
 {
-  OutputWriter *writer = new OutputWriter(continuousProblem.outputFileName);
-  continuousProblem.settings->writer = writer;
-  settings2->writer = writer;
-
-
-
-	if(usePlainFlowstar) {
+	mlog1("continuous1");
+	if(useCFlow == false) {
+  	OutputWriter *writer = new OutputWriter(continuousProblem.outputFileName);
+  	settings2->writer = writer;
+		continuousProblem.settings = settings2;
+		
 		int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		if(mkres < 0 && errno != EEXIST)
 		{
@@ -235,6 +232,7 @@ model: CONTINUOUS '{' continuous '}'
 |
 CONTINUOUS '{' continuous '}' unsafe_continuous
 {
+	mlog1("continuous2");
 	int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	if(mkres < 0 && errno != EEXIST)
 	{
@@ -305,6 +303,7 @@ CONTINUOUS '{' continuous '}' unsafe_continuous
 |
 HYBRID '{' hybrid '}'
 {
+	mlog1("hybrid1");
 	int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	if(mkres < 0 && errno != EEXIST)
 	{
@@ -352,6 +351,7 @@ HYBRID '{' hybrid '}'
 |
 HYBRID '{' hybrid '}' unsafe_hybrid
 {
+	mlog1("hybrid2");
 	int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 	if(mkres < 0 && errno != EEXIST)
 	{
@@ -421,6 +421,7 @@ HYBRID '{' hybrid '}' unsafe_hybrid
 |
 stateVarDecls plotting CUTOFF NUM OUTPUT IDENT unsafe_continuous CONTINUOUSFLOW '{' tmVarDecls continuous_flowpipes '}'
 {
+	mlog1("stateVarDecls1");
 	clock_t begin, end;
 
 	if($4 <= 0)
@@ -461,6 +462,7 @@ stateVarDecls plotting CUTOFF NUM OUTPUT IDENT unsafe_continuous CONTINUOUSFLOW 
 |
 stateVarDecls plotting CUTOFF NUM OUTPUT IDENT CONTINUOUSFLOW '{' tmVarDecls continuous_flowpipes '}'
 {
+	mlog1("stateVarDecls2");
 	if($4 <= 0)
 	{
 		parseError("The cutoff threshold should be a positive number.", lineNum);
@@ -477,6 +479,7 @@ stateVarDecls plotting CUTOFF NUM OUTPUT IDENT CONTINUOUSFLOW '{' tmVarDecls con
 |
 stateVarDecls modeDecls COMPUTATIONPATHS '{' computation_paths '}' plotting OUTPUT IDENT unsafe_hybrid HYBRIDFLOW '{' hybrid_flowpipes '}'
 {
+	mlog1("stateVarDecls3");
 	clock_t begin, end;
 	strcpy(hybridProblem.outputFileName, $9->c_str());
 	generateNodeSeq(hybridProblem.traceNodes, hybridProblem.traceTree);
@@ -510,6 +513,7 @@ stateVarDecls modeDecls COMPUTATIONPATHS '{' computation_paths '}' plotting OUTP
 |
 stateVarDecls modeDecls COMPUTATIONPATHS '{' computation_paths '}' plotting OUTPUT IDENT HYBRIDFLOW '{' hybrid_flowpipes '}'
 {
+	mlog1("stateVarDecls4");
 	strcpy(hybridProblem.outputFileName, $9->c_str());
 	generateNodeSeq(hybridProblem.traceNodes, hybridProblem.traceTree);
 	hybridProblem.plot_2D();
@@ -519,6 +523,7 @@ stateVarDecls modeDecls COMPUTATIONPATHS '{' computation_paths '}' plotting OUTP
 |
 TAYLOR_PICARD '{' non_polynomial_rhs_picard '}'
 {
+	mlog1("taylorpicard");
 	$3->getExpansion(parseResult.expansion);
 	parseResult.remainder = $3->getRemainder();
 	delete $3;
@@ -526,18 +531,21 @@ TAYLOR_PICARD '{' non_polynomial_rhs_picard '}'
 |
 TAYLOR_REMAINDER '{' non_polynomial_rhs_remainder '}'
 {
+	mlog1("taylorremainder");
 	parseResult.remainder = (*$3);
 	delete $3;
 }
 |
 TAYLOR_POLYNOMIAL '{' non_polynomial_rhs_no_remainder '}'
 {
+	mlog1("taylorpoly");
 	parseResult.expansion = (*$3);
 	delete $3;
 }
 |
 NONPOLY_CENTER '{' non_polynomial_rhs_center '}'
 {
+	mlog1("NONPOLY_CENTER");
 	parseResult.strExpansion = (*$3);
 	delete $3;
 }
@@ -2014,7 +2022,6 @@ stateIdDeclList: stateIdDeclList ',' IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
-  continuousProblem.settings->varNames.push_back(*$3);
   settings2->varNames.push_back(*$3);
 
 	//mlog1(sbuilder() << "*$3: " << *$3);
@@ -2036,7 +2043,6 @@ IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
-  continuousProblem.settings->varNames.push_back(*$1);
   settings2->varNames.push_back(*$1);
 	
 	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
@@ -2105,16 +2111,14 @@ IDENT EQ NUM
 }
 ;
 
+/*
+myorder: FIXEDORD {
 
-//TODO remove algorithm decomposition
-settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM 
-CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker compositionality
+};*/
+
+settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-  settings2->step = $2;
-  settings2->time = $4;
-  //continuousProblem.settings->log();
 	mlog1("settings1");
-  mlog1(continuousProblem.algorithm);
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2122,13 +2126,13 @@ CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker composit
 	}
 
 	int order = (int)$9;
-  settings2->order = order;
+
 	if(order <= 0)
 	{
 		parseError("Orders should be larger than zero.", lineNum);
 		exit(1);
 	}
-	mlog1(sbuilder() << "step: " << $2 << ", time: " << time << ", order: " << order);
+
 	continuousProblem.bAdaptiveSteps = false;
 	continuousProblem.step = $2;
 	continuousProblem.time = $4;
@@ -2154,17 +2158,60 @@ CUTOFF NUM PRECISION NUM OUTPUT IDENT algorithm point_params implPicker composit
 	Interval cutoff_threshold(-$11,$11);
 	continuousProblem.cutoff_threshold = cutoff_threshold;
 	hybridProblem.global_setting.cutoff_threshold = cutoff_threshold;
-  settings2->cutoff = new Interval(cutoff_threshold);
 
 	intervalNumPrecision = (int)$13;
 
 	strcpy(continuousProblem.outputFileName, (*$15).c_str());
 	strcpy(hybridProblem.outputFileName, (*$15).c_str());
-	mlog1(sbuilder() << "cutoff_thrs: " << $11 << ", intnumprec: " << $13 << ", outFname: " << *$15);
-	
-	//settings2->log();
 
 	delete $15;
+} | FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM 
+CUTOFF NUM PRECISION NUM OUTPUT IDENT point_params implPicker compositionality
+{
+	mreset(old);
+  settings2->step = $2;
+  settings2->time = $4;
+	mlog1("settings cflow");
+	if($2 <= 0)
+	{
+		parseError("A time step-size should be larger than 0", lineNum);
+		exit(1);
+	}
+
+	int order = (int)$9;
+	//TODO move to order parsing part
+  settings2->order2 = order;
+	if(order <= 0)
+	{
+		parseError("Orders should be larger than zero.", lineNum);
+		exit(1);
+	}
+	mlog1(sbuilder() << "step: " << $2 << ", time: " << time << ", order: " << order);
+	settings2->orderLookup[continuousProblem.getIDForStateVar("x1")] = 5;
+	settings2->orderLookup[continuousProblem.getIDForStateVar("x2")] = 5;
+	settings2->orderLookup[continuousProblem.getIDForStateVar("y1")] = 5;
+	settings2->orderLookup[continuousProblem.getIDForStateVar("y2")] = 5;
+	for(int i = 0; i < continuousProblem.stateVarNames.size(); i++) {
+		settings2->order2 = settings2->order2 > settings2->orderLookup[i]? 
+				settings2->order2: settings2->orderLookup[i];
+	}
+	mforce("oMap", settings2->orderLookup);
+
+	if($11 <= 0)
+	{
+		parseError("The cutoff threshold should be a positive number.", lineNum);
+		exit(1);
+	}
+
+	Interval cutoff_threshold(-$11,$11);
+  settings2->cutoff = new Interval(cutoff_threshold);
+
+	intervalNumPrecision = (int)$13;
+
+	settings2->writer = new OutputWriter(*$15);
+	
+	delete $15;
+	mrestore(old);
 }
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' MIN NUM ',' MAX NUM '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
@@ -2629,15 +2676,14 @@ IDENT ':' NUM
 }
 ;
 
+//TODO wanted to make separate precondtion for cflow, but got conflicts between two rules
 precondition: QRPRECOND {
 	plainFlowPrecondMethod = true;
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
   //Transformer *transformer = new QRTransformer();
-  //continuousProblem.settings->transformer = transformer;
   Transformer *transformer = new QRTransformerPlain();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 } | QRPRECOND1 {
   mforce1("making new");
@@ -2646,34 +2692,29 @@ precondition: QRPRECOND {
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer1();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
-} | QRPRECOND2 {
+} | PAPRECOND {
   mforce1("making new");
-	mlog1("qr precond1");
+	mlog1("pa precond");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
-  Transformer *transformer = new QRTransformer2();
-  continuousProblem.settings->transformer = transformer;
+  Transformer *transformer = new PaTransformer();
 	settings2->transformer = transformer;
 } | QRPRECOND3 {
   mforce1("making new");
-	mlog1("qr precond1");
+	mlog1("qr precond3");
 	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
 	continuousProblem.precondition = QR_PRE;
 	hybridProblem.global_setting.precondition = QR_PRE;
   Transformer *transformer = new QRTransformer3();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 } | FULLY_COMP IDPRECOND {
   Transformer *transformer = new SingleComponentIdentityTransformer();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 	//cout << "fully id\n";
 } | LEFT_MODEL_COMP IDPRECOND {
   Transformer *transformer = new IdentityTransformer();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 	//cout << "left id\n";
 } | IDPRECOND {
@@ -2682,7 +2723,6 @@ precondition: QRPRECOND {
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new IdentityTransformer();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 } | COMPIDPRECOND {
 	cout << "shouldn't call anymore\n";
@@ -2691,11 +2731,10 @@ precondition: QRPRECOND {
 	continuousProblem.precondition = ID_PRE;
 	hybridProblem.global_setting.precondition = ID_PRE;
   Transformer *transformer = new SingleComponentIdentityTransformer();
-  continuousProblem.settings->transformer = transformer;
+  settings2->transformer = transformer;
 } | NOPROCESS {
 	mlog1("no processing");
   Transformer *transformer = new NullTransformer();
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
 } | SHRINRWRAPPING NUM {
 	mlog1("shrink num");
@@ -2703,77 +2742,25 @@ precondition: QRPRECOND {
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
   //old implemenation discard empty params in shrinkwrapping
-  continuousProblem.settings->discardEmptyParams = true;
+  //settings2->discardEmptyParams = true;
 } | SHRINRWRAPPING REM {
 	mlog1("shrink rem");
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
 	continuousProblem.precondition = SHRINK_WRAPPING;
   Transformer *transformer;
   transformer = new ShrinkWrapper(cond);
-  continuousProblem.settings->transformer = transformer;
 	settings2->transformer = transformer;
   //old implemenation discard empty params in shrinkwrapping
-  continuousProblem.settings->discardEmptyParams = true;
+  //settings2->discardEmptyParams = true;
 } | {
 	cout << "bad processing\n";
 	exit(0);
 }
 ;
 
-algorithm: ALG_SIMPLE_IMPL
-{
-	mlog1("ALG_SIMPLE_IMPL");
-	if(continuousProblem.precondition == SHRINK_WRAPPING) {
-    parseError(
-        "Only small component algorith supports shrink wrapping", lineNum);
-    exit(1);
-	}
-	continuousProblem.algorithm = ALGORITHM_SIMPLE_IMPL;
-}
-|
-ALG_SIMPLE_COMP
-{
-	mlog1("ALG_SIMPLE_COMP");
-	if(continuousProblem.precondition == SHRINK_WRAPPING) {
-    parseError(
-        "Only small component algorith supports shrink wrapping", lineNum);
-    exit(1);
-	}
-	continuousProblem.algorithm = ALGORITHM_SIMPLE_COMP;
-}
-|
-ALG_SMALL_COMP
-{
-	mlog1("ALG_SMALL_COMP");
-	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
-}
-|
-ALG_SMALL_COMP FLOW_IMPL
-{
-	mlog1("ALG_SMALL_COMP");
-	continuousProblem.algorithm = ALGORITHM_SMALL_COMP;
-	continuousProblem.settings->useFlow = true;
-	//exit(0);
-}
-|
-ALG_FLOW
-{
-	mlog1(sbuilder() << "type: " << typeid(continuousProblem).name());
-	mlog1("ALG_DEF");
-	continuousProblem.algorithm = ALGORITHM_DEFAULT;
-}
-| {
-  mlog1(sbuilder() << "type: " << typeid(continuousProblem).name());
-	mlog1("ALG_DEF");
-	continuousProblem.algorithm = ALGORITHM_DEFAULT;
-}
-;
-
 point_params: REMOVE_EMPTY_PARAMS {
-  continuousProblem.settings->discardEmptyParams = true;
   settings2->discardEmptyParams = true;
 } | {
   //initialized to false in constructor
@@ -2781,13 +2768,16 @@ point_params: REMOVE_EMPTY_PARAMS {
 
 implPicker: USE_CFLOW {
 	mlog1("using my impl");
-} | {
+	useCFlow = true;
+}
+/* | {
   if (plainFlowPrecondMethod == false) {
 		parseError("Flowstar only supports (non compositional) identity and QR precondition.", lineNum);
 	}
 	cout << "using f* impl\n";
-	usePlainFlowstar = true;
-};
+	//useCFlow = false;
+}
+*/;
 
 
 compositionality: comps {}
@@ -2802,13 +2792,12 @@ compType: LEFT_MODEL_COMP {
 };*/
 
 comps: AUTO_COMPONENTS {
-	if(usePlainFlowstar) {
+	if(useCFlow == false) {
 		parseError("Flowstar doesn't have components", lineNum);
 	}
-  continuousProblem.settings->autoComponents = true;
 	settings2->autoComponents = true;
 } | NO_COMPONENTS {
-	if(usePlainFlowstar) {
+	if(useCFlow == false) {
 		parseError("Flowstar doesn't have components", lineNum);
 	}
 	int varNumber = continuousProblem.stateVarNames.size();
@@ -2816,40 +2805,15 @@ comps: AUTO_COMPONENTS {
   for(int i = 0; i < varNumber; i++) {
     vs.push_back(i);
   }
-  continuousProblem.settings->intComponents.push_back(vs);
   settings2->intComponents.push_back(vs);
 } | '[' components ']'{
-	if(usePlainFlowstar) {
+	if(useCFlow == false) {
 		parseError("Flowstar doesn't have components", lineNum);
 	}
 } | {
-	if(usePlainFlowstar == false)
+	if(useCFlow)
 		parseError("No decompostion specified for compositional algorithm.", lineNum);
 }
-
-/*TODO remove
-decomposition: DECOMPOSITION '[' components ']'
-{
-	mlog1("DECOMPOSITION");
-} | FULL_DECOMPOSITION {
-  continuousProblem.settings->autoComponents = true;
-  settings2->autoComponents = true;
-} | NO_DECOMPOSITION {
-  logger.force("none");
-  int varNumber = continuousProblem.stateVarNames.size();
-  vector<int> vs;
-  for(int i = 0; i < varNumber; i++) {
-    vs.push_back(i);
-  }
-  continuousProblem.settings->intComponents.push_back(vs);
-  settings2->intComponents.push_back(vs);
-} | {
-  if(continuousProblem.algorithm == ALGORITHM_SMALL_COMP) {
-    parseError("No decompostion given for composition algorithm.", lineNum);
-    exit(1);
-  }
-}
-*/
 
 components: components ',' component { }
 |
@@ -2874,7 +2838,6 @@ component: '[' compVarIds ']'
     }
   }
   //add this component to all components
-  continuousProblem.settings->intComponents.push_back(*($2));
 	settings2->intComponents.push_back(*($2));
   delete $2;
 }

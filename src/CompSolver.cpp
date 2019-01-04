@@ -74,6 +74,7 @@ void Solver::setUp(MySettings *settings, IVP & ivp) {
     outName.append(".txt");
     mlog1(sbuilder() << "serializer name: " << outName);
     pSerializer = new TMVSerializer(outName);
+    //pSerializer->deactivate();
   }
   
   comps = createComponents(settings, ivp.hfOde);
@@ -82,7 +83,7 @@ void Solver::setUp(MySettings *settings, IVP & ivp) {
 
 	vector<Interval> step_exp_table, step_end_exp_table;
 	construct_step_exp_table(step_exp_table, step_end_exp_table, settings->step, 
-	    2*settings->order);
+	    2*settings->order2);
   settings->step_exp_table = step_exp_table;
   settings->step_end_exp_table = step_end_exp_table;
   
@@ -94,9 +95,11 @@ void Solver::setUp(MySettings *settings, IVP & ivp) {
   vector<Interval> & domain = ivp.domain;
 
   //mlog1("before preparing");
+  int stepNum = ceil(settings->time / settings->step);
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     (*it)->prepareComponent(currentTMV, ivp.hfOde, settings);
+    (*it)->pipePairs.reserve(stepNum);
   }
   
   all = pGetSystemComponent(comps, currentTMV, ivp.hfOde, settings);
@@ -120,7 +123,6 @@ namespace compSolver{
     tstart1(pic_ref_start);
     
     const vector<Interval> & step_exp_table = settings.step_exp_table;
-    int order = settings.order;
     const Interval & cutoff_threshold = *settings.cutoff;
 
    
@@ -136,6 +138,7 @@ namespace compSolver{
 	  
 	  //initial guess for the remainder
 	  vector<Interval> guess;
+    guess.reserve(varCount);
 	  for(int i = 0; i < varCount; i++) {
       /*TODO decide to include or not (rem state 1/3)
       if(comp.lastRems.size() != 0) {
@@ -162,8 +165,8 @@ namespace compSolver{
     tend1(pic_ref_start);
     tstart1(pic_ref_first);
 	  TaylorModelVec compTemp;
-    p.Picard_ctrunc_normal(compTemp, trees, &comp, pPolyRange, 
-      step_exp_table, paramCount, order, cutoff_threshold);
+    p.Picard_ctrunc_normal(compTemp, trees, &comp, &settings, pPolyRange, 
+      step_exp_table, paramCount, cutoff_threshold);
     //pSerializer->add(compTemp, "inspect");
     tend1(pic_ref_first);
     tstart1(pic_ref_rem);
@@ -172,6 +175,7 @@ namespace compSolver{
     mlog("tm0", compTemp.tms[0]);
 	  mlog("solve", comp.solveIndexes);
 	  
+    cutoffInt.reserve(varCount);
 	  //should be because of the turncated parts and uncertainties (?)
 	  for(int i=0; i < varCount; i++) {
   	  //TODO make this one compositional (no need to find remainders for 
@@ -206,6 +210,7 @@ namespace compSolver{
 	  
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
+    newRemainders.reserve(varCount);
     //mforce1(sbuilder() << "initial ");
 		
 		int counter = 0;
@@ -270,7 +275,6 @@ namespace compSolver{
 	  //minc();
 	  
     const vector<Interval> & step_exp_table = settings.step_exp_table;
-    int order = settings.order;
     const Interval & cutoff_threshold = *settings.cutoff;
     
 	  //number of taylor model parameters
@@ -282,6 +286,7 @@ namespace compSolver{
 	  
 	  //new remainders are stored here
 		vector<Interval> newRemainders;
+    newRemainders.reserve(varCount);
 		
 	  bool stop = false;
 	  int counter = 0;
@@ -318,13 +323,22 @@ namespace compSolver{
           continue;
 	      p.tms[i].remainder = newRemainders[i];
 	    }
+      //force n number of refinements for all components
+      /*
+      if(stop) {
+        if(counter < 7) {
+          stop = false;
+          continue;
+        }
+        cout << counter << " ";
+      }//*/
       //if(stop) {
       //  //cout << counter << endl;
       //  addRef(counter, comp.getVarName(&settings));
       //}
   	  //mforce("mr", p.getRemainders());
 	  }
-    compStepMap[comp.getVarName(&settings)][curStep] = counter;
+    //compStepMap[comp.getVarName(&settings)][curStep] = counter;
     /*TODO decide to include or not (rem state 2/3)
     comp.lastRems = newRemainders;
     */
@@ -384,7 +398,7 @@ namespace compSolver{
     
     tstart(pic_poly);
     //find the picard polynomial
-    for(int i = 1; i <= settings.order; i++) {
+    for(int i = 1; i <= settings.order2; i++) {
       p.Picard_no_remainder_assign(&component, varCount + 1, i, *settings.cutoff);
       //mforce1(sbuilder() << i);
       //mforce("poly", p);
@@ -582,6 +596,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   cerr << endl;
 
   
+  /*
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     string name = (*it)->getVarName(settings);
@@ -591,7 +606,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
       mforce1(sbuilder() << name << "[" << i << "] = " << compStepMap[name][i]);
     }
   }
-  
+  */
 
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;
@@ -604,9 +619,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
 
   post(settings);
   
-  mdec();
   mrestore(old);
-
   mdec();
   mlog1("solve ivp >");
 }

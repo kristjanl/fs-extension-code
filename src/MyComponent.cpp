@@ -314,6 +314,7 @@ void addEmptyTM(vector<TaylorModelVec> & pipes, int dim) {
 
 TaylorModelVec getEmptyTMV(int dim) {  
   TaylorModelVec temp;
+  temp.tms.reserve(dim);
   TaylorModel t;
   for(int i = 0; i < dim; i++) {
     temp.tms.push_back(t);
@@ -565,8 +566,8 @@ TaylorModelVec MyComponent::orderedTSPRemap(bool first) {
     throw std::invalid_argument("orderedTSPRemap can only be used with deps");
   }
   
-  TaylorModelVec ret(compVars.size());
   TaylorModelVec ret2;
+  ret2.tms.reserve(allVars.size());
   
   map<int, CompDependency *>  lookup;
   for(vector<CompDependency *>::iterator it = dependencies.begin(); 

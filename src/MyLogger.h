@@ -8,6 +8,7 @@
 #include <vector>
 #include <stdexcept>
 #include <set>
+#include <map>
 
 #ifdef DInt
   #include "DoubleInterval.h"
@@ -96,6 +97,7 @@ class mylogger2 {
 		void log(std::string, Monomial);
 		void log(std::string, std::vector<Interval>);
 		void log(std::string, std::vector<int>);
+		void log(std::string, std::map<int, int>);
 		void log(std::string, std::vector<std::string>);
 		void log(std::string, std::vector<HornerForm>);
 		void log(std::string, HornerForm);

@@ -1,0 +1,24 @@
+int progress: 100
+eval_t: 0.01
+fl_int_all: 0.34
+fl_int_rem: 0.23
+fl_part1: 0
+fl_part2: 0.07
+fl_part_all: 0.08
+fl_part_matrix: 0.01
+fl_pre_end: 0
+fl_pre_insert: 0.05
+fl_pre_left: 0.01
+fl_pre_lin_trans: 0.01
+fl_pre_ltr: 0.01
+fl_pre_matrix: 0
+fl_pre_r_range: 0
+fl_pre_scaling: 0
+fl_pre_start: 0
+fl_precond: 0.08
+int_time: 0.34
+pic_decr: 0.15
+pic_poly: 0.11
+pic_ref: 0.08
+pic_ref_first: 0.13
+computation time: 0.43

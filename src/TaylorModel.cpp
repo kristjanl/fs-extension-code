@@ -9,6 +9,7 @@
 #include "TaylorModel.h"
 #include "MyLogger.h"
 #include "MyComponent.h"
+#include "Utils.h"
 #include "Exceptions.h"
 
 ParseSetting parseSetting;
@@ -765,7 +766,9 @@ void TaylorModel::insert_no_remainder_no_cutoff(TaylorModel & result, const Tayl
 }
 
 //numVars is the number of parameters on the vars TMV
-void TaylorModel::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
+void TaylorModel::insert_ctrunc_normal(TaylorModel & result, const TaylorModelVec & vars, 
+    const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, 
+    const int numVars, const int order, const Interval & cutoff_threshold) const 
 {
 	if(vars.tms.size() == 0)
 	{
@@ -1615,9 +1618,7 @@ TaylorModelVec::TaylorModelVec()
 }
 
 TaylorModelVec::TaylorModelVec(int n) {
-	for(int i = 0; i < n; i++) 	{
-		tms.push_back(TaylorModel());
-	}
+  tms.reserve(n);
 }
 
 TaylorModelVec::TaylorModelVec(const vector<TaylorModel> & tms_input):tms(tms_input)
@@ -1630,6 +1631,7 @@ TaylorModelVec::TaylorModelVec(const Matrix & coefficients)
 	RowVector rowVec(cols);
 
 	int rows = coefficients.rows();
+  tms.reserve(rows);
 
 	for(int i=0; i<rows; ++i)
 	{
@@ -1645,6 +1647,7 @@ TaylorModelVec::TaylorModelVec(const Matrix & coefficients, const vector<Interva
 	RowVector rowVec(cols);
 
 	int rows = coefficients.rows();
+  tms.reserve(rows);
 
 	for(int i=0; i<rows; ++i)
 	{
@@ -1656,6 +1659,7 @@ TaylorModelVec::TaylorModelVec(const Matrix & coefficients, const vector<Interva
 
 TaylorModelVec::TaylorModelVec(const vector<Interval> & constants, const int numVars)
 {
+  tms.reserve(constants.size());
 	for(int i=0; i<constants.size(); ++i)
 	{
 		TaylorModel tmTemp(constants[i], numVars);
@@ -1665,6 +1669,7 @@ TaylorModelVec::TaylorModelVec(const vector<Interval> & constants, const int num
 
 TaylorModelVec::TaylorModelVec(const vector<vector<Interval> > & coefficients)
 {
+  tms.reserve(coefficients.size());
 	for(int i=0; i<coefficients.size(); ++i)
 	{
 		TaylorModel tmTemp(coefficients[i]);
@@ -1674,6 +1679,7 @@ TaylorModelVec::TaylorModelVec(const vector<vector<Interval> > & coefficients)
 
 TaylorModelVec::TaylorModelVec(const vector<vector<Interval> > & coefficients, const vector<Interval> & remainders)
 {
+  tms.reserve(coefficients.size());
 	for(int i=0; i<coefficients.size(); ++i)
 	{
 		TaylorModel tmTemp(coefficients[i], remainders[i]);
@@ -1784,6 +1790,7 @@ void TaylorModelVec::dump_constant(FILE *fp, const vector<string> & stateVarName
 void TaylorModelVec::constant(vector<Interval> & result) const
 {
 	result.clear();
+  result.reserve(tms.size());
 
 	for(int i=0; i<tms.size(); ++i)
 	{
@@ -1807,6 +1814,7 @@ void TaylorModelVec::intEval(vector<Interval> & result, const vector<Interval> &
 void TaylorModelVec::intEvalNormal(vector<Interval> & result, const vector<Interval> & step_exp_table) const
 {
 	result.clear();
+  result.reserve(tms.size());
 	for(int i=0; i<tms.size(); ++i)
 	{
 		Interval I;
@@ -1865,6 +1873,7 @@ void TaylorModelVec::inv(TaylorModelVec & result) const
 void TaylorModelVec::add(TaylorModelVec & result, const TaylorModelVec & tmv) const
 {
 	result.clear();
+  result.tms.reserve(tmv.tms.size());
 
 	if(tms.size() != tmv.tms.size())
 	{
@@ -1883,6 +1892,7 @@ void TaylorModelVec::add(TaylorModelVec & result, const TaylorModelVec & tmv) co
 void TaylorModelVec::sub(TaylorModelVec & result, const TaylorModelVec & tmv) const
 {
 	result.clear();
+  result.tms.reserve(tmv.tms.size());
 
 	if(tms.size() != tmv.tms.size())
 	{
@@ -1915,6 +1925,7 @@ void TaylorModelVec::sub_assign(const TaylorModelVec & tmv)
 void TaylorModelVec::mul(TaylorModelVec & result, const Interval & I) const
 {
 	result.clear();
+  result.tms.reserve(tms.size());
 
 	for(int i=0; i<tms.size(); ++i)
 	{
@@ -1934,6 +1945,7 @@ void TaylorModelVec::mul_assign(const Interval & I)
 void TaylorModelVec::div(TaylorModelVec & result, const Interval & I) const
 {
 	result.clear();
+  result.tms.reserve(tms.size());
 
 	for(int i=0; i<tms.size(); ++i)
 	{
@@ -2110,9 +2122,33 @@ void TaylorModelVec::insert_ctrunc_normal(TaylorModelVec & result, const TaylorM
 	}
 }
 
+void TaylorModelVec::insert_ctrunc_normal(TaylorModelVec & result, 
+		const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, 
+		const MySettings *settings, MyComponent *component, const int numVars) const {
+	//settings.step_end_exp_table, rightParamCount, settings.order, *settings.cutoff
+
+	//int var = comp2->solveIndexes[j]; //local index inside of component
+	//int globalIndex = comp2->compVars[var]; //global index out of all vars
+	//int varOrder = settings->orderLookup[globalIndex];
+	//mlog1(sbuilder() << "var: " << var);
+
+	result.clear();
+	for(int i=0; i<tms.size(); i++) {
+		//tms is ordered the same as allVars, which references the global index
+		int globalIndex = component->allVars[i]; 
+		int varOrder = settings->orderLookup.at(globalIndex);
+		//mforce1(sbuilder() << "globalIndex: " << globalIndex << ", order: " << varOrder);
+		TaylorModel tmTemp;
+		tms[i].insert_ctrunc_normal(tmTemp, vars, varsPolyRange, 
+				settings->step_exp_table, numVars, varOrder, *settings->cutoff);
+		result.tms.push_back(tmTemp);
+	}
+}
+
 void TaylorModelVec::evaluate_t(TaylorModelVec & result, const vector<Interval> & step_exp_table) const
 {
 	result.clear();
+  result.tms.reserve(tms.size());
 	for(int i=0; i<tms.size(); ++i)
 	{
 		TaylorModel tmTemp;
@@ -2149,6 +2185,7 @@ void TaylorModelVec::linearTrans(TaylorModelVec & result, const Matrix & A) cons
 	}
 
 	int rows = A.rows();
+  result.tms.reserve(rows);
 	for(int i=0; i<rows; ++i)
 	{
 		TaylorModel tm1;
@@ -2249,11 +2286,11 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
   //mlog1(sbuilder() << "order: " << order);
   
 	TaylorModelVec tmvTemp;
-	vector<int> sIndexes = comp->solveIndexes;
+	vector<int> & sIndexes = comp->solveIndexes;
 	int lowerOrder = max(0, order - 1);
 	
 	//find picard iteration for variables that need to be solved
-  TaylorModelVec compPicard;
+  TaylorModelVec compPicard(sIndexes.size());
 	for(int i=0; i<sIndexes.size(); ++i) {
 	  TaylorModel tmTemp;
 		comp->odes[sIndexes[i]].insert_no_remainder(tmTemp, *this, numVars, order-1,
@@ -2262,9 +2299,8 @@ void TaylorModelVec::Picard_no_remainder(TaylorModelVec & result,
 	}
 	//mlog("compPic", compPicard);
 	
-	TaylorModelVec integrated;
+	TaylorModelVec integrated(tms.size());
 	compPicard.integral_no_remainder(integrated);
-	
 	
 	for(int i = 0; i < tms.size(); i++) {
     //mlog1(sbuilder() << "i: " << i);
@@ -2297,7 +2333,7 @@ void TaylorModelVec::Picard_no_remainder_assign(const TaylorModelVec & x0, const
 
 void TaylorModelVec::Picard_no_remainder_assign(MyComponent *component, 
     const int numVars, const int order, const Interval & cutoff_threshold) {
-	TaylorModelVec result;
+	TaylorModelVec result(tms.size());
 	Picard_no_remainder(result, component, numVars, order, cutoff_threshold);
 	*this = result;
 }
@@ -2396,95 +2432,10 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeT
   //mforce("result", result);
 }
 
-void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const
-{
-  //mforce1("my version shouldn't call this2");
-  mreset(old);
-  mdisable();
-  minc();
-  //mlog1("Picard_ctrunc_normal2 (i vec)");
-  //mlog("x0", x0);
-  //mlog("ode", ode);
-  //mlog("this", *this);
-  //mlog("polyRange", polyRange);
-  //mlog1(sbuilder() << "order: " << order);
-  //mlog1(sbuilder() << "numVars: " << numVars);
-  //mlog("comp", comp);
-	TaylorModelVec inserted;
-
-	trees.clear();
-	for(int i=0; i<ode.size(); ++i)
-	{
-		trees.push_back(NULL);
-	}
-
-	if(order <= 1)
-	{
-		//for(int i=0; i<ode.size(); ++i) {
-	  for(int j = 0; j < comp.size(); j++) {
-	    int var = comp[j];
-	    //mlog1(sbuilder() << "var: " << var);
-			TaylorModel tmTemp;
-			//mlog1(ode[var].toString());
-			ode[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, 0, cutoff_threshold);
-			inserted.tms.push_back(tmTemp);
-			//mlog(sbuilder() << "tm[" << var << "]", tmTemp);
-		}
-	}
-	else
-	{
-		//for(int i=0; i<ode.size(); ++i) {
-	  for(int j = 0; j < comp.size(); j++) {
-	    int var = comp[j];
-	    //mlog1(sbuilder() << "var: " << var);
-		  //order - 1, since the integration makes the degree 1 higher
-			TaylorModel tmTemp;
-			ode[var].insert_ctrunc_normal(tmTemp, trees[var], *this, polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
-			inserted.tms.push_back(tmTemp);
-		}
-	}
-	//mlog("inserted(TM)", inserted);
-
-	TaylorModelVec integrated;
-	for(int i = 0; i < inserted.tms.size(); i++) {
-		TaylorModel tmTemp;
-		inserted.tms[i].integral(tmTemp, step_exp_table[1]);
-		integrated.tms.push_back(tmTemp);
-	}
-	//mlog("integrated(TM)", integrated);
-	
-	TaylorModelVec added;
-	for(int i = 0; i < comp.size(); i++) {
-	  //i is index in integrated, var is index in original
-	  int var = comp[i];
-		TaylorModel tmTemp;
-		x0.tms[var].add(tmTemp, integrated.tms[i]);
-		added.tms.push_back(tmTemp);
-	}
-	
-	result.clear();
-	
-	for(int i = 0; i < tms.size(); i++) {
-    //mlog1(sbuilder() << "i: " << i);
-    vector<int>::iterator it = find(comp.begin(), comp.end(), i);
-    if(it == comp.end()) {
-      result.tms.push_back(tms[i]);
-    }else {
-      int indexInComp = it - comp.begin();
-      result.tms.push_back(added.tms[indexInComp]);
-    }
-	}
-	//mlog("result", result);
-	
-	mdec();
-	mrestore(old);
-}
-
 void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result, 
-    vector<RangeTree *> & trees, MyComponent *comp2, 
+    vector<RangeTree *> & trees, MyComponent *comp2, MySettings *settings,
     const vector<Interval> & polyRange, const vector<Interval> & step_exp_table, 
-    const int numVars, const int order, const Interval & cutoff_threshold) 
-    const {
+    const int numVars, const Interval & cutoff_threshold) const {
   mreset(old);
   mdisable();
   minc();
@@ -2496,49 +2447,47 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
   //mlog1(sbuilder() << "order: " << order);
   //mlog1(sbuilder() << "numVars: " << numVars);
   //mlog("comp", comp2->solveIndexes);
-	TaylorModelVec inserted;
+	TaylorModelVec inserted(comp2->solveIndexes.size());
 
 	trees.clear();
 	for(int i=0; i<comp2->odes.size(); ++i) {
 		trees.push_back(NULL);
 	}
 
-	if(order <= 1) {
-		//for(int i=0; i<ode.size(); ++i) {
-	  for(int j = 0; j < comp2->solveIndexes.size(); j++) {
-	    int var = comp2->solveIndexes[j];
-	    //mlog1(sbuilder() << "var: " << var);
+	for(int j = 0; j < comp2->solveIndexes.size(); j++) {
+		int var = comp2->solveIndexes[j]; //local index inside of component
+		int globalIndex = comp2->compVars[var]; //global index out of all vars
+		int varOrder = settings->orderLookup.at(globalIndex);
+		//mforce1(sbuilder() << "var: " << var << ", order: " << varOrder);
+		//TODO two branches are the same one if varOrder = max(1, varOrder)
+		if(varOrder <= 1) {
 			TaylorModel tmTemp;
 			//mlog1(comp2->odes[var].toString());
 			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, 
           polyRange, step_exp_table, numVars, 0, cutoff_threshold);
 			inserted.tms.push_back(tmTemp);
 			//mlog(sbuilder() << "tm[" << var << "]", tmTemp);
-		}
-	} else {
-		//for(int i=0; i<ode.size(); ++i) {
-	  for(int j = 0; j < comp2->solveIndexes.size(); j++) {
-	    int var = comp2->solveIndexes[j];
+		} else {
 	    mlog1(sbuilder() << "var: " << var);
 			mlog1(comp2->odes[var].toString());
       mlog1(sbuilder() << numVars);
-		  //order - 1, since the integration makes the degree 1 higher
+		  //varOrder - 1, since the integration makes the degree 1 higher
 			TaylorModel tmTemp;
 			comp2->odes[var].insert_ctrunc_normal(tmTemp, trees[var], *this, 
-          polyRange, step_exp_table, numVars, order-1, cutoff_threshold);
+          polyRange, step_exp_table, numVars, varOrder-1, cutoff_threshold);
 			inserted.tms.push_back(tmTemp);
 		}
 	}
 	//mlog("inserted(TM)", inserted);
 
-	TaylorModelVec integrated;
+	TaylorModelVec integrated(inserted.tms.size());
 	for(int i = 0; i < inserted.tms.size(); i++) {
 		TaylorModel tmTemp;
 		inserted.tms[i].integral(tmTemp, step_exp_table[1]);
 		integrated.tms.push_back(tmTemp);
 	}
 	//mlog("integrated(TM)", integrated);
-	TaylorModelVec added;
+	TaylorModelVec added(comp2->solveIndexes.size());
 	for(int i = 0; i < comp2->solveIndexes.size(); i++) {
 	  //i is index in integrated, var is index in original
 	  int var = comp2->solveIndexes[i];
@@ -2548,7 +2497,7 @@ void TaylorModelVec::Picard_ctrunc_normal(TaylorModelVec & result,
 	}
 	
 	result.clear();
-	
+	result.tms.reserve(tms.size());
 	for(int i = 0; i < tms.size(); i++) {
     //mlog1(sbuilder() << "i: " << i);
     vector<int>::iterator it = find(comp2->solveIndexes.begin(), comp2->solveIndexes.end(), i);
@@ -3044,6 +2993,7 @@ void TaylorModelVec::polyRange(vector<Interval> & result, const vector<Interval>
 void TaylorModelVec::polyRangeNormal(vector<Interval> & result, const vector<Interval> & step_exp_table) const
 {
 	result.clear();
+  result.reserve(tms.size());
 
 	for(int i=0; i<tms.size(); ++i)
 	{

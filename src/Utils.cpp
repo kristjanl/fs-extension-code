@@ -35,7 +35,7 @@ MySettings::MySettings(OutputWriter *writer, int order,
       vector<Interval> step_exp_table, 
       vector<Interval> step_end_exp_table, 
       vector<Interval> domain, const Interval *cutoff)
-      : writer(writer), order(order), step(step), time(time), 
+      : writer(writer), order2(order), step(step), time(time), 
       estimation(estimation), step_exp_table(step_exp_table), 
       step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
       discardEmptyParams(false), autoComponents(false) {
@@ -46,7 +46,7 @@ void MySettings::log() {
   mlog1("setting2 <");
   minc();
   mlog1(sbuilder() << "autoComponents: " << autoComponents);
-  mlog1(sbuilder() << "order: " << order);
+  mlog1(sbuilder() << "order: " << order2);
   mlog1(sbuilder() << "step: " << step);
   mlog1(sbuilder() << "time: " << time);
   mlog1(sbuilder() << "useFlow: " << useFlow);
@@ -599,6 +599,9 @@ void TMVSerializer::serialize() {
 void TMVSerializer::activate() {
   active = true;
 }
+void TMVSerializer::deactivate() {
+  active = false;
+}
 
 vector<NamedTMV> pDeserializeNamedFlows(string filename) {
   mlog1(sbuilder() << "reading flows from " << filename);
@@ -736,6 +739,7 @@ void addFlowInfo(vector<string> & info) {
 
 TaylorModelVec getUnitTmv(int varCount) {
   vector<TaylorModel> tms;
+  tms.reserve(varCount);
   for(int i = 0; i < varCount; i++) {
     vector<Interval> temp;
     temp.push_back(Interval(0));
@@ -803,8 +807,8 @@ void createFullyCompositionalOutput(vector<MyComponent *> comps,
   mlog1(sbuilder() << all.dependencies.size());
   
   int pipes = all.dependencies[0]->pComp->pipePairs.size();
+  all.pipePairs.reserve(pipes);
   TaylorModel left, right;
-  
   
   for(int step = 0; step < pipes; step++) {
     mlog1(sbuilder() << "step: " << step);
@@ -921,11 +925,12 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   tend(tr_remap3);
   
   mlog1("composing flowpipes");
+  all.output.reserve(all.pipePairs.size());
   for(int i = 0; i < all.pipePairs.size(); i++) {
     cout << ".";
     //pSerializer->add(all.pipePairs[i]->left, "comp_left");
     //pSerializer->add(all.pipePairs[i]->right, "comp_right");
-    TaylorModelVec composed = all.pipePairs[i]->composed(settings);
+    TaylorModelVec composed = all.pipePairs[i]->composed(settings, &all);
     
     //pSerializer->add(composed, "composed");
     all.output.push_back(composed);

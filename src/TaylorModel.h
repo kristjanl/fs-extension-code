@@ -13,6 +13,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 class MyComponent;
+class MySettings;
 
 class TaylorModel			// Taylor models: R^n -> R. We use t to denote the time variable and x to denote the state variable.
 {
@@ -238,6 +239,9 @@ public:
 	void insert_ctrunc(TaylorModelVec & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & domain, const vector<int> & orders, const Interval & cutoff_threshold) const;
 	void insert_no_remainder(TaylorModelVec & result, const TaylorModelVec & vars, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const;
 	void insert_ctrunc_normal(TaylorModelVec & result, const TaylorModelVec & vars, const vector<Interval> & varsPolyRange, const vector<Interval> & step_exp_table, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const;
+	void insert_ctrunc_normal(TaylorModelVec & result, const TaylorModelVec & vars, 
+			const vector<Interval> & varsPolyRange, const MySettings *settings, 
+			MyComponent *component, const int numVars) const;
 
 	void evaluate_t(TaylorModelVec & result, const vector<Interval> & step_exp_table) const;
 
@@ -268,8 +272,10 @@ public:
 	void Picard_ctrunc_normal_assign(const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold);
 
 	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
-	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, vector<int> comp, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
-	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, MyComponent *component, const vector<Interval> & polyRange, const vector<Interval> & step_exp_table, const int numVars, const int order, const Interval & cutoff_threshold) const;
+	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, 
+			MyComponent *component, MySettings *settings, 
+			const vector<Interval> & polyRange, const vector<Interval> & step_exp_table, 
+			const int numVars, const Interval & cutoff_threshold) const;
 	void Picard_ctrunc_normal(TaylorModelVec & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<Interval> & polyRange, const vector<HornerForm> & ode, const vector<Interval> & step_exp_table, const int numVars, const vector<int> & orders, const Interval & cutoff_threshold) const;
 	void Picard_only_remainder(vector<Interval> & result, vector<RangeTree *> & trees, const TaylorModelVec & x0, const vector<HornerForm> & ode, const Interval & timeStep) const;
 	

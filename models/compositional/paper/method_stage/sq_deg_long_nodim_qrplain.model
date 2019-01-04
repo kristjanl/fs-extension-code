@@ -13,8 +13,8 @@ continuous reachability
     cutoff 1e-15
     precision 53
     output sq_deg_longnodim_qrplain
-    alg_small_comp flow impl
-    no decomposition
+    use cflow
+    no components
     print on
   }
 

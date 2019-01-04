@@ -27,6 +27,7 @@ Monomial::Monomial(const Monomial & monomial): coefficient(monomial.coefficient)
 
 Monomial::Monomial(const Interval & I, const int numVars):d(0)
 {
+  degrees.reserve(numVars);
 	for(int i=0; i<numVars; ++i)
 	{
 		degrees.push_back(0);

@@ -25,6 +25,18 @@ using namespace std;
 //because of modelparser.y
 mpfr_prec_t intervalNumPrecision = normal_precision;
 int Interval::lastUsed = -1;
+bool coefficientOutputFormatSet = false;
+char coefficientFormatCStr[6];
+
+void setCoefficientFormatCStr() {
+	char format[6];
+	if(PN > 99) {
+		//need to increase the size of char coefficientFormatCStr;
+		throw std::runtime_error("output only supports precision <= 99");
+	}
+  sprintf(coefficientFormatCStr, "%%.%dg", PN);
+	//cout << "'" << coefficientFormatCStr << "'" << endl;
+}
 
 Interval::Interval()
 {
@@ -922,14 +934,15 @@ bool Interval::isClose(const Interval & I, double d) const {
 
 void Interval::dump(FILE *fp) const
 {
+	if(coefficientOutputFormatSet == false) {
+		setCoefficientFormatCStr();
+	}
 	fprintf (fp, "[");
 
-	//15 is PN in Flow* (but it's arbitrary anyway)
-  std::fesetround(FE_DOWNWARD);
-  fprintf (fp, "%.15f", lo);
+  std::fesetround(FE_TONEAREST);
+	fprintf (fp, coefficientFormatCStr, lo);
 	fprintf(fp, " , ");
-  std::fesetround(FE_UPWARD);
-  fprintf (fp, "%.15f", up);
+	fprintf (fp, coefficientFormatCStr, up);
 
 	fprintf(fp, "]");
 }
@@ -970,14 +983,15 @@ void Interval::serialize(FILE *fp) const
 
 void Interval::output(FILE * fp, const char * msg, const char * msg2) const
 {
+	if(coefficientOutputFormatSet == false) {
+		setCoefficientFormatCStr();
+	}
 	fprintf (fp, "%s [ ", msg);
 
-	//15 is PN in Flow* (but it's arbitrary anyway)
-  std::fesetround(FE_DOWNWARD);
-  fprintf (fp, "%.15f", lo);
+  std::fesetround(FE_TONEAREST);
+	fprintf (fp, coefficientFormatCStr, lo);
 	fprintf(fp, " , ");
-  std::fesetround(FE_UPWARD);
-  fprintf (fp, "%.15f", up);
+	fprintf (fp, coefficientFormatCStr, up);
 
 	fprintf(fp, " ] %s", msg2);
 }

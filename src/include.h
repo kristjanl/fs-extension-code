@@ -126,11 +126,6 @@ extern vector<Interval> parseIVec(string s);
 class Monomial;
 extern Monomial parseMono(string s);
 
-
-#define ALGORITHM_DEFAULT 0
-#define ALGORITHM_SIMPLE_IMPL 1
-#define ALGORITHM_SIMPLE_COMP 2
-#define ALGORITHM_SMALL_COMP 3
 #define PADDING_VARIABLE -2
 
 #endif /* INCLUDE_H_ */

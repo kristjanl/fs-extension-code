@@ -7,14 +7,14 @@ continuous reachability
     fixed steps 1
     time 100
     remainder estimation 1e-3
-    QR precondition2
+    parallelepiped precondition
     gnuplot interval x1,x1
     fixed orders 5
     cutoff 1e-15
     precision 53
     output sq_deg_longnodim_qr2
-    alg_small_comp flow impl
-    no decomposition
+    use cflow
+    no components
     print on
   }
 

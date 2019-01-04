@@ -6,7 +6,7 @@ import subprocess
 
 import my_functions as fs
 
-plotAllVars = False
+plotAllVars = True
 plotToCommon = False
 #plotToCommon = True
 tableCSSFile='../scripts/table.css'
@@ -22,7 +22,7 @@ def getVars(modelFile):
       if 'setting' in line:
         break
       if store:
-        s = s + line
+        s = s + line.split('#')[0]
   return s.split(',')
 
 def getDimension(modelFile):
@@ -49,7 +49,7 @@ def getVarRange2(modelFile, csvs):
         if float(data[0]) == float(time):
           #get variable ranges
           ranges[i] = map(lambda x: float(x), data[2 + 2*dim: 2 + 3*dim])
-  
+          
   for i in range(dim):
     #find minimum value in the ranges
     minValue = ranges[0][i]
@@ -154,7 +154,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
   
-  
+  """
   #print "%s \t& %s & %s" %(outputName, time, varRange[0])
   compMap = {"fcomp":"FC", "comp": "LC", "nocomp": "NC"}
 #  print outputName.split("_")[-2]
@@ -172,7 +172,8 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
     fs.getParam(infoFile, "tr_precond:"),
     fs.getParam(infoFile, "tr_remap2:"),
     )
-    
+  """
+  
 def write_table_rows(modelDir, pairs, outFile, nameSuffix, infoFields):
   for models in pairs:
     modelFiles = map(lambda m: os.path.join(modelDir, m), models)

@@ -37,6 +37,23 @@ void mylogger2::log(string name, vector<Interval> v) {
     logger.log(sbuilder() << name << " is empty");
 }
 
+void mylogger2::log(std::string name, map<int, int> lookup) {
+  if(disabled > 0)
+		return;    
+  if(lookup.size() == 0) {
+    logger.log(sbuilder() << name <<" = [ ]");
+    return;
+  }
+
+  for(map<int,int>::iterator iter = lookup.begin(); 
+      iter != lookup.end(); ++iter) {
+    //only print the Transformer clocks
+    logger.log(sbuilder() << name <<"[" << iter->first << "]: " << iter->second);
+    //if(strncmp(iter->first.c_str(), prefix.c_str(), prefix.length()) == 0) {
+    //  cout << iter->first << ": " << iter->second << endl;
+  }
+}
+
 void mylogger2::log(string name, vector<string> v) {
   if(disabled > 0)
 		return;

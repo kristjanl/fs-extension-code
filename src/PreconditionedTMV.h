@@ -4,6 +4,7 @@
 #include "TaylorModel.h"
 
 class MySettings;
+class MyComponent;
 
 class PrecondModel {
   public:
@@ -12,7 +13,7 @@ class PrecondModel {
     TaylorModelVec left;
     TaylorModelVec right;
     
-    TaylorModelVec composed(MySettings *settings);
+    TaylorModelVec composed(MySettings *settings, MyComponent *component);
 };
 
 

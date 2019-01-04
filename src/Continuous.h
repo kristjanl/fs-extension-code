@@ -231,7 +231,6 @@ public:
 	bool bSafetyChecking;
 
 	int integrationScheme;
-  int algorithm;
 
 	Interval cutoff_threshold;
 

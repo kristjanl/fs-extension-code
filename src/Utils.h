@@ -42,7 +42,7 @@ class MySettings {
     OutputWriter *writer;
     std::vector< std::vector<int> > intComponents;
     bool autoComponents;
-    int order;
+    int order2; //rename to globalOrder or something like that
     double step; 
     double time;
     std::vector<Interval> estimation;
@@ -54,6 +54,8 @@ class MySettings {
     bool discardEmptyParams;
     std::vector<std::string> varNames;
     Transformer *transformer; // determines how are initials sets transformed for each timestep
+    std::map<int,int> orderLookup;
+
     MySettings();
     MySettings(OutputWriter *writer, int order, double step, 
         double time, std::vector<Interval> estimation, 
@@ -110,6 +112,7 @@ class TMVSerializer {
     void add(const TaylorModelVec & tmv, std::string name);
     void serialize();
     void activate();
+    void deactivate();
   public:
     std::string filename;
     std::vector<TaylorModelVec> tmvs;

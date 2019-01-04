@@ -105,7 +105,7 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
   data2.at(1).push_back("0");
   //size - 1, since first one was added manually
   for(int i = 1; i < all.output.size(); i++) {
-    Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
+    Interval timeInt = domain.at(0) + Interval((i-1)*domain.at(0).sup());
     data2.at(0).push_back(timeInt.getLower(5));
     data2.at(1).push_back(timeInt.getHigher(5));
   }

@@ -479,7 +479,7 @@ QRTransformer::QRTransformer(string name) :
 
 QRTransformerPlain::QRTransformerPlain() : QRTransformer("qrp") { }
 QRTransformer1::QRTransformer1() : QRTransformer("qr1") { }
-QRTransformer2::QRTransformer2() : QRTransformer("qr2") { }
+PaTransformer::PaTransformer() : QRTransformer("qr2") { }
 QRTransformer3::QRTransformer3() : QRTransformer("qr3") { }
 
 NullTransformer::NullTransformer() : Transformer(false, false, TR_UNKNOWN, "null") {
@@ -612,10 +612,14 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
 	//current right is leftToRight o previousRight
   tstart1(pre_insert);
 	TaylorModelVec currentRight;
-	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+  currentRight.tms.reserve(prevRight.tms.size());
+	/*
+  leftToRight.insert_ctrunc_normal(currentRight, prevRight,
 	    prevRightPolyRange, settings.step_end_exp_table, rightParamCount, 
 	    settings.order, *settings.cutoff);
-      
+  */
+  leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+	    prevRightPolyRange, &settings, &all, rightParamCount);
   tend1(pre_insert);
 	//exit(0);
   //mlog("currentRight", currentRight);
@@ -691,6 +695,7 @@ void makeCompInitSets(MyComponent & all, MyComponent * comp) {
   minc();
 
   TaylorModelVec newCompSet;
+  newCompSet.tms.reserve(comp->compVars.size());
   
   
   mlog("all", all.allVars);
@@ -845,7 +850,7 @@ void QRTransformer1::getMatrices(Matrix & a, Matrix & aInv,
   mrestore(old);
 }
 
-void QRTransformer2::getMatrices(Matrix & a, Matrix & aInv, 
+void PaTransformer::getMatrices(Matrix & a, Matrix & aInv, 
       const TaylorModelVec & x0) {
   mreset(old);
   mdisable();
@@ -1000,6 +1005,7 @@ void PreconditionedTransformer::firstTransform(MyComponent & comp,
   int leftParams = tmv.tms.size() + 1;
   
   vector<Interval> cVec;
+  cVec.reserve(tmv.tms.size());
   tmv.constant(cVec);
 	TaylorModelVec left(cVec, leftParams);
 
@@ -1052,8 +1058,6 @@ void PreconditionedTransformer::transformFullSystem(MyComponent & all,
   mlog("compVars",   all.compVars);
   mlog("allVars",   all.allVars);
   //mlog("input   ", input);
-  
-  
   
   all.pipePairs.push_back(new PrecondModel(tsp, all.unpairedRight));
   
@@ -1171,6 +1175,7 @@ void SingleComponentIdentityTransformer::initialPrecondition(MyComponent *comp,
   
   //reset to be empty
   comp->unpairedRight = TaylorModelVec();
+  comp->unpairedRight.tms.reserve(comp->varIndexes.size());
   
   //loop over variables that are going to be solved here and
   for(int i = 0; i < comp->varIndexes.size(); i++) {
@@ -1258,6 +1263,7 @@ void SingleComponentIdentityTransformer::firstTransform2(MyComponent & comp,
   minc();
   
   TaylorModelVec tmv;
+  tmv.tms.reserve(comp.solveIndexes.size());
   
   //pick only variables that need to be solved
   for(int i = 0; i < comp.solveIndexes.size(); i++) {
@@ -1340,6 +1346,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   mlog("allVars", comp->allVars);
   
   TaylorModelVec tsp;
+  tsp.tms.reserve(comp->solveIndexes.size());
   
   //extract only the variables solved in component
   for(int i = 0; i < comp->solveIndexes.size(); i++) {
@@ -1363,6 +1370,7 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
   
   
   TaylorModelVec fullRight;
+  fullRight.tms.reserve(comp->allVars.size());
   
   mlog1(sbuilder() << "making right");
   mlog("all", comp->allVars);
@@ -1430,9 +1438,14 @@ void SingleComponentIdentityTransformer::preconditionSingleComponent(
 	
   //current right is leftToRight o previousRight
 	TaylorModelVec currentRight;
+  currentRight.tms.reserve(prevRight.tms.size());
+  /*
 	leftToRight.insert_ctrunc_normal(currentRight, prevRight,
 	    prevRightPolyRange, settings.step_end_exp_table, rightParams, 
 	    settings.order, *settings.cutoff);
+  */
+  leftToRight.insert_ctrunc_normal(currentRight, prevRight,
+	    prevRightPolyRange, &settings, comp, rightParams);
   mlog("currentRight", currentRight);
   
   vector<Interval> currentRightRange;

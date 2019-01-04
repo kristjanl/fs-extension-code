@@ -91,9 +91,9 @@ class QRTransformer1: public QRTransformer {
 };
 
 //using lin and lin^-1
-class QRTransformer2: public QRTransformer {
+class PaTransformer: public QRTransformer {
   public:
-    QRTransformer2();
+    PaTransformer();
     void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
 };
 //using R^T and R

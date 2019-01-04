@@ -46,8 +46,8 @@ int main(int argc, const char *argv[]) {
   }
   mdisable();
   yyparse();
-  if(argc == 1 && usePlainFlowstar == false) {
-    cout << "upf:" << usePlainFlowstar << endl;
+  if(argc == 1 && useCFlow) {
+    cout << "upf:" << useCFlow << endl;
     cout << "need to solve\n";
 
 
@@ -58,7 +58,6 @@ int main(int argc, const char *argv[]) {
     Solver solver;
     solver.solveIVP(settings2, IVP(continuousProblem.system));
   }
-
 	//simpleImplMain();
   //compMain();
 	

@@ -534,11 +534,16 @@ se_data treePart(Se se) {
     TaylorModelVec compTemp;
     
     clock_t start = clock();
+
+    
+		throw runtime_error("fix it");
+    /*TODO fix it
     p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
       step_exp_table, paramCount, order, cutoff);
     clock_t end = clock();
     cout << varCount << "\t" << (long double)(end - start) / CLOCKS_PER_SEC << endl;
     ret.second.push_back((long double)(end - start) / CLOCKS_PER_SEC);
+    */
   }
   return ret;
 }
@@ -689,8 +694,9 @@ se_data refPart(Se se) {
     
     TaylorModelVec compTemp;
     
-    p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
-      step_exp_table, paramCount, order, cutoff);
+		throw runtime_error("fix it");
+    //p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
+    //  step_exp_table, paramCount, order, cutoff);
     
 	  vector<Interval> cutoffInt;
     for(int i=0; i < varCount; i++) {
@@ -837,8 +843,10 @@ int decPart() {
     TaylorModelVec compTemp;
     
     clock_t start = clock();
-    p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
-      step_exp_table, paramCount, order, cutoff);
+    
+		throw runtime_error("fix it");
+    //p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
+    //  step_exp_table, paramCount, order, cutoff);
   	clock_t end = clock();
     cout << k << ": " << (long double)(end - start) / CLOCKS_PER_SEC << endl;
   }
@@ -915,8 +923,9 @@ int decreasing() {
   mlog("g_rem", p);
   
   TaylorModelVec compTemp;
-  p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
-    step_exp_table, paramCount, order, cutoff);
+  throw runtime_error("fix it");
+  //p.Picard_ctrunc_normal(compTemp, trees, &component, pPolyRange, 
+  //  step_exp_table, paramCount, order, cutoff);
   mlog("final", p);
 }
 
@@ -1074,9 +1083,64 @@ void monoArith() {
   }
 }
 
+void vectorSize() {
+  parseSetting.clear();
+	parseSetting.addVar("t");
+	parseSetting.addVar("x1");
+  TaylorModelVec init = parseTMV("my models {x1 + x1^2 + 1^3 + x1^4}");
+
+  mlog("init", init);
+  cout << init.toString(parseSetting.variables) << endl;
+
+  cout << "here" << endl;
+
+  int n = 20;
+  long t1,t2;
+  t1 = getTime();
+  for(int j = 0; j < 100; j++) {
+    TaylorModelVec tmv(n);
+
+    for(int i = 0; i < n; i++) {
+      //tmv.tms.push_back(init.tms[0]);r
+      tmv.tms[i] = init.tms[0];
+    }
+  }
+  t2 = getTime();
+  cout << "time: " << getDiff(t1, t2, false) << endl;
+
+  t1 = getTime();
+  for(int j = 0; j < 100; j++) {
+    TaylorModelVec tmv;
+    tmv.tms.reserve(n);
+    for(int i = 0; i < n; i++) {
+      tmv.tms.push_back(init.tms[0]);
+    }
+  }
+  t2 = getTime();
+  cout << "time: " << getDiff(t1, t2, false) << endl;
+  
+  t1 = getTime();
+  for(int j = 0; j < 100; j++) {
+    TaylorModelVec tmv;
+    for(int i = 0; i < n; i++) {
+      tmv.tms.push_back(init.tms[0]);
+    }
+  }
+  t2 = getTime();
+  cout << "time: " << getDiff(t1, t2, false) << endl;
+  
+}
 
 int main() {
-  monoArith();
+  //vectorSize();
+
+  vector<int> v;
+  v.reserve(50);
+  v.clear();
+  cout << v.capacity() << endl;
+
+
+  //monoArith();
 
   //polyPart();
   //poly();

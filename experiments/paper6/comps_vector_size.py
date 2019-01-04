@@ -27,7 +27,7 @@ modelTypes += ["lin_dep_20_id"]
 modelTypes += ["and_v3"]
 modelTypes += ["and_or_v2"]
 
-#modelTypes = ["sq_deg_long_10_id"]
+modelTypes = ["sq_deg_long_10_id"]
 #modelTypes += ["lin_dep_20_id"]
 #modelTypes = ["Lotka_Volterra_10_qr2"]
 #modelTypes = ["sq_deg_long_10_id"]

@@ -70,7 +70,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "grid" {return GRID;}
 "QR precondition" {return QRPRECOND;}
 "QR precondition1" {return QRPRECOND1;}
-"QR precondition2" {return QRPRECOND2;}
+"parallelepiped precondition" {return PAPRECOND;}
 "QR precondition3" {return QRPRECOND3;}
 "identity precondition" {return IDPRECOND;}
 "compositional identity precondition" {return COMPIDPRECOND;}
@@ -113,16 +113,7 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "computation paths" {return COMPUTATIONPATHS;}
 "linear ode" {return LINEARODE;}
 "par" {return PAR;}
-"algorithm" {return ALGORITHM;}
-"alg_flow" {return ALG_FLOW;}
-"alg_simple_impl" {return ALG_SIMPLE_IMPL;}
-"alg_simple_comp" {return ALG_SIMPLE_COMP;}
-"alg_small_comp" {return ALG_SMALL_COMP;}
-"decomposition" {return DECOMPOSITION;}
-"no decomposition" {return NO_DECOMPOSITION;}
-"full decomposition" {return FULL_DECOMPOSITION;}
 
-"use plain flowstar" {return USE_PLAIN_FLOWSTAR;}
 "use cflow" {return USE_CFLOW;}
 "left model compositional" {return LEFT_MODEL_COMP;}
 "fully compositional" {return FULLY_COMP;}
@@ -138,7 +129,6 @@ mpfrnum 0m("-"?)(({hexdigit}+)|({hexdigit}*"."{hexdigit}*)|({hexdigit}+"@"(({hex
 "my iv" {return MYINTGVEC;}
 "my Iv" {return MYINTRVEC;}
 "rem" {return REM;}
-"flow impl" {return FLOW_IMPL;}
 "flowpipes" {return FLOWPIPES;}
 "vars" {return VARS;}
 

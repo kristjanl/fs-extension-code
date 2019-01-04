@@ -1,0 +1,36 @@
+continuous reachability
+{
+  state var x1,x2,y1,y2
+
+  setting
+  {
+    fixed steps 1
+    time 30
+    remainder estimation 1e-2
+    identity precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output mult_comp_my_id
+    use cflow
+    auto components
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -0.11*x1*x2
+    x2' = -0.12*x1*x2
+    y1' = -0.13*y1*y2
+    y2' = -0.14*y1*y2
+  }
+
+  init
+  {
+    x1 in [0.5,1.0]
+    x2 in [0.5,1.0]
+    y1 in [0.5,1.0]
+    y2 in [0.5,1.0]
+  }
+}
