@@ -70,7 +70,7 @@ DFILES= $(patsubst %.o,$(DEPDIR)/%.d,$(OBJS) modelParser.o profiling.o)
 
 all:
 	make flowstar
-	make profiling
+	#make profiling
 
 .PHONY: test profiling
 

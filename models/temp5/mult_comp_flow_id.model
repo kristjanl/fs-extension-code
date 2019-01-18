@@ -7,7 +7,6 @@ continuous reachability
     fixed steps 1
     time 30
     remainder estimation 1e-2
-    left model compositional
     identity precondition
     gnuplot interval x1,x1
     fixed orders 5

@@ -4,17 +4,18 @@ continuous reachability
 
   setting
   {
+    use cflow
+    auto components
     fixed steps 1
     time 30
     remainder estimation 1e-2
     identity precondition
     gnuplot interval x1,x1
     fixed orders 5
+    #fixed orders { x1:5, x2: 6, y1:4,y2:7}
     cutoff 1e-15
     precision 53
     output mult_comp_my_id
-    use cflow
-    auto components
     print on
   }
 

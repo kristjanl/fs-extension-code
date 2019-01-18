@@ -23,7 +23,7 @@ extern mpfr_prec_t intervalNumPrecision;
 
 extern ContinuousReachability continuousProblem;
 extern HybridReachability hybridProblem;
-extern MySettings *settings2;
+extern MySettings *settings;
 extern bool useCFlow;
 
 //extern ParseSetting parseSetting;

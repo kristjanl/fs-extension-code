@@ -84,9 +84,9 @@ class QRTransformerPlain: public QRTransformer {
 };
 
 //using row based QR
-class QRTransformer1: public QRTransformer {
+class TQRTransformer: public QRTransformer {
   public:
-    QRTransformer1();
+    TQRTransformer();
     void getMatrices(Matrix & a, Matrix & aInv, const TaylorModelVec & x0);
 };
 

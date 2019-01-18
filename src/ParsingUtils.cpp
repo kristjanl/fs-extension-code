@@ -7,7 +7,7 @@ ContinuousReachability continuousProblem;
 HybridReachability hybridProblem;
 ReachabilitySetting mode_local_setting;
 
-MySettings *settings2 = new MySettings();
+MySettings *settings = new MySettings();
 
 extern int yyparse();
 

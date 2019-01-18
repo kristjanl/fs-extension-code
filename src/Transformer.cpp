@@ -478,7 +478,7 @@ QRTransformer::QRTransformer(string name) :
 }
 
 QRTransformerPlain::QRTransformerPlain() : QRTransformer("qrp") { }
-QRTransformer1::QRTransformer1() : QRTransformer("qr1") { }
+TQRTransformer::TQRTransformer() : QRTransformer("qr1") { }
 PaTransformer::PaTransformer() : QRTransformer("qr2") { }
 QRTransformer3::QRTransformer3() : QRTransformer("qr3") { }
 
@@ -800,7 +800,7 @@ void QRTransformerPlain::getMatrices(Matrix & a, Matrix & aInv,
   mrestore(old);
 }
 
-void QRTransformer1::getMatrices(Matrix & a, Matrix & aInv, 
+void TQRTransformer::getMatrices(Matrix & a, Matrix & aInv, 
       const TaylorModelVec & x0) {
   mreset(old);
   mdisable();

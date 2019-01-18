@@ -10807,8 +10807,7 @@ void ContinuousReachability::dump(FILE *fp) const
 */
 }
 
-
-void ContinuousReachability::contRun()
+void ContinuousReachability::run()
 {
   mlog1("ContRun <");
   minc();
@@ -10865,15 +10864,15 @@ void ContinuousReachability::contRun()
 		case MULTI:
 			if(bAdaptiveSteps)
 			{
-				system.reach_picard(flowpipes, step, miniStep, time, orders, globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
+				system.reach_picard(flowpipes, step, miniStep, time, orders,            globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
 			}
 			else if(bAdaptiveOrders)
 			{
-				system.reach_picard(flowpipes, step, time, orders, maxOrders, globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
+				system.reach_picard(flowpipes, step,           time, orders, maxOrders, globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
 			}
 			else
 			{
-				system.reach_picard(flowpipes, step, time, orders, globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
+				system.reach_picard(flowpipes, step,           time, orders,            globalMaxOrder, precondition, estimation, bPrint, stateVarNames, cutoff_threshold);
 			}
 			break;
 		}
@@ -13674,86 +13673,9 @@ void build_constraint_template(const int d)
 
 
 
-void ContinuousSystem::my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const
-{
-  mreset(old);
-  mlog1("dummy reach");
-  exit(0);
-}
 
 
 
-void ContinuousReachability::run()
-{
-  mlog1("run <"); 
-  minc();
 
 
-  /*
-  contRun();
-  mdec();
-  mlog1("run >");
-  return;
-  */
 
-
-  //TODO remove
-  contRun();
-  //exit(2);
-  mdec();
-  mlog1("run >");
-}
-
-
-void ContinuousReachability::myRun() {
-  mreset(old);
-  mlog1("dummy run");
-  exit(0);
-}
-/*
-MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
-      autoComponents(false) {
-}
-MySettings::MySettings(OutputWriter *writer, int order, 
-      double step, double time, vector<Interval> estimation, 
-      vector<Interval> step_exp_table, 
-      vector<Interval> step_end_exp_table, 
-      vector<Interval> domain, Interval cutoff)
-      : writer(writer), order(order), step(step), time(time), 
-      estimation(estimation), step_exp_table(step_exp_table), 
-      step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
-      discardEmptyParams(false), autoComponents(false) {
-}
-
-void MySettings::log() {
-  mreset(old);
-  mlog1("setting <");
-  minc();
-  mlog1(sbuilder() << "autoComponents: " << autoComponents);
-  mlog1(sbuilder() << "order: " << order);
-  mlog1(sbuilder() << "step: " << step);
-  mlog1(sbuilder() << "time: " << time);
-  mlog1(sbuilder() << "useFlow: " << useFlow);
-  mlog1(sbuilder() << "discardEmptyParams: " << discardEmptyParams);
-  mlog("estimation", estimation);
-  if(step_exp_table.size() < 2) {
-    mlog1("step_exp_table is empty");
-  } else {
-    mlog1(sbuilder() << "step_exp_table[1]: " << step_exp_table[1].toString());
-  }
-  if(step_end_exp_table.size() < 2) {
-    mlog1("step_end_exp_table is empty");
-  } else {
-    mlog1(sbuilder() << "step_end_exp_table[1]: " << step_end_exp_table[1].toString());
-  }
-  mlog("domain", domain);
-  //mlog1(sbuilder() << "cutoff: " << cutoff->toString(5));
-  mlog("varNames", varNames);
-  mlog1(sbuilder() << "number of components: " << intComponents.size());
-  for(int i = 0; i < intComponents.size(); i++) {
-    mlog(sbuilder() << "comp[" << i << "]", intComponents[i]);
-  }
-  mdec();
-  mlog1("setting >");
-  mrestore(old);
-}*/

@@ -42,7 +42,7 @@ class MySettings {
     OutputWriter *writer;
     std::vector< std::vector<int> > intComponents;
     bool autoComponents;
-    int order2; //rename to globalOrder or something like that
+    int maxOrder; //rename to globalOrder or something like that
     double step; 
     double time;
     std::vector<Interval> estimation;

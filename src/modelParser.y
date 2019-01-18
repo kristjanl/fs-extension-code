@@ -22,7 +22,6 @@
 	bool err;
 	bool useCFlow = false;
 	//could get rid of this if determining the use of flowstar before preconditioning method
-	bool plainFlowPrecondMethod = false;
 %}
 
 %union
@@ -47,6 +46,7 @@
 	Interval *pint;
 	vector<string> *strVec;
 	TreeNode *pNode;
+  map<int,int> *mapIntInt;
 }
 
 
@@ -64,8 +64,8 @@
 %token MIN MAX
 %token REMEST
 %token INTERVAL OCTAGON GRID
-%token QRPRECOND IDPRECOND COMPIDPRECOND SHRINRWRAPPING REM NOPROCESS
-%token QRPRECOND1 PAPRECOND QRPRECOND3
+%token QRPRECOND IDPRECOND SHRINRWRAPPING REM NOPROCESS
+%token TQRPRECOND PAPRECOND QRPRECOND3
 %token TIME
 %token MODES JUMPS INV GUARD RESET START MAXJMPS
 %token PRINTON PRINTOFF UNSAFESET
@@ -129,6 +129,7 @@
 %type <intVec> my_interval_vector
 %type <polyVec> my_polys
 %type <pint> mpfr_interval
+%type <mapIntInt> varOrders
 
 
 
@@ -148,8 +149,8 @@ model: CONTINUOUS '{' continuous '}'
 	mlog1("continuous1");
 	if(useCFlow == false) {
   	OutputWriter *writer = new OutputWriter(continuousProblem.outputFileName);
-  	settings2->writer = writer;
-		continuousProblem.settings = settings2;
+  	settings->writer = writer;
+		continuousProblem.settings = settings;
 		
 		int mkres = mkdir(outputDir, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
 		if(mkres < 0 && errno != EEXIST)
@@ -2022,7 +2023,7 @@ stateIdDeclList: stateIdDeclList ',' IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
-  settings2->varNames.push_back(*$3);
+  settings->varNames.push_back(*$3);
 
 	//mlog1(sbuilder() << "*$3: " << *$3);
   logger.dec();
@@ -2043,7 +2044,7 @@ IDENT
 		parseError(errMsg, lineNum);
 		exit(1);
 	}
-  settings2->varNames.push_back(*$1);
+  settings->varNames.push_back(*$1);
 	
 	//mlog1(sbuilder() << "stateVarNames.size = " << continuousProblem.stateVarNames.size());
 	hybridProblem.declareStateVar(*$1);
@@ -2111,10 +2112,54 @@ IDENT EQ NUM
 }
 ;
 
-/*
-myorder: FIXEDORD {
 
-};*/
+myorder: FIXEDORD NUM {
+  cout << "in here\n";
+  int order = (int)$2;
+  settings->maxOrder = order;
+	if(order <= 0) {
+		parseError("Orders should be larger than zero.", lineNum);
+		exit(1);
+	}
+  settings->orderLookup = map<int,int>();
+	for(int i = 0; i < settings->varNames.size(); i++)
+    settings->orderLookup[i] = order;
+} | FIXEDORD '{' varOrders '}' {
+  mlog1("custom orders");
+	if($3->size() != settings->varNames.size()) {
+		parseError("Order wasn't specified for all variables.", lineNum);
+		exit(1);
+	}
+  settings->orderLookup = map<int,int>(*$3);
+  delete $3;
+};
+
+varOrders: varOrders ',' IDENT ':' NUM
+{
+	$$ = $1;
+	int id = continuousProblem.getIDForStateVar(*$3);
+	if(id < 0) {
+		char errMsg[MSG_SIZE];
+		sprintf(errMsg, "State variable %s is not declared.", (*$3).c_str());
+		parseError(errMsg, lineNum);
+		exit(1);
+	}
+	(*$$)[id] = (int)$5;
+	delete $3;
+} | IDENT ':' NUM {
+	int numVars = continuousProblem.stateVarNames.size();
+	$$ = new map<int, int>;
+	int id = continuousProblem.getIDForStateVar(*$1);
+	if(id < 0) {
+		char errMsg[MSG_SIZE];
+		sprintf(errMsg, "State variable %s is not declared.", (*$1).c_str());
+		parseError(errMsg, lineNum);
+		exit(1);
+	}
+	(*$$)[id] = (int)$3;
+	delete $1;
+};
+
 
 settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
@@ -2165,58 +2210,46 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 	strcpy(hybridProblem.outputFileName, (*$15).c_str());
 
 	delete $15;
-} | FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDORD NUM 
-CUTOFF NUM PRECISION NUM OUTPUT IDENT point_params implPicker compositionality
+} | implPicker comps FIXEDST NUM TIME NUM remainder_estimation 
+		compPrecondition plotting myorder CUTOFF NUM PRECISION NUM OUTPUT IDENT 
+		point_params
 {
 	mreset(old);
-  settings2->step = $2;
-  settings2->time = $4;
+	for(int i = 0; i < settings->varNames.size(); i++)
+    if(settings->maxOrder < settings->orderLookup[i])
+		  settings->maxOrder = settings->orderLookup[i];
+
+  settings->step = $4;
+  settings->time = $6;
 	mlog1("settings cflow");
-	if($2 <= 0)
+	if($4 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
 		exit(1);
 	}
 
-	int order = (int)$9;
-	//TODO move to order parsing part
-  settings2->order2 = order;
-	if(order <= 0)
-	{
-		parseError("Orders should be larger than zero.", lineNum);
-		exit(1);
-	}
-	mlog1(sbuilder() << "step: " << $2 << ", time: " << time << ", order: " << order);
-	settings2->orderLookup[continuousProblem.getIDForStateVar("x1")] = 5;
-	settings2->orderLookup[continuousProblem.getIDForStateVar("x2")] = 5;
-	settings2->orderLookup[continuousProblem.getIDForStateVar("y1")] = 5;
-	settings2->orderLookup[continuousProblem.getIDForStateVar("y2")] = 5;
-	for(int i = 0; i < continuousProblem.stateVarNames.size(); i++) {
-		settings2->order2 = settings2->order2 > settings2->orderLookup[i]? 
-				settings2->order2: settings2->orderLookup[i];
-	}
-	mforce("oMap", settings2->orderLookup);
-
-	if($11 <= 0)
+	
+	mlog1(sbuilder() << "step: " << $4 << ", time: " << time << ", order: " << settings->maxOrder);
+	if($12 <= 0)
 	{
 		parseError("The cutoff threshold should be a positive number.", lineNum);
 		exit(1);
 	}
 
-	Interval cutoff_threshold(-$11,$11);
-  settings2->cutoff = new Interval(cutoff_threshold);
+	Interval cutoff_threshold(-$12,$12);
+  settings->cutoff = new Interval(cutoff_threshold);
 
-	intervalNumPrecision = (int)$13;
+	intervalNumPrecision = (int)$14;
 
-	settings2->writer = new OutputWriter(*$15);
+	settings->writer = new OutputWriter(*$16);
 	
-	delete $15;
+	delete $16;
 	mrestore(old);
 }
 |
 FIXEDST NUM TIME NUM remainder_estimation precondition plotting ADAPTIVEORD '{' MIN NUM ',' MAX NUM '}' CUTOFF NUM PRECISION NUM OUTPUT IDENT
 {
-	mlog1("settings2");
+	mlog1("settings");
 	if($2 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -2562,7 +2595,7 @@ remainder_estimation: REMEST NUM
 		//mlog1(sbuilder() << "i: " << i << " - " << $2);
 		continuousProblem.estimation.push_back(I);
 		hybridProblem.global_setting.estimation.push_back(I);
-    settings2->estimation.push_back(I);
+    settings->estimation.push_back(I);
 	}
 }
 |
@@ -2677,91 +2710,56 @@ IDENT ':' NUM
 ;
 
 //TODO wanted to make separate precondtion for cflow, but got conflicts between two rules
-precondition: QRPRECOND {
-	plainFlowPrecondMethod = true;
-	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
-	continuousProblem.precondition = QR_PRE;
-	hybridProblem.global_setting.precondition = QR_PRE;
-  //Transformer *transformer = new QRTransformer();
-  Transformer *transformer = new QRTransformerPlain();
-	settings2->transformer = transformer;
-} | QRPRECOND1 {
-  mforce1("making new");
-	mlog1("qr precond1");
-	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
-	continuousProblem.precondition = QR_PRE;
-	hybridProblem.global_setting.precondition = QR_PRE;
-  Transformer *transformer = new QRTransformer1();
-	settings2->transformer = transformer;
-} | PAPRECOND {
-  mforce1("making new");
-	mlog1("pa precond");
-	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
-	continuousProblem.precondition = QR_PRE;
-	hybridProblem.global_setting.precondition = QR_PRE;
-  Transformer *transformer = new PaTransformer();
-	settings2->transformer = transformer;
+compPrecondition: QRPRECOND {
+	settings->transformer = new QRTransformerPlain();
+} | TQRPRECOND {
+	settings->transformer = new TQRTransformer();
+} | LEFT_MODEL_COMP PAPRECOND {
+	settings->transformer = new PaTransformer();
 } | QRPRECOND3 {
-  mforce1("making new");
-	mlog1("qr precond3");
-	mlog1(sbuilder() << "QR_PRE: " << QR_PRE);
-	continuousProblem.precondition = QR_PRE;
-	hybridProblem.global_setting.precondition = QR_PRE;
-  Transformer *transformer = new QRTransformer3();
-	settings2->transformer = transformer;
+	settings->transformer = new QRTransformer3();
 } | FULLY_COMP IDPRECOND {
-  Transformer *transformer = new SingleComponentIdentityTransformer();
-	settings2->transformer = transformer;
-	//cout << "fully id\n";
+	settings->transformer = new SingleComponentIdentityTransformer();
 } | LEFT_MODEL_COMP IDPRECOND {
-  Transformer *transformer = new IdentityTransformer();
-	settings2->transformer = transformer;
-	//cout << "left id\n";
+	settings->transformer = new IdentityTransformer();
 } | IDPRECOND {
-	plainFlowPrecondMethod = true;
-	mlog1("id precond");
-	continuousProblem.precondition = ID_PRE;
-	hybridProblem.global_setting.precondition = ID_PRE;
-  Transformer *transformer = new IdentityTransformer();
-	settings2->transformer = transformer;
-} | COMPIDPRECOND {
-	cout << "shouldn't call anymore\n";
-	exit(0);
-	mforce1("comp id precond");
-	continuousProblem.precondition = ID_PRE;
-	hybridProblem.global_setting.precondition = ID_PRE;
-  Transformer *transformer = new SingleComponentIdentityTransformer();
-  settings2->transformer = transformer;
+	settings->transformer = new IdentityTransformer();
 } | NOPROCESS {
-	mlog1("no processing");
-  Transformer *transformer = new NullTransformer();
-	settings2->transformer = transformer;
+	settings->transformer = new NullTransformer();
 } | SHRINRWRAPPING NUM {
 	mlog1("shrink num");
-	continuousProblem.precondition = SHRINK_WRAPPING;
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition($2);
-  Transformer *transformer;
-  transformer = new ShrinkWrapper(cond);
-	settings2->transformer = transformer;
+	settings->transformer = new ShrinkWrapper(cond);
   //old implemenation discard empty params in shrinkwrapping
-  //settings2->discardEmptyParams = true;
+  //settings->discardEmptyParams = true;
 } | SHRINRWRAPPING REM {
 	mlog1("shrink rem");
 	ShrinkWrappingCondition *cond = new ShrinkWrappingCondition();
-	continuousProblem.precondition = SHRINK_WRAPPING;
-  Transformer *transformer;
-  transformer = new ShrinkWrapper(cond);
-	settings2->transformer = transformer;
+  Transformer *transformer = new ShrinkWrapper(cond);
+	settings->transformer = transformer;
   //old implemenation discard empty params in shrinkwrapping
-  //settings2->discardEmptyParams = true;
+  //settings->discardEmptyParams = true;
 } | {
-	cout << "bad processing\n";
+	cout << "missing processing\n";
 	exit(0);
 }
 ;
 
+precondition: QRPRECOND
+{
+	continuousProblem.precondition = QR_PRE;
+	hybridProblem.global_setting.precondition = QR_PRE;
+}
+|
+IDPRECOND
+{
+	continuousProblem.precondition = ID_PRE;
+	hybridProblem.global_setting.precondition = ID_PRE;
+}
+;
+
 point_params: REMOVE_EMPTY_PARAMS {
-  settings2->discardEmptyParams = true;
+  settings->discardEmptyParams = true;
 } | {
   //initialized to false in constructor
 };
@@ -2770,49 +2768,20 @@ implPicker: USE_CFLOW {
 	mlog1("using my impl");
 	useCFlow = true;
 }
-/* | {
-  if (plainFlowPrecondMethod == false) {
-		parseError("Flowstar only supports (non compositional) identity and QR precondition.", lineNum);
-	}
-	cout << "using f* impl\n";
-	//useCFlow = false;
-}
-*/;
-
-
-compositionality: comps {}
-
-/* TODO REMOVE
-compType: LEFT_MODEL_COMP {
-	cout << "here1\n";
-} | FULLY_COMP {
-	cout << "here2\n";
-} | {
-	cout << "here3\n";
-};*/
+;
 
 comps: AUTO_COMPONENTS {
-	if(useCFlow == false) {
-		parseError("Flowstar doesn't have components", lineNum);
-	}
-	settings2->autoComponents = true;
+	settings->autoComponents = true;
 } | NO_COMPONENTS {
-	if(useCFlow == false) {
-		parseError("Flowstar doesn't have components", lineNum);
-	}
 	int varNumber = continuousProblem.stateVarNames.size();
   vector<int> vs;
   for(int i = 0; i < varNumber; i++) {
     vs.push_back(i);
   }
-  settings2->intComponents.push_back(vs);
+  settings->intComponents.push_back(vs);
 } | '[' components ']'{
-	if(useCFlow == false) {
-		parseError("Flowstar doesn't have components", lineNum);
-	}
 } | {
-	if(useCFlow)
-		parseError("No decompostion specified for compositional algorithm.", lineNum);
+	parseError("No decompostion specified.", lineNum);
 }
 
 components: components ',' component { }
@@ -2823,7 +2792,7 @@ component: '[' compVarIds ']'
 {
   for(vector<int>::iterator varIt = $2->begin(); varIt < $2->end(); varIt++) {
     int varId = *varIt;
-    vector< vector<int> > & v = settings2->intComponents;
+    vector< vector<int> > & v = settings->intComponents;
     //check if variable is in any of the other components
     for(vector< vector<int> >::iterator it = v.begin(); it < v.end(); it++) {
       //check if variable is in the component
@@ -2838,7 +2807,7 @@ component: '[' compVarIds ']'
     }
   }
   //add this component to all components
-	settings2->intComponents.push_back(*($2));
+	settings->intComponents.push_back(*($2));
   delete $2;
 }
 

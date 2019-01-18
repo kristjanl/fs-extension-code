@@ -56,7 +56,7 @@ int main(int argc, const char *argv[]) {
     //mforce("ode", continuousProblem.system);
 
     Solver solver;
-    solver.solveIVP(settings2, IVP(continuousProblem.system));
+    solver.solveIVP(settings, IVP(continuousProblem.system));
   }
 	//simpleImplMain();
   //compMain();

@@ -83,7 +83,7 @@ void Solver::setUp(MySettings *settings, IVP & ivp) {
 
 	vector<Interval> step_exp_table, step_end_exp_table;
 	construct_step_exp_table(step_exp_table, step_end_exp_table, settings->step, 
-	    2*settings->order2);
+	    2*settings->maxOrder);
   settings->step_exp_table = step_exp_table;
   settings->step_end_exp_table = step_end_exp_table;
   
@@ -398,7 +398,7 @@ namespace compSolver{
     
     tstart(pic_poly);
     //find the picard polynomial
-    for(int i = 1; i <= settings.order2; i++) {
+    for(int i = 1; i <= settings.maxOrder; i++) {
       p.Picard_no_remainder_assign(&component, varCount + 1, i, *settings.cutoff);
       //mforce1(sbuilder() << i);
       //mforce("poly", p);
@@ -459,8 +459,7 @@ namespace compSolver{
     mrestore(old);    
   }
 
-  void doSingleStep(MyComponent & component, 
-    MySettings & settings) {
+  void doSingleStep(MyComponent & component, MySettings & settings) {
     //if component has already been solved return
     if(component.isSolved) {
       //mlog1("solved already");

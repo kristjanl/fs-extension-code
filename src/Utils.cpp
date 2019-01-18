@@ -35,7 +35,7 @@ MySettings::MySettings(OutputWriter *writer, int order,
       vector<Interval> step_exp_table, 
       vector<Interval> step_end_exp_table, 
       vector<Interval> domain, const Interval *cutoff)
-      : writer(writer), order2(order), step(step), time(time), 
+      : writer(writer), maxOrder(order), step(step), time(time), 
       estimation(estimation), step_exp_table(step_exp_table), 
       step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
       discardEmptyParams(false), autoComponents(false) {
@@ -46,7 +46,7 @@ void MySettings::log() {
   mlog1("setting2 <");
   minc();
   mlog1(sbuilder() << "autoComponents: " << autoComponents);
-  mlog1(sbuilder() << "order: " << order2);
+  mlog1(sbuilder() << "order: " << maxOrder);
   mlog1(sbuilder() << "step: " << step);
   mlog1(sbuilder() << "time: " << time);
   mlog1(sbuilder() << "useFlow: " << useFlow);

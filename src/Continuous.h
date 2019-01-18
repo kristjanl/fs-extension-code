@@ -195,8 +195,6 @@ public:
 
 	ContinuousSystem & operator = (const ContinuousSystem & system);
 
-  virtual void my_reach_picard(list<Flowpipe> & results, const double step, const double time, const int order, const int precondition, const vector<Interval> & estimation, const bool bPrint, const vector<string> & stateVarNames, const Interval & cutoff_threshold, OutputWriter & writer) const;
-  
 	friend class ContinuousReachability;
 };
 
@@ -259,8 +257,6 @@ public:
 	void dump(FILE *fp) const;
 
 	void run();
-	void contRun();
-  virtual void myRun();
   
 	void composition();
 	int safetyChecking() const;
