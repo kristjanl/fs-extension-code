@@ -1,0 +1,3 @@
+reason: matrix is singular Was thrown
+int progress: 0
+computation time: 0.000779

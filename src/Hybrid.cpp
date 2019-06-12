@@ -5079,7 +5079,7 @@ void HybridReachability::run()
 
 void HybridReachability::plot_2D() const
 {
-	char filename[NAME_SIZE+10];
+	char filename[10+NAME_SIZE+4+1];
 
 	switch(plotFormat)
 	{
@@ -5134,7 +5134,7 @@ void HybridReachability::plot_2D_interval_GNUPLOT(FILE *fp) const
 {
 	fprintf(fp, "set terminal postscript\n");
 
-	char filename[NAME_SIZE+10];
+	char filename[9+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.eps", imageDir, outputFileName);
 	fprintf(fp, "set output '%s'\n", filename);
 
@@ -5289,7 +5289,7 @@ void HybridReachability::plot_2D_octagon_GNUPLOT(FILE *fp) const
 
 	fprintf(fp, "set terminal postscript\n");
 
-	char filename[NAME_SIZE+10];
+	char filename[9+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.eps", imageDir, outputFileName);
 	fprintf(fp, "set output '%s'\n", filename);
 
@@ -5500,7 +5500,7 @@ void HybridReachability::plot_2D_grid_GNUPLOT(FILE *fp) const
 {
 	fprintf(fp, "set terminal postscript\n");
 
-	char filename[NAME_SIZE+10];
+	char filename[9+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.eps", imageDir, outputFileName);
 	fprintf(fp, "set output '%s'\n", filename);
 
@@ -6989,7 +6989,7 @@ int HybridReachability::safetyChecking()
 		bDumpCounterexamples = false;
 	}
 
-	char filename_counterexamples[NAME_SIZE+10];
+	char filename_counterexamples[18+NAME_SIZE+15+1];
 	FILE *fpDumpCounterexamples;
 
 	if(bDumpCounterexamples)

@@ -10,7 +10,7 @@
 #define TAYLORMODEL_H_
 
 #include "Polynomial.h"
-#include <boost/algorithm/string/replace.hpp>
+//#include <boost/algorithm/string/replace.hpp>
 
 class MyComponent;
 class MySettings;

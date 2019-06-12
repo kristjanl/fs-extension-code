@@ -1,0 +1,33 @@
+continuous reachability
+{
+  state var x,y
+
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.02
+    time 10
+    remainder estimation 1e-3
+    no processing
+    gnuplot octagon x,y
+    fixed orders 4
+    cutoff 1e-20
+    precision 53
+    output Lotka_Volterra_nop
+    print on
+  }
+
+  poly ode 1
+  {
+    x' = 1.5*x - x*y
+    y' = -3*y + x*y
+  }
+
+  init
+  {
+    x in [4.8 , 5.2]
+    y in [1.8 , 2.2]
+  }
+}
+

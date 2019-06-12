@@ -6,8 +6,10 @@ import subprocess
 
 import my_functions as fs
 
-plotAllVars = True
+plotAllVars = False
 plotToCommon = False
+
+extendedHeader = False
 #plotToCommon = True
 tableCSSFile='../scripts/table.css'
 
@@ -112,10 +114,11 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("  <tr align=\"center\">\n")
   outFile.write("    <td class='modelCell'><a href='%s'>%s</a></td>\n"
       %(modelFile,modelName))
-  outFile.write("    <td class='dataCell'>%s</td> \n"%dim)
-  outFile.write("    <td class='dataCell'>%s</td>\n"%order)
-  outFile.write("    <td class='dataCell'>%s</td>\n"%step)
-  outFile.write("    <td class='dataCell'>%s</td>\n"%time)
+  if extendedHeader:
+    outFile.write("    <td class='dataCell'>%s</td> \n"%dim)
+    outFile.write("    <td class='dataCell'>%s</td>\n"%order)
+    outFile.write("    <td class='dataCell'>%s</td>\n"%step)
+    outFile.write("    <td class='dataCell'>%s</td>\n"%time)
   
   for (a,_) in infoFields:
     if os.path.isfile(infoFile):
@@ -244,10 +247,11 @@ def write_table_start(outFile, infoFields):
   outFile.write("<table class='headerTable'>\n")
   outFile.write("  <tr>\n")
   outFile.write("    <th class='modelCell'>Model</th>\n")
-  outFile.write("    <th class='dataCell'>Dim</th> \n")
-  outFile.write("    <th class='dataCell'>Order</th>\n")
-  outFile.write("    <th class='dataCell'>step</th>\n")
-  outFile.write("    <th class='dataCell'>Time (goal)</th>\n")
+  if extendedHeader:
+    outFile.write("    <th class='dataCell'>Dim</th> \n")
+    outFile.write("    <th class='dataCell'>Order</th>\n")
+    outFile.write("    <th class='dataCell'>Step</th>\n")
+    outFile.write("    <th class='dataCell'>Time (goal)</th>\n")
   
   for (_,b) in infoFields:
     outFile.write("    <th class='dataCell'>%s</th>\n" %b)

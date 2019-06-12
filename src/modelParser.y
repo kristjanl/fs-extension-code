@@ -190,7 +190,7 @@ model: CONTINUOUS '{' continuous '}'
 		/* FLOWSTAR OUTPUT REMOVED
 		continuousProblem.plot_2D();
 
-		char filename[NAME_SIZE+10];
+		char filename[10+NAME_SIZE+4+1];
 		sprintf(filename, "%s%s.flow", outputDir, continuousProblem.outputFileName);
 		FILE *fpDumping = fopen(filename, "w");
 
@@ -263,7 +263,7 @@ CONTINUOUS '{' continuous '}' unsafe_continuous
 
 	continuousProblem.plot_2D();
 
-	char filename[NAME_SIZE+10];
+	char filename[10+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.flow", outputDir, continuousProblem.outputFileName);
 	FILE *fpDumping = fopen(filename, "w");
 
@@ -333,7 +333,7 @@ HYBRID '{' hybrid '}'
 
 	hybridProblem.plot_2D();
 
-	char filename[NAME_SIZE+10];
+	char filename[10+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.flow", outputDir, hybridProblem.outputFileName);
 	FILE *fpDumping = fopen(filename, "w");
 
@@ -381,7 +381,7 @@ HYBRID '{' hybrid '}' unsafe_hybrid
 
 	hybridProblem.plot_2D();
 
-	char filename[NAME_SIZE+10];
+	char filename[10+NAME_SIZE+4+1];
 	sprintf(filename, "%s%s.flow", outputDir, hybridProblem.outputFileName);
 	FILE *fpDumping = fopen(filename, "w");
 
@@ -2114,7 +2114,6 @@ IDENT EQ NUM
 
 
 myorder: FIXEDORD NUM {
-  cout << "in here\n";
   int order = (int)$2;
   settings->maxOrder = order;
 	if(order <= 0) {
@@ -2221,7 +2220,7 @@ settings: FIXEDST NUM TIME NUM remainder_estimation precondition plotting FIXEDO
 
   settings->step = $4;
   settings->time = $6;
-	mlog1("settings cflow");
+	//mlog1("settings cflow");
 	if($4 <= 0)
 	{
 		parseError("A time step-size should be larger than 0", lineNum);
@@ -5088,7 +5087,7 @@ my_poly: my_poly '+' my_poly{
   if(pos >= dim) {
 		char errMsg[MSG_SIZE];
 		string s = sbuilder() << "variable '" << *$1 << "' wasn't declared";
-		sprintf(errMsg, s.c_str());
+		sprintf(errMsg, "%s", s.c_str());
 		parseError(errMsg, lineNum);
 		exit(1);
 	}

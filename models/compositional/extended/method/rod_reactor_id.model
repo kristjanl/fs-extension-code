@@ -1,0 +1,36 @@
+continuous reachability
+{
+  state var x,c1,c2
+    
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 50
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon x,c1
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output rod_reactor_id
+    print on
+  }
+    
+  poly ode 1
+  {
+    x' = 0.1*x - 50
+    c1' = 1
+    c2' = 1
+  }
+  
+  init
+  {
+    x in [510,520]
+    c1 in [20,20]
+    c2 in [20,20]
+  }
+}
+

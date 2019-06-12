@@ -1,0 +1,12 @@
+int progress: 0.11
+computation time: 0.114087
+int_time: 0.112421
+pic_decr: 0.062537
+pic_poly: 0.048144
+pic_ref: 0.000967
+pic_ref_first: 0.057575
+pic_ref_rem: 0.002922
+pic_ref_start: 0.001874
+pic_ref_subset: 1.8e-05
+sc_int_rem: 0.063545
+sc_transfrom: 0.001464

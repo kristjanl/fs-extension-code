@@ -1,0 +1,32 @@
+continuous reachability
+{
+ state var x,y
+	
+ setting
+ {
+  use cflow
+  no components
+  fixed steps 0.04
+  time 10
+  remainder estimation 1e-5
+  identity precondition
+  gnuplot interval x,y
+  fixed orders 7
+  cutoff 1e-6
+  precision 53
+  output vanderpol
+  print on
+ }
+	
+ poly ode 1
+ {
+  x' =  y
+  y' =  y - x - x^2*y
+ }
+ 
+ init
+ {
+  x in [1.25 , 1.55]
+  y in [2.35 , 2.45]
+ }
+}

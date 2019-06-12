@@ -1,0 +1,24 @@
+int progress: 40
+eval_t: 0.432042
+fl_int_all: 52.5486
+fl_int_rem: 44.6063
+fl_part1: 0.122424
+fl_part2: 15.9479
+fl_part_all: 16.1056
+fl_part_matrix: 0.030891
+fl_pre_end: 0.036764
+fl_pre_insert: 10.327
+fl_pre_left: 0.286668
+fl_pre_lin_trans: 4.08244
+fl_pre_ltr: 0.028925
+fl_pre_matrix: 0.009377
+fl_pre_r_range: 0.543807
+fl_pre_scaling: 0.658825
+fl_pre_start: 0.109044
+fl_precond: 16.1075
+int_time: 51.853
+pic_decr: 19.5662
+pic_poly: 7.24008
+pic_ref: 24.9683
+pic_ref_first: 18.1435
+computation time: 69.6644

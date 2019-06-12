@@ -63,7 +63,7 @@ void bar2(string name) {
 }
 
 void Solver::setUp(MySettings *settings, IVP & ivp) {
-  cout << "setting up\n";
+  //cout << "setting up\n";
   
   if(pSerializer == NULL) {
     //transformer name appended with .txt
@@ -512,12 +512,12 @@ void Solver::post(MySettings *settings) {
   #ifdef no_output
     cout << "not creating my output" << endl;
   #else
-    cout << "creating my output" << endl;
+    //cout << "creating my output" << endl;
     createOutput(comps, *all, settings->transformer, settings);
     //settings->transformer->addInfo(writer.info);
     addMyInfo(settings->writer->info);
     tstart(sc_post_add);
-    cout << "writing output" << endl;
+    //cout << "writing output" << endl;
     //need to use all->dom, since some parameters maybe be discarded
     settings->writer->addComponents(comps, all->dom, *all, 
         settings->transformer->isPreconditioned);
@@ -537,7 +537,7 @@ void Solver::post(MySettings *settings) {
 }
 
 void Solver::solveIVP(MySettings *settings, IVP ivp) {
-  mforce1("solve ivp <");
+  //mforce1("solve ivp <");
   mreset(old);
   minc();
   mdisable();
@@ -551,7 +551,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   clock_t integrClock = clock();
   double t;
 
-  for(t = 0; (t + THRESHOLD_HIGH) < settings->time; t+= settings->step) {
+  for(t = 0; (t + THRESHOLD_HIGH) < settings->time && (true || t < settings->step * 10); t+= settings->step) {
     //mforce1(sbuilder() << "t: " << t);
     if(t > 1) compSolver::print = true;
     cerr << ".";
@@ -584,7 +584,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
       //make apppropriate next initial set
       //cout << "integrate: " << timeLookup["int_time"] << endl;
       //cout << "transform: " << timeLookup["sc_transfrom"] << endl;
-    }catch(IntegrationException& e) {
+    } catch(IntegrationException& e) {
       logger.force("IntegrationException caught");
       logger.force(e.what());
       settings->writer->info.push_back(sbuilder() << "reason: " << e.what());

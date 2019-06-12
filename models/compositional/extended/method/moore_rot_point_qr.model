@@ -1,0 +1,32 @@
+continuous reachability
+{
+  state var x1,x2
+
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 10.0
+    remainder estimation 1e-1
+    QR precondition
+    gnuplot interval x1,x2
+    fixed orders 2
+    cutoff 1e-15
+    precision 53
+    output moore_rot_point_qr
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -x2
+    x2' = x1
+  }
+  
+  init
+  {
+    x1 in [10 , 11]
+    x2 in [0 , 0]
+  }
+}

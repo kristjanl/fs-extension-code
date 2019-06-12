@@ -103,6 +103,7 @@ def write_data(outFile, inFileName, args, var1, var2):
 def getNameMap(argv, args):
   scriptArg = argv[0]
   inArg = argv[1]
+
   
   scriptDir = scriptArg[:scriptArg.rfind('/') + 1]
   inDir = inArg[:inArg.rfind('/') + 1]

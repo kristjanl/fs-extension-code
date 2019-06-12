@@ -4062,7 +4062,8 @@ string TaylorModel::toMathematicaString() const {
   string ret = ss.str();
   
   //replace scientific notation
-  boost::replace_all(ret, "e", " * 10^");
+	throw std::runtime_error("replace not substituted");
+	//boost::replace_all(ret, "e", " * 10^");
   
   
   return ret;

@@ -1,0 +1,31 @@
+continuous reachability
+{
+  state var v,t
+
+  setting
+  {
+    fixed steps 0.1
+    time 100
+    remainder estimation 1e-5
+    identity precondition
+    gnuplot octagon v,t
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output cruise_control_flowid
+    print on
+  }
+  
+  poly ode 1
+  {
+    v' = -t - 2.5
+    t' = 1
+  }
+  
+  init
+  {
+    v in [15,40]
+    t in [0,2.5]
+  }
+}
+

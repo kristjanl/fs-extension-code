@@ -1,0 +1,25 @@
+reason: The remainder estimation is not large enough.
+int progress: 29
+eval_t: 2.6127
+fl_int_all: 482.988
+fl_int_rem: 357.397
+fl_part1: 0.199789
+fl_part2: 144.991
+fl_part_all: 178.907
+fl_part_matrix: 33.713
+fl_pre_end: 0.496036
+fl_pre_insert: 124.022
+fl_pre_left: 3.72506
+fl_pre_lin_trans: 7.35022
+fl_pre_ltr: 33.7102
+fl_pre_matrix: 0.014356
+fl_pre_r_range: 6.93939
+fl_pre_scaling: 2.4462
+fl_pre_start: 0.181655
+fl_precond: 178.908
+int_time: 481.121
+pic_decr: 339.495
+pic_poly: 123.918
+pic_ref: 17.5284
+pic_ref_first: 333.502
+computation time: 669.026

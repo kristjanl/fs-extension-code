@@ -1,0 +1,31 @@
+continuous reachability
+{
+  state var x1
+
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 1
+    time 50
+    remainder estimation 1e-3
+    left model compositional
+    identity precondition
+    gnuplot interval x1,x1
+    fixed orders 5
+    cutoff 1e-15
+    precision 53
+    output lin_id
+    print on
+  }
+
+  poly ode 1
+  {
+    x1' = -0.1*x1
+  }
+  
+  init
+  {
+    x1 in [0.5,1.0]
+  }
+}

@@ -4,14 +4,14 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
 CXX = g++ -std=c++11
 include makefile.local
-LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk -lboost_iostreams -lboost_serialization
+LIBS = -lmpfr -lgmp -lgsl -lgslcblas -lm -lglpk #-lboost_iostreams -lboost_serialization
 
 
 #CFLAGS += -Dno_output
-#CFLAGS = -I . -I $(GMP_HOME) -g -O3
+#CFLAGS = -I . -I $(DEP_INC) -g -O3
 #CFLAGS += -Denablelog
 #CXXFLAGS = -I . -I $(GMP_HOME) -g -O3
-#LINK_FLAGS = -g -L $(GMP_LIB_HOME) -Wl,-rpath,$(GMP_LIB_HOME) 
+#LINK_FLAGS = -g -L $(DEP_LIB) -Wl,-rpath,$(GMP_LIB_HOME) 
 
 #no profiling
 #CFLAGS = -I . -g -O3
@@ -22,13 +22,17 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
-CFLAGS += -Ddo_checks
-CXXFLAGS += -Ddo_checks
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
 #CFLAGS += -Dno_output
 #CXXFLAGS += -Dno_output
 LINK_FLAGS = -g
+
+#if dependencies are installed locally
+CFLAGS += -I $(DEP_INC)
+LINK_FLAGS += -L $(DEP_LIB) -Wl,-rpath,$(DEP_LIB)
 
 
 

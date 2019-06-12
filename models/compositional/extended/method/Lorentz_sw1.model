@@ -1,0 +1,37 @@
+continuous reachability
+{
+  state var x,y,z
+  
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.003
+    time 6.5
+    remainder estimation 1e-6
+    shrink wrapping 1
+    gnuplot octagon x,y
+    fixed orders 4
+    cutoff 1e-10
+    precision 53
+    output Lorentz_sw1
+    print on
+  }
+  
+  poly ode 1
+  {
+    x' = 10 * (y - x)
+    y' = x * ( 28 - z ) - y
+    z' = x * y - 2.6667*z
+  }
+  
+  init
+  {
+    x in [14.999,15.001]
+    y in [14.999,15.001]
+    z in [35.999,36.001]
+  }
+}
+
+
+

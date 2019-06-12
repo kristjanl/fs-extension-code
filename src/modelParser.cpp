@@ -47,10 +47,6 @@ int main(int argc, const char *argv[]) {
   mdisable();
   yyparse();
   if(argc == 1 && useCFlow) {
-    cout << "upf:" << useCFlow << endl;
-    cout << "need to solve\n";
-
-
     //mforce("tmvOde", continuousProblem.system.initialSet.tmvPre);
     //mforce("tmvode", continuousProblem.pSystem->tmvOde);
     //mforce("ode", continuousProblem.system);

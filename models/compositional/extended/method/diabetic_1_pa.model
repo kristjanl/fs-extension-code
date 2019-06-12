@@ -1,0 +1,38 @@
+continuous reachability
+{
+  state var G,X,I,T
+
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 360
+    remainder estimation 0.1
+    left model compositional
+    parallelepiped precondition
+    gnuplot interval T,G
+    fixed orders 2
+    cutoff 1e-10
+    precision 53
+    output diabetic_1_pa
+    print on
+  }
+
+  poly ode 1
+  {
+    G' = -0.01*G - X*(G + 4.5) + 0.0167*T
+    X' = -0.025*X + 0.000013*I
+    I' = -0.093*(I + 15) + 0.083*8.333
+    T' = 1
+  }
+  
+  init
+  {
+    G in [-2 , 2]
+    X in [0 , 0]
+    I in [-0.1 , 0.1]
+    T in [0 , 0]
+  }
+}
+

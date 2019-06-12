@@ -524,6 +524,9 @@ void ShrinkWrapper::transform(MyComponent & all, vector<MyComponent *> & comps,
   //makeNextInitSet(comps, settings, false);
   if(swChecker->checkApplicability(comps, settings.estimation)) {
     mlog1(sbuilder() << "wrapping");
+
+    //record it for plotting
+    comps[0]->pipes.push_back(comps[0]->timeStepPipe);
     
     //this is used to the domain before parameter discarding, check if this is OK
     applyShrinkWrapping(all, settings.domain, settings.step_end_exp_table, comps,

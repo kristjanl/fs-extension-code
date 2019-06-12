@@ -129,8 +129,8 @@ void OutputWriter::addPreconditioned(vector<MyComponent *> comps,
 void OutputWriter::addComponents(vector<MyComponent *> comps, 
     vector<Interval> & domain, MyComponent & all, bool isPreconditioned) {
   mreset(old);
-  mdisable();
-  mlog1("adding components");
+  //mdisable();
+  //mlog1("adding components");
   minc();
   
   //for time
@@ -151,7 +151,6 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
     addPreconditioned(comps, domain, all);
     return;
   }
-  
   minc();
   int dim = 0;
   for(vector<MyComponent *>::iterator it = comps.begin(); 
@@ -164,7 +163,10 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
     data2.push_back(vector<string>());
   }
   
-  for(int i = 0; i < comps.at(0)->pipes.size(); i++) {
+  //first manually
+  data2.at(0).push_back("0");
+  data2.at(1).push_back("0");
+  for(int i = 0; i < comps.at(0)->pipes.size() - 1; i++) {
     Interval timeInt = domain.at(0) + Interval(i*domain.at(0).sup());
     data2.at(0).push_back(timeInt.getLower(5));
     data2.at(1).push_back(timeInt.getHigher(5));
@@ -211,7 +213,10 @@ void createDir(string pathname) {
   if( stat( pathname.c_str(), &info ) != 0 ) {
     mforce1(sbuilder() << "creating directory '" << pathname << "'");
     string cmd = sbuilder() << "mkdir " << pathname;
-    system(cmd.c_str());
+    if(system(cmd.c_str())) {
+      cout << cmd << endl;
+	    throw std::runtime_error("couldn't make the directory");
+    }
   } else if( info.st_mode & S_IFDIR ) {
 //    printf( "%s is a directory\n", pathname.c_str() );
   } else
@@ -222,7 +227,7 @@ void OutputWriter::writeCSV() {
   string csvfname = "csvs/" + name + ".csv";
   
   createDir("csvs");
-  mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
+  //mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
   csvfile->open(csvfname.c_str());
   
   int values = data2.size();
@@ -278,14 +283,14 @@ void OutputWriter::writeCSV() {
 void OutputWriter::writeInfo() {
   string infoName = "infos/" + name + ".txt";
   createDir("infos");
-  mlog1(sbuilder() << "writingInfo (" << infoName << ")");
+  //mlog1(sbuilder() << "writingInfo (" << infoName << ")");
   ofstream infoFile;
   infoFile.open(infoName.c_str());
   
   //info.push_back(sbuilder() << "shrink wrapping time: " << swTime);
 
 
-  
+  //mforce1(sbuilder() << "info.size(): " << info.size());
   for(vector<string>::iterator it = info.begin(); it < info.end(); it++) {
 
     std::string str = *it;

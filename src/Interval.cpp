@@ -1869,7 +1869,7 @@ void serializeMpfr(FILE *fp, const mpfr_t number) {
   }
   
   
-	fprintf (fp, buffer);
+	fprintf (fp, "%s", buffer);
   
   /*
   cout << "-----" << endl;

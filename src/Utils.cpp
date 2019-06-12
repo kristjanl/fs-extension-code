@@ -178,7 +178,7 @@ namespace utilsprivate {
     fprintf(fp, "vars{t"); 
     for(int i = 1; i < params.size(); i++) {
       string s = sbuilder() << ", " << params[i];
-      fprintf(fp, s.c_str());
+      fprintf(fp, "%s", s.c_str());
     }
     fprintf(fp, "}\n");
   }
@@ -521,7 +521,7 @@ void toMathematica(string file) {
     
     fprintf(fp, "{");
     fprintf(fp, "\"%s\", ", named[i].name.c_str());
-    fprintf(fp, named[i].tmv.toMathematicaString().c_str());
+    fprintf(fp, "%s", named[i].tmv.toMathematicaString().c_str());
     fprintf(fp, "}");
   }
   
@@ -569,7 +569,7 @@ void TMVSerializer::add(const TaylorModelVec & tmv, string name) {
 }
 
 void TMVSerializer::serialize() {
-  cout << "silently stopping serializer\n";
+  //cout << "silently stopping serializer\n";
   return;
   mreset(old);
   mlog1("");
@@ -883,14 +883,20 @@ void createFullyCompositionalOutput(vector<MyComponent *> comps,
 void createOutput(vector<MyComponent *> comps, MyComponent & all, 
       Transformer *transformer, MySettings *settings) {
   tstart(sc_post_composing);
-  if(transformer->isPreconditioned == false)
+  mreset(old);
+  //mdisable();
+  if(transformer->isPreconditioned == false) {
+    //last one manually since transforming is before integration
+    //cout << "size: " << comps[0]->pipes.size() << endl;
+    //comps[0]->pipes.push_back(comps[0]->timeStepPipe);
     return;
-  
+  }
   mlog1("making system flowpipes");  
   //if fully compositional  
   tstart(tr_remap3);
   
   if(transformer->getType() == TR_SINGLE_COMP) {
+    //mforce1("SINGLE COMP");
     //transformer preconditions single component at a time
     //need to add last flowpipe for all components
     for(int i = 0; i < comps.size(); i++) {
@@ -899,7 +905,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     }
     createFullyCompositionalOutput(comps, all, transformer, settings);
   } else if(transformer->getType() == TR_ALL_COMP) {
-    mforce1("ALL COMP");
+    //mforce1("ALL COMP");
     //tranformer maps everything to system, then precondtions
     //need to remap last integration result, add last flowpipe for system component
     all.remapTimeStepPipe();
@@ -940,6 +946,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   cout << all.output.size();
   cout << endl;
   tend(sc_post_composing);
+  mrestore(old);
 }
 
 

@@ -1,0 +1,33 @@
+reason: max increase couldn't find a remainder (in finding contracting) Was thrown
+int progress: 14.5
+computation time: 53.5782
+eval_t: 0.255673
+int_time: 38.1023
+pic_decr: 21.6684
+pic_poly: 7.91639
+pic_ref: 8.26113
+pic_ref_first: 20.1155
+pic_ref_rem: 0.763283
+pic_ref_start: 0.468092
+pic_ref_subset: 0.387938
+pre_end: 0.106721
+pre_insert: 7.06078
+pre_left: 0.364666
+pre_lin_trans: 1.03363
+pre_ltr: 3.52985
+pre_matrix: 0.210291
+pre_r_range: 0.223255
+pre_scaling_m: 0.320384
+pre_start: 0.115005
+sc_int_rem: 29.9313
+sc_post_composing: 13.6613
+sc_transfrom: 15.0454
+tr_comp_pre: 12.9696
+tr_part1: 0.121045
+tr_part2: 9.11305
+tr_part_all: 12.9718
+tr_part_matrix: 3.73573
+tr_precond: 13.0238
+tr_remap1: 0.713505
+tr_remap2: 0.282098
+tr_remap3: 0.002546

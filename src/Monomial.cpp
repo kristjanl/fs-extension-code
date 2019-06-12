@@ -415,7 +415,7 @@ string Monomial::toString(const vector<string> & varNames) const
 
 string Monomial::toString() const {
 	vector<string> variables;
-	for(int i = 0; i < degrees.size(); i++) {
+	for(unsigned int i = 0; i < degrees.size(); i++) {
 	  char buffer[10];
     sprintf (buffer, "a%d", i);
 	  variables.push_back(buffer);
