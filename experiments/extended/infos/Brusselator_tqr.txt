@@ -1,32 +1,33 @@
-int progress: 0.3
-computation time: 0.066128
-eval_t: 0.000432
-int_time: 0.042132
-pic_decr: 0.02745
-pic_poly: 0.012619
-pic_ref: 0.00174
-pic_ref_first: 0.025167
-pic_ref_rem: 0.00135
-pic_ref_start: 0.000797
-pic_ref_subset: 1.7e-05
-pre_end: 0.000233
-pre_insert: 0.016947
-pre_left: 0.000219
-pre_lin_trans: 0.001173
-pre_ltr: 0.000625
-pre_matrix: 0.000159
-pre_r_range: 0.000448
-pre_scaling_m: 0.000546
-pre_start: 0.000241
-sc_int_rem: 0.029231
-sc_post_composing: 0.030586
-sc_transfrom: 0.023805
-tr_comp_pre: 0.020672
-tr_part1: 0.000263
-tr_part2: 0.019629
-tr_part_all: 0.020734
-tr_part_matrix: 0.000785
-tr_precond: 0.020854
-tr_remap1: 0.000972
-tr_remap2: 0.000206
-tr_remap3: 9.2e-05
+reason: max increase couldn't find a remainder (in finding contracting) Was thrown
+int progress: 5.34
+computation time: 0.8
+eval_t: 0
+int_time: 0.46
+pic_decr: 0.3
+pic_poly: 0.14
+pic_ref: 0.02
+pic_ref_first: 0.3
+pic_ref_rem: 0
+pic_ref_start: 0
+pic_ref_subset: 0
+pre_end: 0.01
+pre_insert: 0.26
+pre_left: 0
+pre_lin_trans: 0.01
+pre_ltr: 0
+pre_matrix: 0.01
+pre_r_range: 0.01
+pre_scaling_m: 0
+pre_start: 0
+sc_int_rem: 0.32
+sc_post_composing: 0.37
+sc_transfrom: 0.34
+tr_comp_pre: 0.3
+tr_part1: 0
+tr_part2: 0.29
+tr_part_all: 0.3
+tr_part_matrix: 0.01
+tr_precond: 0.3
+tr_remap1: 0.02
+tr_remap2: 0
+tr_remap3: 0

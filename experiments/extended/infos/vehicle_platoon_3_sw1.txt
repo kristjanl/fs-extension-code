@@ -1,13 +1,13 @@
-int progress: 0.22
-computation time: 4.12537
-int_time: 4.00726
-pic_decr: 1.13164
-pic_poly: 2.80079
-pic_ref: 0.057641
-pic_ref_first: 1.04405
-pic_ref_rem: 0.05416
-pic_ref_start: 0.032198
-pic_ref_subset: 4e-05
-sc_int_rem: 1.18934
-sc_transfrom: 0.117816
-sw_wrapping: 0.117769
+int progress: 12
+computation time: 145.26
+int_time: 140.52
+pic_decr: 38.31
+pic_poly: 99.13
+pic_ref: 2.21
+pic_ref_first: 35.3
+pic_ref_rem: 1.91
+pic_ref_start: 1.03
+pic_ref_subset: 0
+sc_int_rem: 40.52
+sc_transfrom: 4.73
+sw_wrapping: 4.73

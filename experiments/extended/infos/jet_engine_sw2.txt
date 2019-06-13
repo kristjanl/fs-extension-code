@@ -1,13 +1,14 @@
-int progress: 0.3
-computation time: 0.137142
-int_time: 0.129817
-pic_decr: 0.072809
-pic_poly: 0.05397
-pic_ref: 0.002145
-pic_ref_first: 0.067521
-pic_ref_rem: 0.003298
-pic_ref_start: 0.001785
-pic_ref_subset: 1.8e-05
-sc_int_rem: 0.075
-sc_transfrom: 0.007076
-sw_wrapping: 0.007036
+reason: Map is not shrinkable (n = 2, t = 0.515654) Was thrown
+int progress: 4.29
+computation time: 1.22
+int_time: 1.09
+pic_decr: 0.61
+pic_poly: 0.45
+pic_ref: 0.01
+pic_ref_first: 0.58
+pic_ref_rem: 0.02
+pic_ref_start: 0.01
+pic_ref_subset: 0
+sc_int_rem: 0.62
+sc_transfrom: 0.13
+sw_wrapping: 0.13
