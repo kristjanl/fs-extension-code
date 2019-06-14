@@ -13,6 +13,8 @@ extendedHeader = False
 #plotToCommon = True
 tableCSSFile='../scripts/table.css'
 
+forcedIndexes = None
+
 def getVars(modelFile):
   csv = os.path.join("csvs", "%s.csv" %fs.getParam(modelFile, "output"))
   store = False
@@ -68,6 +70,8 @@ def getVarRange2(modelFile, csvs):
   return ranges
 
 def getSkippingIndexes(dim):
+  if forcedIndexes != None:
+    return forcedIndexes
   if plotAllVars:
     return range(0,dim)
   
@@ -306,7 +310,7 @@ def plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
   
   #print "time: %s" %time
   
-  bounds = fs.get_range_bounds(time, csvs)
+  bounds = fs.get_range_bounds(time, csvs, modelFiles)
   
   #timeValues = map(lambda s: fs.get_range_up_to(time, s), csvs)
   #bounds = fs.get_bounds(timeValues)
@@ -352,8 +356,7 @@ def group_plot_variable(scriptsDir, modelFiles, var1, var2, nameSuffix):
   #  return
   
   #print "time: %s" %time
-  
-  bounds = fs.get_range_bounds(time, csvs)
+  bounds = fs.get_range_bounds(time, csvs, modelFiles)
   
   #timeValues = map(lambda s: fs.get_range_up_to(time, s), csvs)
   #bounds = fs.get_bounds(timeValues)
@@ -459,7 +462,10 @@ def generateHtml(scriptsDir, modelDir, modelPairs, suffix, infoFields):
       suffix, infoFields)
 
 
-def generateGroupHtml(scriptsDir, modelDir, modelGroups, suffix, infoFields):
+def generateGroupHtml(scriptsDir, modelDir, modelGroups, suffix, infoFields, vars):
+  if vars != None:
+    global forcedIndexes
+    forcedIndexes = vars
   generate_group_comparision_plots(scriptsDir, modelDir, modelGroups, suffix)
   write_group_table("experiments%s.html" %suffix, modelDir, modelGroups, \
       suffix, infoFields)

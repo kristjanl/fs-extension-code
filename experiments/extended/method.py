@@ -26,12 +26,13 @@ modelTypes += ["and_v3"]
 #modelTypes = ["Lotka_Volterra", "sq_deg_long", "lin_dep"]
 
 modelTypes += ["pair_dep"]
-modelTypes += ["jet_engine"]
+#modelTypes += ["jet_engine"]
 modelTypes += ["lin"]
 modelTypes += ["bouncing_ball"]
 modelTypes += ["Brusselator"]
 modelTypes += ["buckling_column"]
-modelTypes += ["moore_rot", "moore_rot_point"]
+modelTypes += ["moore_rot"]
+#modelTypes += ["moore_rot_point"]
 
 modelTypes += ["cruise_control"]
 modelTypes += ["diabetic_1"]
@@ -50,9 +51,9 @@ modelTypes += ["two_tanks"]
 modelTypes += ["vanderpol"]
 modelTypes += ["vehicle_platoon_3"]
 
-algos = ["flowid", "flowqr"]
-algos = ["id", "pa", "qr", "tqr"]
-algos += ["nop", "sw1", "sw2", "sw5", "sw10"]
+#algos = ["flowid", "flowqr"]
+algos = ["id", "qr", "tqr"]
+#algos += ["nop", "sw1", "sw2", "sw5", "sw10"]
 
 
 groups = [["%s_%s.model"%(t,a) for a in algos] for t in modelTypes]
@@ -78,10 +79,10 @@ args = parser.parse_args()
 if args.action == 'run':
   flowstar_runner.runFlowstar(modelDir, flowstar, models, doLog=True)
 elif args.action == 'compare':
-  comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_method")
+  comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_method", vars=[0])
 elif args.action == 'both':
   flowstar_runner.runFlowstar(modelDir, flowstar, models)
-  comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_method")
+  comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_method", vars=[0])
 
 
 

@@ -502,7 +502,7 @@ void IdentityTransformer::getMatrices(Matrix & a, Matrix & aInv,
   for(int i=0; i< x0.tms.size(); ++i) {
     a.set(1, i, i);
     aInv.set(1, i, i);
-	}
+  }
 }
 
 
@@ -566,17 +566,17 @@ void PreconditionedTransformer::precondition(TaylorModelVec & leftStar,
   
   tstart(tr_comp_pre);
   	
-	//center remainder around zero and push the shift to constant
-	leftStar.preconditionCenterRemainder();
+  //center remainder around zero and push the shift to constant
+  leftStar.preconditionCenterRemainder();
   
   vector<Interval> constantVec;
-	leftStar.constant(constantVec);
-	TaylorModelVec c0(constantVec, leftParamCount);
+  leftStar.constant(constantVec);
+  TaylorModelVec c0(constantVec, leftParamCount);
 
   //remove constant part from old part
-	leftStar.rmConstant();
+  leftStar.rmConstant();
 	
-	mlog("left", leftStar);
+  mlog("left", leftStar);
 	
 	
   tend1(pre_start);
@@ -834,10 +834,12 @@ void TQRTransformer::getMatrices(Matrix & a, Matrix & aInv,
 			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
 		}
 	}
-  
+  mforce("lin", lin);
   //using row based QR
   Matrix linT(rangeDim, rangeDim);
   lin.transpose(linT);
+
+  mforce("linT", linT);
   Matrix QT(rangeDim, rangeDim);
 	//linT.sortColumns(); //should sort rows likely
 	linT.QRfactor(QT);
@@ -845,10 +847,10 @@ void TQRTransformer::getMatrices(Matrix & a, Matrix & aInv,
   aInv = QT;
   
 	
-	//mlog("lin", lin);
-	//mlog("linT", linT);
-	mlog("a", a);
-	mlog("aInv", aInv);
+  //mlog("lin", lin);
+  //mlog("linT", linT);
+  mforce("a", a);
+  mforce("aInv", aInv);
   
   mrestore(old);
 }

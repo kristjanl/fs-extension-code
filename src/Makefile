@@ -28,6 +28,8 @@ CXXFLAGS = -I . -g -O2
 #CXXFLAGS += -Ddo_checks
 #CFLAGS += -Dno_output
 #CXXFLAGS += -Dno_output
+CFLAGS += -Doutput1
+CXXFLAGS += -Doutput1
 LINK_FLAGS = -g
 
 #if dependencies are installed locally

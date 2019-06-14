@@ -2724,6 +2724,8 @@ compPrecondition: QRPRECOND {
 } | IDPRECOND {
 	settings->transformer = new IdentityTransformer();
 } | NOPROCESS {
+        cout << "no processing" << endl;
+
 	settings->transformer = new NullTransformer();
 } | SHRINRWRAPPING NUM {
 	mlog1("shrink num");

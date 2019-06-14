@@ -658,7 +658,7 @@ void printComponents(MySettings *settings) {
     }
     s.append(sbuilder() << "]");
   }
-  mlog1(sbuilder() << "components: " << s);
+  cout << "components: " << s << endl;
   mrestore(old);
 }
 
@@ -926,14 +926,13 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     //mforce3(old3, "all.right3", all.unpairedRight);
   } else {
     //old code might not be compatible, look into it when problems arise
-    throw std::runtime_error("don't know how to make output");
+    throw std::runtime_error("not updated");
   }
   tend(tr_remap3);
-  
   mlog1("composing flowpipes");
   all.output.reserve(all.pipePairs.size());
   for(int i = 0; i < all.pipePairs.size(); i++) {
-    cout << ".";
+    cerr << ".";
     //pSerializer->add(all.pipePairs[i]->left, "comp_left");
     //pSerializer->add(all.pipePairs[i]->right, "comp_right");
     TaylorModelVec composed = all.pipePairs[i]->composed(settings, &all);
@@ -942,7 +941,6 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
     all.output.push_back(composed);
     //pSerializer->add(composed, "composed");
   }
-  
   cout << all.output.size();
   cout << endl;
   tend(sc_post_composing);

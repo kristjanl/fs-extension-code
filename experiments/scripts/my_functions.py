@@ -35,7 +35,7 @@ def get_range_at_time(time, csv):
         #get variable ranges
         return map(lambda x: float(x), data)
         
-def get_range_bounds(time, csvs):
+def get_range_bounds(time, csvs, modelFiles):
   all = map(lambda s: get_single_range_bounds(time, s), csvs)
   
   #filter out empty data
@@ -45,6 +45,8 @@ def get_range_bounds(time, csvs):
   #  print d[1][:9]
   #  print d[1]
   
+  if len(all) == 0:
+    raise Exception("empty ranges for models %s"%modelFiles)
   minBounds = all[0][0]
   maxBounds = all[0][1]
   
