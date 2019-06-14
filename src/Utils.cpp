@@ -28,7 +28,7 @@ vector<NamedTMV> pDeserializeNamedFlows(string filename);
 
 
 MySettings::MySettings() : useFlow(false), discardEmptyParams(false), 
-      autoComponents(false) {
+      autoComponents(false), only1Var(false) {
 }
 MySettings::MySettings(OutputWriter *writer, int order, 
       double step, double time, vector<Interval> estimation, 
@@ -38,7 +38,7 @@ MySettings::MySettings(OutputWriter *writer, int order,
       : writer(writer), maxOrder(order), step(step), time(time), 
       estimation(estimation), step_exp_table(step_exp_table), 
       step_end_exp_table(step_end_exp_table), domain(domain), cutoff(cutoff), 
-      discardEmptyParams(false), autoComponents(false) {
+      discardEmptyParams(false), autoComponents(false), only1Var(false) {
 }
 
 void MySettings::log() {

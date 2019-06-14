@@ -834,12 +834,12 @@ void TQRTransformer::getMatrices(Matrix & a, Matrix & aInv,
 			lin.set(intCoefficients[i][j].midpoint(), i, j-1);
 		}
 	}
-  mforce("lin", lin);
+  mlog("lin", lin);
   //using row based QR
   Matrix linT(rangeDim, rangeDim);
   lin.transpose(linT);
 
-  mforce("linT", linT);
+  mlog("linT", linT);
   Matrix QT(rangeDim, rangeDim);
 	//linT.sortColumns(); //should sort rows likely
 	linT.QRfactor(QT);
@@ -849,8 +849,8 @@ void TQRTransformer::getMatrices(Matrix & a, Matrix & aInv,
 	
   //mlog("lin", lin);
   //mlog("linT", linT);
-  mforce("a", a);
-  mforce("aInv", aInv);
+  mlog("a", a);
+  mlog("aInv", aInv);
   
   mrestore(old);
 }

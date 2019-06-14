@@ -2139,12 +2139,10 @@ void TaylorModelVec::insert_ctrunc_normal(TaylorModelVec & result,
 		int varOrder = settings->orderLookup.at(globalIndex);
 		//mforce1(sbuilder() << "globalIndex: " << globalIndex << ", order: " << varOrder);
 		TaylorModel tmTemp;
-    #ifdef output1
-      if (i != 0) {
-        result.tms.push_back(TaylorModel());
-        continue;
-      }
-    #endif
+    if (settings->only1Var && i != 0) {
+      result.tms.push_back(TaylorModel());
+      continue;
+    }
 		tms[i].insert_ctrunc_normal(tmTemp, vars, varsPolyRange, 
 				settings->step_exp_table, numVars, varOrder, *settings->cutoff);
 		result.tms.push_back(tmTemp);

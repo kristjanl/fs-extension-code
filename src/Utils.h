@@ -56,6 +56,8 @@ class MySettings {
     Transformer *transformer; // determines how are initials sets transformed for each timestep
     std::map<int,int> orderLookup;
 
+    bool only1Var;
+
     MySettings();
     MySettings(OutputWriter *writer, int order, double step, 
         double time, std::vector<Interval> estimation, 

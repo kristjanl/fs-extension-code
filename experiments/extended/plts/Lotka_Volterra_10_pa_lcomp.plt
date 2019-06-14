@@ -1,12 +1,12 @@
 set term png
-set output './images/Lotka_Volterra_10_pa_lcomp_comps_11_t_9.98.png
+set output './images/Lotka_Volterra_10_pa_lcomp_comps_1_t_9.98.png
 set style line 1 linecolor rgb "blue"
 set autoscale
 unset label
 set xtic auto
 set ytic auto
 set xlabel "t"
-set ylabel "x11"
+set ylabel "x1"
 set xrange [0.0:11.0]
 set yrange [0.559472717386:6.60858755619]
 plot '-' notitle with lines ls 1

@@ -508,6 +508,9 @@ void Solver::post(MySettings *settings) {
   //tprint("tr_remap");
   //tprint("tr_comp_pre");
   
+  #ifdef output1
+    settings->only1Var = true;
+  #endif
 
   #ifdef no_output
     cout << "not creating my output" << endl;
