@@ -21,7 +21,7 @@ flowstar = os.path.join("..", "..", "src", "flowstar")
 modelTypes = []
 modelTypes += ["Lotka_Volterra_10_pa"]
 modelTypes += ["sq_deg_long_10_id"]
-modelTYpes += ["lin_dep_20_id"]
+modelTypes += ["lin_dep_20_id"]
 modelTypes += ["and_or_v2_id"]
 modelTypes += ["and_v3_id"]
 modelTypes += ["pair_dep_id"]
@@ -29,7 +29,6 @@ modelTypes += ["jet_engine_pa"]
 modelTypes += ["Brusselator_id"]
 modelTypes += ["buckling_column_id"]
 modelTypes += ["moore_rot_pa"]
-modelTypes += ["moore_rot_point_tqr"]
 modelTypes += ["cruise_control_id"]
 modelTypes += ["diabetic_1_id"]
 modelTypes += ["diabetic_2_id"]
@@ -44,12 +43,14 @@ modelTypes += ["rod_reactor_id"]
 modelTypes += ["Roessler_id"]
 modelTypes += ["switching_5_id"]
 modelTypes += ["two_tanks_id"]
-modelTypes += ["vanderpol_nop"]
 modelTypes += ["vehicle_platoon_3_id"]
 
 modelTypes += ["lin_dep_id"]
 modelTypes += ["lin_id"]
 modelTypes += ["bouncing_ball_id"]
+
+#modelTypes += ["moore_rot_point_tqr"]
+#modelTypes += ["vanderpol_nop"]
 
 
 
@@ -63,7 +64,9 @@ groups = [["%s_%s.model"%(modelType, comp) for comp in comps] \
     
     
 #discard gr2 and fcomp combo
-groups = [filter(lambda s: not "_pa_" in s or not "_fcomp" in s , g) for g in groups]    
+groups = [filter(lambda s: not "_pa_" in s or not "_fcomp" in s , g) for g in groups]
+groups = [filter(lambda s: not "_nop_" in s or not "_fcomp" in s , g) for g in groups]
+groups = [filter(lambda s: not "_tqr_" in s or not "_fcomp" in s , g) for g in groups]
 
 models = [m for g in groups for m in g]
 
