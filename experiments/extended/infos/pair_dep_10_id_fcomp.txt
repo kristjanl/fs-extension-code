@@ -1,0 +1,18 @@
+int progress: 60
+computation time: 1
+eval_t: 0
+int_time: 0.91
+pic_decr: 0.4
+pic_poly: 0.44
+pic_ref: 0.07
+pic_ref_first: 0.34
+pic_ref_rem: 0.05
+pic_ref_start: 0.01
+pic_ref_subset: 0
+sc_int_rem: 0.47
+sc_post_composing: 0.09
+sc_transfrom: 0.09
+tr_comp_pre: 0.06
+tr_precond: 0.06
+tr_remap1: 0.01
+tr_remap3: 0.03

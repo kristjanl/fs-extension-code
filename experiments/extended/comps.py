@@ -26,7 +26,7 @@ modelTypes += ["and_or_v2_id"]
 modelTypes += ["and_v3_id"]
 modelTypes = []
 modelTypes += ["pair_dep_10_id"]
-modelTypes += ["jet_engine_10_pa"]
+#modelTypes += ["jet_engine_10_pa"]
 modelTypes += ["Brusselator_10_id"]
 modelTypes += ["buckling_column_10_id"]
 modelTypes += ["moore_rot_10_pa"]
@@ -55,9 +55,9 @@ modelTypes += ["bouncing_ball_10_id"]
 #modelTypes = ["lin_dep_20_id"]
 #modelTypes += ["moore_rot_point_2_tqr"]
 
-modelTypes = []
+#modelTypes = []
 #modelTypes += ["jet_engine_10_pa"]
-modelTypes += ["moore_rot_10_pa"]
+#modelTypes += ["moore_rot_10_pa"]
 
 
 #modelTypes = ["sq_deg_long_10_id"]
@@ -73,7 +73,6 @@ groups = [filter(lambda s: not "_pa_" in s or not "_fcomp" in s , g) for g in gr
 groups = [filter(lambda s: not "_nop_" in s or not "_lcomp" in s , g) for g in groups]
 groups = [filter(lambda s: not "_tqr_" in s or not "_fcomp" in s , g) for g in groups]
 
-groups[0].append("moore_rot_pa.model")
 models = [m for g in groups for m in g]
 
 infoFields = [
