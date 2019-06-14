@@ -18,16 +18,39 @@ import comparer
 modelDir = os.path.join("..", "..", "models", "compositional", "extended", "comp")
 flowstar = os.path.join("..", "..", "src", "flowstar")
 
-
-modelTypes = ["Lotka_Volterra", "sq_deg_long", "lin_dep_20_id"]
-modelTypes += ["and_or_v2"]
-modelTypes += ["and_v3"]
-
-modelTypes = ["Lotka_Volterra_10_pa"]#, "sq_deg_long"]
-
-modelTypes = ["Lotka_Volterra_10_pa", "sq_deg_long_10_id", "lin_dep_20_id"]
+modelTypes = []
+modelTypes += ["Lotka_Volterra_10_pa"]
+modelTypes += ["sq_deg_long_10_id"]
+modelTYpes += ["lin_dep_20_id"]
 modelTypes += ["and_or_v2_id"]
 modelTypes += ["and_v3_id"]
+modelTypes += ["pair_dep_id"]
+modelTypes += ["jet_engine_pa"]
+modelTypes += ["Brusselator_id"]
+modelTypes += ["buckling_column_id"]
+modelTypes += ["moore_rot_pa"]
+modelTypes += ["moore_rot_point_tqr"]
+modelTypes += ["cruise_control_id"]
+modelTypes += ["diabetic_1_id"]
+modelTypes += ["diabetic_2_id"]
+modelTypes += ["filtered_oscillator_4_id"]
+modelTypes += ["filtered_oscillator_8_id"]
+modelTypes += ["filtered_oscillator_16_id"]
+modelTypes += ["Lorentz_id"]
+modelTypes += ["neuron_I_id"]
+modelTypes += ["neuron_I_id"]
+modelTypes += ["nonholonomic_id"]
+modelTypes += ["rod_reactor_id"]
+modelTypes += ["Roessler_id"]
+modelTypes += ["switching_5_id"]
+modelTypes += ["two_tanks_id"]
+modelTypes += ["vanderpol_nop"]
+modelTypes += ["vehicle_platoon_3_id"]
+
+modelTypes += ["lin_dep_id"]
+modelTypes += ["lin_id"]
+modelTypes += ["bouncing_ball_id"]
+
 
 
 #modelTypes = ["sq_deg_long_10_id"]
@@ -63,7 +86,7 @@ parser.add_argument('rest', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 
 if args.action == 'run':
-  flowstar_runner.runFlowstar(modelDir, flowstar, models)
+  flowstar_runner.runFlowstar(modelDir, flowstar, models, doLog=True)
 elif args.action == 'compare':
   comparer.compare5(modelDir, scriptsDir, groups, infoFields, suffix="_comps")
 elif args.action == 'both':

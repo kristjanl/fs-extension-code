@@ -1,0 +1,70 @@
+continuous reachability
+{
+  state var v_0,t_0,v_1,t_1,v_2,t_2,v_3,t_3,v_4,t_4,v_5,t_5,v_6,t_6,v_7,t_7,v_8,t_8,v_9,t_9
+
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 100
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon v_0,v_0
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output cruise_control_10_id_nocomp
+    print on
+  }
+  
+  poly ode 1
+  {
+    v_0' = -t_0 - 2.5
+    v_1' = -t_1 - 2.5
+    v_2' = -t_2 - 2.5
+    v_3' = -t_3 - 2.5
+    v_4' = -t_4 - 2.5
+    v_5' = -t_5 - 2.5
+    v_6' = -t_6 - 2.5
+    v_7' = -t_7 - 2.5
+    v_8' = -t_8 - 2.5
+    v_9' = -t_9 - 2.5
+    t_0' = 1
+    t_1' = 1
+    t_2' = 1
+    t_3' = 1
+    t_4' = 1
+    t_5' = 1
+    t_6' = 1
+    t_7' = 1
+    t_8' = 1
+    t_9' = 1
+  }
+  
+  init
+  {
+    v_0 in [15,40]
+    v_1 in [15,40]
+    v_2 in [15,40]
+    v_3 in [15,40]
+    v_4 in [15,40]
+    v_5 in [15,40]
+    v_6 in [15,40]
+    v_7 in [15,40]
+    v_8 in [15,40]
+    v_9 in [15,40]
+    t_0 in [0,2.5]
+    t_1 in [0,2.5]
+    t_2 in [0,2.5]
+    t_3 in [0,2.5]
+    t_4 in [0,2.5]
+    t_5 in [0,2.5]
+    t_6 in [0,2.5]
+    t_7 in [0,2.5]
+    t_8 in [0,2.5]
+    t_9 in [0,2.5]
+  }
+}
+

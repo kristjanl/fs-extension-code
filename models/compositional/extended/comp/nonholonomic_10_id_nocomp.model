@@ -1,0 +1,90 @@
+continuous reachability
+{
+  state var x_0,y_0,z_0,x_1,y_1,z_1,x_2,y_2,z_2,x_3,y_3,z_3,x_4,y_4,z_4,x_5,y_5,z_5,x_6,y_6,z_6,x_7,y_7,z_7,x_8,y_8,z_8,x_9,y_9,z_9
+  
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.01
+    time 7.5
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon x_0,x_0
+    fixed orders 5
+    cutoff 1e-12
+    precision 53
+    output nonholonomic_10_id_nocomp
+    print on
+  }
+    
+  poly ode 1
+  {
+    x_0' = 1
+    x_1' = 1
+    x_2' = 1
+    x_3' = 1
+    x_4' = 1
+    x_5' = 1
+    x_6' = 1
+    x_7' = 1
+    x_8' = 1
+    x_9' = 1
+    y_0' = 1
+    y_1' = 1
+    y_2' = 1
+    y_3' = 1
+    y_4' = 1
+    y_5' = 1
+    y_6' = 1
+    y_7' = 1
+    y_8' = 1
+    y_9' = 1
+    z_0' = x_0 - y_0
+    z_1' = x_1 - y_1
+    z_2' = x_2 - y_2
+    z_3' = x_3 - y_3
+    z_4' = x_4 - y_4
+    z_5' = x_5 - y_5
+    z_6' = x_6 - y_6
+    z_7' = x_7 - y_7
+    z_8' = x_8 - y_8
+    z_9' = x_9 - y_9
+  }
+  
+  init
+  {
+    x_0 in [0,0]
+    x_1 in [0,0]
+    x_2 in [0,0]
+    x_3 in [0,0]
+    x_4 in [0,0]
+    x_5 in [0,0]
+    x_6 in [0,0]
+    x_7 in [0,0]
+    x_8 in [0,0]
+    x_9 in [0,0]
+    y_0 in [0,0]
+    y_1 in [0,0]
+    y_2 in [0,0]
+    y_3 in [0,0]
+    y_4 in [0,0]
+    y_5 in [0,0]
+    y_6 in [0,0]
+    y_7 in [0,0]
+    y_8 in [0,0]
+    y_9 in [0,0]
+    z_0 in [14.9,15.1]
+    z_1 in [14.9,15.1]
+    z_2 in [14.9,15.1]
+    z_3 in [14.9,15.1]
+    z_4 in [14.9,15.1]
+    z_5 in [14.9,15.1]
+    z_6 in [14.9,15.1]
+    z_7 in [14.9,15.1]
+    z_8 in [14.9,15.1]
+    z_9 in [14.9,15.1]
+  }
+}
+

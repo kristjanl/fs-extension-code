@@ -1,0 +1,90 @@
+continuous reachability
+{
+  state var x_0,c1_0,c2_0,x_1,c1_1,c2_1,x_2,c1_2,c2_2,x_3,c1_3,c2_3,x_4,c1_4,c2_4,x_5,c1_5,c2_5,x_6,c1_6,c2_6,x_7,c1_7,c2_7,x_8,c1_8,c2_8,x_9,c1_9,c2_9
+    
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 50
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon x_0,x_0
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output rod_reactor_10_id_nocomp
+    print on
+  }
+    
+  poly ode 1
+  {
+    x_0' = 0.1*x_0 - 50
+    x_1' = 0.1*x_1 - 50
+    x_2' = 0.1*x_2 - 50
+    x_3' = 0.1*x_3 - 50
+    x_4' = 0.1*x_4 - 50
+    x_5' = 0.1*x_5 - 50
+    x_6' = 0.1*x_6 - 50
+    x_7' = 0.1*x_7 - 50
+    x_8' = 0.1*x_8 - 50
+    x_9' = 0.1*x_9 - 50
+    c1_0' = 1
+    c1_1' = 1
+    c1_2' = 1
+    c1_3' = 1
+    c1_4' = 1
+    c1_5' = 1
+    c1_6' = 1
+    c1_7' = 1
+    c1_8' = 1
+    c1_9' = 1
+    c2_0' = 1
+    c2_1' = 1
+    c2_2' = 1
+    c2_3' = 1
+    c2_4' = 1
+    c2_5' = 1
+    c2_6' = 1
+    c2_7' = 1
+    c2_8' = 1
+    c2_9' = 1
+  }
+  
+  init
+  {
+    x_0 in [510,520]
+    x_1 in [510,520]
+    x_2 in [510,520]
+    x_3 in [510,520]
+    x_4 in [510,520]
+    x_5 in [510,520]
+    x_6 in [510,520]
+    x_7 in [510,520]
+    x_8 in [510,520]
+    x_9 in [510,520]
+    c1_0 in [20,20]
+    c1_1 in [20,20]
+    c1_2 in [20,20]
+    c1_3 in [20,20]
+    c1_4 in [20,20]
+    c1_5 in [20,20]
+    c1_6 in [20,20]
+    c1_7 in [20,20]
+    c1_8 in [20,20]
+    c1_9 in [20,20]
+    c2_0 in [20,20]
+    c2_1 in [20,20]
+    c2_2 in [20,20]
+    c2_3 in [20,20]
+    c2_4 in [20,20]
+    c2_5 in [20,20]
+    c2_6 in [20,20]
+    c2_7 in [20,20]
+    c2_8 in [20,20]
+    c2_9 in [20,20]
+  }
+}
+

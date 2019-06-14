@@ -1,0 +1,70 @@
+continuous reachability
+{
+  state var x_0,v_0,x_1,v_1,x_2,v_2,x_3,v_3,x_4,v_4,x_5,v_5,x_6,v_6,x_7,v_7,x_8,v_8,x_9,v_9
+	
+  setting
+  {
+    use cflow
+    auto components
+    fixed steps 0.1
+    time 10
+    remainder estimation 1e-5
+    fully compositional
+    identity precondition
+    gnuplot octagon x_0,x_0
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output bouncing_ball_10_id_fcomp
+    print on
+  }
+	
+  poly ode 1
+  {
+    x_0' = v_0
+    x_1' = v_1
+    x_2' = v_2
+    x_3' = v_3
+    x_4' = v_4
+    x_5' = v_5
+    x_6' = v_6
+    x_7' = v_7
+    x_8' = v_8
+    x_9' = v_9
+    v_0' = -9.81
+    v_1' = -9.81
+    v_2' = -9.81
+    v_3' = -9.81
+    v_4' = -9.81
+    v_5' = -9.81
+    v_6' = -9.81
+    v_7' = -9.81
+    v_8' = -9.81
+    v_9' = -9.81
+  }
+ 
+  init
+  {
+    x_0 in [10,10.2]
+    x_1 in [10,10.2]
+    x_2 in [10,10.2]
+    x_3 in [10,10.2]
+    x_4 in [10,10.2]
+    x_5 in [10,10.2]
+    x_6 in [10,10.2]
+    x_7 in [10,10.2]
+    x_8 in [10,10.2]
+    x_9 in [10,10.2]
+    v_0 in [0,0]
+    v_1 in [0,0]
+    v_2 in [0,0]
+    v_3 in [0,0]
+    v_4 in [0,0]
+    v_5 in [0,0]
+    v_6 in [0,0]
+    v_7 in [0,0]
+    v_8 in [0,0]
+    v_9 in [0,0]
+  }
+}
+
