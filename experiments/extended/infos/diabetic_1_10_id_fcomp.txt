@@ -1,18 +1,18 @@
 int progress: 360
-computation time: 45.95
-eval_t: 0.86
-int_time: 34.56
-pic_decr: 16.96
-pic_poly: 9.98
-pic_ref: 3.86
-pic_ref_first: 11.76
-pic_ref_rem: 2.21
-pic_ref_start: 2.08
-pic_ref_subset: 0.16
-sc_int_rem: 21.2
-sc_post_composing: 6.35
-sc_transfrom: 11.36
-tr_comp_pre: 7.21
-tr_precond: 7.53
-tr_remap1: 0.67
-tr_remap3: 4.08
+computation time: 52.55
+eval_t: 0.77
+int_time: 40.07
+pic_decr: 20.08
+pic_poly: 11.29
+pic_ref: 4.51
+pic_ref_first: 13.62
+pic_ref_rem: 2.5
+pic_ref_start: 2.84
+pic_ref_subset: 0.2
+sc_int_rem: 24.91
+sc_post_composing: 6.9
+sc_transfrom: 12.42
+tr_comp_pre: 7.67
+tr_precond: 7.98
+tr_remap1: 0.75
+tr_remap3: 4.5
