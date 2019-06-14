@@ -11,7 +11,7 @@ continuous reachability
     remainder estimation 1e-4
     fully compositional
     identity precondition
-    matlab octagon x,y
+    matlab octagon x_0,x_0
     fixed orders 6
     cutoff 1e-12
     precision 53

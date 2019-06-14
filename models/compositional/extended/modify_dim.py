@@ -17,12 +17,27 @@ outDir = os.path.join(".", "dim")
 def vd(var, dim):
   return "%s_%s"%(var,dim)
 
+useSubsetReplace = None
+
+#safely replaces variables that can subsets of other variables
+def safeSubsetReplace(line2, v, v2):
+  line2 = line2.replace(v + "'", v2 + "'")
+  line2 = line2.replace(v + " ", v2 + " ")
+  line2 = line2.replace(v + "+", v2 + "+")
+  line2 = line2.replace(v + "-", v2 + "-")
+  line2 = line2.replace(v + "*", v2 + "*")
+  line2 = line2.replace(v + "^", v2 + "^")
+  line2 = line2.replace(v + ")", v2 + ")")
+  line2 = line2.replace(v + ",", v2 + ",")
+  line2 = line2.replace(v + "\n", v2 + "\n")
+  return line2
+
+
 def replaceVars(line, vs, dim, outFile):
-  
   for i in range(dim):
     line2 = line
     for v in vs:
-      line2 = line2.replace(v, vd(v,i))
+      line2 = safeSubsetReplace(line2, v, vd(v,i))
     #print line2
     outFile.write(line2)
   
@@ -36,8 +51,9 @@ def justPrint(line):
 
 def makeVars(m, dim, outFile):
   vs = re.split(',', m.group(2))
+  if len(filter(lambda v: len(v) == 0, vs)) != 0:
+    raise Exception("state var declaration over multiple lines")
   vs = map(lambda s: s.strip(), vs)
-  
   outFile.write(m.group(1))
   strVars = ""
   for i in range(dim):
@@ -79,6 +95,11 @@ def foo(dim):
         m2 = re.search('(\s*gnuplot [^\s]*).*', line)
         if m2:
           outFile.write('%s %s,%s\n'%(m2.group(1),vd(vs[0],0),vd(vs[0],0)))
+          continue
+                  
+        m22 = re.search('(\s*matlab [^\s]*).*', line)
+        if m22:
+          outFile.write('%s %s,%s\n'%(m22.group(1),vd(vs[0],0),vd(vs[0],0)))
           continue
           
         
