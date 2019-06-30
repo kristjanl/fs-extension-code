@@ -238,6 +238,7 @@ void OutputWriter::writeCSV() {
   //  mforce1(sbuilder() << i << ": " << data2[i][0]);
   //}
   
+  //cout << "data2.size(): " << data2[0].size() << endl;
   int samplePoint = data2[0].size() / 8;
   
   //mlog1(sbuilder() << "steps: " << data2[0].size());
@@ -265,7 +266,7 @@ void OutputWriter::writeCSV() {
     //mforce1(sbuilder() << "ratio: "<< (stepWidth/sampleWidth));
     if(stepWidth/sampleWidth > 10) {
       //mforce1(sbuilder() << "breaking at step #"<< step);
-      break;
+      //break;
     }
     
     for(int value = 0; value < values; value++) {

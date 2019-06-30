@@ -1,0 +1,34 @@
+set term png
+set output './images/rod_reactor_sw2_method_1_t_49.9.png
+set style line 1 linecolor rgb "blue"
+set autoscale
+unset label
+set xtic auto
+set ytic auto
+set xlabel "t"
+set ylabel "x1"
+set xrange [0.0:50.71]
+set yrange [74.1996553326:2708.65129288]
+plot '-' notitle with lines ls 1
+0 510
+0 520
+0 520
+0 510
+0 510
+
+
+0 509.999999999978955
+0 520.201003341700338
+0.1 520.201003341700338
+0.1 509.999999999978955
+0 509.999999999978955
+
+
+0.1 509.999999999978955
+0.1 520.201003341700338
+0.2 520.201003341700338
+0.2 509.999999999978955
+0.1 509.999999999978955
+
+
+e

@@ -7,7 +7,7 @@ import re
 def find_file_max_time(fileName):
   max = -1
   if not os.path.isfile(fileName):
-    return 100000000000000
+    return None
     
   with open(fileName) as inFile:
     for line in inFile:
@@ -75,7 +75,11 @@ def get_single_range_bounds(time, csv):
     return []
   minBounds = []
   maxBounds = []
+
+  lastMax = 1
   with open(csv) as f:
+    #print csv
+    first = None
     for line in f:
       #-1 since last one is newline
       data = line.split(',')[:-1]
@@ -85,7 +89,20 @@ def get_single_range_bounds(time, csv):
         maxBounds = list(dData)
         continue
       
+      #print dData
+      toInspect =  (len(dData) - 2)/2
+      maxWidth = max(dData[-toInspect:])
+      if first == None and maxWidth > 0.1:
+        first = maxWidth
+      #print maxWidth / lastMax
+      #print maxWidth / first
+      if maxWidth / lastMax > 1000 or (first != None and maxWidth / first > 100):
+        #print "breaking"
+        break
+        pass
+      lastMax = maxWidth
       for (i, d) in enumerate(dData):
+        #print (i, d)
         #print "(%s, %s, %s, %s)" %(i, d, minBounds[i], minBounds[i] > d)
         if minBounds[i] > d:
           minBounds[i] = d

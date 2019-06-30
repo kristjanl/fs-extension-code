@@ -1,0 +1,14 @@
+reason: matrix is singular Was thrown
+int progress: 0.1
+computation time: 0.001339
+int_time: 0.000964
+pic_decr: 0.000499
+pic_poly: 0.000174
+pic_ref: 0.000265
+pic_ref_first: 0.000368
+pic_ref_rem: 5.5e-05
+pic_ref_start: 5.9e-05
+pic_ref_subset: 5e-06
+sc_int_rem: 0.000769
+sc_transfrom: 1.4e-05
+sw_wrapping: 1.1e-05

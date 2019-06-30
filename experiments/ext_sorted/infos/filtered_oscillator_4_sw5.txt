@@ -1,0 +1,14 @@
+reason: max increase couldn't find a remainder (in finding contracting) Was thrown
+int progress: 3.7
+computation time: 1.08032
+int_time: 1.01168
+pic_decr: 0.369623
+pic_poly: 0.555441
+pic_ref: 0.074449
+pic_ref_first: 0.24371
+pic_ref_rem: 0.048265
+pic_ref_start: 0.028807
+pic_ref_subset: 0.051634
+sc_int_rem: 0.444255
+sc_transfrom: 0.051261
+sw_wrapping: 0.051095

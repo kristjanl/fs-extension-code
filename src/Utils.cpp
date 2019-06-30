@@ -888,7 +888,7 @@ void createOutput(vector<MyComponent *> comps, MyComponent & all,
   if(transformer->isPreconditioned == false) {
     //last one manually since transforming is before integration
     //cout << "size: " << comps[0]->pipes.size() << endl;
-    //comps[0]->pipes.push_back(comps[0]->timeStepPipe);
+    comps[0]->pipes.push_back(comps[0]->timeStepPipe);
     return;
   }
   mlog1("making system flowpipes");  

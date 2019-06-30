@@ -1,0 +1,14 @@
+reason: Map is not shrinkable (n = 2, t = 0.522174) Was thrown
+int progress: 4.17
+computation time: 1.19108
+int_time: 1.14875
+pic_decr: 0.630309
+pic_poly: 0.490629
+pic_ref: 0.014592
+pic_ref_first: 0.585646
+pic_ref_rem: 0.02708
+pic_ref_start: 0.016054
+pic_ref_subset: 0.000141
+sc_int_rem: 0.645193
+sc_transfrom: 0.040294
+sw_wrapping: 0.039978

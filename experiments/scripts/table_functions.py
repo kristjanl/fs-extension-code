@@ -9,9 +9,14 @@ import my_functions as fs
 plotAllVars = False
 plotToCommon = False
 
+doAllMethods = False
+doSingleMethods = True
+
 extendedHeader = False
 #plotToCommon = True
 tableCSSFile='../scripts/table.css'
+
+methodData = []
 
 forcedIndexes = None
 
@@ -32,15 +37,18 @@ def getVars(modelFile):
 def getDimension(modelFile):
   return len(getVars(modelFile))
 
+
 def getVarRange2(modelFile, csvs):
-  # find time that all integrations reached
-  time = min( map(lambda x: fs.find_file_max_time(x), csvs) )
+  print modelFile
+  # find time that the longest integrations reached
+  time = max( map(lambda x: fs.find_file_max_time(x), csvs) )
   
   dim = getDimension(modelFile)
   
   ranges = map(lambda c: [], csvs)
   
   for (i, csv) in enumerate(csvs):
+    ranges[i] = map(lambda x: None, range(dim))
     if not os.path.isfile(csv):
       ranges[i] = map(lambda _:None, range(dim))
       continue
@@ -50,21 +58,23 @@ def getVarRange2(modelFile, csvs):
         if data[-1] == '':
           data = data[0:-1]
         #line with needed time
+        if float(data[0]) > float(time):
+          break
         if float(data[0]) == float(time):
           #get variable ranges
           ranges[i] = map(lambda x: float(x), data[2 + 2*dim: 2 + 3*dim])
+          break
           
   for i in range(dim):
     #find minimum value in the ranges
     minValue = ranges[0][i]
     for r in ranges[1:]:
-      if minValue > r[i] and r[i] != None:
+      if minValue == None or minValue > r[i] and r[i] != None:
         minValue = r[i]
-    
     # mark minimum value
     for (j,_) in enumerate(ranges):
-      if minValue == ranges[0][i]:
-        continue
+      #if minValue == ranges[0][i]:
+      #  continue
       if minValue == ranges[j][i]:
         ranges[j][i] = "<b>%s</b>"%ranges[j][i]
   return ranges
@@ -137,7 +147,7 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
       outFile.write("    <td class='dataCell'>%s</td>\n"%value)
     else:
       outFile.write("    <td>--</td>\n")
-    
+
   outFile.write("    <td class='dataCell'>%s</td>\n"%filterVarRange(varRange))
   outFile.write("    <td align=\"left\">\n");
   outFile.write("    <table><tr>\n")
@@ -160,6 +170,15 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   outFile.write("    </tr></table>\n")
   outFile.write("    </td>\n")
   outFile.write("  </tr>\n")
+  
+
+  
+  if os.path.isfile(infoFile):
+    #print(modelName)
+    #print fs.getParam(infoFile, "int progress:")
+    methodData.append((modelName, fs.getParam(infoFile, "int progress:"), filterVarRange(varRange)))
+  else:
+    methodData.append((modelName, None, None))
   
   """
   #print "%s \t& %s & %s" %(outputName, time, varRange[0])
@@ -470,6 +489,192 @@ def generateGroupHtml(scriptsDir, modelDir, modelGroups, suffix, infoFields, var
   write_group_table("experiments%s.html" %suffix, modelDir, modelGroups, \
       suffix, infoFields)
 
+  printMethodData()
+
+nameLookup = {
+  "and_v3": "AND-Gate",
+  "and_or_v2": "AND-OR Gate",
+  "Brusselator": "Brusselator",
+  "buckling_column": "Buckling col",
+  'jet_engine': 'Jet engine',
+  "Lorentz": "Lorentz",
+  "Lotka_Volterra": "Lotka-Volterra",
+  "moore_rot": "Moore rot",
+  "Roessler": "Roessler",
+  "vanderpol": "Vanderpol",
+  "bouncing_ball": "Bouncing ball",
+  "cruise_control": "Cruise control",
+  "diabetic_1": "Glycemic 1",
+  "diabetic_2": "Glycemic 2",
+  "filtered_oscillator_4": "Filtered osc 4",
+  "filtered_oscillator_8": "Filtered osc 8",
+  "filtered_oscillator_16": "Filtered osc 16",
+  "filtered_oscillator_32": "Filtered osc 32",
+  "neuron_I": "Neuron 1",
+  "neuron_II": "Neuron 2",
+  "nonholonomic": "Non-holonomic",
+  "rod_reactor": "Rod reactor",
+  "switching_5": "Switching",
+  "two_tanks": "Two tanks",
+  "vehicle_platoon_3": "Three vehicle",
+  "lin": "Linear",
+  "lin_dep": "Lin-dep",
+  'sq_deg_long': 'Sqr-deg',
+  "pair_dep": "Pairwise",
+}
+
+cont = ["and_v3", "and_or_v2", "Brusselator", "buckling_column", "jet_engine", "Lorentz", "Lotka_Volterra", "moore_rot", "Roessler", "vanderpol"]
+hybr = ["bouncing_ball", "cruise_control", "diabetic_1", "diabetic_2", "filtered_oscillator_4", "filtered_oscillator_8", "filtered_oscillator_16", "filtered_oscillator_32", "neuron_I", "neuron_II", "nonholonomic", "rod_reactor", "switching_5", "two_tanks", "vehicle_platoon_3"]
+arti = ["lin", "lin_dep", "sq_deg_long", "pair_dep"]
 
 
+def convertToMethodRowBoth(methodData, methodKey, maxDur, best):
+  dur = methodData[methodKey][0]
+  width = methodData[methodKey][1]
+  #w = float('%.3g' % width)
+
+  lookup = {
+    'id':'Identity preconditioning', 
+    'pa':'Parallelepiped preconditioning', 
+    'qr':'QR preconditioning', 
+    'nop':'No processing', 
+    'sw1':'Shrink wrapping 1', 
+    'sw2':'Shrink wrapping 2', 
+    'sw5':'Shrink wrapping 5', 
+    'sw10':'Shrink wrapping 10', 
+  }
+  
+
+  prefix = ""
+  if methodKey in best["global"]:
+    prefix = "\\bf "
+
+  if dur != maxDur:
+    width = "--"
+
+  return "%s%s & %s & %s"%(prefix, lookup[methodKey], ('%f' % dur).rstrip('0').rstrip('.'), width)
+
+def convertToMethodRowDur(methodData, methodKey, maxDur):
+  dur = methodData[methodKey][0]
+  if dur == maxDur:
+    return "& \\bf %s "%(('%f' % dur).rstrip('0').rstrip('.'), )
+  return "& %s "%(('%f' % dur).rstrip('0').rstrip('.'),)
+
+def convertToMethodRowDurWithBest(methodData, methodKey, best):
+  dur = methodData[methodKey][0]
+  #if dur == maxDur:
+  #  return "& \\bf %s "%(('%f' % dur).rstrip('0').rstrip('.'), )
+  #print best
+  #print methodKey
+  prefix = ""
+  suffix = ""
+  if methodKey in best["global"]:
+    suffix = "*"
+  if methodKey in best["comp"]:
+    prefix = "\\bf "
+  return "& %s%s%s"%(prefix, ('%f' % dur).rstrip('0').rstrip('.'), suffix)
+
+
+def pick_best_choice(temp, choices):
+  maxDur = -1
+  for m in choices:
+    (dur, wid) = temp[m]
+    if dur > maxDur:
+      maxDur = dur
+  
+  minWidth = None
+  for m in choices:
+    (dur, wid) = temp[m]
+    if dur == maxDur and (wid < minWidth or minWidth == None):
+      minWidth = wid
+  
+  best = set()
+  for m in choices:
+    (dur, wid) = temp[m]
+    if dur == maxDur and wid == minWidth:
+      best.add(m)
+  return best
+
+def pick_best(temp):
+  globalBest = pick_best_choice(temp, ['id', 'pa', 'qr', 'nop', 'sw1', 'sw2', 'sw5', 'sw10'])
+  compBest = pick_best_choice(temp, ['id', 'pa', 'nop'])
+  return {"global":globalBest, "comp":compBest}
+
+def printMethodData():
+  maxDur = {}
+  data = {}
+  for (model, durS, widthS) in methodData:
+    width = -1
+    #print model
+    #print "widthS: '%s'"%widthS
+    #print "dur: '%s'"%durS
+    if widthS == 'None' or widthS == None:
+      width = None
+    else:
+      width = float(re.sub(r"[<>b/']", "", widthS))
+
+    if durS == 'None' or durS == None:
+      dur = 0
+    else:
+      dur = float(durS)
+    #print width
+    #print model
+    m = re.search('(.*)_(.*)\\.', model)
+    #print m.group(1)
+    #print m.group(2)
+    if m.group(1) not in data:
+      data[m.group(1)] = {}
+      maxDur[m.group(1)] = None
+    data[m.group(1)][m.group(2)] = (dur, width)
+    if maxDur[m.group(1)] < dur:
+      maxDur[m.group(1)] = dur
+
+  if doAllMethods:
+    for l in [cont, hybr, arti]:
+      for key in l: #data.keys():
+      #for key in data.keys():
+        if key not in data:
+          continue
+        #print key
+        #print data[key]
+        #print "max: %s" %maxDur[key]
+        best = pick_best(data[key])
+        f = lambda s: convertToMethodRowDurWithBest(data[key], s, best)
+
+        print "%s %s %s %s %s %s %s %s %s \\\\"%\
+          (nameLookup[key], f('id'), f('pa'), f('qr'), f('nop'), f('sw1'), f('sw2'), f('sw5'), f('sw10'))
+        #print "%s %s %s %s %s \\\\"%\
+        #  (nameLookup[key], f('sw1'), f('sw2'), f('sw5'), f('sw10'))
+      print "\\hline"
+  if doSingleMethods:
+    for l in [cont, hybr, arti]:
+      for key in l: #data.keys():
+      #for key in data.keys():
+        if key not in data:
+          continue
+        #print key
+        #print data[key]
+        #print "max: %s" %maxDur[key]
+        best = pick_best(data[key])
+        f = lambda s: convertToMethodRowBoth(data[key], s, maxDur[key], best)
+        #original format
+        #print "%s %s %s %s %s \\\\"%\
+        #  (nameLookup[key], f('id'), f('pa'), f('qr'), f('nop'))
+        #print "%s %s %s %s %s \\\\"%\
+        #  (nameLookup[key], f('sw1'), f('sw2'), f('sw5'), f('sw10'))
+
+        
+        print "%s\\\\"%(f('id'))
+        print "%s\\\\"%(f('pa'))
+        print "%s\\\\"%(f('qr'))
+        print "%s\\\\"%(f('nop'))
+        print "%s\\\\"%(f('sw1'))
+        print "%s\\\\"%(f('sw2'))
+        print "%s\\\\"%(f('sw5'))
+        print "%s\\\\"%(f('sw10'))
+
+
+        #print f('id')
+#{'qr': (100.0, 0.0109325), 'sw10': (19.0, None), 'sw5': (19.0, None), 'pa': (100.0, 0.0109325), 'tqr': (100.0, 0.0109325), 'sw1': (17.0, None), 'sw2': (17.0, None), 'nop': (100.0, 0.314886), 'id': (100.0, 0.0109325)}
+#max: 100.0
 
