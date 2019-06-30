@@ -54,10 +54,9 @@ modelTypes += ["pair_dep"]
 
 #modelTypes += ["moore_rot_point"]
 
-modelTypes = ["Lorentz"]
-
 #modelTypes = ["rod_reactor"]
 
+#modelTypes = ["and_v3"]
 
 #modelTypes = ["buckling_column"]
 #modelTypes += ["Brusselator"]

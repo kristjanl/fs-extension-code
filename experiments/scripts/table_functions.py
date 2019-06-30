@@ -54,29 +54,13 @@ def getVarRange2(modelFile, csvs):
       continue
     with open(csv) as f:
       for line in f:
-        data = line.strip().split(',')
-        if data[-1] == '':
-          data = data[0:-1]
-        #line with needed time
-        if float(data[0]) > float(time):
-          break
-        if float(data[0]) == float(time):
-          #get variable ranges
-          ranges[i] = map(lambda x: float(x), data[2 + 2*dim: 2 + 3*dim])
-          break
-          
-  for i in range(dim):
-    #find minimum value in the ranges
-    minValue = ranges[0][i]
-    for r in ranges[1:]:
-      if minValue == None or minValue > r[i] and r[i] != None:
-        minValue = r[i]
-    # mark minimum value
-    for (j,_) in enumerate(ranges):
-      #if minValue == ranges[0][i]:
-      #  continue
-      if minValue == ranges[j][i]:
-        ranges[j][i] = "<b>%s</b>"%ranges[j][i]
+        pass
+      data = line.strip().split(',')
+      if data[-1] == '':
+        data = data[0:-1]
+      #line with needed time
+      ranges[i] = ( float(data[1]), map(lambda x: float(x), data[2 + 2*dim: 2 + 3*dim]))
+  #print ranges
   return ranges
 
 def getSkippingIndexes(dim):
@@ -95,6 +79,8 @@ def getSkippingIndexes(dim):
   return indexes + powers
 
 def filterVarRange(varRange):
+  if varRange == None:
+    return None
   indexes = getSkippingIndexes(len(varRange))
   
   #get rid of indexes too big
@@ -147,8 +133,8 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
       outFile.write("    <td class='dataCell'>%s</td>\n"%value)
     else:
       outFile.write("    <td>--</td>\n")
-
-  outFile.write("    <td class='dataCell'>%s</td>\n"%filterVarRange(varRange))
+  
+  outFile.write("    <td class='dataCell'>%s</td>\n"%filterVarRange(varRange[1]))
   outFile.write("    <td align=\"left\">\n");
   outFile.write("    <table><tr>\n")
   
@@ -176,9 +162,10 @@ def writeData(modelFile, modelName, outFile, varRange, commonTime, nameSuffix,
   if os.path.isfile(infoFile):
     #print(modelName)
     #print fs.getParam(infoFile, "int progress:")
-    methodData.append((modelName, fs.getParam(infoFile, "int progress:"), filterVarRange(varRange)))
+    #methodData.append((modelName, fs.getParam(infoFile, "int progress:"), filterVarRange(varRange)))
+    methodData.append((modelName, fs.getParam(infoFile, "int progress:"), varRange))
   else:
-    methodData.append((modelName, None, None))
+    methodData.append((modelName, 0, (0, None)))
   
   """
   #print "%s \t& %s & %s" %(outputName, time, varRange[0])
@@ -544,15 +531,24 @@ def convertToMethodRowBoth(methodData, methodKey, maxDur, best):
     'sw10':'Shrink wrapping 10', 
   }
   
-
   prefix = ""
   if methodKey in best["global"]:
     prefix = "\\bf "
 
-  if dur != maxDur:
+  #if dur != maxDur:
+  #  width = "--"
+  if width == None:
     width = "--"
+  elif float(width) > 1000:
+    width = "MAX"
 
-  return "%s%s & %s & %s"%(prefix, lookup[methodKey], ('%f' % dur).rstrip('0').rstrip('.'), width)
+  #dur = ('%f' % dur).rstrip('0').rstrip('.')
+
+  #dur = float('%.3f' % float(dur))
+  dur = "{0:.3f}".format(float(dur))
+
+  return "{%s}{%s}"%(dur, width)
+  #return "%s%s & %s & %s"%(prefix, lookup[methodKey], , width)
 
 def convertToMethodRowDur(methodData, methodKey, maxDur):
   dur = methodData[methodKey][0]
@@ -603,20 +599,15 @@ def pick_best(temp):
 def printMethodData():
   maxDur = {}
   data = {}
-  for (model, durS, widthS) in methodData:
-    width = -1
-    #print model
-    #print "widthS: '%s'"%widthS
-    #print "dur: '%s'"%durS
-    if widthS == 'None' or widthS == None:
-      width = None
-    else:
-      width = float(re.sub(r"[<>b/']", "", widthS))
+  #print methodData
+  for (model, durS, progress) in methodData:
+    #print "prog: %s"%str(progress)
 
-    if durS == 'None' or durS == None:
-      dur = 0
-    else:
-      dur = float(durS)
+    #dur = float(durS)
+    (dur, widths) = progress
+    width = filterVarRange(widths)
+    #print progress
+
     #print width
     #print model
     m = re.search('(.*)_(.*)\\.', model)
@@ -663,15 +654,15 @@ def printMethodData():
         #print "%s %s %s %s %s \\\\"%\
         #  (nameLookup[key], f('sw1'), f('sw2'), f('sw5'), f('sw10'))
 
-        
-        print "%s\\\\"%(f('id'))
-        print "%s\\\\"%(f('pa'))
-        print "%s\\\\"%(f('qr'))
-        print "%s\\\\"%(f('nop'))
-        print "%s\\\\"%(f('sw1'))
-        print "%s\\\\"%(f('sw2'))
-        print "%s\\\\"%(f('sw5'))
-        print "%s\\\\"%(f('sw10'))
+        print "\\smtArgs{%s}%s%s%s%s%s%s%s%s"%(nameLookup[key], f('id'), f('pa'), f('qr'), f('nop'), f('sw1'), f('sw2'), f('sw5'), f('sw10'))
+        #print "%s\\\\"%(f('id'))
+        #print "%s\\\\"%(f('pa'))
+        #print "%s\\\\"%(f('qr'))
+        #print "%s\\\\"%(f('nop'))
+        #print "%s\\\\"%(f('sw1'))
+        #print "%s\\\\"%(f('sw2'))
+        #print "%s\\\\"%(f('sw5'))
+        #print "%s\\\\"%(f('sw10'))
 
 
         #print f('id')
