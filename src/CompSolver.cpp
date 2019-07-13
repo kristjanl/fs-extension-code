@@ -502,43 +502,6 @@ namespace compSolver{
   }
 }
 
-void Solver::post(MySettings *settings) {
-  
-  //tprint("sc_transfrom");
-  //tprint("tr_remap");
-  //tprint("tr_comp_pre");
-  
-  #ifdef output1
-    settings->only1Var = true;
-  #endif
-
-  #ifdef no_output
-    cout << "not creating my output" << endl;
-  #else
-    //cout << "creating my output" << endl;
-    createOutput(comps, *all, settings->transformer, settings);
-    //settings->transformer->addInfo(writer.info);
-    addMyInfo(settings->writer->info);
-    tstart(sc_post_add);
-    //cout << "writing output" << endl;
-    //need to use all->dom, since some parameters maybe be discarded
-    settings->writer->addComponents(comps, all->dom, *all, 
-        settings->transformer->isPreconditioned);
-    tend(sc_post_add);
-    tstart(sc_post_write);
-    settings->writer->writeCSV();
-    settings->writer->writeInfo();
-    settings->writer->finish();
-    tend(sc_post_write);
-  #endif
-  //tprint("sc_post");
-  //tprint("tr_");
-  //cout << "here2" << endl;
-  
-  if(pSerializer != NULL)
-    pSerializer->serialize();
-}
-
 void Solver::solveIVP(MySettings *settings, IVP ivp) {
   //mforce1("solve ivp <");
   mreset(old);
@@ -548,13 +511,13 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   //settings->toOld()->log();
   setUp(settings, ivp);
 
-  mforce1(sbuilder() << "size: " << comps.size());
+  //mforce1(sbuilder() << "size: " << comps.size());
   
   
   clock_t integrClock = clock();
   double t;
 
-  for(t = 0; (t + THRESHOLD_HIGH) < settings->time && (true || t < settings->step * 10); t+= settings->step) {
+  for(t = 0; (t + THRESHOLD_HIGH) < settings->time && (true || t < settings->step * 5); t+= settings->step) {
     //mforce1(sbuilder() << "t: " << t);
     if(t > 1) compSolver::print = true;
     cerr << ".";
@@ -624,6 +587,44 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   mrestore(old);
   mdec();
   mlog1("solve ivp >");
+}
+
+void Solver::post(MySettings *settings) {
+  
+  //tprint("sc_transfrom");
+  //tprint("tr_remap");
+  //tprint("tr_comp_pre");
+
+  #ifdef output1
+    settings->only1Var = true;
+  #endif
+
+  #ifdef no_output
+    cout << "not creating my output" << endl;
+  #else
+    cout << "creating my output" << endl;
+    createOutput(comps, *all, settings->transformer, settings);
+    //settings->transformer->addInfo(writer.info);
+    addMyInfo(settings->writer->info);
+    tstart(sc_post_add);
+    //cout << "writing output" << endl;
+    //need to use all->dom, since some parameters maybe be discarded
+
+    settings->writer->addComponents(comps, all->dom, *all, 
+        settings->transformer->isPreconditioned);
+    tend(sc_post_add);
+    tstart(sc_post_write);
+    settings->writer->writeCSV();
+    settings->writer->writeInfo();
+    settings->writer->finish();
+    tend(sc_post_write);
+  #endif
+  //tprint("sc_post");
+  //tprint("tr_");
+  //cout << "here2" << endl;
+  
+  if(pSerializer != NULL)
+    pSerializer->serialize();
 }
 
 

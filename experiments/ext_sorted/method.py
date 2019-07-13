@@ -63,6 +63,7 @@ modelTypes += ["pair_dep"]
 #modelTypes += ["Lotka_Volterra"]
 #modelTypes += ["sq_deg_long"]
 #modelTypes = ["filtered_oscillator_4"]
+#modelTypes = ["lin"]
 
 
 #algos = ["flowid", "flowqr"]

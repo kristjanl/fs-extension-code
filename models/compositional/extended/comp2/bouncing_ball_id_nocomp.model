@@ -1,0 +1,34 @@
+continuous reachability
+{
+  state var x,v
+	
+  setting
+  {
+    use cflow
+    no components
+    fixed steps 0.1
+    time 10
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon x,v
+    fixed orders 5
+    cutoff 1e-15
+    precision 128
+    output bouncing_ball_id_nocomp
+    print on
+  }
+	
+  poly ode 1
+  {
+    x' = v
+    v' = -9.81
+  }
+ 
+  init
+  {
+    x in [10,10.2]
+    v in [0,0]
+  }
+}
+

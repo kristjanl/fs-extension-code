@@ -1,0 +1,32 @@
+int progress: 1000
+computation time: 34.5411
+eval_t: 0.049404
+int_time: 27.6981
+pic_decr: 14.3574
+pic_poly: 13.0018
+pic_ref: 0.126875
+pic_ref_first: 13.8784
+pic_ref_rem: 0.293447
+pic_ref_start: 0.173477
+pic_ref_subset: 0.000394
+pre_end: 0.112595
+pre_insert: 6.34995
+pre_left: 0.002844
+pre_lin_trans: 0.082367
+pre_ltr: 0.002732
+pre_matrix: 0.000385
+pre_r_range: 0.025943
+pre_scaling_m: 0.027442
+pre_start: 0.007311
+sc_int_rem: 14.4851
+sc_post_composing: 1.43532
+sc_transfrom: 6.84137
+tr_comp_pre: 6.61214
+tr_part1: 0.007518
+tr_part2: 6.6017
+tr_part_all: 6.61259
+tr_part_matrix: 0.003032
+tr_precond: 6.61743
+tr_remap1: 0.108584
+tr_remap2: 0.01127
+tr_remap3: 0.00097

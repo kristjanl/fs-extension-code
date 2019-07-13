@@ -174,7 +174,6 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
   
   mdec();
   
-  
   for(vector<MyComponent *>::iterator it = comps.begin(); 
       it < comps.end(); it++) {
     addCompomentData(**it, domain);
@@ -185,17 +184,32 @@ void OutputWriter::addComponents(vector<MyComponent *> comps,
 
 void OutputWriter::addCompomentData(MyComponent & comp, 
     vector<Interval> & domain) {
-  
   int dim = domain.size() - 1;
   int index = 0;
   for(vector<int>::iterator it = comp.varIndexes.begin(); 
       it < comp.varIndexes.end(); it++, index++) {
     int varIndex = *it;
     int compIndex = comp.solveIndexes.at(index);
+
+    //mforce1(sbuilder() << "varIndex: " << varIndex);
+    //mforce1(sbuilder() << "pipes.size: " << comp.pipes.size());
     
     for(int i = 0; i < comp.pipes.size(); i++) {
       TaylorModelVec tmv = comp.pipes.at(i);
       Interval pipe = evalVarToInterval(tmv, domain, compIndex);
+      
+      #ifdef output1
+        if(varIndex != 0) {
+          data.at(varIndex+1).push_back(Interval());
+        
+          data2.at((varIndex +1)*2).push_back("0");
+          data2.at((varIndex +1)*2+1).push_back("0");
+          data2.at((dim + 1)*2 + varIndex).push_back("0");
+          data2.at((dim + 1)*2 + dim + varIndex).push_back("0");
+          continue;
+        }
+      #endif
+      
       data.at(varIndex+1).push_back(pipe);
       
       //shift by all previous variables and time
@@ -258,6 +272,7 @@ void OutputWriter::writeCSV() {
     double stepWidth = 0;
     for(int i = 0; i < dim; i++) {
       int varWidthIndex = 2 + dim * 2 + i;
+      //mforce1(sbuilder() << "varWidthIndex: " << varWidthIndex);
       //mforce1(sbuilder() << i << ": " << data2[varWidthIndex][step]);
       double value = atof(data2[varWidthIndex][step].c_str());
       stepWidth += value;
@@ -268,7 +283,6 @@ void OutputWriter::writeCSV() {
       //mforce1(sbuilder() << "breaking at step #"<< step);
       //break;
     }
-    
     for(int value = 0; value < values; value++) {
       if(data2.at(value).size() <= step) {
         *csvfile << ",";

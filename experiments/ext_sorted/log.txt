@@ -816,3 +816,143 @@ pair_dep_sw1.model
 pair_dep_sw2.model
 pair_dep_sw5.model
 pair_dep_sw10.model
+Mon Jul  1 16:20:18 EEST 2019
+and_v3_id_fcomp.model
+and_v3_id_lcomp.model
+and_v3_id_nocomp.model
+and_or_v2_id_fcomp.model
+and_or_v2_id_lcomp.model
+and_or_v2_id_nocomp.model
+Brusselator_10_id_fcomp.model
+Brusselator_10_id_lcomp.model
+Brusselator_10_id_nocomp.model
+buckling_column_10_nop_fcomp.model
+buckling_column_10_nop_nocomp.model
+jet_engine_10_pa_lcomp.model
+jet_engine_10_pa_nocomp.model
+Lorentz_10_id_fcomp.model
+Lorentz_10_id_lcomp.model
+Lorentz_10_id_nocomp.model
+Lotka_Volterra_10_pa_lcomp.model
+Lotka_Volterra_10_pa_nocomp.model
+moore_rot_10_pa_lcomp.model
+moore_rot_10_pa_nocomp.model
+Roessler_10_id_fcomp.model
+Roessler_10_id_lcomp.model
+Roessler_10_id_nocomp.model
+vanderpol_10_nop_fcomp.model
+vanderpol_10_nop_nocomp.model
+bouncing_ball_10_id_fcomp.model
+bouncing_ball_10_id_lcomp.model
+bouncing_ball_10_id_nocomp.model
+cruise_control_10_id_fcomp.model
+cruise_control_10_id_lcomp.model
+cruise_control_10_id_nocomp.model
+diabetic_1_10_id_fcomp.model
+diabetic_1_10_id_lcomp.model
+diabetic_1_10_id_nocomp.model
+diabetic_2_10_id_fcomp.model
+diabetic_2_10_id_lcomp.model
+diabetic_2_10_id_nocomp.model
+filtered_oscillator_4_10_id_fcomp.model
+filtered_oscillator_4_10_id_lcomp.model
+filtered_oscillator_4_10_id_nocomp.model
+filtered_oscillator_8_10_id_fcomp.model
+filtered_oscillator_8_10_id_lcomp.model
+filtered_oscillator_8_10_id_nocomp.model
+filtered_oscillator_16_10_id_fcomp.model
+filtered_oscillator_16_10_id_lcomp.model
+filtered_oscillator_16_10_id_nocomp.model
+filtered_oscillator_16_10_id_fcomp.model
+filtered_oscillator_16_10_id_lcomp.model
+filtered_oscillator_16_10_id_nocomp.model
+neuron_I_10_id_fcomp.model
+neuron_I_10_id_lcomp.model
+neuron_I_10_id_nocomp.model
+neuron_II_10_id_fcomp.model
+neuron_II_10_id_lcomp.model
+neuron_II_10_id_nocomp.model
+nonholonomic_10_id_fcomp.model
+nonholonomic_10_id_lcomp.model
+nonholonomic_10_id_nocomp.model
+rod_reactor_10_id_fcomp.model
+rod_reactor_10_id_lcomp.model
+rod_reactor_10_id_nocomp.model
+switching_5_10_id_fcomp.model
+switching_5_10_id_lcomp.model
+switching_5_10_id_nocomp.model
+two_tanks_10_id_fcomp.model
+two_tanks_10_id_lcomp.model
+two_tanks_10_id_nocomp.model
+vehicle_platoon_3_10_nop_fcomp.model
+vehicle_platoon_3_10_nop_nocomp.model
+lin_10_id_fcomp.model
+lin_10_id_lcomp.model
+lin_10_id_nocomp.model
+lin_dep_20_id_fcomp.model
+lin_dep_20_id_lcomp.model
+lin_dep_20_id_nocomp.model
+sq_deg_long_10_id_fcomp.model
+sq_deg_long_10_id_lcomp.model
+sq_deg_long_10_id_nocomp.model
+pair_dep_10_id_fcomp.model
+pair_dep_10_id_lcomp.model
+pair_dep_10_id_nocomp.model
+Mon Jul  1 18:51:05 EEST 2019
+filtered_oscillator_8_10_id_fcomp.model
+Mon Jul  1 18:52:58 EEST 2019
+filtered_oscillator_8_10_id_fcomp.model
+Mon Jul  1 18:56:27 EEST 2019
+filtered_oscillator_8_10_id_fcomp.model
+filtered_oscillator_8_10_id_lcomp.model
+filtered_oscillator_8_10_id_nocomp.model
+Mon Jul  1 19:17:15 EEST 2019
+Mon Jul  1 19:17:59 EEST 2019
+vehicle_platoon_3_10_nop_fcomp.model
+vehicle_platoon_3_10_nop_nocomp.model
+Mon Jul  1 19:23:40 EEST 2019
+vanderpol_10_nop_fcomp.model
+vanderpol_10_nop_nocomp.model
+Mon Jul  1 19:25:53 EEST 2019
+vanderpol_10_nop_fcomp.model
+vanderpol_10_nop_nocomp.model
+Mon Jul  1 19:27:49 EEST 2019
+vanderpol_10_nop_fcomp.model
+vanderpol_10_nop_nocomp.model
+Mon Jul  1 19:27:59 EEST 2019
+Mon Jul  1 19:29:12 EEST 2019
+Mon Jul  1 19:29:31 EEST 2019
+Mon Jul  1 19:31:15 EEST 2019
+Mon Jul  1 19:32:03 EEST 2019
+Mon Jul  1 19:32:24 EEST 2019
+Mon Jul  1 19:33:17 EEST 2019
+Mon Jul  1 19:33:56 EEST 2019
+Mon Jul  1 20:58:00 EEST 2019
+Mon Jul  1 20:58:36 EEST 2019
+Mon Jul  1 20:58:51 EEST 2019
+Mon Jul  1 20:59:20 EEST 2019
+Mon Jul  1 20:59:40 EEST 2019
+Mon Jul  1 21:04:40 EEST 2019
+Mon Jul  1 21:09:51 EEST 2019
+Mon Jul  1 21:10:27 EEST 2019
+Mon Jul  1 21:10:36 EEST 2019
+vanderpol_10_nop_fcomp.model
+vanderpol_10_nop_nocomp.model
+buckling_column_10_nop_fcomp.model
+buckling_column_10_nop_nocomp.model
+vehicle_platoon_3_10_nop_fcomp.model
+vehicle_platoon_3_10_nop_nocomp.model
+Mon Jul  1 22:35:57 EEST 2019
+Mon Jul  1 22:36:41 EEST 2019
+Tue Jul  2 14:02:08 EEST 2019
+vehicle_platoon_3_10_nop_fcomp.model
+vehicle_platoon_3_10_nop_nocomp.model
+Tue Jul  2 23:06:10 EEST 2019
+Tue Jul  2 23:06:41 EEST 2019
+Tue Jul  2 23:07:25 EEST 2019
+filtered_oscillator_32_10_id_fcomp.model
+filtered_oscillator_32_10_id_lcomp.model
+Wed Jul  3 11:28:49 EEST 2019
+filtered_oscillator_32_10_id_fcomp.model
+filtered_oscillator_32_10_id_lcomp.model
+filtered_oscillator_32_10_id_nocomp.model

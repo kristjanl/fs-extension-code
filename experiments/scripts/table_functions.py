@@ -9,8 +9,9 @@ import my_functions as fs
 plotAllVars = False
 plotToCommon = False
 
-doAllMethods = False
-doSingleMethods = True
+doAllMethods = True
+doCompMethods = False
+doSingleMethods = False
 
 extendedHeader = False
 #plotToCommon = True
@@ -564,11 +565,56 @@ def convertToMethodRowDurWithBest(methodData, methodKey, best):
   #print methodKey
   prefix = ""
   suffix = ""
+  #if methodKey in best["global"]:
+  #  suffix = "*"
+  #if methodKey in best["comp"]:
+  #  prefix = "\\bf "
   if methodKey in best["global"]:
-    suffix = "*"
-  if methodKey in best["comp"]:
     prefix = "\\bf "
   return "& %s%s%s"%(prefix, ('%f' % dur).rstrip('0').rstrip('.'), suffix)
+
+def methodCmp(x, y):
+  x = map(lambda s: float(s) if s != None else None, x)
+  y = map(lambda s: float(s) if s != None else None, y)
+  if x[0] > y[0]:
+    return -1
+  if x[0] < y[0]:
+    return 1
+  if x[1] < y[1]:
+    return -1
+  if x[1] > y[1]:
+    return 1
+  return 0
+
+def markBestCompMethod(methodData, methodKey):
+  compMethods = ['id', 'pa', 'nop']
+  compData = map(lambda x: methodData[x], compMethods)
+
+  #print compData
+
+  first = sorted(compData, cmp=methodCmp)[0]
+
+  dur = methodData[methodKey][0]
+  width = methodData[methodKey][1]
+
+  
+  dPrefix = ""
+  wPrefix = ""
+
+  if dur == first[0] and width == first[1]:
+    dPrefix = wPrefix = "\\bf "
+  
+  if width == None:
+    width = "--"
+  elif float(width) > 1000:
+    width = "MAX"
+
+  dur = ('%f' % dur).rstrip('0').rstrip('.')
+
+  #dur = float('%.3f' % float(dur))
+  #dur = "{0:.3f}".format(float(dur))
+
+  return "& %s%s & %s%s"%(dPrefix, dur, wPrefix, width)
 
 
 def pick_best_choice(temp, choices):
@@ -621,10 +667,11 @@ def printMethodData():
       maxDur[m.group(1)] = dur
 
   if doAllMethods:
-    for l in [cont, hybr, arti]:
+    for l in [cont, arti, hybr]:
       for key in l: #data.keys():
       #for key in data.keys():
         if key not in data:
+          print "--------------missing key--------------"
           continue
         #print key
         #print data[key]
@@ -637,13 +684,34 @@ def printMethodData():
         #print "%s %s %s %s %s \\\\"%\
         #  (nameLookup[key], f('sw1'), f('sw2'), f('sw5'), f('sw10'))
       print "\\hline"
+  
+  if doCompMethods:
+    for l in [cont, arti, hybr]:
+      for key in l: #data.keys():
+      #for key in data.keys():
+        if key not in data:
+          print "--------------missing key--------------"
+          continue
+        #print data[key]
+        #print key
+        #print "max: %s" %maxDur[key]
+
+        f = lambda s: markBestCompMethod(data[key], s)
+
+        print "%s %s %s %s \\\\"%\
+          (nameLookup[key], f('id'), f('pa'), f('nop'))
+        #print "%s %s %s %s %s \\\\"%\
+        #  (nameLookup[key], f('sw1'), f('sw2'), f('sw5'), f('sw10'))
+      print "\\hline"
   if doSingleMethods:
     for l in [cont, hybr, arti]:
       for key in l: #data.keys():
       #for key in data.keys():
         if key not in data:
+          #print "--------------missing key--------------"
           continue
         #print key
+        
         #print data[key]
         #print "max: %s" %maxDur[key]
         best = pick_best(data[key])

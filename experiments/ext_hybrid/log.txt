@@ -1,0 +1,35 @@
+Sat Jul  6 22:55:19 EEST 2019
+Sat Jul  6 22:55:38 EEST 2019
+bouncing_ball_id_fcomp.model
+bouncing_ball_id_lcomp.model
+bouncing_ball_id_nocomp.model
+cruise_control_id_fcomp.model
+cruise_control_id_lcomp.model
+cruise_control_id_nocomp.model
+diabetic_1_id_fcomp.model
+diabetic_1_id_lcomp.model
+diabetic_1_id_nocomp.model
+diabetic_2_id_fcomp.model
+diabetic_2_id_lcomp.model
+diabetic_2_id_nocomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_4_id_lcomp.model
+filtered_oscillator_4_id_nocomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_8_id_lcomp.model
+filtered_oscillator_8_id_nocomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_16_id_lcomp.model
+filtered_oscillator_16_id_nocomp.model
+filtered_oscillator_32_id_fcomp.model
+filtered_oscillator_32_id_lcomp.model
+filtered_oscillator_32_id_nocomp.model
+nonholonomic_id_fcomp.model
+nonholonomic_id_lcomp.model
+nonholonomic_id_nocomp.model
+rod_reactor_id_fcomp.model
+rod_reactor_id_lcomp.model
+rod_reactor_id_nocomp.model
+two_tanks_id_fcomp.model
+two_tanks_id_lcomp.model
+two_tanks_id_nocomp.model

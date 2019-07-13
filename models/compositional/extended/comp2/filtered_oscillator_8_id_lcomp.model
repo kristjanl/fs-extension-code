@@ -1,0 +1,50 @@
+continuous reachability
+{
+  state var x,y,f4a_x1,f4a_x2,f4a_x3,f8_x1,f4b_x1,f4b_x2,f4b_x3,z
+  
+  setting
+  {
+    use cflow
+    auto components
+    fixed steps 0.05
+    time 4
+    remainder estimation 1e-5
+    left model compositional
+    identity precondition
+    gnuplot octagon x,y
+    fixed orders 8
+    cutoff 1e-15
+    precision 128
+    output filtered_oscillator_8_id_lcomp
+    print on
+  }
+  
+  poly ode 1
+  {
+    x' = -2*x + 1.4
+    y' = -y - 0.7
+    f4a_x1' = 5*x - 5*f4a_x1
+    f4a_x2' = 5*f4a_x1 - 5*f4a_x2
+    f4a_x3' = 5*f4a_x2 - 5*f4a_x3
+    f8_x1' = 5*f4a_x3 - 5*f8_x1
+    f4b_x1' = 5*f8_x1 - 5*f4b_x1
+    f4b_x2' = 5*f4b_x1 - 5*f4b_x2
+    f4b_x3' = 5*f4b_x2 - 5*f4b_x3
+    z' = 5*f4b_x3 - 5*z
+  }
+  
+  init
+  {
+    x in [0.2,0.3]
+    y in [-0.1,0.1]
+    z in [0,0]
+    f4a_x1 in [0,0]
+    f4a_x2 in [0,0]
+    f4a_x3 in [0,0]
+    f8_x1 in [0,0]
+    f4b_x1 in [0,0]
+    f4b_x2 in [0,0]
+    f4b_x3 in [0,0]
+  }
+}
+
