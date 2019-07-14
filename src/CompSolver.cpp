@@ -338,7 +338,7 @@ namespace compSolver{
       //}
   	  //mforce("mr", p.getRemainders());
 	  }
-    //compStepMap[comp.getVarName(&settings)][curStep] = counter;
+    compStepMap[comp.getVarName(&settings)][curStep] = counter;
     /*TODO decide to include or not (rem state 2/3)
     comp.lastRems = newRemainders;
     */
@@ -560,18 +560,8 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   }
   cerr << endl;
 
+  settings->writer->writeRefinementInfo(comps, settings, compStepMap, curStep);
   
-  /*
-  for(vector<MyComponent *>::iterator it = comps.begin(); 
-      it < comps.end(); it++) {
-    string name = (*it)->getVarName(settings);
-    //bar((*it)->getVarName(settings) + ".init");
-    //bar2((*it)->getVarName(settings));
-    for(int i = 0; i < curStep; i++) {
-      mforce1(sbuilder() << name << "[" << i << "] = " << compStepMap[name][i]);
-    }
-  }
-  */
 
   clock_t end = clock();
   double integrTime = double(end - integrClock) / CLOCKS_PER_SEC;

@@ -34,6 +34,8 @@ class OutputWriter {
     void writeCSV();
     void writeInfo();
 		void finish();
+    void writeRefinementInfo(vector<MyComponent *> comps, MySettings *settings, 
+        map<string, map<int,int> > compStepMap, int stepCount);
 		vector<string> info;
 		double swTime; //separate to info file
 	private:

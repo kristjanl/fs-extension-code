@@ -383,3 +383,76 @@ void OutputWriter::fromFlowstar(list<TaylorModelVec> & flowpipesCompo,
   }
 }
 
+void OutputWriter::writeRefinementInfo(vector<MyComponent *> comps, 
+    MySettings *settings, map<string, map<int,int> > compStepMap, 
+    int stepCount) {
+  /*
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+      it < comps.end(); it++) {
+    string name = (*it)->getVarName(settings);
+    //bar((*it)->getVarName(settings) + ".init");
+    //bar2((*it)->getVarName(settings));
+    for(int i = 0; i < stepCount; i++) {
+      mforce1(sbuilder() << name << "[" << i << "] = " << compStepMap[name][i]);
+    }
+  }
+  */
+
+  string datfname = "dats/" + name + ".dat";
+  createDir("dats");
+  //mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
+  ofstream datfile;
+  datfile.open(datfname.c_str());
+  int yMin = 999999999, yMax = -1;
+  for(int i = 0; i < stepCount; i++) {
+    bool first = false;
+    datfile << i;
+    for(vector<MyComponent *>::iterator it = comps.begin(); 
+        it < comps.end(); it++) {
+      string compName = (*it)->getVarName(settings);
+      //bar((*it)->getVarName(settings) + ".init");
+      //bar2((*it)->getVarName(settings));
+      
+      //mforce1(sbuilder() << name << "[" << i << "] = " << compStepMap[name][i]);
+      if (compStepMap[compName][i] < yMin) 
+        yMin = compStepMap[compName][i];
+      if (compStepMap[compName][i] > yMax) 
+        yMax = compStepMap[compName][i];
+      if (first) {
+        datfile << compStepMap[compName][i];
+        first = false;
+        continue;  
+      }
+      datfile << ";" << compStepMap[compName][i];
+    }
+    datfile << endl;
+  }
+  datfile.close();
+  
+  string pltfname = "dats/" + name + ".plt";
+  createDir("dats");
+  //mlog1(sbuilder() << "writingCSV (" << csvfname << ")");
+  ofstream pltfile;
+  pltfile.open(pltfname.c_str());
+
+  pltfile << "set term png\n";
+  pltfile << "set output './" << name << ".png'\n";
+  pltfile << "set datafile separator ';'\n";
+
+  pltfile << "set autoscale\n";
+  pltfile << "set yrange [" << (yMin - 1) << ":" << (yMax + 1) << "]\n";
+
+  pltfile << "plot ";
+  int counter = 2;
+  for(vector<MyComponent *>::iterator it = comps.begin(); 
+        it < comps.end(); it++) {
+    string compName = (*it)->getVarName(settings);
+    if( it != comps.begin())
+      pltfile << ", ";
+    pltfile << "'" << name + ".dat' using 1:" << counter++ << " with linespoints title '" << compName <<"'";
+  }
+  //pltfile << "plot 'and_or_v2_id_fcomp.dat' using 1:2 with linespoints title 'Square', 'and_or_v2_id_fcomp.dat' using 1:3 with linespoints, 'and_or_v2_id_fcomp.dat' using 1:4 with linespoints\n";
+  
+
+  pltfile.close();
+}
