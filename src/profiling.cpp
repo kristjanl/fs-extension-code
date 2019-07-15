@@ -1088,9 +1088,10 @@ void monoArith() {
 
 void monoOperations() {
   int count = 100000;
-  for(int step = 0; step < 30 + 1; step += 1) {
+  for(int step = -1; step < 30 + 1; step += 1) {
     int dim = step * 20;
-    if(dim == 0)
+    //dim = step;
+    if(dim < 1)
       dim = 1;
     Monomial m1 = getMono(dim - 1, false);
     Monomial m2 = getMono(dim - 1, false);

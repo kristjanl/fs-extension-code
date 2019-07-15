@@ -1,18 +1,18 @@
 int progress: 4
-computation time: 14.2142
-eval_t: 0.15153
-int_time: 12.695
-pic_decr: 3.39879
-pic_poly: 8.67061
-pic_ref: 0.227019
-pic_ref_first: 2.47048
-pic_ref_rem: 0.400824
-pic_ref_start: 0.49366
-pic_ref_subset: 0.002713
-sc_int_rem: 3.63185
-sc_post_composing: 0.788544
-sc_transfrom: 1.51798
-tr_comp_pre: 0.615177
-tr_precond: 0.619661
-tr_remap1: 0.343082
-tr_remap3: 0.529892
+computation time: 14.1821
+eval_t: 0.150487
+int_time: 12.685
+pic_decr: 3.3866
+pic_poly: 8.70497
+pic_ref: 0.226375
+pic_ref_first: 2.47763
+pic_ref_rem: 0.397108
+pic_ref_start: 0.478131
+pic_ref_subset: 0.002556
+sc_int_rem: 3.61872
+sc_post_composing: 0.780869
+sc_transfrom: 1.496
+tr_comp_pre: 0.617931
+tr_precond: 0.622462
+tr_remap1: 0.331976
+tr_remap3: 0.518612

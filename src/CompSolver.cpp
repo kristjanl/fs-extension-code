@@ -560,7 +560,7 @@ void Solver::solveIVP(MySettings *settings, IVP ivp) {
   }
   cerr << endl;
 
-  settings->writer->writeRefinementInfo(comps, settings, compStepMap, curStep);
+  //settings->writer->writeRefinementInfo(comps, settings, compStepMap, curStep);
   
 
   clock_t end = clock();
