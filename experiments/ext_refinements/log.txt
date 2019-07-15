@@ -1,0 +1,250 @@
+P juuli 14 00:55:39 CEST 2019
+bouncing_ball_id_fcomp.model
+bouncing_ball_id_lcomp.model
+bouncing_ball_id_nocomp.model
+cruise_control_id_fcomp.model
+cruise_control_id_lcomp.model
+cruise_control_id_nocomp.model
+diabetic_1_id_fcomp.model
+diabetic_1_id_lcomp.model
+diabetic_1_id_nocomp.model
+diabetic_2_id_fcomp.model
+diabetic_2_id_lcomp.model
+diabetic_2_id_nocomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_4_id_lcomp.model
+filtered_oscillator_4_id_nocomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_8_id_lcomp.model
+filtered_oscillator_8_id_nocomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_16_id_lcomp.model
+filtered_oscillator_16_id_nocomp.model
+filtered_oscillator_32_id_fcomp.model
+filtered_oscillator_32_id_lcomp.model
+filtered_oscillator_32_id_nocomp.model
+nonholonomic_id_fcomp.model
+nonholonomic_id_lcomp.model
+nonholonomic_id_nocomp.model
+rod_reactor_id_fcomp.model
+rod_reactor_id_lcomp.model
+rod_reactor_id_nocomp.model
+two_tanks_id_fcomp.model
+two_tanks_id_lcomp.model
+two_tanks_id_nocomp.model
+P juuli 14 00:57:19 CEST 2019
+bouncing_ball_id_fcomp.model
+bouncing_ball_id_lcomp.model
+bouncing_ball_id_nocomp.model
+cruise_control_id_fcomp.model
+cruise_control_id_lcomp.model
+cruise_control_id_nocomp.model
+diabetic_1_id_fcomp.model
+diabetic_1_id_lcomp.model
+diabetic_1_id_nocomp.model
+diabetic_2_id_fcomp.model
+diabetic_2_id_lcomp.model
+diabetic_2_id_nocomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_4_id_lcomp.model
+filtered_oscillator_4_id_nocomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_8_id_lcomp.model
+filtered_oscillator_8_id_nocomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_16_id_lcomp.model
+filtered_oscillator_16_id_nocomp.model
+filtered_oscillator_32_id_fcomp.model
+filtered_oscillator_32_id_lcomp.model
+filtered_oscillator_32_id_nocomp.model
+nonholonomic_id_fcomp.model
+nonholonomic_id_lcomp.model
+nonholonomic_id_nocomp.model
+rod_reactor_id_fcomp.model
+rod_reactor_id_lcomp.model
+rod_reactor_id_nocomp.model
+two_tanks_id_fcomp.model
+two_tanks_id_lcomp.model
+two_tanks_id_nocomp.model
+P juuli 14 01:04:47 CEST 2019
+P juuli 14 01:05:28 CEST 2019
+and_or_v2_id_fcomp.model
+and_or_v2_id_lcomp.model
+and_or_v2_id_nocomp.model
+P juuli 14 01:06:15 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:09:33 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:11:57 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:12:53 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:13:24 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:14:08 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:14:29 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:19:09 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:19:42 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:19:59 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:23:15 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:24:01 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:24:20 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:24:54 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 01:25:57 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 22:03:17 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:06:16 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:07:40 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:07:59 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:11:18 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:11:41 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:14:16 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:14:47 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 22:19:26 CEST 2019
+P juuli 14 22:19:45 CEST 2019
+and_or_v2_id_fcomp.model
+P juuli 14 22:25:03 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:25:56 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+P juuli 14 22:30:11 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:30:19 CEST 2019
+and_v3_id_fcomp.model
+P juuli 14 22:45:33 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+and_v3_id_fcomp.model
+P juuli 14 22:52:36 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+and_v3_id_fcomp.model
+P juuli 14 22:53:05 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:53:47 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:54:00 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:54:16 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:54:35 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:57:05 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:57:42 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:57:58 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:58:57 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:59:10 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 22:59:55 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 23:00:08 CEST 2019
+bouncing_ball_id_fcomp.model
+P juuli 14 23:00:52 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+and_v3_id_fcomp.model
+P juuli 14 23:08:07 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+and_v3_id_fcomp.model
+P juuli 14 23:19:51 CEST 2019
+bouncing_ball_id_fcomp.model
+cruise_control_id_fcomp.model
+diabetic_1_id_fcomp.model
+diabetic_2_id_fcomp.model
+filtered_oscillator_4_id_fcomp.model
+filtered_oscillator_8_id_fcomp.model
+filtered_oscillator_16_id_fcomp.model
+filtered_oscillator_32_id_fcomp.model
+nonholonomic_id_fcomp.model
+rod_reactor_id_fcomp.model
+two_tanks_id_fcomp.model
+and_or_v2_id_fcomp.model
+and_v3_id_fcomp.model
+P juuli 14 23:59:49 CEST 2019
+bouncing_ball_id_fcomp.model
+bouncing_ball_id_lcomp.model
+bouncing_ball_id_nocomp.model
+cruise_control_id_fcomp.model
+cruise_control_id_lcomp.model
+E juuli 15 00:00:01 CEST 2019
+bouncing_ball_id_fcomp.model
+bouncing_ball_id_lcomp.model
+bouncing_ball_id_nocomp.model
+cruise_control_id_fcomp.model
+cruise_control_id_lcomp.model
+cruise_control_id_nocomp.model
+diabetic_1_id_fcomp.model
+diabetic_1_id_lcomp.model

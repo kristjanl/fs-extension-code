@@ -1,0 +1,8 @@
+set term png
+set output './dat_images/refs_and_or_v2.png'
+set datafile separator ';'
+set xlabel 'step'
+set ylabel 'iters'
+set autoscale
+set yrange [0:7]
+plot 'and_or_v2_id_fcomp.dat' using 1:2 with lines title 'AND_1,STRAND_2', 'and_or_v2_id_fcomp.dat' using 1:3 with lines title 'AND,STRAND', 'and_or_v2_id_fcomp.dat' using 1:4 with lines title 'sp12', 'and_or_v2_id_fcomp.dat' using 1:5 with lines title 'sp13', 'and_or_v2_id_fcomp.dat' using 1:6 with lines title 'sp22', 'and_or_v2_id_fcomp.dat' using 1:7 with lines title 'sp23', 'and_or_v2_id_fcomp.dat' using 1:8 with lines title 'STRAND_3,sp11', 'and_or_v2_id_fcomp.dat' using 1:9 with lines title 'STRAND_1,sp21', 'and_or_v2_id_fcomp.dat' using 1:10 with lines title 'sp24', 'and_or_v2_id_fcomp.dat' using 1:11 with lines title 'sp25', 'and_or_v2_id_fcomp.dat' using 1:12 with lines title 'sp14', 'and_or_v2_id_fcomp.dat' using 1:13 with lines title 'sp15', 'and_or_v2_id_fcomp.dat' using 1:14 with lines title 'OR_1,sp16', 'and_or_v2_id_fcomp.dat' using 1:15 with lines title 'OR,sp26', 'and_or_v2_id_fcomp.dat' using 1:16 with lines title 'sp17', 'and_or_v2_id_fcomp.dat' using 1:17 with lines title 'sp18', 'and_or_v2_id_fcomp.dat' using 1:18 with lines title 'sp27', 'and_or_v2_id_fcomp.dat' using 1:19 with lines title 'sp28', 'and_or_v2_id_fcomp.dat' using 1:20 with lines title 'REPORTER,sp19,sp29', 'and_or_v2_id_fcomp.dat' using 1:21 with lines title 'sp10', 'and_or_v2_id_fcomp.dat' using 1:22 with lines title 'sp20', 'and_or_v2_id_fcomp.dat' using 1:23 with lines title 'sp30'

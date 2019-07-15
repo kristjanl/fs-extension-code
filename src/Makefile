@@ -22,10 +22,10 @@ CFLAGS = -I . -g -O2
 CXXFLAGS = -I . -g -O2
 
 #CFLAGS += -pg
-CFLAGS += -Denablelog
-CXXFLAGS += -Denablelog
-CFLAGS += -Ddo_checks
-CXXFLAGS += -Ddo_checks
+#CFLAGS += -Denablelog
+#CXXFLAGS += -Denablelog
+#CFLAGS += -Ddo_checks
+#CXXFLAGS += -Ddo_checks
 #CFLAGS += -Dno_output
 #CXXFLAGS += -Dno_output
 CFLAGS += -Doutput1

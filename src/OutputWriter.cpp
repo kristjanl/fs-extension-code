@@ -404,8 +404,8 @@ void OutputWriter::writeRefinementInfo(vector<MyComponent *> comps,
   ofstream datfile;
   datfile.open(datfname.c_str());
   int yMin = 999999999, yMax = -1;
+  int compsNum = comps.end() - comps.begin();
   for(int i = 0; i < stepCount; i++) {
-    bool first = false;
     datfile << i;
     for(vector<MyComponent *>::iterator it = comps.begin(); 
         it < comps.end(); it++) {
@@ -418,12 +418,9 @@ void OutputWriter::writeRefinementInfo(vector<MyComponent *> comps,
         yMin = compStepMap[compName][i];
       if (compStepMap[compName][i] > yMax) 
         yMax = compStepMap[compName][i];
-      if (first) {
-        datfile << compStepMap[compName][i];
-        first = false;
-        continue;  
-      }
-      datfile << ";" << compStepMap[compName][i];
+      double shift = (it - comps.begin()) * 0.25 / (compsNum - 1);
+      //cout << shift << endl;
+      datfile << ";" << compStepMap[compName][i] + shift;
     }
     datfile << endl;
   }
@@ -436,8 +433,15 @@ void OutputWriter::writeRefinementInfo(vector<MyComponent *> comps,
   pltfile.open(pltfname.c_str());
 
   pltfile << "set term png\n";
-  pltfile << "set output './" << name << ".png'\n";
+
+  std::size_t pos = name.find("_id_fcomp");
+  if (pos == std::string::npos) {
+    throw std::invalid_argument(sbuilder() << "no suffix in '" << name << "'");
+  }
+  pltfile << "set output './dat_images/refs_" << name.substr(0, pos) << ".png'\n";
   pltfile << "set datafile separator ';'\n";
+  pltfile << "set xlabel 'step'\n";
+  pltfile << "set ylabel 'iters'\n";
 
   pltfile << "set autoscale\n";
   pltfile << "set yrange [" << (yMin - 1) << ":" << (yMax + 1) << "]\n";
@@ -449,7 +453,8 @@ void OutputWriter::writeRefinementInfo(vector<MyComponent *> comps,
     string compName = (*it)->getVarName(settings);
     if( it != comps.begin())
       pltfile << ", ";
-    pltfile << "'" << name + ".dat' using 1:" << counter++ << " with linespoints title '" << compName <<"'";
+    //linespoints
+    pltfile << "'" << name + ".dat' using 1:" << counter++ << " with lines title '" << compName <<"'";
   }
   //pltfile << "plot 'and_or_v2_id_fcomp.dat' using 1:2 with linespoints title 'Square', 'and_or_v2_id_fcomp.dat' using 1:3 with linespoints, 'and_or_v2_id_fcomp.dat' using 1:4 with linespoints\n";
   

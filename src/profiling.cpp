@@ -1056,7 +1056,10 @@ Monomial getMono(int dim, bool first=true) {
 
 //#include <fenv.h>
 void monoArith() {
-  for(int dim = 1; dim < 50 + 1; dim += 1) {
+  for(int step = 0; step < 30 + 1; step += 1) {
+    int dim = step * 20;
+    if(dim == 0)
+      dim = 1;
     Monomial m1 = getMono(dim - 1, false);
     Monomial m2 = getMono(dim - 1, false);
 
@@ -1080,6 +1083,54 @@ void monoArith() {
     }
     t2 = getTime();
     cout << "\t " << getDiff(t1, t2, false) << endl;
+  }
+}
+
+void monoOperations() {
+  int count = 100000;
+  for(int step = 0; step < 30 + 1; step += 1) {
+    int dim = step * 20;
+    if(dim == 0)
+      dim = 1;
+    Monomial m1 = getMono(dim - 1, false);
+    Monomial m2 = getMono(dim - 1, false);
+
+    cout << dim;
+
+    long t1, t2;
+
+    t1 = getTime();
+    for(int i = 0; i < count; i++) {
+      Monomial m3 = m1 + m2;
+      //m1 *= m2;
+    }
+    t2 = getTime();
+    cout << "\t " << getDiff(t1, t2, false);
+    t1 = getTime();
+    for(int i = 0; i < count; i++) {
+      Monomial m3 = m1 * m2;
+      //m1 *= m2;
+    }
+    t2 = getTime();
+    cout << "\t " << getDiff(t1, t2, false);
+
+
+    t1 = getTime();
+    for(int i = 0; i < count; i++) {
+      m1 += m2;
+    }
+    t2 = getTime();
+    cout << "\t " << getDiff(t1, t2, false);
+
+
+    t1 = getTime();
+    for(int i = 0; i < count; i++) {
+      m1 *= m2;
+    }
+    t2 = getTime();
+    cout << "\t " << getDiff(t1, t2, false);
+
+    cout << endl;
   }
 }
 
@@ -1134,13 +1185,15 @@ void vectorSize() {
 int main() {
   //vectorSize();
 
+  /*
   vector<int> v;
   v.reserve(50);
   v.clear();
   cout << v.capacity() << endl;
-
+  */
 
   //monoArith();
+  monoOperations();
 
   //polyPart();
   //poly();
