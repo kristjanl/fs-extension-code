@@ -37,7 +37,7 @@ def times(modelDir, groups, infoFields):
       modelFile = os.path.join(modelDir, model)
       #print model
 
-      m = re.search('(.*?)_(10_){0,1}(nop|id|pa)_(.*)\.', model)
+      m = re.search('(.*?)_(10_|20_){0,1}(nop|id|pa)_(.*)\.', model)
       modelPrefix = m.group(1)
       alias = get_model_alias(modelPrefix)
       compType = get_comp(m.group(4))
@@ -78,8 +78,8 @@ def times(modelDir, groups, infoFields):
       for c in compTypes:
         if c not in data[key]:
           continue
-        printLine(data[key], c)
-        #printPercentage(data[key], c)
+        #printLine(data[key], c)
+        printPercentage(data[key], c)
       print "\\hline"
       #sys.exit(0)
 

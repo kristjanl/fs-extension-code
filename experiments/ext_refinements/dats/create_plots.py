@@ -21,6 +21,7 @@ modelTypes += ["rod_reactor_id"]
 modelTypes += ["two_tanks_id"]
 modelTypes += ["and_or_v2_id"]
 modelTypes += ["and_v3_id"]
+modelTypes += ["lin_dep_20_id"]
 
 modelTypes = map(lambda s: s + "_fcomp.plt", modelTypes)
 

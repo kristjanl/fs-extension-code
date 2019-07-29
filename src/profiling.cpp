@@ -1093,13 +1093,15 @@ void monoOperations() {
     //dim = step;
     if(dim < 1)
       dim = 1;
-    Monomial m1 = getMono(dim - 1, false);
-    Monomial m2 = getMono(dim - 1, false);
+    Monomial m1;
+    Monomial m2;
 
     cout << dim;
 
     long t1, t2;
 
+    m1 = getMono(dim - 1, false);
+    m2 = getMono(dim - 1, false);
     t1 = getTime();
     for(int i = 0; i < count; i++) {
       Monomial m3 = m1 + m2;
@@ -1107,6 +1109,8 @@ void monoOperations() {
     }
     t2 = getTime();
     cout << "\t " << getDiff(t1, t2, false);
+    m1 = getMono(dim - 1, false);
+    m2 = getMono(dim - 1, false);
     t1 = getTime();
     for(int i = 0; i < count; i++) {
       Monomial m3 = m1 * m2;
@@ -1116,6 +1120,8 @@ void monoOperations() {
     cout << "\t " << getDiff(t1, t2, false);
 
 
+    m1 = getMono(dim - 1, false);
+    m2 = getMono(dim - 1, false);
     t1 = getTime();
     for(int i = 0; i < count; i++) {
       m1 += m2;
@@ -1124,6 +1130,8 @@ void monoOperations() {
     cout << "\t " << getDiff(t1, t2, false);
 
 
+    m1 = getMono(dim - 1, false);
+    m2 = getMono(dim - 1, false);
     t1 = getTime();
     for(int i = 0; i < count; i++) {
       m1 *= m2;
